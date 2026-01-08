@@ -1,0 +1,99 @@
+﻿<!-- Page Header Close -->
+<div id="team_info" class="row row-sm d-none">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Team Members </div>
+            </div>
+            <div class="card-body teamCardBody">
+                <div class="row gy-4 teamBody m-3">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <label for="input-text" class="form-label">Name<span style="color:red">*</span></label>
+                        <select class="form-control" id="choices-single-default">
+                            <option selected disabled>Select User</option>
+                            <option value="">User 1</option>
+                            <option value="">User 2</option>
+                            <option value="">User 3</option>
+                            <option value="">User 4</option>
+                        </select>
+                    </div>
+
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                        <label for="text-area" class="form-label">Role <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select roles for team members, ensure to have a minimum of one facilitator/owner"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select class="form-control" id="choices-single-default">
+                            <option selected disabled>Select Role</option>
+                            <option value="">Role 1</option>
+                            <option value="">Role 2</option>
+                            <option value="">Role 3</option>
+                            <option value="">Role 4</option>
+                        </select>
+                    </div>
+
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                        <p class="mb-2 fw-medium">Notification
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Toggle for any team member you would like to receive an email notification whenever any update is made"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="form-check form-check-lg d-flex align-items-center align-self-center"> 
+                            <input class="form-check-input" type="checkbox" value="" id="checkebox-lg"> 
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                        <p class="mb-2 fw-medium">Add/Remove</p>
+                        <div class="mb-md-0 mb-2"> 
+                            <button class="btn btn-icon btn-primary btn-wave waves-effect waves-light add"> <i class="fe fe-plus"></i> </button>
+                            <button class="btn btn-icon btn-warning btn-wave me-5 waves-effect waves-light d-none remove"> <i class="fe fe-minus"></i> </button> 
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-primary" onclick="loadPartial('team_info', 'project_info')">Previous</button>
+                <button class="btn btn-success shadow-success" onclick="loadPartial('team_info', 'tools_info')">Save &amp; Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let formCount = 1;
+
+        $('.add').click(function() {
+            formCount++;
+
+            // Clone the first form section
+            const newForm = $('.teamBody').first().clone();
+
+            // Clear input values
+            newForm.find('input').val('');
+                       
+            // Show remove button for cloned forms
+            newForm.find('.add').addClass("d-none");
+            newForm.find('.remove').removeClass("d-none");
+
+            // // Add remove functionality
+            // newForm.find('.remove').click(function() {
+            //     $(this).closest('.teamBody').remove();
+            //     formCount--;
+            // });
+
+            // Append to container
+            $('.teamCardBody').append(newForm);
+        });
+
+        // Remove functionality for initial form (if needed)
+        $(document).on('click', '.remove', function() {
+            if ($('.teamBody').length > 1) {
+                $(this).closest('.teamBody').remove();
+                formCount--;
+            }
+        });
+    });
+</script>

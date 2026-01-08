@@ -1,0 +1,338 @@
+﻿@inject IHttpContextAccessor hca
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
+   <head>
+      <!-- Meta Data --> 
+      <meta charset="UTF-8">
+      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>@ViewBag.Title</title>
+      <meta name="Description" content="">
+      <meta name="Author" content="Ops Focus Inc">
+      <meta name="keywords" content="admin,admin dashboard,admin panel,admin template,bootstrap,clean,dashboard,flat,jquery,modern,responsive,premium admin templates,responsive admin,ui,ui kit.">
+      <!-- Favicon --> 
+      <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+      <!-- Choices JS -->
+      <link src="~/assets/libs/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+      <!-- Bootstrap Css --> 
+      <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Main Theme Js --> 
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="~/assets/js/main.js"></script> <!-- Style Css --> 
+      <link href="~/assets/css/styles.min.css" rel="stylesheet">
+      <link href="~/assets/css/partial.css" rel="stylesheet">
+      <!-- Icons Css -->
+      <link href="~/assets/css/icons.css" rel="stylesheet">
+      <!-- Node Waves Css --> 
+      <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+      <!-- Color Picker Css --> 
+      <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
+      <link rel="stylesheet" href="~/assets/libs/@@simonwep/pickr/themes/nano.min.css">
+      <!-- Choices Css -->
+      <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+      <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+      <!-- Bootstrap Css -->
+      <link rel="stylesheet" href="~/assets/libs/jsvectormap/css/jsvectormap.min.css">
+      <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+      <!-- Flatpicker-->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+      <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
+      <!--Datatables fixed column-->
+      <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+      <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+      <!-- Prism CSS --> 
+      <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
+      <meta http-equiv="imagetoolbar" content="no" />    
+      <style>
+        a.details-control {
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .child-table {
+            width: 95%;
+        }
+
+        .child-table1 {
+            width: 30%;
+        }
+
+        .child-table-wrapper {
+            display: flex;
+            justify-content: flex-end; /* align to the right */
+        }
+
+        .child-table-wrapper1 {
+            display: flex;
+            justify-content: flex-start; /* align to the right */
+        }
+      </style>
+   </head>
+   <body>
+   <!-- Loader --> 
+   <div id="loader" class="d-none"> <img src="~/assets/images/media/media-79.svg" alt=""> </div>
+   <!-- Loader --> 
+   <div class="page">
+        <!-- app-header -->
+        <header class="app-header">
+            <!-- Start::main-header-container -->
+            <div class="main-header-container container-fluid">
+                <!-- Start::header-content-left -->
+                <div class="header-content-left">
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <div class="horizontal-logo">
+                            <a href="index.html" class="header-logo">
+                                <img src="~/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
+                                <img src="~/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
+                                <img src="~/assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
+                                <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+                                <img src="~/assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
+                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- End::header-element -->
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <!-- Start::header-link -->
+                        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a>
+                        <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+                </div>
+                <!-- End::header-content-left -->
+                <!-- Start::header-content-right -->
+                <div class="header-content-right">
+                    <!-- Start::header-element -->
+                    <div class="header-element header-fullscreen d-xl-flex d-none">
+                        <!-- Start::header-link -->
+                        <a onclick="openFullscreen();" href="javascript:void(0);" class="header-link">
+                            <i class="fe fe-maximize full-screen-open header-link-icon"></i>
+                            <i class="fe fe-minimize full-screen-close header-link-icon d-none"></i>
+                        </a>
+                        <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <!-- Start::header-link|dropdown-toggle -->
+                        <a href="javascript:void(0);" class="header-link dropdown-toggle" id="mainHeaderProfile" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <div class="header-link-icon">
+                                    <img src="~/assets/images/faces/1.jpg" alt="img" width="32" height="32" class="rounded-circle">
+                                </div>
+                                <div class="d-none">
+                                    <p class="fw-semibold mb-0">Angelica</p>
+                                    <span class="op-7 fw-normal d-block fs-11">Web Designer</span>
+                                </div>
+                            </div>
+                        </a>
+                        <!-- End::header-link|dropdown-toggle -->
+
+                        <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
+                            <li>
+                                <div class="header-navheading border-bottom">
+                                    <h6 class="main-notification-title">Sonia Taylor</h6>
+                                    <p class="main-notification-text mb-0">Web Designer</p>
+                                </div>
+                            </li>
+                            <li><a class="dropdown-item d-flex border-bottom" href="profile.html"><i class="fe fe-user fs-16 align-middle me-2"></i>Profile</a></li>
+                            @* <li><a class="dropdown-item d-flex border-bottom" href="mail-inbox.html"><i class="fe fe-inbox fs-16 align-middle me-2"></i>Inbox <span class="badge bg-success ms-auto">25</span></a></li>
+                            <li><a class="dropdown-item d-flex border-bottom border-block-end" href="notifications-list.html"><i class="fe fe-compass fs-16 align-middle me-2"></i>Activity</a></li>
+                            <li><a class="dropdown-item d-flex border-bottom" href="settings.html"><i class="fe fe-settings fs-16 align-middle me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item d-flex border-bottom" href="chat.html"><i class="fe fe-headphones fs-16 align-middle me-2"></i>Support</a></li>*@
+                            <li><a class="dropdown-item d-flex" href="@Url.Action("Main", "Logout")"><i class="fe fe-power fs-16 align-middle me-2"></i>Log Out</a></li>
+                        </ul>
+                    </div>
+                    <!-- End::header-element -->
+                </div>
+                <!-- End::header-content-right -->
+            </div>
+            <!-- End::main-header-container -->
+        </header>
+      <!-- /app-header --> <!-- Start::app-sidebar --> 
+      <aside class="app-sidebar sticky" id="sidebar">
+         <!-- Start::main-sidebar-header --> 
+         <div class="main-sidebar-header"> <a href="#" class="header-logo"> <img src="~/assets/images/brand-logos/desktop-white.png" class="desktop-white" alt="logo"> <img src="~/assets/images/brand-logos/toggle-white.png" class="toggle-white" alt="logo"> <img src="~/assets/images/brand-logos/desktop-logo.png" class="desktop-logo" alt="logo"> <img src="~/assets/images/brand-logos/toggle-dark.png" class="toggle-dark" alt="logo"> <img src="~/assets/images/brand-logos/toggle-logo.png" class="toggle-logo" alt="logo"> <img src="~/assets/images/brand-logos/desktop-dark.png" class="desktop-dark" alt="logo"> </a> </div>
+         <!-- End::main-sidebar-header --> <!-- Start::main-sidebar --> 
+         <div class="main-sidebar" id="sidebar-scroll" data-simplebar="init">
+            <div class="simplebar-wrapper" style="margin: -14.4px 0px -80px;">
+               <div class="simplebar-height-auto-observer-wrapper">
+                  <div class="simplebar-height-auto-observer"></div>
+               </div>
+               <div class="simplebar-mask">
+                  <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
+                     <div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: 100%; overflow: hidden scroll;">
+                        <div class="simplebar-content" style="padding: 14.4px 0px 80px;">
+                           <!-- Start::nav --> 
+                           <nav class="main-menu-container nav nav-pills flex-column sub-open">
+                              <div class="slide-left d-none" id="slide-left">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                                 </svg>
+                              </div>
+                              <ul class="main-menu" style="margin-left: 0px; margin-right: 0px;">
+                                 <!-- Start::slide__category --> 
+                                 <li class="slide__category"><span class="category-name">Dashboard</span></li>
+                                 <!-- End::slide__category --> <!-- Start::slide -->
+                                    <li class="slide @(ViewBag.Active == "Dashboard" ? "active" : "")">
+                                        <a href="@Url.Action("Dashboard", "Main")" class="side-menu__item">
+                                            <span class="shape1"></span> <span class="shape2"></span> <i class="ti-home side-menu__icon"></i> <span class="side-menu__label">Dashboard</span>
+                                        </a>
+                                    </li>
+                                 <!-- End::slide --> 
+                                 <li class="slide__category"><span class="category-name">Initiative Management</span></li>
+                                 <!-- End::slide__category --> <!-- Start::slide -->
+                                 <li class="slide has-sub @(ViewBag.Base == "InitiativeManagement" ? "open active" : "")">
+                                    <a href="javascript:void(0);" class="side-menu__item"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-write side-menu__icon"></i> <span class="side-menu__label">Initiative Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                    <ul class="slide-menu child1" data-popper-placement="bottom" data-popper-reference-hidden="" data-popper-escaped="" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, -168px);">
+                                       <li class="slide side-menu__label1"> <a href="javascript:void(0)">Initiative Management</a> </li>
+                                       <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>
+                                       <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
+                                            <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")"> Continuous Improvement </a>
+                                            <ul class="slide-menu child2 @(ViewBag.Active == "CICreateProject" || ViewBag.Active == "AllCIProjects" ? "active" : "")">
+                                                <li class="slide @(ViewBag.Active == "CICreateProject" ? "active" : "")"> <a href="@Url.Action("CreateCIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CICreateProject" ? "active" : "")"> New Project </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> <a href="@Url.Action("AllCIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> All Projects</a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="slide has-sub @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")"> 
+                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">Operational Excellence
+                                                <i class="fe fe-chevron-right side-menu__angle"></i>
+                                            </a> 
+                                            <ul class="slide-menu child2 @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
+                                                <li class="slide @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> <a href="@Url.Action("CreateOEProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> New Project </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllOEProjects" ? "active" : "")"> <a href="@Url.Action("AllOEProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllOEProjects" ? "active" : "")">All Projects </a></li>
+                                            </ul>
+                                        </li>
+                                        <li class="slide has-sub @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")"> 
+                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")">Strategic Initiatives</a>
+                                            <ul class="slide-menu child2 @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")">
+                                                <li class="slide @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> <a href="@Url.Action("CreateSIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> Strategic Project </a></li>
+                                                <li class="slide @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> <a href="@Url.Action("CreateSISubProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> Sub Project </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllSIProjects" ? "active" : "")"> <a href="@Url.Action("AllSIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllSIProjects" ? "active" : "")">All Projects </a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                 </li>
+                                 <!-- End::slide --> <!-- Start::slide__category --> 
+                                 @if((bool)hca?.HttpContext?.Session?.GetString("UserRole")?.ToString().Equals("Admin"))
+                                 {
+                                     <li class="slide__category"><span class="category-name">Administration</span></li>
+                                     <!-- End::slide__category --> <!-- Start::slide --> 
+                                     <li class="slide has-sub @(ViewBag.Base == "LocationManagement" ? "open active" : "")">
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" || ViewBag.Active == "ManageFacilities" || ViewBag.Active == "ManageDepartments" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Location Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <ul class="slide-menu child2 @(ViewBag.Active == "ManageOperationalLocation" || ViewBag.Active == "ManageFacilities" || ViewBag.Active == "ManageDepartments" ? "active" : "")">
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">Location Management</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")"> <a href="@Url.Action("ManageOperationalLocation", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")">Manage Operational Countries</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageFacilities" ? "active" : "")"> <a href="@Url.Action("ManageFacilities", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageFacilities" ? "active" : "")">Manage Facilities</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageDepartments" ? "active" : "")"> <a href="@Url.Action("ManageDepartments", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageDepartments" ? "active" : "")">Manage Departments</a> </li>
+                                        </ul>
+                                     </li>
+                                     <li class="slide has-sub @(ViewBag.Base == "UserManagement" ? "open active" : "")">
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageUsers" || ViewBag.Active == "Account" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">User Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <ul class="slide-menu child2 @(ViewBag.Active == "ManageUsers" || ViewBag.Active == "Account" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">User Management</a> </li>
+                                                        <li class="slide @(ViewBag.Active == "ManageUsers" ? "active" : "")"> <a href="@Url.Action("ManageUsers", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageUsers" ? "active" : "")">Manage Users</a> </li>
+                                           <li class="slide @(ViewBag.Active == "Account" ? "active" : "")"> <a href="#" class="side-menu__item @(ViewBag.Active == "Account" ? "active" : "")">My Account</a> </li>
+                                           @* <li class="slide @(ViewBag.Active == "Settings" ? "active" : "")"> <a href="#" class="side-menu__item @(ViewBag.Active == "Settings" ? "active" : "")">Settings</a> </li> *@
+                                        </ul>
+                                     </li>
+                                     <li class="slide has-sub @(ViewBag.Base == "ToolManagement" ? "open active" : "")">
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">Tool Management</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageTools" ? "active" : "")"> <a href="@Url.Action("ManageTools", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageTools" ? "active" : "")">Manage Tools</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <a href="@Url.Action("ManageSavingCategory", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")">Manage Saving Category</a> </li>
+                                        </ul>
+                                     </li>
+                                     <!-- End::slide -->
+                                 }
+                              </ul>
+                              <div class="slide-right d-none" id="slide-right">
+                                 <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                                    <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+                                 </svg>
+                              </div>
+                           </nav>
+                           <!-- End::nav --> 
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="simplebar-placeholder" style="width: auto; height: 1471px;"></div>
+            </div>
+            <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;">
+               <div class="simplebar-scrollbar" style="width: 0px; transform: translate3d(0px, 0px, 0px); display: none;"></div>
+            </div>
+            <div class="simplebar-track simplebar-vertical" style="visibility: visible;">
+               <div class="simplebar-scrollbar" style="height: 605px; transform: translate3d(0px, 339px, 0px); display: block;"></div>
+            </div>
+         </div>
+         <!-- End::main-sidebar --> 
+      </aside>
+      <!-- End::app-sidebar -->
+
+      @RenderBody()
+
+      <!-- Footer Start --> 
+      <footer class="footer mt-auto py-3 bg-white text-center">
+         <div class="container"> <span class="text-muted"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="bi bi-heart-fill text-danger"></span> by <a href="https://spruko.com/" target="_blank"> <span class="fw-semibold text-primary text-decoration-underline">CI Tracker</span> </a> All rights reserved </span> </div>
+      </footer>
+      
+   </div>
+   <!-- Scroll To Top --> 
+   <div class="scrollToTop" style="display: none;"> <span class="arrow"><i class="fe fe-arrow-up"></i></span> </div>
+   <div id="responsive-overlay"></div>
+   <!-- Scroll To Top -->
+
+
+    <script>
+        function loadPartial(hide, show) {
+            $("#"+hide).addClass("d-none")
+            $("#"+show).removeClass("d-none")
+
+            document.dispatchEvent(
+                new CustomEvent('partialShown', {
+                    detail: { id: show }
+                })
+            );
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+
+            // Show active child2 menus
+            document.querySelectorAll('ul.slide-menu.child2.active').forEach(el => {
+                el.style.display = 'block';
+            });
+
+            // Hide inactive child2 menus
+            document.querySelectorAll('ul.slide-menu.child2:not(.active)').forEach(el => {
+                el.style.removeProperty('display');
+            });
+
+        });
+    </script>
+
+   <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
+   <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+   <script src="~/assets/js/defaultmenu.min.js"></script>
+   <script src="~/assets/libs/node-waves/waves.min.js"></script>
+   <script src="~/assets/js/sticky.js"></script>
+   <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
+   <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
+   <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
+   @* <script src="~/assets/js/index.js"></script> *@
+   <script src="~/assets/js/custom-switcher.min.js"></script>
+   <script src="~/assets/libs/prismjs/prism.js"></script>
+   <script src="~/assets/js/prism-custom.js"></script>
+   @* <script src="~/assets/js/choices.js"></script> *@
+    <script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
+   <script src="~/assets/js/date&time_pickers.js"></script>
+</body>
+</html>

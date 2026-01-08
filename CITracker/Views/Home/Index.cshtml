@@ -1,0 +1,496 @@
+﻿@inject IHttpContextAccessor hca
+@model Shared.DTO.ResponseHandler<Shared.Models.SubscriptionPlan>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- Start::app-content -->
+<div class="main-content landing-main">
+    <!-- Start:: Section-1 -->
+    <div class="landing-banner landing-top-header" id="home">
+        <section class="section demo-screen-headline main-demo-1">
+            <div class="container main-banner-container">
+                <div class="row">
+                    <div class="col-xl-6 col-lg-6 animation-zidex position-relative">
+                        @* <h4 class="fw-medium mt-7">Manage initiatives — track audits — realise benefits</h4> *@
+                        <p class="text-start fw-bold">Bring your continuous improvement into one place</p>
+                        <h6 class="pb-3">CI Tracker helps teams capture ideas, audit processes, and measure financial benefits — with documents stored in your tenant via SharePoint integration.</h6>
+
+                        <div class="btn-list">
+                            @if (String.IsNullOrEmpty(hca?.HttpContext?.Session?.GetString("UserEmail")?.ToString()))
+                            {
+                                <a href="@Url.Action("SignIn", "Home")" class="btn btn-lg btn-w-lg mb-3 me-2 btn-dark">
+                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden class="opacity-90">
+                                    <rect x="1" y="1" width="10" height="10" fill="#F35325"></rect>
+                                    <rect x="13" y="1" width="10" height="10" fill="#81BC06"></rect>
+                                    <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
+                                    <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
+                                    </svg>
+                                    Sign in with SSO
+                                </a>
+                            }
+                            else
+                            {
+                                if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
+                                {
+                                    <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
+                                        Select a Subscription Plan
+                                    </a>
+                                }
+                                else
+                                {                                    
+                                    <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
+                                        Proceed to CITracker
+                                    </a>
+                                }
+                            }
+                        </div>
+                        <p class="mt-1" style="font-size:0.8rem !important">Listing: Microsoft AppSource — <a href="https://marketplace.microsoft.com/en-gb/product/office/WA200007156?tab=Overview" style="color:white; text-decoration: underline">View on Marketplace</a></p>
+                    </div>
+                    <div class="col-xl-6 col-lg-6 my-auto"> <img src="~/assets/landing/images/4.png" alt=""> </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- End:: Section-1 --> <!-- Start:: Section-7 -->
+    <section class="section highlights" id="faq">
+        <div class="container">
+            <div class="row">
+                <h4 class="text-center fw-medium landing-card-header">Manage initiatives — track audits — realise benefits</h4>
+                <span class="landing-title"></span>
+                @* <h2 class="text-center fw-medium">We are here to help you</h2>
+                <div class="row justify-content-center">
+                    <p class="col-xl-9 wow fadeInUp text-default sub-text mb-5" data-wow-delay="0s"> The Spruha admin template is one of the modern dashboard templates. It is also a premium admin dashboard with high-end features, where users can easily customize or change their projects according to their choice. Please take a quick look at our template highlights. </p>
+                </div> *@
+                <div class="row align-items-center">
+                    <div class="col-md-12 col-lg-6 px-4">
+                        <div class="accordion accordion-customicon1 accordion-primary accordions-items-seperate" id="accordionFAQ2">
+                            <div class="accordion-item acc-primary">
+                                <h2 class="accordion-header" id="headingcustomicon20Five"> <button class="accordion-button collapsed text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon20Five" aria-expanded="false" aria-controls="collapsecustomicon20Five"> <span class="me-3 fs-18 fw-bold">01.</span> Initiative Tracker </button> </h2>
+                                <div id="collapsecustomicon20Five" class="accordion-collapse collapse" aria-labelledby="headingcustomicon20Five" data-bs-parent="#accordionFAQ2">
+                                    <div class="accordion-body">
+                                        <p> Plan, prioritise and monitor improvement ideas from submission to completion. Set milestones, assign owners, manage risks and track progress using structured workflows. </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item acc-danger">
+                                <h2 class="accordion-header" id="headingcustomicon21Six"> <button class="accordion-button collapsed text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon21Six" aria-expanded="false" aria-controls="collapsecustomicon21Six"> <span class="me-3 fs-18 fw-bold">02.</span> Audit & Evidence </button> </h2>
+                                <div id="collapsecustomicon21Six" class="accordion-collapse collapse" aria-labelledby="headingcustomicon21Six" data-bs-parent="#accordionFAQ2">
+                                    <div class="accordion-body">
+                                        <p> Conduct process audits with configurable checklists and attach supporting evidence. All documents are securely stored in the customer’s SharePoint tenant to maintain full data ownership. </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item acc-success">
+                                <h2 class="accordion-header" id="headingcustomicon22Six"> <button class="accordion-button collapsed text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon22Six" aria-expanded="false" aria-controls="collapsecustomicon22Six"> <span class="me-3 fs-18 fw-bold">03.</span> Finance & reporting </button> </h2>
+                                <div id="collapsecustomicon22Six" class="accordion-collapse collapse" aria-labelledby="headingcustomicon22Six" data-bs-parent="#accordionFAQ2">
+                                    <div class="accordion-body">
+                                        <p> Analyse financial performance with detailed reporting on hard and soft savings, ROI and project outcomes. Export data, connect Power BI and generate management-ready dashboards. </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6 reveal revealright">
+                        <div class="card">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End:: Section-7 --> <!-- Start:: Section-2 -->
+    <section class="section hor-content main_features" id="features">
+        <div class="container">
+            <h4 class="text-center fw-medium landing-card-header">Key Features</h4>
+            <span class="landing-title"></span>
+            <h2 class="fw-medium text-center"></h2>
+            @*<p class="text-default mb-5 text-center">The Spruha admin template comes with ready-to-use features that are completely easy-to-use for any user, even for a beginner.</p> *@
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-1 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-layers text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Improvement Ideas Capture</h4>
+                                <p class="mb-0">Collect, review, and prioritize improvement ideas through a structured intake workflow.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-2 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-git-merge text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Align Initiatives to Value Streams</h4>
+                                <p class="mb-0">Associate every initiative with the correct value stream for strategic alignment and visibility.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-3 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-award text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Green &amp; Black Belt Certification Tracking</h4>
+                                <p class="mb-0">Track practitioner progress and project milestones for Lean Six Sigma certifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-4 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-folder text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Track Traditional Projects</h4>
+                                <p class="mb-0">Manage classic continuous improvement projects with complete lifecycle visibility.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-5 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-sliders text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Customizable Templates & Tools</h4>
+                                <p class="mb-0"> like registration, profile, and log-in pages, etc. </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-6 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-book-open text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Initiative Library</h4>
+                                <p class="mb-0">Access a searchable library of active and completed initiatives for quick reference.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-7 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-dollar-sign text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Track Hard &amp; Soft Savings</h4>
+                                <p class="mb-0">Quantify cost savings and revenue gains from improvement projects.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-8 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-file-check text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Project Auditing & Benefits Capture</h4>
+                                <p class="mb-0">Audit project results, validate benefits, and maintain financial governance.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-1 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-file-plus text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Initiative Journaling</h4>
+                                <p class="mb-0">Record decisions, updates, and lessons learned in a detailed project journal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-2 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-bar-chart-2 text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Power BI Analytics</h4>
+                                <p class="mb-0">Integrate with Power BI for enterprise-grade dashboards and insights.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-3 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-pie-chart text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Reporting</h4>
+                                <p class="mb-0">Generate comprehensive reports across projects, savings, and certifications.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card features border text-center main-features main-features-4 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
+                        <div class="card-body">
+                            <div class="counter-body-2">
+                                <div class="bg-img mb-2 text-left hexagon-wrapper">
+                                    <div class="counter-icon hexagon"> <i class="fe fe-search text-white"></i> </div>
+                                </div>
+                            </div>
+                            <div class="text-left counter-body">
+                                <h4 class="fw-bold">Advanced Search</h4>
+                                <p class="mb-0">Quickly locate projects, documents, and insights with rich filtering options.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End:: Section-2 --> <!-- Start:: Section-6 -->
+    <section class="section section-bg" id="pricing">
+        <div class="container text-center">
+            <div class="row">
+                <h4 class="text-center fw-medium landing-card-header">Choose a plan </h4>
+                <span class="landing-title"></span>
+                <h2 class="text-center fw-medium">Find the <span class="text-primary">Perfect Plan</span> for your Business.</h2>
+                <div class="pricing-tabs text-center">
+                    @* <div class="pri-tabs-heading text-center mt-3">
+                        <ul class="nav nav-price" role="tablist">
+                            <li><a data-bs-toggle="tab" href="#month" class="monthly" aria-selected="false" tabindex="-1" role="tab">Monthly</a></li>
+                            <li><a class="active show annualy" data-bs-toggle="tab" href="#annualyear" aria-selected="true" role="tab">Annual</a></li>
+                        </ul>
+                    </div> *@
+                    <div class="tab-content text-start">
+                        <div class="tab-pane pb-0 active show" id="annualyear" role="tabpanel">
+                            <div class="row d-flex align-items-center justify-content-center">
+                                @if(Model.Result != null)
+                                {
+                                    if (Model.Result.Any())
+                                    {
+                                        var isOdd = Model.Result.Count() % 2 != 0;
+                                        var middleIndex = Model.Result.Count() / 2;
+                                        for(var i = 0; i < Model.Result.Count(); i++)
+                                        {
+                                            if(i == middleIndex)
+                                            {
+                                                <div class="col-lg-4 col-xl-4 col-md-8 col-sm-12">
+                                                    @using (Html.BeginForm("Checkout", "Home", FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <div class="card border bg-primary border-primary pricing-card advanced reveal revealrotate">
+                                                            <div class="p-3 d-block text-justified bd-b-white-2">
+                                                                <p class="fs-18 fw-medium mb-1 pe-0">@Model.Result.ElementAt(i).Name<span class="badge bg-white text-primary float-end fw-normal">Most Popular</span></p>
+                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2)</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                <p class="fs-13 mb-2">@Model.Result.ElementAt(i).Description</p>
+                                                                <p class="fs-13 mb-1">Billed annually!!!</p>
+                                                            </div>
+                                                            <div class="card-body py-2">
+                                                                <ul class="text-justify pricing-body ps-0 my-5">
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i> <strong> @Model.Result.ElementAt(i).FreeTrialDuration Days </strong> Free Trial </li>
+                                                                        <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> User Licenses</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> Unlimited </strong> Projects</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> Money </strong> Back Guarantee</li>
+                                                                    <li class=""><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> 24/7</strong> support</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="text-center border-top-0 p-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-white text-primary"> <span class="ms-4 me-4">Subscribe</span> </button> </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-lg-4 col-xl-4 col-md-8 col-sm-12">
+                                                    @using (Html.BeginForm("Checkout", "Home", FormMethod.Post))
+                                                    {
+                                                        @Html.AntiForgeryToken()
+                                                        <div class="card pricing-card reveal revealrotate">
+                                                            <div class="card-header d-block text-justified py-3">
+                                                                <p class="fs-18 fw-medium mb-1">@Model.Result.ElementAt(i).Name</p>
+                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2)</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                <p class="fs-13 mb-1">@Model.Result.ElementAt(i).Description</p>
+                                                                <p class="fs-13 mb-3 text-secondary">Billed annually!!!</p>
+                                                            </div>
+                                                            <div class="card-body py-2">
+                                                                <ul class="text-justify pricing-body ps-0 mb-0">
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> @Model.Result.ElementAt(i).FreeTrialDuration Days </strong> Free Trial</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i> <strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> User Licenses </li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> Unlimited </strong> Projects</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> Money </strong> Back Guarantee</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> 24/7</strong> support</li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="card-footer text-center border-top-0 py-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-outline-secondary"> <span class="ms-4 me-4">Subscribe</span> </button> </div>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        }
+                                    }
+                                }
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End:: Section-6 --> <!-- Start:: Section-10 -->
+    <section class="section" id="contact">
+        <div class="container">
+            <div class="row">
+                <h4 class="text-center fw-semibold mt-7 landing-card-header ">Contact</h4>
+                <span class="landing-title"></span>
+                <h2 class="text-center fw-semibold mb-0 px-2">Get in Touch with <span class="text-primary">US.</span></h2>
+                <div class="card-body text-dark p-4">
+                    <div class="statistics-info">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
+                                <div class="mt-3">
+                                    <div class="text-dark">
+                                        <div class="services-statistics reveal my-5">
+                                            <div class="row text-center">
+                                                <div class="col-xl-3 col-md-6 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-body p-0">
+                                                            <div class="counter-status">
+                                                                <div class="counter-icon bg-primary-transparent box-shadow-primary"> <i class="fe fe-map-pin text-primary fs-23"></i> </div>
+                                                                <h4 class="mb-2 fw-semibold"> Main Branch</h4>
+                                                                <p class="title-desc mb-1">150 Burno Street</p>
+                                                                <p>San Francisco, CA </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-3 col-md-6 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-body p-0">
+                                                            <div class="counter-status">
+                                                                <div class="counter-icon bg-secondary-transparent box-shadow-secondary"> <i class="fe fe-headphones text-secondary fs-23"></i> </div>
+                                                                <h4 class="mb-2 fw-semibold"> Phone &amp; Email</h4>
+                                                                <p class="mb-0">+125 254 3562 </p>
+                                                                <p>georgeme@abc.com</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-3 col-md-6 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-body p-0">
+                                                            <div class="counter-statuss">
+                                                                <div class="counter-icon bg-success-transparent box-shadow-success"> <i class="fe fe-mail text-success fs-23"></i> </div>
+                                                                <h4 class="mb-2 fw-semibold"> Contact</h4>
+                                                                <p class="mb-0"> www.example.com</p>
+                                                                <p>example@dev.com</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-3 col-md-6 col-lg-6">
+                                                    <div class="card">
+                                                        <div class="card-body p-0">
+                                                            <div class="counter-status">
+                                                                <div class="counter-icon bg-danger-transparent box-shadow-danger"> <i class="fe fe-airplay text-danger fs-23"></i> </div>
+                                                                <h4 class="mb-2 fw-semibold"> Working Hours</h4>
+                                                                <p class="mb-0">Monday - Friday: 9am - 6pm</p>
+                                                                <p>Saturday - Sunday: Holiday </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-12">
+                                <div class="">
+                                    @using (Html.BeginForm("Contact", "Home", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+
+                                        <div class="reveal">
+                                            <div class="row">
+                                                <div class="col-xl-6">
+                                                    <div class="form-group "> 
+                                                        <label for="cusName" class="form-label">Name <span class="text-danger">*</span></label> 
+                                                        <input type="text" class="form-control" name="cusName" placeholder="Enter your name" required> 
+                                                    </div>
+                                                </div>
+                                                <div class="col-xl-6">
+                                                    <div class="form-group"> 
+                                                        <label for="cusEmail" class="form-label">Email <span class="text-danger">*</span></label> 
+                                                        <input type="email" class="form-control" name="cusEmail" placeholder="Enter your email" required> 
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group"> 
+                                                <label for="cusSubject" class="form-label">Subject</label> 
+                                                <input type="text" class="form-control" name="cusSubject" placeholder="Enter your subject" required> 
+                                            </div>
+                                            <div class="form-group"> 
+                                                <label for="cusMessage" class="form-label">Message <span class="text-danger">*</span></label> 
+                                                <textarea rows="5" class="form-control" name="cusMessage" placeholder="Type your message here..." required></textarea> 
+                                            </div>
+                                            <div class="form-group"> 
+                                                <button type="submit" class="btn btn-primary">Send Message</button> 
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End:: Section-10 -->
+</div>
+<!-- End::app-content -->

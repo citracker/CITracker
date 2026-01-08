@@ -1,0 +1,151 @@
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationSoftSaving>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "ToolManagement";
+    ViewData["Active"] = "ManageSavingCategory";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Add Soft Saving Category </div>
+                    </div>
+                    @using (Html.BeginForm("AddSoftSavingCategory", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Soft Saving Category <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control mt-3 mb-3" id="ssc" name="ssc" placeholder="Category (e.g. Time, Space, quality)" required>
+                                    <input type="text" class="form-control mt-3 mb-3" id="ssu" name="ssu" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Rename a Soft Saving Category </div>
+                    </div>
+                    @using (Html.BeginForm("ModifySoftSavingCategory", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
+                                    <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'sscM', 'ssuM')" required>
+                                        <option selected disabled>Select a Soft Saving Category</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.Category</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        User Details <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Organization User"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control mt-3 mb-3" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
+                                    <input type="text" class="form-control mt-3 mb-3" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Delete a Soft Saving Category </div>
+                    </div>
+                    @using (Html.BeginForm("DeleteSoftSavingCategory", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
+                                    <select class="form-control" name="sssD" id="sssD">
+                                        <option selected disabled>Select a Soft Saving Category</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.Category</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--APP-CONTENT CLOSE-->
+<script>
+    const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
+    function onCategoryChange(selectEl, ssc, ssu) {
+        const catId = parseInt(selectEl.value);
+        const sscInp = document.getElementById(ssc);
+        const ssuInp = document.getElementById(ssu);
+
+
+        if (isNaN(catId)) return;
+
+        const filtered = categories.filter(l => l.Id === catId);
+
+        filtered.forEach(item => {
+           sscInp.value = item.Category;
+           ssuInp.value = item.Unit;
+        });
+    }
+</script>

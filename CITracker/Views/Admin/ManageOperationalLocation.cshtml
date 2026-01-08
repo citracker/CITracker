@@ -1,0 +1,137 @@
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationCountry>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "LocationManagement";
+    ViewData["Active"] = "ManageOperationalLocation";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Manage Country of Operation</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Manage Countries</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Add a Country of Operation </div>
+                    </div>
+                    @using (Html.BeginForm("AddCountry", "Admin", FormMethod.Post))
+                    {                        
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Country <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="country" placeholder="Name of Country" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Rename a Country of Operation </div>
+                    </div>
+                    @using(Html.BeginForm("RenameCountry", "Admin", FormMethod.Post))
+                    {                        
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="country" onchange="setInputFromSelect(this, 'input')" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if(Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {                                            
+                                                foreach(var country in Model.Result)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Country <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="input" id="input" placeholder="Name of Country" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Delete a Country of Operation </div>
+                    </div>
+                    @using (Html.BeginForm("DeleteCountry", "Admin", FormMethod.Post))
+                    {                        
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="country" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var country in Model.Result)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setInputFromSelect(selectEl, targetInputId) {
+      if (!selectEl || !targetInputId) return;
+
+      const input = document.getElementById(targetInputId);
+      if (!input) return;
+
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      input.value = selectedOption ? selectedOption.text.trim() : '';
+    }
+</script>

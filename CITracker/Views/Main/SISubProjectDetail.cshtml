@@ -1,0 +1,295 @@
+﻿@inject IHttpContextAccessor hca
+@model Shared.ViewModels.StrategicInitiativeVM
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "SISubProjectDetail";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Existing Sub Project</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Strategic Project</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Sub Project</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Sub Project Details </div>
+                    </div>
+                    @using (Html.BeginForm("UpdateSISubProject", "Main", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            @{
+                                var isAdminOrFacilitator = hca?.HttpContext?.Session?.GetString("UserRole") == "Admin" || Model.SISubProject.FacilitatorId == Convert.ToInt64(hca?.HttpContext?.Session?.GetString("UserId"));
+                            }
+                            @if (Model.Message.Length > 5)
+                            {
+                                if (Model.Message.ToLower().Contains("success"))
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                            }
+                            <div class="row gy-4 mb-5">
+                                <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                    <label for="input-text" class="form-label">
+                                        Select Strategic Project<span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <select class="form-control" name="siproject" required>
+                                        @if (Model.Initiative.Result != null)
+                                        {
+                                            if (Model.Initiative.Result.Any())
+                                            {
+                                                foreach (var i in Model.Initiative.Result)
+                                                {
+                                                    if (Model.SISubProject.SIId == i.Id)
+                                                    {
+                                                        <option value="@i.Id" selected>@i.Title</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i.Id">@i.Title</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row gy-4">
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                    <p class="mb-2 fw-medium">
+                                        Initiative <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="title" value="@Model.SISubProject.Initiative" @(isAdminOrFacilitator == true ? "" : "readonly") required>
+                                    <input type="text" class="form-control" name="id" value="@Model.SISubProject.Id" required hidden>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="startdate" class="form-label">Start Date</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" value="@(Model.SISubProject.StartDate.ToString(" yyyy-MM-dd"))" placeholder="Start Date" readonly required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="enddate" class="form-label">End Date</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" value="@(Model.SISubProject.EndDate.ToString(" yyyy-MM-dd"))" readonly required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <label for="description" class="form-label">
+                                        Description <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <textarea class="form-control" name="description" rows="3" @(isAdminOrFacilitator == true ? "" : "readonly") required> @Model.SISubProject.Description </textarea>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="facilitator" class="form-label">Facilitator<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="facilitator" id="facilitator" @(isAdminOrFacilitator == true ? "" : "readonly") required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="percent" class="form-label">Percentage Status<span style="color:red">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="percent" class="form-control" max="100" value="@Model.SISubProject.Percentage" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" @(isAdminOrFacilitator == true ? "" : "readonly") required>
+                                        <button class="btn btn-outline-primary" type="button">%</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="targetsavings" class="form-label">Target Savings<span style="color:red">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" name="targetsavings" id="targetsavings" class="form-control" value="@Model.SISubProject.Savings.ToString("N2")" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" @(isAdminOrFacilitator == true ? "" : "readonly") required>
+                                        <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">@Model.SISubProject.Currency</button>
+                                        <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto;" data-popper-placement="bottom-end">
+                                            @if (isAdminOrFacilitator)
+                                            {                                                
+                                                <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                                <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <input type="hidden" name="currency" id="selectedCurrency" value="@Model.SISubProject.Currency">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button @(isAdminOrFacilitator == true ? "type=submit" : "type=button") class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!--APP-CONTENT CLOSE-->
+<script>
+
+    const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
+    const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
+    const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let endPicker;
+
+        endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    const startDate = selectedDates[0];
+
+                    // Set min date for end date
+                    endPicker.set("minDate", startDate);
+
+                    // Optional: auto-set end date to +12 months
+                    const endDate = new Date(startDate);
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                    endPicker.setDate(endDate, true);
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.currency-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const currency = this.textContent.trim();
+
+            // Update button display
+            const button = this.closest('.input-group').querySelector('button');
+            button.innerHTML = currency;
+
+            // Store value for form submission
+            document.getElementById('selectedCurrency').value = currency;
+        });
+    });
+
+
+    const selectedFacilitatorId = @(Model.SISubProject.FacilitatorId > 0 ? Model.SISubProject.FacilitatorId.ToString() : null);
+
+
+    var facChoice = new Choices('#facilitator', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+
+    if (selectedFacilitatorId !== null) {
+        const preSelected = users.find(
+            u => u.Id === Number(selectedFacilitatorId)
+        );
+
+        if (preSelected) {
+            facChoice.setChoices(
+                [{
+                    value: preSelected.Id,
+                    label: preSelected.Name,
+                    selected: true
+                }],
+                'value',
+                'label',
+                false
+            );
+        }
+    }
+
+    const facilitatorEl = document.getElementById('facilitator');
+
+
+    facilitatorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        facChoice.clearChoices();
+        facChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+
+
+    if (selectedFacilitatorId !== null) {
+        facChoice.setChoiceByValue(selectedFacilitatorId.toString());
+    }
+
+
+    function formatNumberRealTime(input) {
+        let cursorPos = input.selectionStart;
+        let formattedValue = input.value;
+        let numbersOnly = formattedValue.replace(/[^\d.]/g, '');
+
+        let parts = numbersOnly.split('.');
+        if (parts.length > 2) {
+            numbersOnly = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        if (parts[0].length > 0) {
+            parts[0] = parseInt(parts[0] || '0', 10).toLocaleString('en-US');
+        }
+
+        formattedValue = parts.join('.');
+        input.value = formattedValue;
+
+        let newCursorPos = cursorPos + (formattedValue.length - input.value.length);
+        input.setSelectionRange(newCursorPos, newCursorPos);
+    }
+</script>

@@ -1,0 +1,287 @@
+﻿<!-- Page Header Close -->
+<div id="financial_info" class="row row-sm d-none">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Financial Verification </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                        <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
+                            One time savings
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Savings that will not be recurring overtime"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
+                            <div class="custom-toggle-switch toggle-md ms-sm-2 ms-0">
+                                <input id="size-md" name="toggleswitchsize" type="checkbox" checked="">
+                                <label for="size-md" class="label-success mb-2"></label>
+                            </div>
+                            <div class="mb-lg-0 ms-3"><h4 class="text-lg-center">Y</h4></div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                        <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
+                            Carry over savings
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Savings spanning over more than a year"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <div class="d-flex align-items-center justify-content-center">
+                            <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
+                            <div class="custom-toggle-switch toggle-md ms-sm-2 ms-0">
+                                <input id="size-md" name="toggleswitchsize" type="checkbox" checked="">
+                                <label for="size-md" class="label-success mb-2"></label>
+                            </div>
+                            <div class="mb-lg-0 ms-3"><h4 class="text-lg-center">Y</h4></div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
+                            Select date after date from project start
+                        </label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Date" readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="main-content-label main-content-label-lg mt-5 mb-5">
+                    Hard Savings                    
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Financial Benefits"> <i class="fe fe-info"></i></a>
+                </label>
+
+                <nav class="navbar navbar-expand-lg bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Months</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Saving Type</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Saving Amount (select currency)</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Add/Remove</a>
+                    </div>
+                </nav>
+                <div class="finCardBody">
+                    <div class="row gy-4 finBody mt-2 mb-2">
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Date" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                            <select class="form-control" id="choices-single-default">
+                                <option selected disabled>Select a savings type</option>
+                                <option value="">Cost Reduction</option>
+                                <option value="">Revenue</option>
+                                <option value="">Cost Avoidance</option>
+                                <option value="">Cost Containment</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                                <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                    <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
+                            <div class="mb-md-0 mb-2 ms-5">
+                                <button class="btn btn-icon btn-primary btn-wave waves-effect waves-light addFin"> <i class="fe fe-plus"></i> </button>
+                                <button class="btn btn-icon btn-warning btn-wave me-5 waves-effect waves-light d-none removeFin"> <i class="fe fe-minus"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <label class="main-content-label main-content-label-lg mt-5 mb-5">
+                    Soft Savings
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This includes non-financial savings (e.g. time, space, quality, safety)"> <i class="fe fe-info"></i></a>
+                </label>
+
+                <nav class="navbar navbar-expand-lg bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Category: Time, Space etc.</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Saving Amount (in sec, sqft, etc.)</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Add/Remove</a>
+                    </div>
+                </nav>
+                <div class="finSftCardBody">
+                    <div class="row gy-4 finSftBody mt-2 mb-2">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                            <select class="form-control" id="choices-single-default">
+                                <option selected disabled>Select a Category</option>
+                                <option value="">Space</option>
+                                <option value="">Time</option>
+                                <option value="">Quality</option>
+                                <option value="">Safety</option>
+                                <option value="">Defect Rate</option>
+                            </select>
+                        </div>
+
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">hr</button>
+                                <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                    <li><a class="dropdown-item" href="javascript:void(0);">hr</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">TRIR</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">month</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">sqft</a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0);">#</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="mb-md-0 mb-2 ms-5">
+                                <button class="btn btn-icon btn-primary btn-wave waves-effect waves-light addSftFin"> <i class="fe fe-plus"></i> </button>
+                                <button class="btn btn-icon btn-warning btn-wave me-5 waves-effect waves-light d-none removeSftFin"> <i class="fe fe-minus"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <label for="formFileLg" class="form-label">Financial Report (Supported Format: PPT, Excel, PDF, Word)</label>
+                                <input class="form-control form-control-lg" id="formFileLg" type="file">
+                                <p class="text-danger text-sm-start"> Note: To attach the financial report, ensure to enter in hard savings, upload final report under the attachment status and move project to completed status under the project detail tab.</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <label for="formFileLg" class="form-label">Comment</label>
+                                <textarea class="form-control" id="text-area" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <label class="main-content-label main-content-label-lg mt-5 mb-5">
+                    Audited Details (Auditor Only)
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Closed projects can be randomly selected for auditing"> <i class="fe fe-info"></i></a>
+                </label>
+
+                <nav class="navbar navbar-expand-lg bg-light">
+                    <div class="container-fluid">
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Audited</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Auditor</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Audited Date</a>
+                    </div>
+                </nav>
+                <div class="row gy-4 mt-2 mb-2">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="form-check form-check-lg d-flex align-items-center"> 
+                            <input class="form-check-input" type="checkbox" value="" id="checkebox-lg" checked=""> 
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <select class="form-control" id="choices-single-default">
+                            <option selected disabled>Select User</option>
+                            <option value="">User 1</option>
+                            <option value="">User 2</option>
+                            <option value="">User 3</option>
+                            <option value="">User 4</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Audited Date" readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
+                <a href="@Url.Action("Projects", "Main")" class="btn btn-success shadow-success">Save</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let formCount = 1;
+        let sftFormCount = 1;
+
+        $('.addFin').click(function() {
+            formCount++;
+
+            // Clone the first form section
+            const newForm = $('.finBody').first().clone();
+
+            // Clear input values
+            newForm.find('input').val('');
+                       
+            // Show remove button for cloned forms
+            newForm.find('.addFin').addClass("d-none");
+            newForm.find('.removeFin').removeClass("d-none");
+
+            // Append to container
+            $('.finCardBody').append(newForm);
+        });
+
+        // Remove functionality for initial form (if needed)
+        $(document).on('click', '.removeFin', function() {
+            if ($('.finBody').length > 1) {
+                $(this).closest('.finBody').remove();
+                formCount--;
+            }
+        });
+
+
+
+        $('.addSftFin').click(function() {
+            sftFormCount++;
+
+            // Clone the first form section
+            const newSftForm = $('.finSftBody').first().clone();
+
+            // Clear input values
+            newSftForm.find('input').val('');
+
+            // Show remove button for cloned forms
+            newSftForm.find('.addSftFin').addClass("d-none");
+            newSftForm.find('.removeSftFin').removeClass("d-none");
+
+            // Append to container
+            $('.finSftCardBody').append(newSftForm);
+        });
+
+        // Remove functionality for initial form (if needed)
+        $(document).on('click', '.removeSftFin', function() {
+            if ($('.finSftBody').length > 1) {
+                $(this).closest('.finSftBody').remove();
+                sftFormCount--;
+            }
+        });
+    });
+</script>

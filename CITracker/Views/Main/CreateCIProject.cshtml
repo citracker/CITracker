@@ -1,0 +1,46 @@
+﻿
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "CICreateProject";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">New Initiative</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Initiative Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Initiative</li>
+                </ol>
+            </div>            
+        </div>
+        <!-- Page Header Close -->
+        @Html.Partial("~/Views/Main/Partial/_ProjectPartial.cshtml")
+        @Html.Partial("~/Views/Main/Partial/_TeamPartial.cshtml")
+        @Html.Partial("~/Views/Main/Partial/_ToolsPartial.cshtml")
+        @Html.Partial("~/Views/Main/Partial/_AttachmentPartial.cshtml")
+        @Html.Partial("~/Views/Main/Partial/_FinancialPartial.cshtml")
+    </div>
+</div>
+<!--APP-CONTENT CLOSE--> 
+<script>
+    document.querySelectorAll('.currency-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const currency = this.textContent.trim();
+
+            // Update button display
+            const button = this.closest('.input-group').querySelector('button');
+            button.innerHTML = currency;
+
+            // Store value for form submission
+            document.getElementById('selectedCurrency').value = currency;
+        });
+    });
+</script>

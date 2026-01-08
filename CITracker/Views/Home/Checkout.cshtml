@@ -1,0 +1,196 @@
+﻿@using System.Text.Json 
+@inject IHttpContextAccessor hca
+@model Shared.ViewModels.CheckoutVM
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CI Tracker - Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <header class="max-w-6xl mx-auto p-6">
+        <a href="@Url.Action("Index", "Home")" class="header-logo" style="width:5%">
+            <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo">
+        </a>
+    </header>
+
+    @using (Html.BeginForm("MakePayment", "Home", FormMethod.Post))
+    {
+        <main class="max-w-6xl mx-auto p-6 grid md:grid-cols-3 gap-6">
+            <!-- Left: plan summary + duration -->
+            @Html.AntiForgeryToken()
+            <section class="md:col-span-1 bg-white p-6 rounded-lg shadow">
+                <h2 class="font-semibold">Plan</h2>
+                <div id="planName" class="mt-2 text-lg font-bold">@Model.SubscriptionPlan.Name</div>
+                <input name="subscriptionId" value="@Model.SubscriptionPlan.Id" readonly hidden/>
+                <div id="planAnnual" class="mt-1 text-sm text-slate-500">$@Math.Round(Model.SubscriptionPlan.Amount, 2) / year</div>
+
+                <hr class="my-4" />
+
+                <label class="block text-sm font-medium">Subscription duration</label>
+                <div class="mt-2 flex gap-2">
+                    <button class="duration-btn px-3 py-1 rounded border bg-indigo-600 text-white" data-years="1">1 year</button>
+                    <button class="duration-btn px-3 py-1 rounded border" data-years="2">2 years</button>
+                    <button class="duration-btn px-3 py-1 rounded border" data-years="3">3 years</button>
+                    <input name="subscriptionDuration" id="subscriptionDuration" value="1" readonly hidden />
+                </div>
+
+                <div class="mt-4 text-sm">
+                    <div>Annual price: <span id="monthlyPrice" class="font-medium">$0</span></div>
+                    <div class="mt-1">Years: <span id="selectedYears" class="font-medium">1</span></div>
+                    <div class="mt-1">Subtotal: <span id="subtotal" class="font-medium">$0</span></div>
+                    <div id="discountRow" class="mt-1 text-green-600 hidden">Discount (<span id="discountPercent">0</span>%): <span id="discountAmount">-$0</span></div>
+                    <div class="mt-2 text-xl font-bold">Total: <span id="totalAmount">$0</span></div>
+                    <div id="savingsHint" class="mt-2 text-xs text-slate-500">Select more years to save more (2 years = 10% off; 3 years = 15% off).</div>
+                </div>
+
+                <div class="mt-6">
+                    <button id="proceedForm" class="w-full bg-indigo-600 text-white px-4 py-2 rounded">Provide organization details</button>
+                </div>
+            </section>
+
+            <!-- Right: form and payment -->
+            <section class="md:col-span-2 bg-white p-6 rounded-lg shadow">
+                <div id="orgForm" class="space-y-4" onsubmit="return false;">
+                    <h3 class="text-lg font-semibold">Organization details</h3>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm">Company Name <span style="color:red">*</span></label>
+                            <input name="companyName" id="companyName" class="mt-1 block w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Country <span style="color:red">*</span></label>
+                            <select name="country" id="country" class="mt-1 block w-full border rounded p-2" required>
+                                <option value="" selected disabled >Select country</option>
+                                @foreach (var i in Model.Country)
+                                {
+                                    <option value="@i.Id">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm">Address <span style="color:red">*</span></label>
+                            <input name="address" id="address" class="mt-1 block w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Admin Email Address <span style="color:red">*</span></label>
+                            <input name="adminEmail" id="adminEmail" type="email" class="mt-1 block w-full border rounded p-2" value="@hca?.HttpContext?.Session?.GetString("UserEmail")?.ToString()" readonly required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Admin Name <span style="color:red">*</span></label>
+                            <input name="firstName" id="firstName" class="mt-1 block w-full border rounded p-2" value="@hca?.HttpContext?.Session?.GetString("UserName")?.ToString()" readonly required>
+                        </div>
+                        <div>
+                            <label class="text-sm">Phone Number <span style="color:red">*</span></label>
+                            <input name="phone" id="phone" type="text" class="mt-1 block w-full border rounded p-2" onkeydown="return ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode == 8 || event.keyCode == 190);" required>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <h3 class="text-lg font-semibold">Checkout options</h3>
+                    <div class="mt-3 grid grid-cols-2 gap-4">
+                        @foreach(var i in Model.PaymentProvider)
+                        {                        
+                            <label class="p-3 border rounded cursor-pointer flex items-center gap-3">
+                                <input type="radio" name="paymentMethod" value="@i.Name.ToLower()" checked>
+                                <!-- simple svg logos -->
+                                @if (i.LogoType.Equals("svg"))
+                                {
+                                    <span>@Html.Raw(i.LogoUrl)</span>
+                                }
+                                else
+                                {
+                                    <img src="@i.LogoUrl" alt="@i.Name.ToLower()" class="h-6">
+                                }
+                                <span>@i.Name</span>
+                            </label>
+                        }
+                    </div>
+
+                    <div class="mt-6">
+                        <button id="payBtn" type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded">Pay now</button>
+                        <div id="paymentNote" class="mt-3 text-xs text-slate-500">
+                            Note: You will be directed to make payment.
+                        </div>
+                    </div>
+
+                    <div id="result" class="mt-4"></div>
+                </div>
+            </section>
+        </main>
+    }
+
+    @* <footer class="max-w-6xl mx-auto p-6 text-xs text-slate-400">
+        © <span id="year"></span> Survey
+    </footer> *@
+
+    <script>
+        // Load selected plan from localStorage
+        const plan = @Html.Raw(JsonSerializer.Serialize(Model.SubscriptionPlan))
+
+        
+        const selectedYearsEl = document.getElementById('selectedYears');
+        const subtotalEl = document.getElementById('subtotal');
+        const discountRow = document.getElementById('discountRow');
+        const discountPercentEl = document.getElementById('discountPercent');
+        const discountAmountEl = document.getElementById('discountAmount');
+        const totalAmountEl = document.getElementById('totalAmount');
+        const savingsHint = document.getElementById('savingsHint');
+        const payBtn = document.getElementById('payBtn');
+
+        // default selection
+        let years = 1;
+        const discounts = { 1: 0, 2: 10, 3: 15 }; // percent
+
+        function recalc() {
+          const annual = parseFloat(plan.Amount || 0);
+          const subtotal = years * annual;
+          const discountPercent = discounts[years] || 0;
+          const discountAmount = subtotal * (discountPercent / 100);
+          const total = subtotal - discountAmount;
+
+          selectedYearsEl.textContent = years;
+          subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+
+          if (discountPercent > 0) {
+            discountRow.classList.remove('hidden');
+            discountPercentEl.textContent = discountPercent;
+            discountAmountEl.textContent = `-$${discountAmount.toFixed(2)}`;
+          } else {
+            discountRow.classList.add('hidden');
+          }
+
+          totalAmountEl.textContent = `$${total.toFixed(2)}`;
+          // enable proceed only when org form validated + OTP validated — handled separately
+        }
+
+        recalc();
+
+        document.querySelectorAll('.duration-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            years = parseInt(btn.getAttribute('data-years'), 10);
+            // toggle active styles
+            document.getElementById('subscriptionDuration').value = years; 
+            document.querySelectorAll('.duration-btn').forEach(b => b.classList.remove('bg-indigo-600','text-white'));
+            btn.classList.add('bg-indigo-600','text-white');
+            recalc();
+          });
+        });
+
+        // Proceed to show/auto-scroll to the form
+        document.getElementById('proceedForm').addEventListener('click', () => {
+          document.getElementById('companyName').focus();
+          window.scrollTo({ top: document.getElementById('orgForm').offsetTop - 20, behavior: 'smooth' });
+        });
+
+        
+
+    </script>
+</body>
+</html>

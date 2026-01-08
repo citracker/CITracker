@@ -1,0 +1,251 @@
+﻿@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "AllCIProjects";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start::page-header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">All Projects</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">All Projects</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End::page-header -->
+        <!-- Start::row-1 -->
+        <div class="row row-sm">
+            <div class="col-sm-12 col-lg-12 col-xl-12">
+                <!-- Start::row -->
+                <div class="row row-sm">
+                    @* <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Completed Projects</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">All completed projects</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">5,900</h4>
+                                            <small><b class="text-success">55%</b> success achieved</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Cummulative Savings</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">Employees joined this month</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">15</h4>
+                                            <small><b class="text-success">5%</b> Increased</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Total Expenses</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$8,500</h4>
+                                            <small><b class="text-danger">12%</b> decrease</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> *@
+                </div>
+                <!-- End::row -->
+                <!-- Start::row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card custom-card mg-b-20 tasks">
+                            <div class="card-body">
+                                <div class="card-header border-bottom-0 pt-0 ps-0 pe-0 pb-2 d-flex">
+                                    <div>
+                                        <div class="card-title">All my Initiatives</div>
+                                        <p class="mb-0 fs-12 mb-3 text-muted">All my initiatives alongside their objectives and statuses.</p>
+                                    </div>
+                                </div>
+
+                                <div class="accordion accordion-primary mb-5" id="filterAccord">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="filterHeader">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-controls="collapseFilter"> Filter Search</button>
+                                        </h2>
+                                        <div id="collapseFilter" class="accordion-collapse collapse show" aria-labelledby="filterHeader" data-bs-parent="#filterAccord">
+                                            <div class="accordion-body">
+                                                <div class="row gy-4">
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <input type="text" class="form-control" id="input" placeholder="Project Title">
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Start Date" readonly="readonly">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="End Date" readonly="readonly">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <select class="form-control" id="choices-single-default" multiple>
+                                                            <option selected disabled>Select Status</option>
+                                                            <option value="">All</option>
+                                                            <option value="">Idea/Proposed</option>
+                                                            <option value="">Initiated</option>
+                                                            <option value="">Completed</option>
+                                                            <option value="">Closed</option>
+                                                            <option value="">Cancelled</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <select class="form-control" id="choices-single-default" multiple>
+                                                            <option selected disabled>Select Country</option>
+                                                            <option value="">All</option>
+                                                            <option value="">United States</option>
+                                                            <option value="">Canada</option>
+                                                            <option value="">Australia</option>
+                                                            <option value="">Germany</option>
+                                                            <option value="">India</option>
+                                                            <option value="">United Kingdom</option>
+                                                            <option value="">Finland</option>
+                                                            <option value="">Nigeria</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <select class="form-control" id="choices-single-default" multiple>
+                                                            <option selected disabled>Select Group/Function</option>
+                                                            <option value="">All</option>
+                                                            <option value="">Supply Chain</option>
+                                                            <option value="">Mining Operations</option>
+                                                            <option value="">Metal Operation</option>
+                                                            <option value="">Recycling Operation</option>
+                                                            =
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                        <button class="btn btn-success me-5">Submit</button>
+                                                        <button class="btn btn-outline-dark btn-wave">Clear</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <div id="datatable-basic_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <table id="myCIInitiatives" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%;" aria-describedby="datatable-basic_info">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 121.992px;">Name</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 183.992px;">Owner</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 89.992px;">Facilitator</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 29.992px;">Total Expected Savings/Revenue</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 82.992px;">Start date</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="End date: activate to sort column ascending" style="width: 82.992px;">End date</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Status/Percentage Completion: activate to sort column ascending" style="width: 82.992px;">Status/Percentage Completion</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 68.992px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr class="odd">
+                                                            <td class="sorting_1">Inventory Reduction</td>
+                                                            <td>James Reece</td>
+                                                            <td>James Bond</td>
+                                                            <td>$45,000</td>
+                                                            <td>2023-11-28</td>
+                                                            <td>2025-11-28</td>
+                                                            <td>In Progress</td>
+                                                            <td>
+                                                                <a class="align-content-start ms-2 me-2" href="@Url.Action("CIProjectDetail", "Main", new { Id = 1 })"><i class="fe fe-edit"></a></i>
+                                                                <a class="align-content-end ms-3 me-2" href="@Url.Action("CIProjectDetail", "Main", new { Id = 1 })"><i class="fe fe-eye"></a></i>
+                                                            </td>
+                                                        </tr>
+                                                        <tr class="even">
+                                                            <td class="sorting_1">Inventory Reduction 1</td>
+                                                            <td>James Reece</td>
+                                                            <td>James Bond</td>
+                                                            <td>$45,000</td>
+                                                            <td>2023-11-28</td>
+                                                            <td>2025-11-28</td>
+                                                            <td>In Progress</td>
+                                                            <td>
+                                                                <a class="align-content-start ms-2 me-2" href="@Url.Action("CIProjectDetail", "Main", new { Id = 1 })"><i class="fe fe-edit"></a></i>
+                                                                <a class="align-content-end ms-3 me-2" href="@Url.Action("CIProjectDetail", "Main", new { Id = 1 })"><i class="fe fe-eye"></a></i>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- col end -->
+                </div>
+                <!-- End::row -->
+            </div>
+            <!-- col end -->
+        </div>
+        <!-- End::row-1 -->
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#myCIInitiatives').DataTable();
+    });
+</script>

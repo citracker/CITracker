@@ -1,0 +1,421 @@
+﻿@using Shared.Enumerations
+@model Shared.ViewModels.OperationalExcellenceVM
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "CreateOEProject";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">New Project</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Operational Excellence</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Project</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Project Details </div>
+                    </div>                    
+                    @using (Html.BeginForm("NewOEProject", "Main", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            @if (Model.Message.Length > 5)
+                            {
+                                if (Model.Message.ToLower().Contains("success"))
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                            }
+                            <div class="row gy-4">
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                    <p class="mb-2 fw-medium">
+                                        Title <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="title" placeholder="Project Title" required>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="startdate" class="form-label">Start Date<span style="color:red">*</span></label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" name="startdate" id="startdate" placeholder="Start Date"  readonly="readonly" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="enddate" class="form-label">End Date<span style="color:red">*</span></label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" name="enddate" id="enddate" placeholder="End Date" readonly="readonly" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="priority" class="form-label">Priority<span style="color:red">*</span></label>
+                                    <select class="form-control" name="priority" id="priority" required>
+                                        <option selected disabled>Priority</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <label for="description" class="form-label">
+                                        Description <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <textarea class="form-control" name="description" id="description" rows="3" required></textarea>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <label for="facilitator" class="form-label">Facilitator<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="facilitator" id="facilitator" required>                                        
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <label for="sponsor" class="form-label">Sponsor<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="sponsor" id="sponsor" required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <label for="execsponsor" class="form-label">Executive Sponsor<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="execsponsor" id="execsponsor" required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <label for="status" class="form-label">Status<span style="color:red">*</span></label>
+                                    <select class="form-control" name="status" id="status" required>
+                                        <option selected disabled> Select a Status </option>
+                                        @foreach (Status item in Enum.GetValues(typeof(Status)))
+                                        {
+                                            if (item == Status.COMPLETED || item == Status.CLOSED)
+                                            {
+                                                continue;
+                                            }
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="carryover" class="form-label">Carry Over Project?<span style="color:red">*</span></label>
+                                    <select class="form-control" name="carryover" id="carryover" required>
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="savingsclassification" class="form-label">Savings Classification<span style="color:red">*</span></label>
+                                    <select class="form-control" name="savingsclassification" id="savingsclassification" required>
+                                        <option selected disabled>Select Classification</option>
+                                        <option value="Cost Out">Cost Out</option>
+                                        <option value="Cost Savings">Cost Savings</option>
+                                        <option value="Revenue">Revenue</option>
+                                        <option value="Cost Avoidance">Cost Avoidance</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="targetsavings" class="form-label">Target Savings<span style="color:red">*</span></label>
+                                    <div class="input-group">
+                                        <input type="text" name="targetsavings" id="targetsavings" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" required>
+                                        <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                                        <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto;" data-popper-placement="bottom-end">
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                        </ul>
+                                    </div>
+                                    <input type="hidden" name="currency" id="selectedCurrency" value="&#36;">
+                                </div>
+@* 
+                                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                    <label for="input-text" class="form-label">Actual Savings</label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" name="actualsavings" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" readonly>
+                                        <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                                        <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                        </ul>
+                                    </div>
+                                </div> *@
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="country" class="form-label">Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.OrganizationCountry != null)
+                                        {
+                                            if (Model.OrganizationCountry.Any())
+                                            {
+                                                foreach (var country in Model.OrganizationCountry)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="facility" class="form-label">Location/Facility</label>
+                                    <select class="form-control" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
+                                        
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="department" class="form-label">
+                                        Department<span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <select class="form-control" name="department" id="department" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--APP-CONTENT CLOSE-->
+<script>
+    const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
+    const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
+    const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let endPicker;
+
+        endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    const startDate = selectedDates[0];
+
+                    // Set min date for end date
+                    endPicker.set("minDate", startDate);
+
+                    // Optional: auto-set end date to +12 months
+                    const endDate = new Date(startDate);
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                    endPicker.setDate(endDate, true);
+                }
+            }
+        });
+    });
+
+    document.querySelectorAll('.currency-item').forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const currency = this.textContent.trim();
+
+            // Update button display
+            const button = this.closest('.input-group').querySelector('button');
+            button.innerHTML = currency;
+
+            // Store value for form submission
+            document.getElementById('selectedCurrency').value = currency;
+        });
+    });
+
+    function onCountryChange(selectEl, targetInputId) {
+        const countryId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+
+        if (isNaN(countryId)) return;
+
+        const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Facility;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function onFacilityChange(selectEl, targetInputId) {
+        const facilityId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+
+        if (isNaN(facilityId)) return;
+
+        const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Department;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function formatNumberRealTime(input) {
+        let cursorPos = input.selectionStart;
+        let formattedValue = input.value;
+        let numbersOnly = formattedValue.replace(/[^\d.]/g, '');
+
+        let parts = numbersOnly.split('.');
+        if (parts.length > 2) {
+            numbersOnly = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        if (parts[0].length > 0) {
+            parts[0] = parseInt(parts[0] || '0', 10).toLocaleString('en-US');
+        }
+
+        formattedValue = parts.join('.');
+        input.value = formattedValue;
+
+        let newCursorPos = cursorPos + (formattedValue.length - input.value.length);
+        input.setSelectionRange(newCursorPos, newCursorPos);
+    }
+
+    var facChoice = new Choices('#facilitator', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+    var sponChoice = new Choices('#sponsor', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+    var execspnChoice = new Choices('#execsponsor', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+    const facilitatorEl = document.getElementById('facilitator');
+    const sponsorEl = document.getElementById('sponsor');
+    const execsponsorEl = document.getElementById('execsponsor');
+
+
+    facilitatorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        console.log(searchTerm)
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        facChoice.clearChoices();
+        facChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+
+
+    sponsorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        console.log(searchTerm)
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        sponChoice.clearChoices();
+        sponChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+
+
+    execsponsorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        console.log(searchTerm)
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        execspnChoice.clearChoices();
+        execspnChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+
+</script>

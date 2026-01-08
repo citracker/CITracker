@@ -1,0 +1,93 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" dir="ltr" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
+<head>
+    <!-- Meta Data -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <meta name="Description" content="">
+    <meta name="Author" content="Ops Focus Inc">
+    <!-- Favicon -->
+    <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+    <!-- Bootstrap Css -->
+    <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Style Css -->
+    <link href="~/assets/css/styles.css" rel="stylesheet">
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.css" rel="stylesheet">
+    <!-- Node Waves Css -->
+    <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+    <!-- SwiperJS Css -->
+    <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="~/assets/libs/@@simonwep/pickr/themes/nano.min.css">
+    <!-- Choices Css -->
+    <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+</head>
+<body class="landing-body">    
+    <div class="landing-page-wrapper">
+        <!-- app-header -->
+        <header class="app-header">
+            <!-- Start::main-header-container -->
+            <div class="main-header-container container-fluid">
+                <!-- Start::header-content-left -->
+                <div class="header-content-left">
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <div class="horizontal-logo">
+                            <a href="@Url.Action("Index", "Home")" class="header-logo">
+                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo"> <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- End::header-element --> <!-- Start::header-element -->
+                    <div class="header-element">
+                        <!-- Start::header-link --> <a href="javascript:void(0);" class="sidemenu-toggle header-link" data-bs-toggle="sidebar"> 
+                            <span class="open-toggle"> <i class="ri-menu-3-line fs-20"></i> </span> </a> <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+                </div>
+            </div>
+            <!-- End::main-header-container -->
+        </header>
+        <!-- /app-header -->
+        @RenderBody()
+
+        <div class="position-relative">
+            <div class="shape overflow-hidden bottom-footer-shape">
+                <svg viewBox="0 0 2880 48" fill="none">
+                    <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="#0e0e23"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Start:: Section-11 -->
+        <section class="section landing-footer pb-0 text-fixed-white demo-footer px-4">
+            <div class="container">
+                <div class="row">
+                    <div class="p-2 mb-0">
+                        <div class="card-body p-0">
+                            <hr class="mb-0">
+                            <footer class="main-footer px-0 text-center">
+                                <div class="row ">
+                                    <div class="col-md-12 col-sm-12"> Copyright &copy; <span id="year">@DateTime.Now.Year</span> <a href="javascript:void(0)">Spruha</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> CI Tracker </a> All rights reserved. </div>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End:: Section-11 --> 
+    </div>
+    <div class="scrollToTop" style="display: flex;"> <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span> </div>
+    <div id="responsive-overlay"></div>
+    <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+    <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
+    <script src="~/assets/js/landing.js"></script>
+</body>
+</html>

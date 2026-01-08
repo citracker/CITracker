@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>CITracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap"
+          rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap"
+          rel="stylesheet" />
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            max-width: 700px;
+            /* border: 2px solid red; */
+            margin: 0 auto;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-family: "Outfit", serif;
+        }
+
+        p {
+            font-family: "Zilla Slab", serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        input,
+        select,
+        button,
+        textarea {
+            outline: none;
+            border: none;
+            background: transparent;
+        }
+
+        .btn {
+            border-radius: 100px;
+            border: 1px solid var(--Brand-Azure-Blue-500, #1d72db);
+            background: var(--Brand-Azure-Blue-500, #1d72db);
+            box-shadow: 0 1px 2px 0 rgba(16, 24, 40, 0.05);
+            display: flex;
+            padding: 16px 28px;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex: 1 0 0;
+            width: auto;
+            color: var(--White, #fff);
+            font-family: Outfit;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 600;
+            line-height: 28px;
+            width: auto;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+            .btn:hover {
+                transform: scale(0.8);
+            }
+
+        .email-cont {
+            /* border: 1px solid red; */
+            min-height: 100vh;
+        }
+
+        .logo-head {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            padding-bottom: 24px;
+            padding-top: 16px;
+            border-bottom: 1px solid #eaecf0;
+        }
+
+        .email-title {
+            padding: 24px 0;
+        }
+
+            .email-title h2 {
+                color: var(--Gray-900, #101828);
+                font-family: Outfit;
+                font-size: 24px;
+                font-style: normal;
+                font-weight: 600;
+                line-height: 32px;
+            }
+
+        .email-text p,
+        .email-text ul,
+        .email-text ul li {
+            color: var(--Gray-500, #667085);
+            font-family: "Zilla Slab";
+            font-size: 18px;
+            font-style: italic;
+            font-weight: 400;
+            line-height: 28px;
+        }
+
+        .ver-code {
+            display: flex;
+            align-items: center;
+            /* gap: 16px; */
+            padding: 24px 0;
+        }
+
+            .ver-code td {
+                margin-right: 16px;
+            }
+
+            .ver-code p {
+                color: var(--Brand-Azure-Blue-500, #1d72db);
+                text-align: center;
+                font-family: Outfit;
+                font-size: 48px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 60px; /* 125% */
+                letter-spacing: -0.96px;
+                border-radius: 24px;
+                border: 1px solid #d0d5dd;
+                width: 64px;
+            }
+
+            .ver-code h4 {
+                color: var(--Gray-300, #d0d5dd);
+                text-align: center;
+                font-family: Outfit;
+                font-size: 60px;
+                font-style: normal;
+                font-weight: 500;
+                line-height: 72px; /* 120% */
+                letter-spacing: -1.2px;
+            }
+
+        .socials {
+            padding: 24px 0;
+            /* border: 1px solid red; */
+        }
+
+            .socials p {
+                color: var(--Gray-900, #101828);
+                font-family: Outfit;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; /* 150% */
+            }
+
+        .socials-handle {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+            .socials-handle td {
+                margin-right: 8px;
+            }
+
+            .socials-handle img {
+                cursor: pointer;
+            }
+
+                .socials-handle img:hover {
+                    transform: scale(0.95);
+                }
+
+        .footer-text {
+            padding-top: 20px;
+        }
+
+            .footer-text p {
+                color: var(--Gray-900, #101828);
+                font-family: Outfit;
+                font-size: 16px;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 24px; /* 150% */
+            }
+
+                .footer-text p span {
+                    color: var(--Brand-Azure-Blue-500, #1d72db);
+                }
+
+        @media (max-width: 500px) {
+            .email-cont {
+                padding: 0;
+                /* border: 1px solid red; */
+            }
+
+            .email-table {
+                padding: 10px !important;
+                /* border: 1px solid green; */
+                width: 100% !important;
+            }
+
+            .logo-head {
+                padding: 24px 0;
+            }
+
+            .ver-code {
+                gap: 8px;
+            }
+
+                .ver-code p {
+                    font-size: 30px;
+                    line-height: 50px;
+                    width: 50px;
+                    border-radius: 16px;
+                }
+
+                .ver-code h4 {
+                    font-size: 30px;
+                }
+        }
+    </style>
+</head>
+<body>
+    <center class="email-cont">
+        <table class="email-table" style="max-width: 600px; padding: 24px 48px">
+            <tr>
+                <td class="logo-head">
+                    <a href="">
+                        <img src="{{imgbase}}/i/e/logo.png" />
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="email-title">
+                    <h2>Email Received</h2>
+                </td>
+            </tr>
+            <tr>
+                <td class="email-text">
+                    <p>
+                        Hi {{firstname}}, <br />
+                        <br />
+                        We have received your Email with subject "{{subject}}". <br /> <br />
+                        Know that we will respond to it as soon as we can. <br /> <br />
+                        However, if you have't gotten a feedback from us in 24 hours, Please send a reminder and we will respond. <br /> <br />
+                        Look forward to hearing from us
+                    </p>
+                </td>
+            </tr>
+            <tr class="email-text">
+                <td>
+                    <p>
+                        <br />
+                        Thanks, <br />
+                        CITracker Team
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td class="socials"><p>Follow us:</p></td>
+            </tr>
+            <tr class="socials-handle">
+                <td>
+                    <a href="">
+                        <img src="{{imgbase}}/i/e/instagram.png" />
+                    </a>
+                </td>
+                <td>
+                    <a href="">
+                        <img src="{{imgbase}}/i/e/x.png" />
+                    </a>
+                </td>
+                <td>
+                    <a href="">
+                        <img src="{{imgbase}}/i/e/whatsapp.png" />
+                    </a>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer-text">
+                    <p>
+                        Questions or faq? Contact us at
+                        <span>support@citracker.com</span>. You’re receiving this email
+                        because you have an account with CITracker.
+                    </p>
+                    <br />
+                    <p>&copy; {{year}} CITracker. All rights reserved.</p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

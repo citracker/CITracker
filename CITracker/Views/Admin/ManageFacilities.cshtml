@@ -1,0 +1,190 @@
+﻿@model Shared.ViewModels.OperationLocationVM
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "LocationManagement";
+    ViewData["Active"] = "ManageFacilities";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Manage Operational Facilities</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Manage Operational Facilities</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Add a Facility </div>
+                    </div>
+                    @using (Html.BeginForm("AddFacility", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="country" id="country" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.Country != null)
+                                        {
+                                            if (Model.Country.Any())
+                                            {
+                                                foreach (var country in Model.Country)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Facility <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="facility" id="facility" placeholder="Name of Facility" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Rename a Facility </div>
+                    </div>
+                    @using (Html.BeginForm("RenameFacility", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="countryR" id="countryR" onchange="onCountryChange(this, 'facilityR')" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.Country != null)
+                                        {
+                                            if (Model.Country.Any())
+                                            {
+                                                foreach (var country in Model.Country)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
+                                    <select class="form-control" name="facilityR" id="facilityR" onchange="setInputFromSelect(this, 'facilityN')" required>
+                                        <option selected disabled>Select a Facility</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Facility <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="facilityN" id="facilityN" placeholder="Name of Facility" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Delete a Facility </div>
+                    </div>
+                    @using(Html.BeginForm("DeleteFacility", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="countryD" id="countryD" onchange="onCountryChange(this, 'facilityD')" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.Country != null)
+                                        {
+                                            if (Model.Country.Any())
+                                            {
+                                                foreach (var country in Model.Country)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
+                                    <select class="form-control" name="facilityD" id="facilityD" required>
+                                        <option selected disabled>Select a Facility</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Facility));
+
+    function onCountryChange(selectEl, targetInputId) {
+        const countryId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+
+        if (isNaN(countryId)) return;
+
+        const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Facility;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function setInputFromSelect(selectEl, targetInputId) {
+      if (!selectEl || !targetInputId) return;
+
+      const input = document.getElementById(targetInputId);
+      if (!input) return;
+
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      input.value = selectedOption ? selectedOption.text.trim() : '';
+    }
+</script>

@@ -1,0 +1,479 @@
+﻿@using Shared.Enumerations 
+@model Shared.ViewModels.OperationalExcellenceVM
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "AllOEProjects";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Start::page-header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">All Projects</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">All Projects</li>
+                </ol>
+            </div>
+        </div>
+        <!-- End::page-header -->
+        <!-- Start::row-1 -->
+        <div class="row row-sm">
+            <div class="col-sm-12 col-lg-12 col-xl-12">
+                <!-- Start::row -->
+                <div class="row row-sm">
+                    @* <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Completed Projects</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">All completed projects</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">5,900</h4>
+                                            <small><b class="text-success">55%</b> success achieved</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Cummulative Savings</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">Employees joined this month</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">15</h4>
+                                            <small><b class="text-success">5%</b> Increased</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
+                                            <!-- SVG content -->
+                                        </svg>
+                                    </div>
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Total Expenses</label>
+                                        <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$8,500</h4>
+                                            <small><b class="text-danger">12%</b> decrease</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> *@
+                </div>
+                <!-- End::row -->
+                <!-- Start::row -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card custom-card mg-b-20 tasks">
+                            <div class="card-body">
+                                <div class="card-header border-bottom-0 pt-0 ps-0 pe-0 pb-2 d-flex">
+                                    <div>
+                                        <div class="card-title">All my Operational Excellence Initiatives</div>
+                                        <p class="mb-0 fs-12 mb-3 text-muted">All Operational Excellence initiatives alongside their objectives and statuses.</p>
+                                    </div>
+                                </div>
+
+                                <div class="accordion accordion-primary mb-5" id="filterAccord">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="filterHeader">
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-controls="collapseFilter"> Filter Search</button>
+                                        </h2>
+                                        <div id="collapseFilter" class="accordion-collapse collapse" aria-labelledby="filterHeader" data-bs-parent="#filterAccord">
+                                            <div class="accordion-body">
+                                                @using (Html.BeginForm("FilteredOEProjects", "Main", FormMethod.Post))
+                                                {
+                                                    @Html.AntiForgeryToken()
+                                                    <div class="row gy-4">
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <input type="text" class="form-control" id="title" name="title" placeholder="Project Title">
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                    <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <div class="form-group">
+                                                                <div class="input-group">
+                                                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                                    <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly="readonly">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <select class="form-control" id="priority" name="priority">
+                                                                <option selected disabled>Select Priority</option>
+                                                                <option value="All">All</option>
+                                                                <option value="High">High</option>
+                                                                <option value="Medium">Medium</option>
+                                                                <option value="Low">Low</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <select class="form-control" name="users" id="users">
+                                                                <option selected disabled>Select Facilitator/Sponsor</option>
+                                                                <option value="All">All</option>
+                                                                @if (Model.OrganizationUser != null)
+                                                                {
+                                                                    if (Model.OrganizationUser.Any())
+                                                                    {
+                                                                        foreach (var i in Model.OrganizationUser)
+                                                                        {
+                                                                            <option value="@i.Id">@i.Name</option>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <select class="form-control" id="country" name="country">
+                                                                <option selected disabled>Select Country</option>
+                                                                @if (Model.OrganizationCountry != null)
+                                                                {
+                                                                    if (Model.OrganizationCountry.Any())
+                                                                    {
+                                                                        foreach (var country in Model.OrganizationCountry)
+                                                                        {
+                                                                        <option value="@country.Id">@country.Country</option>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <select class="form-control" id="department" name="department">
+                                                                <option selected disabled>Select Group/Function</option>
+                                                                @if (Model.OrganizationDepartment != null)
+                                                                {
+                                                                    if (Model.OrganizationDepartment.Any())
+                                                                    {
+                                                                        foreach (var i in Model.OrganizationDepartment)
+                                                                        {
+                                                                            <option value="@i.Id">@i.Department</option>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <label for="status" class="form-label">Status<span style="color:red">*</span></label>
+                                                            <select class="form-control" name="status" id="status" required>
+                                                                @foreach (Status item in Enum.GetValues(typeof(Status)))
+                                                                {
+                                                                    <option value="@item">@item</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+
+                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                                            <button type="submit" class="btn btn-success me-5">Submit</button>
+                                                            <button onclick="" class="btn btn-outline-dark btn-wave">Clear</button>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <div id="datatable-basic_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <table id="myOEInitiatives" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%;" aria-describedby="datatable-basic_info">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending" style="width: 121.992px;">Id</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Title: activate to sort column ascending" style="width: 183.992px;">Title</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Description: activate to sort column ascending" style="width: 89.992px;">Description</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Facilitator: activate to sort column ascending" style="width: 89.992px;">Facilitator</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Department: activate to sort column ascending" style="width: 29.992px;">Department</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Target Savings: activate to sort column ascending" style="width: 82.992px;">Target Savings</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Sponsor: activate to sort column ascending" style="width: 82.992px;">Sponsor</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Priority: activate to sort column ascending" style="width: 82.992px;">Priority</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 82.992px;">Status</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 82.992px;">Start date</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="End date: activate to sort column ascending" style="width: 82.992px;">End date</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Cummulative Monthly Savings: activate to sort column ascending" style="width: 82.992px;">Cummulative Monthly Savings</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Carry Over Project?: activate to sort column ascending" style="width: 82.992px;">Carry Over Project?</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Savings Classification: activate to sort column ascending" style="width: 82.992px;">Savings Classification</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Location: activate to sort column ascending" style="width: 82.992px;">Location</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Facility: activate to sort column ascending" style="width: 82.992px;">Facility</th>
+                                                            <th class="sorting" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending" style="width: 68.992px;">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model.Projects.Result != null)
+                                                        {
+                                                            if (Model.Projects.Result.Any())
+                                                            {
+                                                                foreach (var i in Model.Projects.Result)
+                                                                {
+                                                                    <tr class="@(i.Id/2 != 0 ? "odd" : "even")" data-id="@i.Id">
+                                                                        <td class="sorting_1">@i.Id</td>
+                                                                        <td>@i.Title</td>
+                                                                        <td>@i.Description</td>
+                                                                        <td>@i.Facilitator</td>
+                                                                        <td>@i.OrganizationDepartment</td>
+                                                                        <td>@i.Currency@String.Format("{0:N}", i.TargetSavings)</td>
+                                                                        <td>@i.Sponsor</td>
+                                                                        <td>@i.Priority</td>
+                                                                        <td>@i.Status</td>
+                                                                        <td>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(i.StartDate))</td>
+                                                                        <td>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(i.EndDate))</td>
+                                                                        <td>@i.Currency@String.Format("{0:N}", i.ActualSavings)</td>
+                                                                        <td>@i.CarryOverProject</td>
+                                                                        <td>@i.SavingsClassification</td>
+                                                                        <td>@i.OrganizationCountry</td>
+                                                                        <td>@i.OrganizationFacility</td>
+                                                                        <td>
+                                                                            <a class="align-content-start ms-2 me-2" href="@Url.Action("OEProjectDetail", "Main", new { id = i.Id })"><i class="fe fe-edit"></i></a>
+                                                                            <a class="align-content-end ms-3 me-2 details-control"><span><i class="fe fe-folder-plus"></i></span></a>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <nav aria-label="Navigation">
+                                                <ul class="pagination justify-content-end mb-0" id="pagination">
+                                                    <li class="page-item" id="prevPage">
+                                                        <a class="page-link" href="javascript:void(0);">Previous</a>
+                                                    </li>
+
+                                                    <li class="page-item" id="nextPage">
+                                                        <a class="page-link" href="javascript:void(0);">Next</a>
+                                                    </li>
+                                                </ul>
+                                            </nav>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- col end -->
+                </div>
+                <!-- End::row -->
+            </div>
+            <!-- col end -->
+        </div>
+        <!-- End::row-1 -->
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var table = $('#myOEInitiatives').DataTable({
+                        scrollX: true,
+                        scrollCollapse: true,
+                        paging: false,
+                        info: false,
+                        lengthChange: false,
+                        fixedColumns: {
+                            leftColumns: 3, 
+                            rightColumns: 1 // optional
+                        },
+                        language: {
+                            emptyTable: "No record found"
+                        }
+                    });
+
+        const endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d"
+        });
+
+        // --- SINGLE AJAX FUNCTION TO LOAD CHILD ITEMS ---
+        function loadChildItems(parentId, callback) {
+            $.ajax({
+                url: '/OEMonthlySaving',   // adjust controller/action
+                type: 'GET',
+                data: { pId: parentId },
+                dataType: 'json',
+                success: function (response) {
+
+                    // Expecting an array
+                    if (Array.isArray(response)) {
+                        callback(response);
+                    } else {
+                        callback([]);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Failed to load child items:', error);
+                    callback([]);
+                }
+            });
+        }
+
+        // --- FORMAT CHILD TABLE HTML ---
+        function formatChildTable(parentId, rows) {
+            var html = `
+                <div class="table-responsive child-table-wrapper1">
+                    <table class="child-table1 table text-nowrap table-dark">
+                        <thead>
+                            <tr>
+                                <th>Month & Year</th>
+                                <th>Savings</th>
+                                <th>Date Created</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            if (rows.length === 0) {
+                html += `<tr><td colspan="4">No records found</td></tr>`;
+            } else {
+                rows.forEach(r => {
+                    html += `
+                        <tr>
+                            <td>${r.MonthYear}</td>
+                            <td>${r.Currency}${Number(String(r.Savings).replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                            <td>${new Date(r.DateCreated).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' })}</td>
+                            <td>${r.CreatedByUser}</td>
+                        </tr>`;
+                });
+            }
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            return html;
+        }
+
+        // --- CLICK HANDLER FOR CHILD ROW TOGGLE ---
+        $('#myOEInitiatives tbody').on('click', 'a.details-control', function () {
+
+            var tr = $(this).closest('tr');
+            var row = table.row(tr);
+            var parentId = tr.data("id");
+
+            if (row.child.isShown()) {
+                // Close child
+                row.child.hide();
+                $(this).html('<span><i class="fe fe-folder-plus"></i></span>');
+            } else {
+                $(this).html('<span><i class="fe fe-folder-minus"></i></span>');
+
+                loadChildItems(parentId, function (data) {
+                    var html = formatChildTable(parentId, data);
+                    row.child(html).show();
+                });
+            }
+        });
+    });
+
+    let currentPage = @Model.Projects.PageNumber;
+    const totalPages = @Model.Projects.TotalPages; // 🔹 set from server (Model.TotalPages)
+    const paginationUrl = '@Url.Action("AllOEProjects", "Main")';
+
+    function renderPagination() {
+        const pagination = document.getElementById('pagination');
+
+        // Remove existing page numbers
+        document.querySelectorAll('.page-number').forEach(e => e.remove());
+
+        // Insert page numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item page-number' + (i === currentPage ? ' active' : '');
+
+            const a = document.createElement('a');
+            a.className = 'page-link';
+            a.href = paginationUrl + '?page=' + i;
+            a.textContent = i;
+            a.dataset.page = i;
+
+            a.addEventListener('click', () => goToPage(i));
+
+            li.appendChild(a);
+
+            pagination.insertBefore(li, document.getElementById('nextPage'));
+        }
+
+        updateNavButtons();
+    }
+
+    function updateNavButtons() {
+        document.getElementById('prevPage')
+            .classList.toggle('disabled', currentPage === 1);
+
+        document.getElementById('nextPage')
+            .classList.toggle('disabled', currentPage === totalPages);
+    }
+
+    function goToPage(page) {
+        if (page < 1 || page > totalPages) return;
+
+        window.location.href = paginationUrl + '?page=' + page;
+    }
+
+    document.getElementById('prevPage').querySelector('a').href =
+        paginationUrl + '?page=' + (currentPage - 1);
+    document.getElementById('nextPage').querySelector('a').href =
+        paginationUrl + '?page=' + (currentPage + 1);
+
+    // Previous / Next handlers
+    document.getElementById('prevPage').addEventListener('click', () => {
+        if (currentPage > 1) goToPage(currentPage - 1);
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+        if (currentPage < totalPages) goToPage(currentPage + 1);
+    });
+
+    // Initial render
+    renderPagination();
+</script>

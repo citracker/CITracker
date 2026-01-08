@@ -1,0 +1,136 @@
+﻿<!-- Page Header Close -->
+<div id="attachments_info" class="row row-sm d-none">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Attachments </div>
+            </div>
+            <div class="card-body">
+                <nav class="navbar navbar-expand-lg bg-light"> 
+                    <div class="container-fluid"> 
+                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">Comments</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Date</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Add/Remove</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href=""></a>
+                    </div>
+                </nav>
+                <div class="attCardBody">
+                    <div class="row gy-4 attBody mt-2 mb-5">
+                        <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6">
+                            @* <label for="input-text" class="form-label">Comments</label> *@
+                            <textarea class="form-control" id="text-area" rows="3"></textarea>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                            @* <label for="text-area" class="form-label">Date</label> *@
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                    <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Date" readonly="readonly">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
+                            @* <p class="mb-2 fw-medium">Add/Remove</p> *@
+                            <div class="mb-md-0 mb-2 ms-5">
+                                <button class="btn btn-icon btn-primary btn-wave waves-effect waves-light addAtt"> <i class="fe fe-plus"></i> </button>
+                                <button class="btn btn-icon btn-warning btn-wave me-5 waves-effect waves-light d-none removeAtt"> <i class="fe fe-minus"></i> </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="navbar navbar-expand-lg bg-light mb-4">
+                    <div class="container-fluid">
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Category</a>
+                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">Item</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Attachment</a>
+                    </div>
+                </nav>
+
+                <div class="contract-container">
+                    <div class="phase-sidebar">
+                        <div class="phase-title">
+                            <h1 class="phase-title-text">Define</h1>
+                        </div>
+                    </div>
+
+                    <div class="content-panel">
+                        <div class="content-section">
+                            <div class="section-text">
+                                <h4 class="section-heading">Project Contract</h4>
+                            </div>
+                            <div class="col-3 mb-3">
+                                <input class="form-control" type="file" id="formFile">
+                            </div>
+                        </div>
+
+                        <div class="content-section">
+                            <div class="section-text">
+                                <h4 class="section-heading">Input Process Output Diagram (IPO/SIPOC)</h4>
+                            </div>
+                            <div class="col-3 mb-3">
+                                <input class="form-control" type="file" id="formFile">
+                            </div>
+                        </div>
+
+                        <div class="content-section">
+                            <div class="section-text">
+                                <h4 class="section-heading">Requirements Specification</h4>
+                            </div>
+                            <div class="col-3 mb-3">
+                                <input class="form-control" type="file" id="formFile">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-12">
+                    <div class="card custom-card">
+                        <div class="card-body">
+                            <label for="formFileLg" class="form-label">Final Report (Supported Format: PPT, Excel, PDF, Word)</label>
+                            <input class="form-control form-control-lg" id="formFileLg" type="file"> 
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-primary" onclick="loadPartial('attachments_info', 'tools_info')">Previous</button>
+                <button class="btn btn-success shadow-success" onclick="loadPartial('attachments_info', 'financial_info')">Save &amp; Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let formCount = 1;
+
+        $('.addAtt').click(function() {
+            formCount++;
+
+            // Clone the first form section
+            const newForm = $('.attBody').first().clone();
+
+            // Clear input values
+            newForm.find('input').val('');
+                       
+            // Show remove button for cloned forms
+            newForm.find('.addAtt').addClass("d-none");
+            newForm.find('.removeAtt').removeClass("d-none");
+
+            // Append to container
+            $('.attCardBody').append(newForm);
+        });
+
+        // Remove functionality for initial form (if needed)
+        $(document).on('click', '.removeAtt', function() {
+            if ($('.attBody').length > 1) {
+                $(this).closest('.attBody').remove();
+                formCount--;
+            }
+        });
+    });
+</script>

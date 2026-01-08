@@ -1,0 +1,427 @@
+﻿@using Shared.Enumerations
+@model Shared.ViewModels.ContinuousImprovementVM
+
+
+
+<!-- Page Header Close -->
+<div id="project_info" class="row row-sm">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Project Details </div>
+            </div>
+            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+                <div class="row gy-4">
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                        <p class="mb-2 fw-medium">Title <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Project Title" required>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="startdate" class="form-label">Start Date</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="enddate" class="form-label">End Date</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="priority" class="form-label">Priority<span style="color:red">*</span></label>
+                        <select class="form-control" name="priority" id="priority" required>
+                            <option selected disabled>Priority</option>
+                            <option value="High">High</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <p class="mb-2 fw-medium">Business Objective Alignment <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="card-body d-sm-flex justify-content-between">
+                            <label class="form-check form-control m-2 p-2"> 
+                                <input type="checkbox" value="Safety" name="boa"> 
+                                <span class="form-check-label"> Safety </span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="checkbox" value="Sustainability" name="boa">
+                                <span class="form-check-label"> Sustainability </span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="checkbox" value="Cost/Revenue" name="boa">
+                                <span class="form-check-label"> Cost/Revenue </span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="checkbox" value="Efficiency" name="boa">
+                                <span class="form-check-label"> Efficiency </span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="checkbox" value="Customer Experience" name="boa">
+                                <span class="form-check-label"> Customer Experience </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <label for="problemstatement" class="form-label">
+                            Problem Statement <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                        </label>
+                        <textarea class="form-control" name="problemstatement" rows="4" required></textarea>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <p class="mb-2 fw-medium">Methodology <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate approach for executing the initiative/project."> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="card-body d-sm-flex justify-content-between">
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="radio" name="methodology" value="General" alt="DMAIC" onchange="onMethodologyChanged()">
+                                <span class="form-check-label">DMAIC</span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="radio" name="methodology" value="General" alt="Gemba" onchange="onMethodologyChanged()">
+                                <span class="form-check-label">Gemba Kaizen</span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="radio" name="methodology" value="General" alt="JDI" onchange="onMethodologyChanged()">
+                                <span class="form-check-label">JDI</span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="radio" name="methodology" value="Project" alt="Project" onchange="onMethodologyChanged()">
+                                <span class="form-check-label">Project</span>
+                            </label>
+                            <label class="form-check form-control m-2 p-2">
+                                <input type="radio" name="methodology" value="General" alt="Others" onchange="onMethodologyChanged()">
+                                <span class="form-check-label">Others</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                        <p class="mb-2 fw-medium">Working towards a certification? <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This helps with tying the initiative/project to any Lean 6 sigma certification effort"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div id="certificationContainer" class="card-body d-sm-flex justify-content-between"></div>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="targetsavings" class="form-label">Total Expected Savings/Revenue</label>
+                        <div class="input-group">
+                            <input type="text" name="targetsavings" id="targetsavings" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" required>
+                            <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                            <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto; min-width:auto;" data-popper-placement="bottom-end">
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                            </ul>
+                        </div>
+                        <input type="hidden" name="currency" id="selectedCurrency" value="&#36;">
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="status" class="form-label">Status<span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select and modify the status as the initiative/project progress"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select class="form-control" name="status" id="status" required>
+                            <option selected disabled> Select a Status </option>
+                            @foreach (Status item in Enum.GetValues(typeof(Status)))
+                            {
+                                if(item == Status.COMPLETED || item == Status.CLOSED)
+                                {
+                                    continue;
+                                }
+                                <option value="@item">@item</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="phase" class="form-label">Phase</label>
+                        <select class="form-control" name="phase" id="phase">
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="country" class="form-label">Country<span style="color:red">*</span></label>
+                        <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
+                            <option selected disabled>Select a Country</option>
+                            @if (Model.OrganizationCountry != null)
+                            {
+                                if (Model.OrganizationCountry.Any())
+                                {
+                                    foreach (var country in Model.OrganizationCountry)
+                                    {
+                                        <option value="@country.Id">@country.Country</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="facility" class="form-label">Facility</label>
+                        <select class="form-control" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="department" class="form-label">Department<span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select class="form-control" name="department" id="department" required>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                        <label for="input-text" class="form-label">Supporting Value Stream
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control" data-trigger>
+                            <option selected default>Kindly select a Supporting Value Stream</option>
+                            <optgroup label="Operational Excellence">
+                                @foreach (var i in Model.OperationalExcellence)
+                                {
+                                    <option value="@i.Id">@i.Title</option>
+                                }
+                            </optgroup>
+                            <optgroup label="Strategic Initiative">
+                                @foreach (var i in Model.StrategicInitiative)
+                                {
+                                    <option value="@i.Id">@i.Title</option>
+                                }
+                            </optgroup>
+                        </select>
+                    </div>                    
+                </div>
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-success shadow-success" onclick="loadPartial('project_info', 'team_info')">Save &amp; Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.AppState = {
+        selectedMethodology: null
+    };
+    const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
+    const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let endPicker;
+
+        endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    const startDate = selectedDates[0];
+
+                    // Set min date for end date
+                    endPicker.set("minDate", startDate);
+
+                    // Optional: auto-set end date to +12 months
+                    const endDate = new Date(startDate);
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                    endPicker.setDate(endDate, true);
+                }
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const certOptions = {
+            DMAIC: ['Green Belt', 'Black Belt', 'Not Applicable'],
+            Gemba: ['Not Applicable'],
+            JDI: ['Not Applicable'],
+            Project: ['PMP'],
+            Others: ['Not Applicable']
+        };
+
+        // Master list of ALL certifications
+        const allCertifications = [
+            'Green Belt',
+            'Black Belt',
+            'PMP',
+            'Not Applicable'
+        ];
+
+        const container = document.getElementById('certificationContainer');
+
+        // Render ALL certifications ONCE
+        function renderAllCertifications() {
+            container.innerHTML = '';
+
+            allCertifications.forEach((text, index) => {
+                container.insertAdjacentHTML('beforeend', `
+                    <label class="form-check form-control m-2 p-2">
+                        <input type="radio"
+                               name="certification"
+                               id="cert_${index}"
+                               value="${text}"
+                               disabled>
+                        <span class="form-check-label" for="cert_${index}">
+                            ${text}
+                        </span>
+                    </label>
+                `);
+            });
+        }
+
+        // Enable/disable based on selected methodology
+        function updateCertifications(methodology) {
+            const allowed = certOptions[methodology] || [];
+            document
+                .querySelectorAll('input[name="certification"]')
+                .forEach(radio => {
+                    radio.disabled = !allowed.includes(radio.value);
+
+                    // Optional: auto-uncheck disabled options
+                    if (radio.disabled) {
+                        radio.checked = false;
+                    }
+                });
+        }
+
+        // Initial render
+        renderAllCertifications();
+
+        // Methodology change handler
+        document
+            .querySelectorAll('input[name="methodology"]')
+            .forEach(radio => {
+                radio.addEventListener('change', function () {
+                    updateCertifications(this.getAttribute("alt"));
+                });
+            });
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        new Choices('#supportingvaluestrings', {
+            shouldSort: false,
+            searchEnabled: true,
+            itemSelectText: '',
+            allowHTML: false
+        });
+    });
+
+
+    function onCountryChange(selectEl, targetInputId) {
+        const countryId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+
+        if (isNaN(countryId)) return;
+
+        const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Facility;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function onFacilityChange(selectEl, targetInputId) {
+        const facilityId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+
+        if (isNaN(facilityId)) return;
+
+        const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Department;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function formatNumberRealTime(input) {
+        let cursorPos = input.selectionStart;
+        let formattedValue = input.value;
+        let numbersOnly = formattedValue.replace(/[^\d.]/g, '');
+
+        let parts = numbersOnly.split('.');
+        if (parts.length > 2) {
+            numbersOnly = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        if (parts[0].length > 0) {
+            parts[0] = parseInt(parts[0] || '0', 10).toLocaleString('en-US');
+        }
+
+        formattedValue = parts.join('.');
+        input.value = formattedValue;
+
+        let newCursorPos = cursorPos + (formattedValue.length - input.value.length);
+        input.setSelectionRange(newCursorPos, newCursorPos);
+    }
+
+    function onMethodologyChanged() {
+        const selectedRadio = document.querySelector(
+            'input[name="methodology"]:checked'
+        );
+
+        if (!selectedRadio) return;
+
+        const methodology = selectedRadio.value;
+        window.AppState.selectedMethodology = methodology;
+
+        fetch(`/GetMethodologyPhases?val=${encodeURIComponent(methodology)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tools");
+                }
+                return response.json();
+            })
+            .then(data => populateToolSelect(data))
+            .catch(error => console.error(error));
+    }
+
+    function populateToolSelect(tools) {
+        const select = document.getElementById("phase");
+
+        // Clear existing options
+        select.innerHTML = '<option value="">-- Select Tool --</option>';
+
+        tools.forEach(tool => {
+            const option = document.createElement("option");
+            option.value = tool.Id;      // must match JSON property
+            option.textContent = tool.Phase;
+            select.appendChild(option);
+        });
+    }
+
+</script>

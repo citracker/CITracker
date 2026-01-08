@@ -1,0 +1,156 @@
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.CIUser>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "UserManagement";
+    ViewData["Active"] = "ManageUsers";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Manage Users</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Add a User </div>
+                    </div>
+                    @using (Html.BeginForm("AddUser", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        User <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="First Name">
+                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="Last Name">
+                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="Email Address">
+                                @* <input type="text" class="form-control mt-3 mb-3" id="ph" name="ph" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Rename a User </div>
+                    </div>
+                    @using (Html.BeginForm("RenameUser", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
+                                    <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
+                                        <option selected disabled>Select a User</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        User Details <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Organization User"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control mt-3 mb-3" id="fnN" name="fnN" placeholder="First Name">
+                                    <input type="text" class="form-control mt-3 mb-3" id="lnN" name="lnN" placeholder="Last Name">
+                                    <input type="email" class="form-control mt-3 mb-3" id="emN" name="emN" placeholder="Email Address">
+                                    @* <input type="text" class="form-control mt-3 mb-3" id="phN" name="phN" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Delete a User </div>
+                    </div>
+                    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
+                                    <select class="form-control" name="userD" id="userD">
+                                        <option selected disabled>Select a User</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.Name</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
+    function onUserChange(selectEl, fnId, lnId, emId) {
+        const userId = parseInt(selectEl.value);
+        const fnInp = document.getElementById(fnId);
+        const lnInp = document.getElementById(lnId);
+        const emInp = document.getElementById(emId);
+
+
+        if (isNaN(userId)) return;
+
+        const filtered = users.filter(l => l.Id === userId);
+
+        filtered.forEach(item => {
+           fnInp.value = item.Name.split(' ')[0];
+           lnInp.value = item.Name.split(' ')[1];
+           emInp.value = item.EmailAddress;
+        });
+    }
+</script>

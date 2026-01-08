@@ -1,0 +1,199 @@
+﻿        <!-- Page Header Close -->
+<div id="project_info" class="row row-sm">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Project Details </div>
+            </div>
+            <div class="card-body">
+                <div class="row gy-4">
+                    <div class="col-xl-8 col-lg-8 col-md-8 col-sm-12">
+                        <p class="mb-2 fw-medium">Title <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <input type="text" class="form-control" id="input" placeholder="Project Title">
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="input-date" class="form-label">Start Date</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="Start Date" readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                        <label for="input-date" class="form-label">End Date</label>
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="End Date" readonly="readonly">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-5 col-lg-6 col-md-6 col-sm-12">
+                        <p class="mb-2 fw-medium">Business Objective Alignment <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="card-body checkbox-button-group">
+                            <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                                <input type="checkbox" class="btn-check" id="btncheck1">
+                                <label class="btn btn-outline-primary" for="btncheck1">Safety</label>
+
+                                <input type="checkbox" class="btn-check" id="btncheck2">
+                                <label class="btn btn-outline-primary" for="btncheck2">Sustainability</label>
+
+                                <input type="checkbox" class="btn-check" id="btncheck3">
+                                <label class="btn btn-outline-primary" for="btncheck3">Cost/Revenue</label>
+
+                                <input type="checkbox" class="btn-check" id="btncheck4">
+                                <label class="btn btn-outline-primary" for="btncheck4">Efficiency</label>
+
+                                <input type="checkbox" class="btn-check" id="btncheck5">
+                                <label class="btn btn-outline-primary" for="btncheck5">Customer Experience</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-7 col-lg-6 col-md-6 col-sm-12">
+                        <label for="text-area" class="form-label">Problem Statement <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                        </label>
+                        <textarea class="form-control" id="text-area" rows="3"></textarea>
+                    </div>
+
+
+
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                        <p class="mb-2 fw-medium">Methodology <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate approach for executing the initiative/project."> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="card-body radio-button-group">
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio1" checked="">
+                                <label class="btn btn-outline-primary" for="btnradio1">DMAIC/DMADV</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio2">
+                                <label class="btn btn-outline-primary" for="btnradio2">Gemba Kaizen</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio3">
+                                <label class="btn btn-outline-primary" for="btnradio3">JDI</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio4">
+                                <label class="btn btn-outline-primary" for="btnradio4">Project</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio5">
+                                <label class="btn btn-outline-primary" for="btnradio5">Others</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                        <p class="mb-2 fw-medium">Working towards a certification? <span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This helps with tying the initiative/project to any Lean 6 sigma certification effort"> <i class="fe fe-info"></i></a>
+                        </p>
+                        <div class="card-body radio-button-group">
+                            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio7" checked="">
+                                <label class="btn btn-outline-primary" for="btnradio7">Green Belt</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio8">
+                                <label class="btn btn-outline-primary" for="btnradio8">Black Belt</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio10">
+                                <label class="btn btn-outline-primary" for="btnradio10">PMP</label>
+
+                                <input type="radio" class="btn-check" name="btnradio" id="btnradio9">
+                                <label class="btn btn-outline-primary" for="btnradio9">Not Applicable</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Total Expected savings/revenue</label>
+                        <div class="input-group mb-3">
+                            <input type="text" class="form-control" placeholder="Enter total Expected savings/revenue" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                            <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                            <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Status<span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select and modify the status as the initiative/project progress"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select class="form-control" id="choices-single-default">
+                            <option selected disabled>This is a placeholder</option>
+                            <option value="">Option 1</option>
+                            <option value="">Option 2</option>
+                            <option value="">Option 3</option>
+                            <option value="">Option 4</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Phase</label>
+                        <select class="form-control" id="choices-single-default">
+                            <option value="">Define</option>
+                            <option value="">Actuate</option>
+                            <option value="">Serenade</option>
+                            <option value="">Conclude</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Country<span style="color:red">*</span></label>
+                        <select class="form-control" id="choices-single-default">
+                            <option value="">Canada</option>
+                            <option value="">United States</option>
+                            <option value="">China</option>
+                            <option value="">Nigeria</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Location/Facility</label>
+                        <select class="form-control" id="choices-single-default">
+                            <option value="">New York</option>
+                            <option value="">Victoria</option>
+                            <option value="">Toronto</option>
+                            <option value="">Saxony</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Groups/Function<span style="color:red">*</span>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <select class="form-control" id="choices-single-default">
+                            <option value="">Supply Chain</option>
+                            <option value="">Mining Operations</option>
+                            <option value="">Metals Operations</option>
+                            <option value="">Recycling Operations</option>
+                        </select>
+                    </div>
+
+                    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                        <label for="input-text" class="form-label">Supporting Value Stream
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
+                        </label>
+                        <input type="text" class="form-control" id="input" placeholder="Supporting Value Stream">
+                    </div>
+
+                </div>
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-success shadow-success" onclick="loadPartial('project_info', 'team_info')">Save &amp; Next</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,313 @@
+﻿@model Shared.ViewModels.ContinuousImprovementVM
+
+<!-- Page Header Close -->
+<div id="tools_info" class="row row-sm d-none">
+    <div class="col-xl-12">
+        <div class="card custom-card">
+            <div class="card-header justify-content-between">
+                <div class="card-title"> Tools </div>
+            </div>
+            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+                <div class="d-sm-flex d-block align-items-center flex-wrap justify-content-center"> 
+                    <div class="mb-lg-0 mb-2"><h4 class="text-lg-center m-3">DMAIC</h4></div>
+                </div>
+                <p>Note: You can download the sample templates for each from the Download Icon <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
+                <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
+                    @* <div class="form-control" style="border:solid, 2px, #bbbbbb; border-radius:5px; padding:0rem; min-width: 330px;">
+                        <div class="card custom-card">
+                            <div class="card-header justify-content-between"> 
+                                <div class="card-title"> DEFINE
+                                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Project definition and alignment."> <i class="fe fe-info"></i></a>
+                                </div>
+                            </div> 
+                            <div class="card-body" style="padding:0.5rem"> 
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important"> 
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label me-3" for="flexCheckDefault" style="width:85%; max-width:85%"> Project Contract </label> 
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div> 
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important"> 
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label me-3" for="flexCheckDefault1" style="width:85%; max-width:85%"> Input Process output Diagram (IPO/SIPOC) </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div> 
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                                    <label class="form-check-label me-3" for="flexCheckDefault2" style="width:85%; max-width:85%"> Champion Interview </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                                    <label class="form-check-label me-3" for="flexCheckDefault3" style="width:85%; max-width:85%"> Cost of Poor Quality (COPQ) </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                                    <label class="form-check-label me-3" for="flexCheckDefault4" style="width:85%; max-width:85%"> Problem Statement </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control" style="border:solid, 2px, #bbbbbb; border-radius:5px; padding:0rem; min-width: 330px;">
+                        <div class="card custom-card">
+                            <div class="card-header justify-content-between">
+                                <div class="card-title">
+                                    MEASURE
+                                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Current State Performance Baseline."> <i class="fe fe-info"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:0.5rem">
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label me-3" for="flexCheckDefault" style="width:85%; max-width:85%"> Process Flow Diagram (PFD) </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label me-3" for="flexCheckDefault1" style="width:85%; max-width:85%"> Gemba Walk </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                                    <label class="form-check-label me-3" for="flexCheckDefault2" style="width:85%; max-width:85%"> Time Motion Study </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                                    <label class="form-check-label me-3" for="flexCheckDefault3" style="width:85%; max-width:85%"> Value Stream Map </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                                    <label class="form-check-label me-3" for="flexCheckDefault4" style="width:85%; max-width:85%"> Physical Flow Map </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control" style="border:solid, 2px, #bbbbbb; border-radius:5px; padding:0rem; min-width: 330px;">
+                        <div class="card custom-card">
+                            <div class="card-header justify-content-between">
+                                <div class="card-title">
+                                    ANALYZE
+                                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Identify Causes of Variation"> <i class="fe fe-info"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:0.5rem">
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label me-3" for="flexCheckDefault" style="width:85%; max-width:85%"> Kaizen </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label me-3" for="flexCheckDefault1" style="width:85%; max-width:85%"> Gemba Keizen </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                                    <label class="form-check-label me-3" for="flexCheckDefault2" style="width:85%; max-width:85%"> Takt Time Analysis </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                                    <label class="form-check-label me-3" for="flexCheckDefault3" style="width:85%; max-width:85%"> Cause &amp; Effect Diagram </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                                    <label class="form-check-label me-3" for="flexCheckDefault4" style="width:85%; max-width:85%"> Root Cause Analysis </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control" style="border:solid, 2px, #bbbbbb; border-radius:5px; padding:0rem; min-width: 330px;">
+                        <div class="card custom-card">
+                            <div class="card-header justify-content-between">
+                                <div class="card-title">
+                                    IMPROVE
+                                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Develop, Test &amp; Implement Solutions"> <i class="fe fe-info"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:0.5rem">
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label me-3" for="flexCheckDefault" style="width:85%; max-width:85%"> Pull System </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label me-3" for="flexCheckDefault1" style="width:85%; max-width:85%"> Layout Design/Work Cell </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                                    <label class="form-check-label me-3" for="flexCheckDefault2" style="width:85%; max-width:85%"> Quick Changeover </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                                    <label class="form-check-label me-3" for="flexCheckDefault3" style="width:85%; max-width:85%"> Mistake Proofing </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                                    <label class="form-check-label me-3" for="flexCheckDefault4" style="width:85%; max-width:85%"> Visual Management </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-control" style="border:solid, 2px, #bbbbbb; border-radius:5px; padding:0rem; min-width: 330px;">
+                        <div class="card custom-card">
+                            <div class="card-header justify-content-between">
+                                <div class="card-title">
+                                    CONTROL
+                                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Sustain gains &amp; Scale"> <i class="fe fe-info"></i></a>
+                                </div>
+                            </div>
+                            <div class="card-body" style="padding:0.5rem">
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
+                                    <label class="form-check-label me-3" for="flexCheckDefault" style="width:85%; max-width:85%"> Control Charts </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
+                                    <label class="form-check-label me-3" for="flexCheckDefault1" style="width:85%; max-width:85%"> Control Plans </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
+                                    <label class="form-check-label me-3" for="flexCheckDefault2" style="width:85%; max-width:85%"> RACI Chart </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
+                                    <label class="form-check-label me-3" for="flexCheckDefault3" style="width:85%; max-width:85%"> Accountability </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                                <div class="form-check form-check-lg mt-3" style="display: flex !important">
+                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
+                                    <label class="form-check-label me-3" for="flexCheckDefault4" style="width:85%; max-width:85%"> SOP/MOS </label>
+                                    <a><i class="las la-download la-2x text-success" style=""></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div> *@
+                </div>
+            </div>
+            <div class="card-footer border-top-card">
+                <button class="btn btn-primary" onclick="loadPartial('tools_info', 'team_info')">Previous</button>
+                <button class="btn btn-success shadow-success" onclick="loadPartial('tools_info', 'attachments_info')">Save &amp; Next</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('partialShown', function (e) {
+        if (e.detail.id === 'tools_info') {
+            if(window.AppState.selectedMethodology !== null){
+                fetch(`/GetMethodologyTools?val=${encodeURIComponent(window.AppState.selectedMethodology)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch tools");
+                        }
+                        return response.json();
+                    })
+                    .then(data => populateToolDiv(data))
+                    .catch(error => console.error(error));
+            }
+        }
+
+        function populateToolDiv(groups) {
+            const ddd = document.getElementById("toolDiv");
+
+            // Clear existing options
+            ddd.innerHTML = '';
+
+            Object.entries(groups).forEach(([phase, tools]) => {
+                ddd.appendChild(createPhaseCard(phase, tools));
+            });
+        }
+
+        function createPhaseCard(key, tools) {
+            const outer = document.createElement('div');
+            outer.className = 'form-control';
+            outer.style.cssText =
+                'border:2px solid #bbbbbb;border-radius:5px;padding:0;min-width:330px;';
+
+            const card = document.createElement('div');
+            card.className = 'card custom-card';
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'card-header justify-content-between';
+
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.textContent = key;
+
+            header.appendChild(title);
+
+            // Body
+            const body = document.createElement('div');
+            body.className = 'card-body';
+            body.style.padding = '0.5rem';
+
+            tools.forEach((tool, index) => {
+                body.appendChild(createToolRow(tool, index, key));
+            });
+
+            card.appendChild(header);
+            card.appendChild(body);
+            outer.appendChild(card);
+
+            return outer;
+        }
+
+        function createToolRow(tool, index, phase) {
+            const row = document.createElement('div');
+            row.className = 'form-check form-check-lg mt-3';
+            row.style.display = 'flex';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'form-check-input';
+            checkbox.id = `${phase}-${index}`;
+            checkbox.value = tool.id;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label me-3';
+            label.setAttribute('for', checkbox.id);
+            label.style.cssText = 'width:85%;max-width:85%';
+            label.textContent = tool.name;
+
+            const action = document.createElement('a');
+
+            if (tool.url) {
+                action.href = tool.url;
+                action.target = '_blank';
+                action.innerHTML =
+                    '<i class="las la-download la-2x text-success"></i>';
+            } else {
+                action.innerHTML =
+                    '<i class="las la-file-upload la-2x text-warning"></i>';
+
+                action.addEventListener('click', function () {
+                    triggerUpload(tool);
+                });
+            }
+
+            row.appendChild(checkbox);
+            row.appendChild(label);
+            row.appendChild(action);
+
+            return row;
+        }
+    });
+</script>

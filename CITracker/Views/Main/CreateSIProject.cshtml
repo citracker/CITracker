@@ -1,0 +1,318 @@
+﻿@using Shared.Enumerations 
+@model Shared.ViewModels.StrategicInitiativeVM
+@inject IHttpContextAccessor hca
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "CreateSIProject";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">New Project</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Strategic Initiative</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Project</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Project Details </div>
+                    </div>
+                    @using (Html.BeginForm("NewSIProject", "Main", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            @if (Model.Message.Length > 5)
+                            {
+                                if (Model.Message.ToLower().Contains("success"))
+                                {
+                                    <div class="alert alert-success" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @Model.Message
+                                    </div>
+                                }
+                            }
+                            <div class="row gy-4">
+                                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                    <p class="mb-2 fw-medium">
+                                        Title <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                                    </p>
+                                    <input type="text" class="form-control" name="title" placeholder="Project Title" required>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="startdate" class="form-label">Start Date</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly="readonly" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="enddate" class="form-label">End Date</label>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                            <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly="readonly" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
+                                    <label for="input-text" class="form-label">Priority<span style="color:red">*</span></label>
+                                    <select class="form-control" name="priority">
+                                        <option selected disabled>Select Priority</option>
+                                        <option value="High">High</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="Low">Low</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+                                    <label for="text-area" class="form-label">
+                                        Description <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <textarea class="form-control" name="description" rows="3" required></textarea>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="input-text" class="form-label">Owner<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="owner" id="owner" required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="input-text" class="form-label">Executive Sponsor<span style="color:red">*</span></label>
+                                    <select class="js-choice" name="execsponsor" id="execsponsor" required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="status" class="form-label">Status<span style="color:red">*</span></label>
+                                    <select class="form-control" name="status" id="status" required>
+                                        <option selected disabled> Select a Status </option>
+                                        @foreach (Status item in Enum.GetValues(typeof(Status)))
+                                        {
+                                            if(item == Status.COMPLETED || item == Status.CLOSED)
+                                            {
+                                                continue;
+                                            }
+                                            <option value="@item">@item</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                @* <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="input-text" class="form-label">Percentage Status<span style="color:red">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" max="100" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                        <button class="btn btn-outline-primary" type="button" >&percnt;</button>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="input-text" class="form-label">Cummulated ROI<span style="color:red">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                        <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
+                                        <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
+                                            <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                        </ul>
+                                    </div>
+                                </div> *@
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="country" class="form-label">Country<span style="color:red">*</span></label>
+                                    <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
+                                        <option selected disabled>Select a Country</option>
+                                        @if (Model.OrganizationCountry != null)
+                                        {
+                                            if (Model.OrganizationCountry.Any())
+                                            {
+                                                foreach (var country in Model.OrganizationCountry)
+                                                {
+                                                    <option value="@country.Id">@country.Country</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="facility" class="form-label">Location/Facility</label>
+                                    <select class="form-control" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
+                                    </select>
+                                </div>
+
+                                <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
+                                    <label for="department" class="form-label">Department<span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                                    </label>
+                                    <select class="form-control" name="department" id="department" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+  
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
+    const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
+    const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
+
+    document.addEventListener("DOMContentLoaded", function () {
+        let endPicker;
+
+        endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d",
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    const startDate = selectedDates[0];
+
+                    // Set min date for end date
+                    endPicker.set("minDate", startDate);
+
+                    // Optional: auto-set end date to +12 months
+                    const endDate = new Date(startDate);
+                    endDate.setFullYear(endDate.getFullYear() + 1);
+                    endPicker.setDate(endDate, true);
+                }
+            }
+        });
+    });
+
+    function onCountryChange(selectEl, targetInputId) {
+        const countryId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+
+        if (isNaN(countryId)) return;
+
+        const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Facility;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    function onFacilityChange(selectEl, targetInputId) {
+        const facilityId = parseInt(selectEl.value);
+        const locationSelect = document.getElementById(targetInputId);
+
+        // Clear existing options
+        locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+
+        if (isNaN(facilityId)) return;
+
+        const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
+
+        filtered.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.Id;
+            option.textContent = item.Department;
+            locationSelect.appendChild(option);
+        });
+    }
+
+    var facChoice = new Choices('#owner', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+    var execspnChoice = new Choices('#execsponsor', {
+            removeItemButton: true,
+            searchEnabled: true,
+            shouldSort: false,
+            placeholderValue: 'Type user...'
+        });
+
+    const facilitatorEl = document.getElementById('owner');
+    const execsponsorEl = document.getElementById('execsponsor');
+
+
+    facilitatorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        facChoice.clearChoices();
+        facChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+
+
+    execsponsorEl.addEventListener('search', function (event) {
+        const searchTerm = event.detail.value.toLowerCase();
+        // Filter items by Name
+        const filtered = users.filter(i =>
+            i.Name.toLowerCase().includes(searchTerm)
+        );
+
+        // Replace choices
+        execspnChoice.clearChoices();
+        execspnChoice.setChoices(
+            filtered.map(i => ({
+                value: i.Id,
+                label: i.Name
+            })),
+            'value',
+            'label',
+            true
+        );
+    });
+</script>

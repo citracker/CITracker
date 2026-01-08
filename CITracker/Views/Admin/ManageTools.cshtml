@@ -1,0 +1,214 @@
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.MethodologyPhase>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "ToolManagement";
+    ViewData["Active"] = "ManageTools";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            <div class="col-xl-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Initiative Details </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row gy-4 mb-5">
+                            <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+                                <label for="input-text" class="form-label"> Select Methodology </label>
+                                <select class="form-control" id="methodology" onchange="onMethodologyChanged(this)" required>
+                                    <option selected disabled>Select a Methodology</option>
+                                    <option value="General">DMAIC</option>
+                                    <option value="General">Gemba Kaizen</option>
+                                    <option value="General">JDI</option>
+                                    <option value="Project">Project</option>
+                                    <option value="General">Others</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row gy-4">
+                            @Html.AntiForgeryToken()
+                            <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                            <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--APP-CONTENT CLOSE-->
+
+<script>
+    function onMethodologyChanged(ref) {
+        const methodology = ref.value;
+
+        fetch(`/GetMethodologyTools?val=${encodeURIComponent(methodology)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch tools");
+                }
+                return response.json();
+            })
+            .then(data => populateToolDiv(data))
+            .catch(error => console.error(error));
+    }
+
+    function populateToolDiv(groups) {
+        const ddd = document.getElementById("toolDiv");
+
+        // Clear existing options
+        ddd.innerHTML = '';
+
+        Object.entries(groups).forEach(([phase, tools]) => {
+            ddd.appendChild(createPhaseCard(phase, tools));
+        });
+    }
+
+    function createPhaseCard(key, tools) {
+        const outer = document.createElement('div');
+        outer.className = 'form-control';
+        outer.style.cssText =
+            'border:2px solid #bbbbbb;border-radius:5px;padding:0;min-width:330px;';
+
+        const card = document.createElement('div');
+        card.className = 'card custom-card';
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'card-header justify-content-between';
+
+        const title = document.createElement('div');
+        title.className = 'card-title';
+        title.textContent = key;
+
+        header.appendChild(title);
+
+        // Body
+        const body = document.createElement('div');
+        body.className = 'card-body';
+        body.style.padding = '0.5rem';
+
+        tools.forEach((tool, index) => {
+            body.appendChild(createToolRow(tool, index, key));
+        });
+
+        card.appendChild(header);
+        card.appendChild(body);
+        outer.appendChild(card);
+
+        return outer;
+    }
+
+    function createToolRow(tool, index, phase) {
+        const row = document.createElement('div');
+        row.className = 'form-check form-check-lg mt-3';
+        row.style.display = 'flex';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'form-check-input';
+        checkbox.id = `${phase}-${index}`;
+        checkbox.value = tool.id;
+
+        const label = document.createElement('label');
+        label.className = 'form-check-label me-3';
+        label.setAttribute('for', checkbox.id);
+        label.style.cssText = 'width:85%;max-width:85%';
+        label.textContent = tool.name;
+
+        const action = document.createElement('a');
+
+        if (tool.url) {
+            action.href = tool.url;
+            action.target = '_blank';
+            action.innerHTML =
+                '<i class="las la-download la-2x text-success"></i>';
+        } else {
+            action.innerHTML =
+                '<i class="las la-file-upload la-2x text-warning"></i>';
+            action.addEventListener('click', function () {
+                triggerUpload(tool);
+            });
+        }
+
+        row.appendChild(checkbox);
+        row.appendChild(label);
+        row.appendChild(action);
+
+        return row;
+    }
+
+    function triggerUpload(tool) {
+        const input = document.getElementById('toolUploadInput');
+
+        input.onchange = function () {
+            if (!input.files.length) return;
+
+            const file = input.files[0];
+
+            const confirmUpload = confirm(
+                `Upload this file???\n\n${file.name}`
+            );
+
+            if (confirmUpload) {
+                uploadToolDocument(file, tool);
+            }
+
+            input.value = ''; // reset input
+        };
+
+        input.click();
+    }
+
+    function getAntiForgeryToken() {
+        const tokenInput = document.querySelector(
+            'input[name="__RequestVerificationToken"]'
+        );
+        return tokenInput ? tokenInput.value : null;
+    }
+
+    function uploadToolDocument(file, tool) {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('toolId', tool.id);
+        formData.append('toolName', tool.name);
+
+        const token = getAntiForgeryToken();
+
+        fetch('/Tools/UploadToolDocument', {
+            method: 'POST',
+            headers: {
+                'RequestVerificationToken': token
+            },
+            body: formData
+        })
+        .then(r => {
+            if (!r.ok) throw new Error('Upload failed');
+            return r.json();
+        })
+        .then(result => {
+            alert('Upload successful');
+            // TODO: replace upload icon with download link
+        })
+        .catch(err => alert(err.message));
+    }
+</script>

@@ -1,0 +1,248 @@
+﻿@inject IHttpContextAccessor hca
+<!DOCTYPE html>
+
+<html lang="en" dir="ltr" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
+<head>
+    <!-- Meta Data -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title</title>
+    <meta name="Description" content="">
+    <meta name="Author" content="Ops Focus Inc">
+    <!-- Favicon -->
+    <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+    <!-- Bootstrap Css -->
+    <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Style Css -->
+    <link href="~/assets/css/styles.css" rel="stylesheet">
+    <!-- Icons Css -->
+    <link href="~/assets/css/icons.css" rel="stylesheet">
+    <!-- Node Waves Css -->
+    <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+    <!-- SwiperJS Css -->
+    <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+    <!-- Color Picker Css -->
+    <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
+    <link rel="stylesheet" href="~/assets/libs/@@simonwep/pickr/themes/nano.min.css">
+    <!-- Choices Css -->
+    <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+</head>
+<body class="landing-body">    
+    <div class="landing-page-wrapper">
+        <!-- app-header -->
+        <header class="app-header">
+            <!-- Start::main-header-container -->
+            <div class="main-header-container container-fluid">
+                <!-- Start::header-content-left -->
+                <div class="header-content-left">
+                    <!-- Start::header-element -->
+                    <div class="header-element">
+                        <div class="horizontal-logo">
+                            <a href="@Url.Action("Index", "Home")" class="header-logo">
+                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo"> <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+                            </a>
+                        </div>
+                    </div>
+                    <!-- End::header-element --> <!-- Start::header-element -->
+                    <div class="header-element">
+                        <!-- Start::header-link --> <a href="javascript:void(0);" class="sidemenu-toggle header-link" data-bs-toggle="sidebar"> 
+                            <span class="open-toggle"> <i class="ri-menu-3-line fs-20"></i> </span> </a> <!-- End::header-link -->
+                    </div>
+                    <!-- End::header-element -->
+                </div>
+                <!-- End::header-content-left --> <!-- Start::header-content-right -->
+                <div class="header-content-right">
+                    <!-- Start::header-element -->
+                    <div class="header-element align-items-center">
+                        <!-- Start::header-link|switcher-icon -->
+                        <div class="btn-list d-lg-none d-block">
+                            @if (String.IsNullOrEmpty(hca?.HttpContext?.Session.GetString("UserEmail")?.ToString()))
+                            {
+                                <a href="@Url.Action("SignIn", "Home")" class="btn btn-lg btn-w-lg btn-dark">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden class="opacity-90">
+                                        <rect x="1" y="1" width="10" height="10" fill="#F35325"></rect>
+                                        <rect x="13" y="1" width="10" height="10" fill="#81BC06"></rect>
+                                        <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
+                                        <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
+                                    </svg> Sign in with SSO
+                                </a>
+                            }
+                            else
+                            {
+                                if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
+                                {
+                                    <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
+                                        Select a Subscription Plan
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
+                                        Proceed to CITracker
+                                    </a>
+                                }
+                            }
+                        </div>
+
+                        <!-- End::header-link|switcher-icon -->
+                    </div>
+                    <!-- End::header-element -->
+                </div>
+                <!-- End::header-content-right -->
+            </div>
+            <!-- End::main-header-container -->
+        </header>
+        <!-- /app-header --> <!-- Start::app-sidebar -->
+        <aside class="app-sidebar sticky sticky-pin" id="sidebar">
+            <div class="container p-0">
+                <!-- Start::main-sidebar -->
+                <div class="main-sidebar">
+                    <!-- Start::nav -->
+                    <nav class="main-menu-container nav nav-pills sub-open">
+                        <div class="landing-logo-container">
+                            <div class="horizontal-logo"> 
+                                <a href="#" class="header-logo"> 
+                                    <img src="~/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo"> 
+                                    <img src="~/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-white"> 
+                                </a> 
+                                </div>
+                        </div>
+                        <div class="slide-left d-none" id="slide-left">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M13.293 6.293 7.586 12l5.707 5.707 1.414-1.414L10.414 12l4.293-4.293z"></path>
+                            </svg>
+                        </div>
+                        <ul class="main-menu" style="margin-left: 0px; margin-right: 0px;">
+                            <!-- Start::slide -->
+                            <li class="slide"> <a class="side-menu__item active" href="#home"> <span class="side-menu__label">Home</span> </a> </li>
+                            <!-- End::slide --> <!-- Start::slide -->
+                            <li class="slide"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">About</span> </a> </li>
+                            <!-- End::slide --> <!-- Start::slide -->
+                            <li class="slide"> <a href="#features" class="side-menu__item"> <span class="side-menu__label">Features</span> </a> </li>
+                            <!-- End::slide --> <!-- Start::slide -->
+                            <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">Pricing</span> </a> </li>
+                            <!-- End::slide --> <!-- Start::slide -->
+                            <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">Contact</span> </a> </li>
+                            <!-- End::slide -->
+                        </ul>
+                        <div class="slide-right d-none" id="slide-right">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
+                                <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
+                            </svg>
+                        </div>
+                        <div class="d-lg-flex d-none">
+                            <div class="btn-list d-lg-flex d-none mt-lg-2 mt-xl-0 mt-0">
+                                @if (String.IsNullOrEmpty(hca?.HttpContext?.Session.GetString("UserEmail")?.ToString()))
+                                {
+                                    <a href="@Url.Action("SignIn", "Home")" class="btn btn-lg btn-w-lg mb-3 me-2 btn-dark">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden class="opacity-90">
+                                            <rect x="1" y="1" width="10" height="10" fill="#F35325"></rect>
+                                            <rect x="13" y="1" width="10" height="10" fill="#81BC06"></rect>
+                                            <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
+                                            <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
+                                        </svg>
+                                        Sign in with SSO
+                                    </a>
+                                }
+                                else
+                                {
+                                    if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
+                                    {
+                                        <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
+                                            Select a Subscription Plan
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
+                                            Proceed to CITracker
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </nav>
+                    <!-- End::nav -->
+                </div>
+                <!-- End::main-sidebar -->
+            </div>
+        </aside>
+        <!-- End::app-sidebar --> 
+        @RenderBody()
+        <div class="position-relative">
+            <div class="shape overflow-hidden bottom-footer-shape">
+                <svg viewBox="0 0 2880 48" fill="none">
+                    <path d="M0 48H1437.5H2880V0H2160C1442.5 52 720 0 720 0H0V48Z" fill="#0e0e23"></path>
+                </svg>
+            </div>
+        </div>
+        <!-- Start:: Section-11 -->
+        <section class="section landing-footer pb-0 text-fixed-white demo-footer px-4">
+            <div class="container">
+                <div class="row">
+                    <div class="p-2 mb-0">
+                        <div class="card-body p-0">
+                            @* <div class="top-footer">
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-12 col-md-12 reveal revealleft position-relative">
+                                        <h6>About</h6>
+                                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. </p>
+                                        <p class="mb-5 mb-lg-2">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat . </p>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-4 reveal revealleft position-relative">
+                                        <h6>Pages</h6>
+                                        <ul class="mb-5 mb-lg-0 ps-0">
+                                            <li><a href="index.html">Dashboard</a></li>
+                                            <li><a href="alerts.html">Elements</a></li>
+                                            <li><a href="form_inputs.html">Forms</a></li>
+                                            <li><a href="apex-area-charts.html">Charts</a></li>
+                                            <li><a href="tables.html">Tables</a></li>
+                                            <li><a href="more.html">Other Pages</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-4 reveal revealleft position-relative">
+                                        <h6>Information</h6>
+                                        <ul class="mb-5 mb-lg-0 ps-0">
+                                            <li><a href="listgroup.html">Our Team</a></li>
+                                            <li><a href="contacts.html">Contact US</a></li>
+                                            <li><a href="aboutus.html">About</a></li>
+                                            <li><a href="search.html">Services</a></li>
+                                            <li><a href="blog.html">Blog</a></li>
+                                            <li><a href="settings.html">Terms and Services</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-4 col-sm-12 col-md-4 reveal revealleft">
+                                        <div class="">
+                                            <a href="index.html"><img loading="lazy" alt="" class="logo mb-3" src="~/assets/images/brand-logos/desktop-white.png"></a>
+                                            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur Excepteur sint occaecat.</p>
+                                            <div class="form-group">
+                                                <div class="input-group"> <input type="text" class="form-control" placeholder="Enter your email" aria-label="Example text with button addon"> <button class="btn btn-primary" type="button" id="button-addon2">Submit</button> </div>
+                                            </div>
+                                        </div>
+                                        <div class="btn-list mt-6"> <button type="button" class="btn btn-icon rounded-pill"><i class="fs-14 fe fe-facebook"></i></button> <button type="button" class="btn btn-icon rounded-pill"><i class="fs-14 fe fe-github"></i></button> <button type="button" class="btn btn-icon rounded-pill"><i class="fs-14 fe fe-twitter"></i></button> <button type="button" class="btn btn-icon rounded-pill"><i class="fs-14 fe fe-instagram"></i></button> </div>
+                                    </div>
+                                </div>
+                            </div> *@
+                            <hr class="mb-0">
+                            <footer class="main-footer px-0 text-center">
+                                <div class="row ">
+                                    <div class="col-md-12 col-sm-12"> Copyright &copy; <span id="year">@DateTime.Now.Year</span> <a href="javascript:void(0)">Spruha</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> CI Tracker </a> All rights reserved. </div>
+                                </div>
+                            </footer>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- End:: Section-11 --> 
+    </div>
+    <div class="scrollToTop" style="display: flex;"> <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span> </div>
+    <div id="responsive-overlay"></div>
+    <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
+    <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+    <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
+    <script src="~/assets/js/landing.js"></script>
+</body>
+</html>

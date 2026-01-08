@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "InitiativeManagement";
+    ViewData["Active"] = "CICreateProject";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">New Initiative</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Initiative Management</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">New Initiative</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        @Html.Partial("~/Views/Main/EditPartial/_ProjectPartial.cshtml")
+        @Html.Partial("~/Views/Main/EditPartial/_TeamPartial.cshtml")
+        @Html.Partial("~/Views/Main/EditPartial/_ToolsPartial.cshtml")
+        @Html.Partial("~/Views/Main/EditPartial/_AttachmentPartial.cshtml")
+        @Html.Partial("~/Views/Main/EditPartial/_FinancialPartial.cshtml")
+    </div>
+</div>
+<!--APP-CONTENT CLOSE-->
+<script>
+    function formatNumberRealTime(input) {
+        let cursorPos = input.selectionStart;
+        let formattedValue = input.value;
+        let numbersOnly = formattedValue.replace(/[^\d.]/g, '');
+
+        let parts = numbersOnly.split('.');
+        if (parts.length > 2) {
+            numbersOnly = parts[0] + '.' + parts.slice(1).join('');
+        }
+
+        if (parts[0].length > 0) {
+            parts[0] = parseInt(parts[0] || '0', 10).toLocaleString('en-US');
+        }
+
+        formattedValue = parts.join('.');
+        input.value = formattedValue;
+
+        let newCursorPos = cursorPos + (formattedValue.length - input.value.length);
+        input.setSelectionRange(newCursorPos, newCursorPos);
+    }
+</script>
