@@ -18,5 +18,8 @@ namespace Shared.Models
         public long? SubscriptionId { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
+
+
+        public string? SiteId { get; set; }
     }
 }

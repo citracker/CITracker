@@ -1,7 +1,9 @@
 using CITracker.Helpers;
+using CITracker.Validator;
 using Datalayer.Implementations;
 using Datalayer.Interfaces;
 using DataRepository;
+using FluentValidation;
 using Infastructure.Implementation;
 using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -45,17 +47,18 @@ namespace CITracker
                 {
                     options.IdleTimeout = TimeSpan.FromMinutes(Convert.ToInt32(builder.Configuration["AppSettings:SessionTimeout"]));
                     options.Cookie.HttpOnly = true;
-                    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.IsEssential = true;
                 });
 
                 builder.Services.AddAntiforgery(options =>
                 {
-                    options.FormFieldName = "AntiforgeryFieldname";
+                    //options.FormFieldName = "AntiforgeryFieldname";
                     options.HeaderName = "X-CSRF-TOKEN-HEADERNAME";
                     options.SuppressXFrameOptionsHeader = false;
-                    //options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.SameSite = SameSiteMode.Strict;
+                    options.Cookie.Path = "/";
                 });
 
                 builder.Services.AddRazorPages();
@@ -94,11 +97,7 @@ namespace CITracker
                 builder.Services.AddTransient<IUserManager, UserManager>();
                 builder.Services.AddTransient<IConnectionStringsManager, ConnectionStringsManager>();
                 builder.Services.AddTransient<IRepository, Repository>();
-
-                builder.Services.AddControllers().AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Case-sensitive matching
-                });
+                builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();
 
                 var app = builder.Build();
 

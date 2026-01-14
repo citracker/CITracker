@@ -50,5 +50,8 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail);
         Task<ResponseHandler> RenameOrganizationSoftSaving(long ssId, OrganizationSoftSaving usr, string adminEmail);
         Task<ResponseHandler> DeleteOrganizationSoftSaving(long ssId, string adminEmail, int orgId);
+        Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement si, string adminEmail);
+        Task<bool> CheckIfTenantHasSiteId(string tenantId);
+        Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> si, string adminEmail);
     }
 }

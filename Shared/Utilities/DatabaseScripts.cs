@@ -38,5 +38,9 @@ namespace Shared.Utilities
         public const string SISubProjectTable = "SISubProject";
 
         public const string OrganizationSoftSavingTable = "OrganizationSoftSaving";
+
+        public const string ContinuousImprovementTable = "ContinuousImprovement";
+
+        public const string CIProjectTeamMemberTable = "CIProjectTeamMember";
     }
 }

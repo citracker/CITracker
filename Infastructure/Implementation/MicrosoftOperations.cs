@@ -1,99 +1,109 @@
 ﻿using Azure.Identity;
+using Datalayer.Interfaces;
 using Infastructure.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
-using Newtonsoft.Json;
-using Shared.DTO;
+using Microsoft.Graph.Models;
 using Shared.ExternalModels;
-using System.Net;
-using System.Runtime.CompilerServices;
+using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace Infastructure.Implementation
 {
     public class MicrosoftOperations : IMicrosoftOperations
     {
         private readonly ILogger<MicrosoftOperations> _logger;
-        public MicrosoftOperations(ILogger<MicrosoftOperations> logger)
+        private readonly IOperationManager _opsMan;
+
+        public MicrosoftOperations(ILogger<MicrosoftOperations> logger, IOperationManager opsMan)
         {
             _logger = logger;
+            _opsMan = opsMan;
         }
 
-        public async Task<Shared.DTO.ResponseHandler<SiteInfo>> SearchSharePointSites(string tenantId, string clientId, string clientSecret, string searchTerm)
+        public async Task<List<DriveInfo>> DiscoverSharePointSites(string tenantId, string clientId, string clientSecret)
         {
+            var graphClient = GetGraphClientForTenant(tenantId, clientId, clientSecret);
+            //var sites = new List<SiteInfo>();
+            
             try
             {
-                var clientSecretCredential = new ClientSecretCredential(tenantId, clientId, clientSecret);
-
-                // Initialize the GraphServiceClient
-                var graphClient = new GraphServiceClient(clientSecretCredential);
-
-                // Start the search
-                var sites = await graphClient.Sites.GetAsync(config =>
+                var drives = await graphClient.Drives.GetAsync((requestConfiguration) =>
                 {
-                    config.QueryParameters.Search = searchTerm;
+                    requestConfiguration.QueryParameters.Select = new[]
+                    {
+                    "id",
+                    "name",
+                    "webUrl",
+                    "driveType",
+                    "createdDateTime",
+                    "owner",
+                    "sharepointIds"
+                };
+                    requestConfiguration.QueryParameters.Top = 100;
                 });
 
-                var allSites = new List<SiteInfo>();
-
-                if (sites.Value != null)
-                {
-                    allSites.AddRange(sites.Value.Select(s => new SiteInfo
+                // Filter for SharePoint document libraries
+                return drives?.Value?
+                    .Where(d => d.DriveType == "documentLibrary" && d.WebUrl != null)
+                    .Select(d => new DriveInfo
                     {
-                        SiteId = s.Id,
-                        Name = s.DisplayName,
-                        WebUrl = s.WebUrl
-                    }));
-                }
-
-                // Pagination
-                var nextPage = sites.OdataNextLink;
-                while (!string.IsNullOrEmpty(nextPage))
-                {
-                    var nextSites = await graphClient.Sites.GetAsync(requestConfiguration =>
-                    {
-                        requestConfiguration.QueryParameters.Top = 50;
-                    });
-
-                    if (nextSites.Value != null)
-                    {
-                        allSites.AddRange(nextSites.Value.Select(s => new SiteInfo
-                        {
-                            SiteId = s.Id,
-                            Name = s.DisplayName,
-                            WebUrl = s.WebUrl
-                        }));
-                    }
-
-                    nextPage = nextSites.OdataNextLink;
-                }
-
-                if (allSites.Any())
-                {
-                    return new Shared.DTO.ResponseHandler<SiteInfo>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Sites retrieved successfully",
-                        Result = allSites
-                    };
-                }
-                else
-                {
-                    return new Shared.DTO.ResponseHandler<SiteInfo>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "No sites found"
-                    };
-                }
+                        Id = d.Id,
+                        Name = d.Name,
+                        WebUrl = d.WebUrl,
+                        DriveType = d.DriveType,
+                        Created = d.CreatedDateTime,
+                        SiteId = d.SharePointIds.SiteId
+                        //SiteUrl = GetSiteUrlFromDriveUrl(d.WebUrl)
+                    })
+                    .ToList() ?? new List<DriveInfo>();
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(SearchSharePointSites)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new Shared.DTO.ResponseHandler<SiteInfo>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                Console.WriteLine($"Error discovering sites: {ex.Message}");
+                throw;
             }
+        }
+
+        private async Task<bool> IsSharePointAvailable(string tenantId, string clientId, string clientSecret)
+        {
+            var graphClient = GetGraphClientForTenant(tenantId, clientId, clientSecret);
+
+            try
+            {
+                // Try a different endpoint first
+                var drives = await graphClient.Drives.GetAsync();
+                return drives.Value != null && drives.Value.Any();
+            }
+            catch
+            {
+                try
+                {
+                    // Try to get the organization details
+                    var organization = await graphClient.Organization.GetAsync();
+                    var domain = organization.Value?.FirstOrDefault()?.VerifiedDomains?.FirstOrDefault();
+
+                    Console.WriteLine($"Tenant domain: {domain?.Name}");
+                    Console.WriteLine($"SharePoint URL should be: https://{domain?.Name}.sharepoint.com/");
+
+                    // SharePoint Online URLs follow this pattern
+                    // If the domain doesn't match, SharePoint might not be provisioned
+
+                    return !string.IsNullOrEmpty(domain?.Name);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
+        private GraphServiceClient GetGraphClientForTenant(string tenantId, string clientId, string clientSecret)
+        {
+            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+            var scopes = new[] { "https://graph.microsoft.com/.default" };
+
+            return new GraphServiceClient(credential, scopes);
         }
     }
 }

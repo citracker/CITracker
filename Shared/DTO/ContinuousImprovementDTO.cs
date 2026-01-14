@@ -1,11 +1,13 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Shared.Models
+namespace Shared.DTO
 {
-    [Table("ContinuousImprovement")]
-    public class ContinuousImprovement
+    public class ContinuousImprovementDTO
     {
-        [ExplicitKey]
         public long Id { get; set; }
         public int OrganizationId { get; set; }
         public string Title { get; set; }
@@ -21,8 +23,11 @@ namespace Shared.Models
         public string Status { get; set; }
         public string Phase { get; set; }
         public int CountryId { get; set; }
+        public string Country { get; set; }
         public int FacilityId { get; set; }
+        public string Facility { get; set; }
         public int DepartmentId { get; set; }
+        public string Department { get; set; }
         public bool IsOneTimeSavings { get; set; }
         public bool IsCarryOverSavings { get; set; }
         public DateTime FinancialVerificationDate { get; set; }
@@ -34,5 +39,6 @@ namespace Shared.Models
         public DateTime? AuditedDate { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
+        public string CreatedByUser { get; set; }
     }
 }

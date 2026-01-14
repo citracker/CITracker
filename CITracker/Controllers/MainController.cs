@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.Models;
+using Shared.Request;
 using Shared.ViewModels;
 using System.Text.RegularExpressions;
 
@@ -78,10 +79,183 @@ namespace CITracker.Controllers
                 OperationalExcellence = _opsManager.GetMiniOEProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 StrategicInitiative = _opsManager.GetMiniSIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
-                //MethodologyTool = _opsManager.GetAllOrganizationTools(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
             };
 
             return View(coep);
+        }
+
+        [HttpPost("NewCIProject")]
+        [ValidateAntiForgeryToken]
+        public IActionResult NewCIProject(CIRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var newCIProject = new ContinuousImprovement
+                {
+                    Id = model.Id,
+                    OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                    Title = model.Title,
+                    StartDate = Convert.ToDateTime(model.StartDate).Date,
+                    EndDate = Convert.ToDateTime(model.EndDate).Date,
+                    Priority = model.Priority,
+                    BusinessObjectiveAlignment = String.Join('|', model.BusinessObjectiveAlignment),
+                    ProblemStatement = model.ProblemStatement,
+                    Methodology = model.Methodology,
+                    Certification = model.Certification,
+                    TotalExpectedRevenue = model.TotalExpectedRevenue,
+                    Currency = model.Currency,
+                    Status = model.Status,
+                    Phase = model.Phase,
+                    CountryId = Convert.ToInt32(model.CountryId),
+                    FacilityId = Convert.ToInt32(model.FacilityId),
+                    DepartmentId = Convert.ToInt32(model.DepartmentId),
+                    SupportingValueStream = model.SupportingValueStream,
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                    DateCreated = DateTime.UtcNow
+                };
+
+                var res = _opsManager.CreateNewCIProject(newCIProject, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                return Ok(res.SingleResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProject)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("NewCIProjectTeam")]
+        [ValidateAntiForgeryToken]
+        public IActionResult NewCIProjectTeam(CITeamRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var newCIProjectTeam = new List<CIProjectTeamMember>();
+
+                foreach(var i in model.Team)
+                {
+                    newCIProjectTeam.Add(new CIProjectTeamMember
+                    {
+                        ProjectId = model.ProjectId,
+                        Role = i.Role,
+                        SendNotification = i.SendNotification,
+                        UserId = i.UserId,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.CreateNewCIProjectTeam(newCIProjectTeam, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("NewCIProjectTeam")]
+        [ValidateAntiForgeryToken]
+        public IActionResult NewCIProjectTeam(CITeamRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var newCIProjectTeam = new List<CIProjectTeamMember>();
+
+                foreach (var i in model.Team)
+                {
+                    newCIProjectTeam.Add(new CIProjectTeamMember
+                    {
+                        ProjectId = model.ProjectId,
+                        Role = i.Role,
+                        SendNotification = i.SendNotification,
+                        UserId = i.UserId,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.CreateNewCIProjectTeam(newCIProjectTeam, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                return Ok(res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("CIProjectDetail")]

@@ -42,8 +42,8 @@ namespace Datalayer.Implementations
                 if (!_memoryCache.TryGetValue("SubscriptionPlans", out ResponseHandler<SubscriptionPlan> subsPlan))
                 {
                     using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = _repository.GetListAsync<SubscriptionPlan>(dbConnection,
-                        "Select * from SubscriptionPlan", CommandType.Text).Result;
+                    var resi = await _repository.GetListAsync<SubscriptionPlan>(dbConnection,
+                        "Select * from SubscriptionPlan", CommandType.Text);
 
                     if (resi.Any())
                     {
@@ -87,11 +87,11 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                var resi = _repository.GetAsync<Organization>(dbConnection,
+                var resi = await _repository.GetAsync<Organization>(dbConnection,
                     "Select * from Organization where tenantId = @tId", new
                     {
                         tId = tenantId
-                    }, CommandType.Text).Result;
+                    }, CommandType.Text);
 
                 if (resi != null)
                 {
@@ -129,11 +129,11 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                var resi = _repository.GetAsync<SubscriptionPlan>(dbConnection,
+                var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                     "Select * from SubscriptionPlan where Id = @subId", new
                     {
                         subId = id
-                    }, CommandType.Text).Result;
+                    }, CommandType.Text);
 
                 if (resi != null)
                 {
@@ -179,20 +179,20 @@ namespace Datalayer.Implementations
                 var orgRes = await _repository.InsertAsync(dbConnection, org, dbTransaction);
 
                 //create organisation user
-                usr.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIUserTable).Result;
+                usr.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIUserTable);
                 usr.OrganizationId = org.Id;
                 usr.CreatedBy = org.Id;
                 usr.IsActive = true;
                 var usrRes =  await _repository.InsertAsync(dbConnection, usr, dbTransaction);
 
                 //create payment record
-                pay.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PaymentTable).Result;
+                pay.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PaymentTable);
                 pay.OrganizationId = org.Id;
                 pay.CreatedBy = org.Id;
                 var payRes = await _repository.InsertAsync(dbConnection, pay, dbTransaction);
 
                 //create subscription record
-                sub.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.SubscriptionTable).Result;
+                sub.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.SubscriptionTable);
                 sub.OrganizationId = org.Id;
                 sub.CreatedBy = org.Id;
                 var subRes = await _repository.InsertAsync(dbConnection, sub, dbTransaction);
@@ -202,15 +202,15 @@ namespace Datalayer.Implementations
                 var ordUpdRes = await _repository.UpdateAsync(dbConnection, org, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Organization Created", $"{org.Name} was registered.", org.AdminEmailAddress);
-                audit.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable).Result;
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 var audit1 = ModelBuilder.BuildAuditLog("Admin User Created", $"{org.Name} admin user was registered.", org.AdminEmailAddress);
-                audit1.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable).Result;
+                audit1.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var audit1Res = await _repository.InsertAsync(dbConnection, audit1, dbTransaction);
 
                 var audit2 = ModelBuilder.BuildAuditLog("Payment Made", $"{org.Name} made a subscription payment.", org.AdminEmailAddress);
-                audit2.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable).Result;
+                audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
 
                 dbTransaction.Commit();

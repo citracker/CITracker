@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "InitiativeManagement";
     ViewData["Active"] = "CICreateProject";
@@ -27,20 +26,3 @@
         @Html.Partial("~/Views/Main/Partial/_FinancialPartial.cshtml")
     </div>
 </div>
-<!--APP-CONTENT CLOSE--> 
-<script>
-    document.querySelectorAll('.currency-item').forEach(item => {
-        item.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            const currency = this.textContent.trim();
-
-            // Update button display
-            const button = this.closest('.input-group').querySelector('button');
-            button.innerHTML = currency;
-
-            // Store value for form submission
-            document.getElementById('selectedCurrency').value = currency;
-        });
-    });
-</script>

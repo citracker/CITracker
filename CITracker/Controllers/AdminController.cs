@@ -4,9 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Shared;
+using Shared.ExternalModels;
 using Shared.Models;
+using Shared.Request;
 using Shared.Utilities;
 using Shared.ViewModels;
+using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace CITracker.Controllers
 {
@@ -134,11 +137,23 @@ namespace CITracker.Controllers
                 return RedirectToAction("Dashboard", "Main");
             }
 
-            var sites = _micOps.SearchSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret, "site").Result;
+            var sites = new List<DriveInfo>();
+            //check if tenant has an existing sharepoint site
+            var hasSiteId = _opsManager.CheckIfTenantHasSiteId(HttpContext.Session.GetString("TenantId")).Result;
 
-            var methPhases = _opsManager.GetMethodologyPhases().Result;
+            if(!hasSiteId)
+            {
+                //discover sharepoint sites
+                sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
+            }
 
-            return View(methPhases);
+            //var res = new ManageToolsVM
+            //{
+            //    Phases = _opsManager.GetMethodologyPhases().Result.Result.ToList(),
+            //    Sites = sites
+            //};
+
+            return View();
         }
 
         [HttpGet("ManageSavingCategory")]
@@ -344,14 +359,14 @@ namespace CITracker.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("UploadToolDocument")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadToolDocument(IFormFile file, int toolId, string toolName)
+        public async Task<IActionResult> UploadToolDocument(ToolUploadRequest tool)
         {
-            if (file == null || file.Length == 0)
+            if (tool.File == null || tool.File.Length == 0)
                 return BadRequest("No file uploaded");
 
-            if (!Utils.IsValidWordDocument(file))
+            if (!Utils.IsValidWordDocument(tool.File))
                 return BadRequest("Invalid or corrupted Word document");
 
             //// Upload to SharePoint

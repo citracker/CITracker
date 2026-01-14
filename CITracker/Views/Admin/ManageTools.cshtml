@@ -1,4 +1,4 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.MethodologyPhase>
+﻿@model Shared.ViewModels.ManageToolsVM
 
 @{
     ViewData["Title"] = "CI Tracker";
@@ -194,11 +194,9 @@
 
         const token = getAntiForgeryToken();
 
-        fetch('/Tools/UploadToolDocument', {
+        fetch('/UploadToolDocument', {
             method: 'POST',
-            headers: {
-                'RequestVerificationToken': token
-            },
+            credentials: 'same-origin',
             body: formData
         })
         .then(r => {

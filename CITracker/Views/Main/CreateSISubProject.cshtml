@@ -123,11 +123,11 @@
                                         <input type="text" name="targetsavings" id="targetsavings" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" required>
                                         <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
                                         <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto;" data-popper-placement="bottom-end">
-                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8358;</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">&#8364;</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">&#163;</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">&#36;</a></li>
-                                            <li><a class="dropdown-item" href="javascript:void(0);">&#165;</a></li>
+                                            <li><a class="dropdown-item currency-item" href="javascript:void(0);">&#8358;</a></li>
+                                            <li><a class="dropdown-item currency-item" href="javascript:void(0);">&#8364;</a></li>
+                                            <li><a class="dropdown-item currency-item" href="javascript:void(0);">&#163;</a></li>
+                                            <li><a class="dropdown-item currency-item" href="javascript:void(0);">&#36;</a></li>
+                                            <li><a class="dropdown-item currency-item" href="javascript:void(0);">&#165;</a></li>
                                         </ul>
                                     </div>
                                     <input type="hidden" name="currency" id="selectedCurrency" value="&#36;">

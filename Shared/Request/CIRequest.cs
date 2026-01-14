@@ -1,13 +1,14 @@
-﻿using Dapper.Contrib.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Shared.Models
+namespace Shared.Request
 {
-    [Table("ContinuousImprovement")]
-    public class ContinuousImprovement
+    public class CIRequest
     {
-        [ExplicitKey]
         public long Id { get; set; }
-        public int OrganizationId { get; set; }
         public string Title { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
@@ -23,16 +24,6 @@ namespace Shared.Models
         public int CountryId { get; set; }
         public int FacilityId { get; set; }
         public int DepartmentId { get; set; }
-        public bool IsOneTimeSavings { get; set; }
-        public bool IsCarryOverSavings { get; set; }
-        public DateTime FinancialVerificationDate { get; set; }
         public string SupportingValueStream { get; set; }
-        public string FinancialReportUrl { get; set; }
-        public string FinancialReportComment { get; set; }
-        public bool IsAudited { get; set; }
-        public long AuditedBy { get; set; }
-        public DateTime? AuditedDate { get; set; }
-        public DateTime DateCreated { get; set; }
-        public long CreatedBy { get; set; }
     }
 }

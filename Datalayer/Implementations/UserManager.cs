@@ -43,11 +43,11 @@ namespace Datalayer.Implementations
             {
                 dbConnection.Open();
                 using var dbTransaction = dbConnection.BeginTransaction();
-                var resi = _repository.GetAsync<CIUserDTO>(dbConnection,
+                var resi = await _repository.GetAsync<CIUserDTO>(dbConnection,
                     "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, b.TenantId as OrganizationTenantId, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where EmailAddress = @em", new
                     {
                         em = email
-                    }, CommandType.Text, dbTransaction).Result;
+                    }, CommandType.Text, dbTransaction);
 
 
                 if (resi != null)
@@ -63,7 +63,7 @@ namespace Datalayer.Implementations
                 {
                     //insert audit log here
                     var log = ModelBuilder.BuildAuditLog("Unregistered User SSO", "An unregistered user signed on to CITracker", email);
-                    log.Id = _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable).Result;
+                    log.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var resp = await _repository.InsertAsync(dbConnection, log, dbTransaction);
                     dbTransaction.Commit();
 
