@@ -355,7 +355,6 @@
 
     facilitatorEl.addEventListener('search', function (event) {
         const searchTerm = event.detail.value.toLowerCase();
-        console.log(searchTerm)
         // Filter items by Name
         const filtered = users.filter(i =>
             i.Name.toLowerCase().includes(searchTerm)
@@ -377,7 +376,6 @@
 
     sponsorEl.addEventListener('search', function (event) {
         const searchTerm = event.detail.value.toLowerCase();
-        console.log(searchTerm)
         // Filter items by Name
         const filtered = users.filter(i =>
             i.Name.toLowerCase().includes(searchTerm)
@@ -399,7 +397,6 @@
 
     execsponsorEl.addEventListener('search', function (event) {
         const searchTerm = event.detail.value.toLowerCase();
-        console.log(searchTerm)
         // Filter items by Name
         const filtered = users.filter(i =>
             i.Name.toLowerCase().includes(searchTerm)

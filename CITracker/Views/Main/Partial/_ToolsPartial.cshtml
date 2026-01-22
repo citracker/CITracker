@@ -13,6 +13,7 @@
                 </div>
                 <p>Note: You can download the sample templates for each from the Download Icon <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
                 <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                @Html.AntiForgeryToken()
                 <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
                     
                 </div>
@@ -24,11 +25,10 @@
         </div>
     </div>
 </div>
-
 <script>
     document.addEventListener('partialShown', function (e) {
         if (e.detail.id === 'tools_info') {
-            if(window.AppState.selectedMethodology !== null){
+            if(window.AppState.selectedMethodology !== undefined){
                 fetch(`/GetMethodologyTools?val=${encodeURIComponent(window.AppState.selectedMethodology)}`)
                     .then(response => {
                         if (!response.ok) {
@@ -136,7 +136,6 @@
         const tool = document.querySelectorAll('input[name="toolbox"]:checked');
         const toolvalue = Array.from(tool).map(cb => cb.value).join('||');
 
-        console.log(toolvalue);
 
         const formData = new FormData();
 
@@ -146,7 +145,11 @@
             formData.append('ProjectId', window.AppState.CIProject.Id.toString());
         }
 
-        formData.append('Tools', toolvalue);
+        if (window.AppState.selectedMethodology !== null) {
+            formData.append('Methodology', window.AppState.selectedMethodology.toString());
+        }
+
+        formData.append('Tool', toolvalue);
 
         // Validation
         if (toolvalue.length === 0) {

@@ -12,6 +12,7 @@ namespace CITracker.Validator
 
         public CIRequestValidator()
         {
+            RuleFor(x => x.Id).GreaterThanOrEqualTo(0).WithMessage("Project ID cannot be negative");
             RuleFor(x => x.Title).NotEmpty().WithMessage("Title is required.");
             RuleFor(x => x.StartDate)
                 .NotEmpty().WithMessage("StartDate is required.")

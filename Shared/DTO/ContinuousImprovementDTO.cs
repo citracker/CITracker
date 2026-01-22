@@ -21,9 +21,12 @@ namespace Shared.DTO
         public string TotalExpectedRevenue { get; set; }
         public string Currency { get; set; }
         public string Status { get; set; }
+        public int PhaseId { get; set; }
         public string Phase { get; set; }
         public int CountryId { get; set; }
         public string Country { get; set; }
+        public int FacilitatorId { get; set; }
+        public string FacilitatorName { get; set; }
         public int FacilityId { get; set; }
         public string Facility { get; set; }
         public int DepartmentId { get; set; }

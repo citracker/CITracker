@@ -8,15 +8,15 @@
                 <div class="card-title"> Team Members </div>
             </div>
             <div class="card-body teamCardBody" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+                <div id="validationSummaryTP" class="alert alert-danger d-none" role="alert">
+                    <ul class="mb-0"></ul>
+                </div>
 
                 @Html.AntiForgeryToken()
 
                 <!--Hidden form-->
-                <div class="row gy-4 teamBody m-3 d-none" id="teamTemplate">
-                    <div id="validationSummary" class="alert alert-danger d-none" role="alert">
-                        <ul class="mb-0"></ul>
-                    </div>
-                    <div class="col-xl-4">
+                <div class="row gy-4 teamBody m-3 team-member-section d-none" id="teamTemplate">
+                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                         <label class="form-label">Name<span style="color:red">*</span></label>
                         <select class="js-choice teammember-select" name="teammember" id="teammember" required></select>
                     </div>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="row gy-4 teamBody m-3">
+                <div class="row gy-4 teamBody m-3 team-member-section">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                         <label for="teammember" class="form-label">Name<span style="color:red">*</span></label>
                         <select class="js-choice teammember-select" name="teammember" id="teammember" required></select>
@@ -111,9 +111,10 @@
     </div>
 </div>
 
+
 <script>
 
-    $(document).ready(function () {
+    $(document).ready(function (){
         const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
 
         let formCount = 1;
@@ -190,29 +191,34 @@
     function collectTeamData() {
         const team = [];
 
-        // Get all team member sections
-        const teamSections = document.querySelectorAll('.team-member-section');
+        try{
+            // Get all team member sections
+            const teamSections = document.querySelectorAll('.team-member-section');
 
-        teamSections.forEach((section, index) => {
-            // Get the select elements and checkbox for this section
-            const memberSelect = section.querySelector('select[name="teammember"]');
-            const roleSelect = section.querySelector('select[name="role"]');
-            const notifCheckbox = section.querySelector('input[name="notif"]');
+            teamSections.forEach((section, index) => {
+                // Get the select elements and checkbox for this section
+                const memberSelect = section.querySelector('select[name="teammember"]');
+                const roleSelect = section.querySelector('select[name="role"]');
+                const notifCheckbox = section.querySelector('input[name="notif"]');
 
-            // Get the selected values
-            const memberName = memberSelect?.value;
-            const role = roleSelect?.value;
-            const getNotification = notifCheckbox?.checked || false;
+                // Get the selected values
+                const memberName = memberSelect?.value;
+                const role = roleSelect?.value;
+                const getNotification = notifCheckbox?.checked == true ? true : false;
 
-            // Only add if member is selected (has a value)
-            if (memberName && memberName.trim() !== '') {
-                team.push({
-                    Name: memberName.trim(),
-                    Role: role || '',
-                    GetNotification: getNotification
-                });
-            }
-        });
+                // Only add if member is selected (has a value)
+                if (memberName && memberName.trim() !== '') {
+                    team.push({
+                        Name: memberName.trim(),
+                        Role: role || '',
+                        GetNotification: getNotification
+                    });
+                }
+            });
+        }catch (err) {
+            console.error(err);
+            displayErrorTP('An error occurred - '+ err);
+        }
 
         return team;
     }
@@ -232,22 +238,41 @@
 
         // Append team members using index notation for model binding
         teamData.forEach((member, index) => {
-            formData.append(`Team[${index}].Name`, member.Name);
+            formData.append(`Team[${index}].UserId`, member.Name);
             formData.append(`Team[${index}].Role`, member.Role);
-            formData.append(`Team[${index}].GetNotification`, member.GetNotification.toString());
+            formData.append(`Team[${index}].SendNotification`, member.GetNotification);
         });
 
         // Validation
-        if (requestData.Team.length === 0) {
-            displayErrors('Please add at least one team member.');
+        if (teamData.length === 0) {
+            displayErrorTP('Please add at least one team member.');
 
             ref.innerHTML = 'Save &amp; Next';
             ref.disabled = false;
             return;
         }
 
-        if(!requestData.Team.includes('Facilitator')){
-            displayErrors('Project Saved, To enter team members, update status in the project details page to "Initiated".');
+        const hasEmptyName = teamData.some(member => !member.Name || member.Name.trim() === '');
+        if (hasEmptyName) {
+            displayErrorTP('All team member names are required.');
+
+            ref.innerHTML = 'Save &amp; Next';
+            ref.disabled = false;
+            return;
+        }
+
+        const hasEmptyRole = teamData.some(member => !member.Role || member.Role.trim() === '');
+        if (hasEmptyRole) {
+            displayErrorTP('All team member roles are required.');
+
+            ref.innerHTML = 'Save &amp; Next';
+            ref.disabled = false;
+            return;
+        }
+
+        const hasFacilitator = teamData.some(member => member.Role === 'Facilitator');
+        if (!hasFacilitator) {
+            displayErrorTP('Project must have at least one Facilitator.');
 
             ref.innerHTML = 'Save &amp; Next';
             ref.disabled = false;
@@ -264,7 +289,7 @@
 
             if (!response.ok) {
                 const result = await response.json();
-                displayErrors(result.errors);
+                displayErrorsTP(result.errors);
                 ref.innerHTML = 'Save &amp; Next';
                 ref.disabled = false;
                 return;
@@ -279,15 +304,37 @@
 
         } catch (err) {
             console.error(err);
-            alert('An error occurred');
+            displayErrorTP('An error occurred - '+ err);
         }
         ref.innerHTML = 'Save &amp; Next';
         ref.disabled = false;
     }
 
 
-    function displayErrors(errors) {
-        const alertDiv = document.getElementById("validationSummary");
+    function displayErrorTP(error) {
+        const alertDiv = document.getElementById("validationSummaryTP");
+        const list = alertDiv.querySelector("ul");
+
+        // Clear previous errors
+        list.innerHTML = "";
+
+        const li = document.createElement("li");
+                li.textContent = error;
+                list.appendChild(li);
+
+        // Show alert
+        alertDiv.classList.remove("d-none");
+
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    function displayErrorsTP(errors) {
+        const alertDiv = document.getElementById("validationSummaryTP");
         const list = alertDiv.querySelector("ul");
 
         // Clear previous errors
@@ -303,5 +350,11 @@
 
         // Show alert
         alertDiv.classList.remove("d-none");
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 </script>

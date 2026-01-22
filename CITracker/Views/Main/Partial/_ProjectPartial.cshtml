@@ -12,7 +12,7 @@
             </div>
             <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
                 <div class="row gy-4">
-                    <div id="validationSummary" class="alert alert-danger d-none" role="alert">
+                    <div id="validationSummaryPP" class="alert alert-danger d-none" role="alert">
                         <ul class="mb-0"></ul>
                     </div>
                     @Html.AntiForgeryToken()
@@ -100,7 +100,7 @@
                                 <span class="form-check-label">DMAIC</span>
                             </label>
                             <label class="form-check form-control m-2 p-2">
-                                <input type="radio" name="methodology" value="General" alt="Gemba" onchange="onMethodologyChanged()">
+                                <input type="radio" name="methodology" value="General" alt="Gemba Kaizen" onchange="onMethodologyChanged()">
                                 <span class="form-check-label">Gemba Kaizen</span>
                             </label>
                             <label class="form-check form-control m-2 p-2">
@@ -260,7 +260,7 @@
 
         const certOptions = {
             DMAIC: ['Green Belt', 'Black Belt', 'Not Applicable'],
-            Gemba: ['Not Applicable'],
+            'Gemba Kaizen': ['Not Applicable'],
             JDI: ['Not Applicable'],
             Project: ['PMP'],
             Others: ['Not Applicable']
@@ -334,7 +334,6 @@
         });
     });
 
-
     function onCountryChange(selectEl, targetInputId) {
         const countryId = parseInt(selectEl.value);
         const locationSelect = document.getElementById(targetInputId);
@@ -402,7 +401,8 @@
         if (!selectedRadio) return;
 
         const methodology = selectedRadio.value;
-        window.AppState.selectedMethodology = methodology;
+        window.AppState = window.AppState || {};
+        window.AppState.selectedMethodology = selectedRadio.getAttribute("alt");
 
         fetch(`/GetMethodologyPhases?val=${encodeURIComponent(methodology)}`)
             .then(response => {
@@ -412,7 +412,7 @@
                 return response.json();
             })
             .then(data => populateToolSelect(data))
-            .catch(error => console.error(error));
+            .catch(error => displayError(error));
     }
 
     function populateToolSelect(tools) {
@@ -450,6 +450,22 @@
         ).value;
     }
 
+    function formatDateToMMDDYYYY(dateString) {
+        const date = new Date(dateString);
+
+        // Handle invalid dates
+        if (isNaN(date.getTime())) {
+            displayError('Invalid date:', dateString);
+            return '';
+        }
+
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${month}/${day}/${year}`;
+    }
+
     async function NewCIProject(ref, hide, show) {
         ref.innerHTML = '<i class="fas fa-cog fa-spin"></i>';
         ref.disabled = true;
@@ -467,10 +483,10 @@
         formData.append('__RequestVerificationToken', getAntiForgeryToken());
 
         // Append all your fields to FormData
-        formData.append('Id', document.getElementById("id").value);
+        formData.append('Id', document.getElementById("id").value === '' ? 0 : document.getElementById("id").value);
         formData.append('Title', document.getElementById("title").value);
-        formData.append('StartDate', document.getElementById("startdate").value);
-        formData.append('EndDate', document.getElementById("enddate").value);
+        formData.append('StartDate', formatDateToMMDDYYYY(document.getElementById("startdate").value));
+        formData.append('EndDate', formatDateToMMDDYYYY(document.getElementById("enddate").value));
         formData.append('Priority', document.getElementById("priority").value);
         formData.append('BusinessObjectiveAlignment', boavalue);
         formData.append('ProblemStatement', document.querySelector('[name="problemstatement"]').value);
@@ -502,17 +518,13 @@
 
                 const data = await response.json();
 
-                console.log("logging data");
-                console.log(data);
-
                 document.getElementById("id").value = data.Id;
 
-                window.AppState = {
-                    CIProject: data
-                };
+                window.AppState = window.AppState || {};
+                window.AppState.CIProject = data;
 
-                if(data.status !=== 'INITIATED'){
-                    displayErrors('Project Saved, To enter team members, update status in the project details page to "Initiated".');
+                if(data.Status !== 'INITIATED'){
+                    displayError('Project Saved, To enter team members, update status in the project details page to "Initiated".');
                 }
                 else{
                     $("#" + hide).addClass("d-none");
@@ -522,18 +534,38 @@
                         new CustomEvent('partialShown', { detail: { id: show } })
                     );
                 }
-
         } 
         catch (err) {
-            console.error(err);
-            alert('An error occurred');
+            displayError('An error occurred '+ err);
         }
         ref.innerHTML = 'Save &amp; Next';
         ref.disabled = false;
     }
 
+    function displayError(error) {
+        const alertDiv = document.getElementById("validationSummaryPP");
+        const list = alertDiv.querySelector("ul");
+
+        // Clear previous errors
+        list.innerHTML = "";
+
+        const li = document.createElement("li");
+                li.textContent = error;
+                list.appendChild(li);
+
+        // Show alert
+        alertDiv.classList.remove("d-none");
+
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
     function displayErrors(errors) {
-        const alertDiv = document.getElementById("validationSummary");
+        const alertDiv = document.getElementById("validationSummaryPP");
         const list = alertDiv.querySelector("ul");
 
         // Clear previous errors
@@ -549,6 +581,12 @@
 
         // Show alert
         alertDiv.classList.remove("d-none");
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
 </script>

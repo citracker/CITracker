@@ -1,9 +1,10 @@
-﻿using Shared.DTO;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using Shared.DTO;
 using Shared.Models;
 
 namespace Shared.ViewModels
 {
-    public class ContinuousImprovementVM
+    public class ContinuousImprovementVM 
     {
         public int StatusCode { get; set; }
         public string Message { get; set; }
@@ -15,6 +16,7 @@ namespace Shared.ViewModels
         public List<CIUser> OrganizationUser { get; set; }
         public List<CIUser> OrganizationRoles { get; set; }
         public List<OrganizationToolDTO> MethodologyTool { get; set; }
+        public ResponseHandler<ContinuousImprovementDTO> Projects { get; set; }
         public ContinuousImprovement Project { get; set; }
 
     }

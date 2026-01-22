@@ -53,5 +53,11 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement si, string adminEmail);
         Task<bool> CheckIfTenantHasSiteId(string tenantId);
         Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> si, string adminEmail);
+        Task<ResponseHandler> CreateNewCIProjectTool(List<CIProjectToolDTO> si, string adminEmail);
+        Task<ResponseHandler<ContinuousImprovementDTO>> GetPaginatedCIProjects(int orgId, int pageNumber, int pageSize, InitiativeFilter filt);
+        Task<ResponseHandler<CIProjectToolDTO>> GetAllProjectSelectedTools(long pid);
+        Task<ResponseHandler> UpdateToolId(int toolId, string fileUrl);
+        Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> si, string adminEmail);
+        Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
     }
 }

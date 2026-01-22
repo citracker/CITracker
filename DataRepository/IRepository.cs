@@ -21,6 +21,7 @@ namespace DataRepository
         Task<int> ExecuteAsync(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType, IDbTransaction dbTransaction);
         Task<int> ExecuteAsync<T>(IDbConnection dbConnection, IDbTransaction dbTransaction, string commandText, object parameters, CommandType commandType);
         Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType) where T : class;
+        Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection, string commandText, CommandType commandType, IDbTransaction dbTransaction) where T : class;
         Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType, IDbTransaction dbTransaction) where T : class;
         Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection, string commandText, CommandType commandType) where T : class;
         Task<Dictionary<string, string>> ExecuteAsync<T>(IDbConnection dbConnection, IDbTransaction dbTransaction, string commandText, Dictionary<string, object> inputParameters, Dictionary<string, object> outputParameters, CommandType commandType) where T : class;

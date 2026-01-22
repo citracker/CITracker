@@ -42,5 +42,11 @@ namespace Shared.Utilities
         public const string ContinuousImprovementTable = "ContinuousImprovement";
 
         public const string CIProjectTeamMemberTable = "CIProjectTeamMember";
+
+        public const string CIProjectToolTable = "CIProjectTool";
+
+        public const string CIProjectCommentTable = "CIProjectComment";
+
+        public const string CIProjectSavingTable = "CIProjectSaving";
     }
 }

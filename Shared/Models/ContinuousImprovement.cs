@@ -25,7 +25,7 @@ namespace Shared.Models
         public int DepartmentId { get; set; }
         public bool IsOneTimeSavings { get; set; }
         public bool IsCarryOverSavings { get; set; }
-        public DateTime FinancialVerificationDate { get; set; }
+        public DateTime? FinancialVerificationDate { get; set; }
         public string SupportingValueStream { get; set; }
         public string FinancialReportUrl { get; set; }
         public string FinancialReportComment { get; set; }

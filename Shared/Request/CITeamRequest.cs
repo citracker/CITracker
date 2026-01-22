@@ -18,4 +18,10 @@ namespace Shared.Request
         public string Role { get; set; }
         public bool SendNotification { get; set; }
     }
+    public class CIToolRequest
+    {
+        public long ProjectId { get; set; }
+        public string Methodology { get; set; }
+        public string Tool { get; set; }
+    }
 }

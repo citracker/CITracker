@@ -81,6 +81,11 @@ namespace DataRepository
             return await dbConnection.QueryAsync<T>(commandText, param: parameters, dbTransaction, commandType: commandType);
         }
 
+        public async Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection, string commandText, CommandType commandType, IDbTransaction dbTransaction) where T : class
+        {
+            return await dbConnection.QueryAsync<T>(commandText, transaction : dbTransaction, commandType: commandType);
+        }
+
         public async Task<T?> GetSumOrCountAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType)
         {
             return await dbConnection.ExecuteScalarAsync<T>(commandText, parameters, commandType: commandType);

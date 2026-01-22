@@ -7,6 +7,7 @@ using Shared.DTO;
 using Shared.Models;
 using Shared.Request;
 using Shared.ViewModels;
+using System.Net;
 using System.Text.RegularExpressions;
 
 namespace CITracker.Controllers
@@ -138,7 +139,10 @@ namespace CITracker.Controllers
                 var res = _opsManager.CreateNewCIProject(newCIProject, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
-                return Ok(res.SingleResult);
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res.SingleResult);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res.SingleResult);
             }
             catch (Exception ex)
             {
@@ -193,7 +197,11 @@ namespace CITracker.Controllers
                 var res = _opsManager.CreateNewCIProjectTeam(newCIProjectTeam, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
-                return Ok(res);
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
             catch (Exception ex)
             {
@@ -203,9 +211,9 @@ namespace CITracker.Controllers
             }
         }
 
-        [HttpPost("NewCIProjectTeam")]
+        [HttpPost("NewCIProjectComment")]
         [ValidateAntiForgeryToken]
-        public IActionResult NewCIProjectTeam(CITeamRequest model)
+        public IActionResult NewCIProjectComment(CICommentRequest model)
         {
             if (!IsAuthenticated())
             {
@@ -230,29 +238,177 @@ namespace CITracker.Controllers
 
             try
             {
-                var newCIProjectTeam = new List<CIProjectTeamMember>();
+                var newCIProjectComm = new List<CIProjectComment>();
 
-                foreach (var i in model.Team)
+                foreach (var i in model.Comment)
                 {
-                    newCIProjectTeam.Add(new CIProjectTeamMember
+                    newCIProjectComm.Add(new CIProjectComment
                     {
                         ProjectId = model.ProjectId,
-                        Role = i.Role,
-                        SendNotification = i.SendNotification,
-                        UserId = i.UserId,
+                        Comment = i.Comment,
+                        Date = i.Date,
                         CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
                         DateCreated = DateTime.UtcNow
                     });
                 }
 
-                var res = _opsManager.CreateNewCIProjectTeam(newCIProjectTeam, HttpContext.Session.GetString("UserEmail")).Result;
+                var res = _opsManager.CreateNewCIProjectComment(newCIProjectComm, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
-                return Ok(res);
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occurred at {nameof(NewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("NewCIProjectTool")]
+        [ValidateAntiForgeryToken]
+        public IActionResult NewCIProjectTool(CIToolRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var tools = model.Tool.Split("||").ToList();
+
+                var newCIProjectTool = new List<CIProjectToolDTO>();
+
+                foreach (var i in tools)
+                {
+                    newCIProjectTool.Add(new CIProjectToolDTO
+                    {
+                        ProjectId = model.ProjectId,
+                        Methodology = model.Methodology,
+                        Phase = i.Split('-')[0],
+                        ToolId = Convert.ToInt32(i.Split('-')[1]),
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.CreateNewCIProjectTool(newCIProjectTool, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("NewCIProjectFinancial")]
+        [ValidateAntiForgeryToken]
+        public IActionResult NewCIProjectFinancial(CIFinancialRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ///TECHNICAL DEBT
+            //if (!ModelState.IsValid)
+            //{
+            //    var errors = ModelState
+            //        .Where(x => x.Value.Errors.Any())
+            //        .ToDictionary(
+            //            x => x.Key,
+            //            x => x.Value.Errors.Select(e => e.ErrorMessage)
+            //        );
+
+            //    return BadRequest(new { errors });
+            //}
+
+            try
+            {
+                var CIProjectSaving = new List<CIProjectSaving>();
+
+                foreach (var i in model.Hard)
+                {
+                    CIProjectSaving.Add(new CIProjectSaving
+                    {
+                        ProjectId = model.ProjectId,
+                        Date = i.Date,
+                        SavingClassification = "Hard",
+                        SavingType = i.SavingType,
+                        SavingValue = i.SavingValue,
+                        IsCurrency = true,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                foreach (var i in model.Soft)
+                {
+                    CIProjectSaving.Add(new CIProjectSaving
+                    {
+                        ProjectId = model.ProjectId,
+                        Category = i.Category,
+                        SavingClassification = "Soft",
+                        SavingUnit = i.SavingUnit,
+                        SavingValue = i.SavingValue,
+                        IsCurrency = false,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var ci = new ContinuousImprovementDTO
+                {
+                    Id = model.ProjectId,
+                    IsOneTimeSavings = model.OneTimeSaving,
+                    IsCarryOverSavings = model.CarryOverSaving,
+                    FinancialVerificationDate = model.FinancialVerificationDate
+                };
+
+                var res = _opsManager.CreateNewCIProjectSaving(CIProjectSaving, ci, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectFinancial)} - {JsonConvert.SerializeObject(ex)}");
                 TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
                 return StatusCode(500, ex.Message);
             }
@@ -275,7 +431,7 @@ namespace CITracker.Controllers
         }
 
         [HttpGet("AllCIProjects")]
-        public IActionResult AllCIProjects()
+        public IActionResult AllCIProjects(int page = 1, InitiativeFilter filt = null)
         {
             if (!IsAuthenticated())
             {
@@ -287,7 +443,59 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+            return LoadPaginatedCI(page, filt);
+        }
+
+        private IActionResult LoadPaginatedCI(int page, InitiativeFilter filt)
+        {
+            var coep = new ContinuousImprovementVM
+            {
+                Message = TempData["Message"]?.ToString() ?? "",
+                OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationUser = _opsManager.GetAllOperationalExcellenceUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                Projects = _opsManager.GetPaginatedCIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), page, _config.Value.PageSize, filt).Result
+            };
+
+            return View("AllCIProjects", coep);
+        }
+
+        [HttpPost("FilteredCIProjects")]
+        [ValidateAntiForgeryToken]
+        public IActionResult FilteredCIProjects(int page = 1)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var filt = new InitiativeFilter
+                {
+                    Title = Request.Form["title"],
+                    StartDate = String.IsNullOrEmpty(Request.Form["startdate"]) ? new DateTime() : Convert.ToDateTime(Request.Form["startdate"]),
+                    EndDate = String.IsNullOrEmpty(Request.Form["enddate"]) ? new DateTime() : Convert.ToDateTime(Request.Form["enddate"]),
+                    Priority = Request.Form["priority"],
+                    Status = Request.Form["status"],
+                    DepartmentId = Convert.ToInt64(Request.Form["department"]),
+                    CountryId = Convert.ToInt32(Request.Form["country"]),
+                    UserId = Convert.ToInt64(Request.Form["users"])
+                };
+
+                return LoadPaginatedCI(page, filt);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(FilteredCIProjects)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return LoadPaginatedCI(page, null);
+            }
         }
 
         [HttpGet("CreateOEProject")]
@@ -609,6 +817,41 @@ namespace CITracker.Controllers
                 g => g.Key,
                 g => g.Select(x => new
                 {
+                    id = x.ToolId,
+                    name = x.Tool,
+                    url = x.Url
+                }).ToList()
+            );
+
+            return Json(result);
+        }
+
+        [HttpGet("GetSelectedTools")]
+        public IActionResult GetSelectedTools(long val)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if(val <= 0)
+            {
+                return NotFound("Incorrect Parameter");
+            }
+
+            var coep = _opsManager.GetAllProjectSelectedTools(val)?.Result?.Result?.ToList();
+
+            var gcoep = coep.GroupBy(t => t.Phase).ToList();
+
+            var result = gcoep.ToDictionary(
+                g => g.Key,
+                g => g.Select(x => new
+                {
                     id = x.Id,
                     name = x.Tool,
                     url = x.Url
@@ -617,6 +860,56 @@ namespace CITracker.Controllers
 
             return Json(result);
         }
+
+        [HttpPost]
+        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty.");
+
+            // 1️⃣ Whitelist allowed extensions
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".jpg" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest("Invalid file type.");
+
+            // 2️⃣ Generate safe file name (never trust client filename)
+            var safeFileName = $"{Guid.NewGuid()}{extension}";
+
+            // 3️⃣ Target directory (wwwroot/uploads/tools)
+            var uploadRoot = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                $"Org-{HttpContext.Session.GetString("OrganizationId")}",
+                "tools"
+            );
+
+            if (!Directory.Exists(uploadRoot))
+                Directory.CreateDirectory(uploadRoot);
+
+            var fullPath = Path.Combine(uploadRoot, safeFileName);
+
+            // 4️⃣ Save file safely
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // 5️⃣ Return relative URL (never physical path)
+            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/tools/{safeFileName}";
+            var res = _opsManager.UpdateToolId(toolId, fileUrl);
+
+            return Ok(new
+            {
+                toolId,
+                fileUrl
+            });
+        }
+
 
         [HttpGet("OEMonthlySaving")]
         public IActionResult OEMonthlySaving(long pId)
