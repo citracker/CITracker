@@ -18,7 +18,7 @@ namespace Shared.DTO
         public string ProblemStatement { get; set; }
         public string Methodology { get; set; }
         public string Certification { get; set; }
-        public string TotalExpectedRevenue { get; set; }
+        public decimal TotalExpectedRevenue { get; set; }
         public string Currency { get; set; }
         public string Status { get; set; }
         public int PhaseId { get; set; }

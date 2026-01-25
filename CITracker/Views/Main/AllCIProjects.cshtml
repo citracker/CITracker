@@ -106,8 +106,8 @@
                             <div class="card-body">
                                 <div class="card-header border-bottom-0 pt-0 ps-0 pe-0 pb-2 d-flex">
                                     <div>
-                                        <div class="card-title">All my Operational Excellence Initiatives</div>
-                                        <p class="mb-0 fs-12 mb-3 text-muted">All Operational Excellence initiatives alongside their objectives and statuses.</p>
+                                        <div class="card-title">All Continuous Improvement Initiatives</div>
+                                        <p class="mb-0 fs-12 mb-3 text-muted">All Continuous Improvement initiatives alongside their objectives and statuses.</p>
                                     </div>
                                 </div>
 
@@ -222,7 +222,7 @@
                                     <div id="datatable-basic_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                <table id="myCIInitiatives" class="table table-bordered text-wrap dataTable no-footer" style="width: 70%;" aria-describedby="datatable-basic_info">
+                                                <table id="myCIInitiatives" class="table table-bordered text-wrap dataTable no-footer" style="width: 100%;" aria-describedby="datatable-basic_info">
                                                     <thead>
                                                         <tr>
                                                             <th class="sorting sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending" style="width: 121.992px;">Id</th>
@@ -268,7 +268,7 @@
                                                                         <td>@i.Department</td>
                                                                         <td>
                                                                             <a class="align-content-start ms-2 me-2" href="@Url.Action("CIProjectDetail", "Main", new { id = i.Id })"><i class="fe fe-edit"></i></a>
-                                                                            <a class="align-content-end ms-3 me-2 details-control"><span><i class="fe fe-folder-plus"></i></span></a>
+                                                                            @* <a class="align-content-end ms-3 me-2 details-control"><span><i class="fe fe-folder-plus"></i></span></a> *@
                                                                         </td>
                                                                     </tr>
                                                                 }
@@ -321,7 +321,7 @@
                         },
                         autoWidth: false,
                         columnDefs: [
-                            { targets: 2, width: '160px' }     // fourth column
+                            { targets: 2, width: '160px' } 
                         ]
                     });
 

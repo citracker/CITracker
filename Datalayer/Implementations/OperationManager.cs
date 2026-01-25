@@ -13,6 +13,7 @@ using Shared.DTO;
 using Shared.Enumerations;
 using Shared.Interfaces;
 using Shared.Models;
+using Shared.Request;
 using Shared.Utilities;
 using System.Data;
 using System.Net;
@@ -969,9 +970,9 @@ namespace Datalayer.Implementations
                 IEnumerable<OperationalExcellenceDTO> resi = null; int count = 0;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Status != 'CLOSED' @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
+                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-                var countquery = "SELECT count(id) from OperationalExcellence where OrganizationId = @oid and Status != 'CLOSED' @where";
+                var countquery = "SELECT count(id) from OperationalExcellence where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -1094,9 +1095,9 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                ///TODO: Include sum of all sub monthly targets
+                
                 var resi = await _repository.GetAsync<OperationalExcellenceDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Id = @pid and a.Status != 'CLOSED'", new { oid = orgId, pid = projectId }, CommandType.Text);
+                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
                 {
@@ -1564,9 +1565,9 @@ namespace Datalayer.Implementations
                 IEnumerable<StrategicInitiativeDTO> resi = null; int count = 0;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status != 'CLOSED' @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
+                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-                var countquery = "SELECT count(id) from StrategicInitiative where OrganizationId = @oid and Status != 'CLOSED' @where";
+                var countquery = "SELECT count(id) from StrategicInitiative where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -1691,7 +1692,7 @@ namespace Datalayer.Implementations
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<StrategicInitiativeDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Status, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Id = @pid and a.Status != 'CLOSED'", new { oid = orgId, pid = projectId }, CommandType.Text);
+                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Status, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
                 {
@@ -1858,7 +1859,7 @@ namespace Datalayer.Implementations
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<OperationalExcellenceDTO>(dbConnection,
-                "SELECT Id, Title FROM OperationalExcellence where OrganizationId = @oid and Status != 'CLOSED'", new { oid = orgId }, CommandType.Text);
+                "SELECT Id, Title FROM OperationalExcellence where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED')", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -1896,7 +1897,7 @@ namespace Datalayer.Implementations
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection,
-                "SELECT Id, Title FROM StrategicInitiative where OrganizationId = @oid and Status != 'CLOSED'", new { oid = orgId }, CommandType.Text);
+                "SELECT Id, Title FROM StrategicInitiative where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED')", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -1927,7 +1928,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<OrganizationToolDTO>> GetAllOrganizationTools(int orgId, string method)
+        public async Task<ResponseHandler<OrganizationToolDTO>> GetAllOrganizationTools(int orgId, string method, long pid)
         {
             try
             {
@@ -1936,7 +1937,7 @@ namespace Datalayer.Implementations
                 method = !method.ToLower().Equals("project") ? "General" : "Project";
 
                 var resi = await _repository.GetListAsync<OrganizationToolDTO>(dbConnection,
-                "SELECT a.Id, a.Url, b.Id as ToolId, b.Tool, c.Phase FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid WHERE c.Methodology = @mth", new { oid = orgId, mth = method }, CommandType.Text);
+                "SELECT a.Id, a.Url, b.Id as ToolId, b.Tool, c.Phase, CASE WHEN d.ToolId IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsChecked FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid LEFT JOIN CIProjectTool d ON d.ToolId = b.Id AND d.ProjectId = @pid WHERE c.Methodology = @mth", new { oid = orgId, mth = method, pid = pid }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -2445,9 +2446,9 @@ namespace Datalayer.Implementations
                 IEnumerable<ContinuousImprovementDTO> resi = null; int count = 0;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid AND a.Status != 'CLOSED' @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
+                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid AND a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
-                var countquery = "SELECT count(id) from ContinuousImprovement where OrganizationId = @oid and Status != 'CLOSED' @where";
+                var countquery = "SELECT count(id) from ContinuousImprovement where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -2760,6 +2761,208 @@ namespace Datalayer.Implementations
             finally
             {
                 dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                
+                var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
+                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.Id = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProject)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
+        public async Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetListAsync<TeamMembersDTO>(dbConnection,
+                "select a.Id, a.ProjectId, a.UserId, b.Name as [User], a.Role, a.SendNotification from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+                    return await Task.FromResult(new ResponseHandler<CITeamDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = new CITeamDTO
+                        {
+                            ProjectId = projectId,
+                            Team = resi.ToList()
+                        }
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<CITeamDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found",
+                        SingleResult = new CITeamDTO
+                        {
+                            ProjectId = projectId
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<CITeamDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured",
+                    SingleResult = new CITeamDTO
+                    {
+                        ProjectId = projectId
+                    }
+                });
+            }
+        }
+
+        public async Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetListAsync<CIProjectToolDTO>(dbConnection,
+                "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+                    return await Task.FromResult(resi.ToList());
+                }
+                else
+                {
+                    return await Task.FromResult(new List<CIProjectToolDTO>());
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new List<CIProjectToolDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<CICommentDTO>> GetCIProjectComment(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetListAsync<CommentzDTO>(dbConnection,
+                "select Id, Comment, Date from CIProjectComment where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+                    return await Task.FromResult(new ResponseHandler<CICommentDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = new CICommentDTO
+                        {
+                            ProjectId = projectId,
+                            Comment = resi.ToList()
+                        }
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<CICommentDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<CICommentDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<CIFinancialDTO>> GetCIProjectFinancial(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetListAsync<SavingsDTO>(dbConnection,
+                "select Id, Category, SavingClassification, SavingType, SavingValue, SavingUnit, IsCurrency, [Date] from CIProjectSaving where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+                    return await Task.FromResult(new ResponseHandler<CIFinancialDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = new CIFinancialDTO
+                        {
+                            ProjectId = projectId,
+                            Hard = resi.Where(e => e.SavingClassification == "Hard").Select(h => new HardSavingsDTO
+                            {
+                                Id = h.Id,
+                                SavingType = h.SavingType,
+                                SavingValue = h.SavingValue,
+                                Date = h.Date                                
+                            }).ToList(),
+                            Soft = resi.Where(e => e.SavingClassification == "Soft").Select(s => new SoftSavingsDTO
+                            {
+                                Id = s.Id,
+                                SavingValue = s.SavingValue,
+                                Category = s.Category,
+                                SavingUnit = s.SavingUnit
+                            }).ToList()
+                        }
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<CIFinancialDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProjectFinancial)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<CIFinancialDTO>());
             }
         }
     }

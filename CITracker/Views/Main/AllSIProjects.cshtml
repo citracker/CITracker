@@ -222,7 +222,7 @@
                                     <div id="datatable-basic_wrapper" class="dataTables_wrapper dt-bootstrap5 no-footer">
                                         <div class="row">
                                             <div class="col-sm-12">
-                                                <table id="mySIInitiatives" class="table table-bordered text-nowrap dataTable no-footer" style="width: 70%;" aria-describedby="datatable-basic_info">
+                                                <table id="mySIInitiatives" class="table table-bordered text-nowrap dataTable no-footer" style="width: 100%;" aria-describedby="datatable-basic_info">
                                                     <thead>
                                                         <tr>
                                                             <th class="sorting sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending" style="width: 121.992px;">Id</th>
@@ -316,7 +316,11 @@
                         },
                         language: {
                             emptyTable: "No record found"
-                        }
+                        },
+                        autoWidth: false,
+                        columnDefs: [
+                            { targets: 2, width: '160px' }
+                        ]
                     });
 
         const endPicker = flatpickr("#enddate", {

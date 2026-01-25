@@ -114,7 +114,7 @@
                                         <option selected disabled> Select a Status </option>
                                         @foreach (Status item in Enum.GetValues(typeof(Status)))
                                         {
-                                            if(item == Status.COMPLETED || item == Status.CLOSED)
+                                            if(item == Status.CLOSED)
                                             {
                                                 continue;
                                             }

@@ -415,7 +415,7 @@ namespace CITracker.Controllers
         }
 
         [HttpGet("CIProjectDetail")]
-        public IActionResult CIProjectDetail()
+        public IActionResult CIProjectDetail(long id)
         {
             if (!IsAuthenticated())
             {
@@ -427,7 +427,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+
+            var coep = new ContinuousImprovementVM
+            {
+                Message = TempData["Message"]?.ToString() ?? "",
+                OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OperationalExcellence = _opsManager.GetMiniOEProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                StrategicInitiative = _opsManager.GetMiniSIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                Project = _opsManager.GetCIProject(id)?.Result?.SingleResult,
+                ProjectTeam = _opsManager.GetCIProjectTeam(id)?.Result?.SingleResult,
+                ProjectTool = _opsManager.GetCIProjectTool(id)?.Result,
+                ProjectComment = _opsManager.GetCIProjectComment(id).Result?.SingleResult,
+                ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult
+            };
+
+            return View(coep);
         }
 
         [HttpGet("AllCIProjects")]
@@ -797,7 +814,7 @@ namespace CITracker.Controllers
         }
 
         [HttpGet("GetMethodologyTools")]
-        public IActionResult GetMethodologyTools(string val)
+        public IActionResult GetMethodologyTools(string val, long pid)
         {
             if (!IsAuthenticated())
             {
@@ -809,7 +826,7 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var coep = _opsManager.GetAllOrganizationTools(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), val)?.Result?.Result?.ToList();
+            var coep = _opsManager.GetAllOrganizationTools(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), val, pid)?.Result?.Result?.ToList();
 
             var gcoep = coep.GroupBy(t => t.Phase).ToList();
 
@@ -819,7 +836,8 @@ namespace CITracker.Controllers
                 {
                     id = x.ToolId,
                     name = x.Tool,
-                    url = x.Url
+                    url = x.Url,
+                    isChecked = x.IsChecked
                 }).ToList()
             );
 
@@ -909,7 +927,6 @@ namespace CITracker.Controllers
                 fileUrl
             });
         }
-
 
         [HttpGet("OEMonthlySaving")]
         public IActionResult OEMonthlySaving(long pId)
@@ -1331,7 +1348,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("SISubProjectDetail", "Main", new { id = id });
             }
         }
-
 
         private bool IsAuthenticated()
         {

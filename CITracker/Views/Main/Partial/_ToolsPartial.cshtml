@@ -9,7 +9,7 @@
             </div>
             <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
                 <div class="d-sm-flex d-block align-items-center flex-wrap justify-content-center"> 
-                    <div class="mb-lg-0 mb-2"><h4 class="text-lg-center m-3">DMAIC</h4></div>
+                    <div class="mb-lg-0 mb-2"><h4 class="text-lg-center m-3"></h4></div>
                 </div>
                 <p>Note: You can download the sample templates for each from the Download Icon <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
                 <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
@@ -29,7 +29,7 @@
     document.addEventListener('partialShown', function (e) {
         if (e.detail.id === 'tools_info') {
             if(window.AppState.selectedMethodology !== undefined){
-                fetch(`/GetMethodologyTools?val=${encodeURIComponent(window.AppState.selectedMethodology)}`)
+                fetch(`/GetMethodologyTools?val=${encodeURIComponent(window.AppState.selectedMethodology)}&pid=${encodeURIComponent(window.AppState.CIProject.Id)}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error("Failed to fetch tools");
@@ -65,16 +65,18 @@
             const header = document.createElement('div');
             header.className = 'card-header justify-content-between';
 
-            const title = document.createElement('div');
-            title.className = 'card-title';
-            title.textContent = key;
+            // const title = document.createElement('div');
+            // title.className = 'card-title';
+            // title.textContent = key;
 
-            header.appendChild(title);
+            // header.appendChild(title);
 
             // Body
             const body = document.createElement('div');
             body.className = 'card-body';
             body.style.padding = '0.5rem';
+
+            console.log(tools)
 
             tools.forEach((tool, index) => {
                 body.appendChild(createToolRow(tool, index, key));
@@ -98,6 +100,8 @@
             checkbox.name = 'toolbox';
             checkbox.id = `${phase}-${index}`;
             checkbox.value = `${phase}-${tool.id}`;
+            
+            checkbox.checked = !!tool.ischecked;
 
             const label = document.createElement('label');
             label.className = 'form-check-label me-3';

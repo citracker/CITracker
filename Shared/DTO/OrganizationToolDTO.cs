@@ -10,6 +10,7 @@ namespace Shared.DTO
         public string Phase { get; set; }
         public string PhaseId { get; set; }
         public string Url { get; set; }
+        public bool IsChecked { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
     }

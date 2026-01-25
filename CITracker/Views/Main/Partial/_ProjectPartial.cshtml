@@ -149,7 +149,7 @@
                             <option selected disabled> Select a Status </option>
                             @foreach (Status item in Enum.GetValues(typeof(Status)))
                             {
-                                if(item == Status.COMPLETED || item == Status.CLOSED)
+                                if(item == Status.CLOSED)
                                 {
                                     continue;
                                 }
@@ -328,6 +328,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         new Choices('#supportingvaluestrings', {
             shouldSort: false,
+            position: 'top',
             searchEnabled: true,
             itemSelectText: '',
             allowHTML: false

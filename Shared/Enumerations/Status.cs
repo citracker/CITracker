@@ -8,9 +8,10 @@ namespace Shared.Enumerations
 {
     public enum Status
     {
-        CLOSED,
-        COMPLETED,
+        PROPOSED,
         INITIATED,
-        PROPOSED
+        COMPLETED,
+        CLOSED,
+        CANCELLED
     }
 }

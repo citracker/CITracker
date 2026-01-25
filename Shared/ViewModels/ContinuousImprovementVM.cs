@@ -1,6 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Spreadsheet;
 using Shared.DTO;
 using Shared.Models;
+using Shared.Request;
 
 namespace Shared.ViewModels
 {
@@ -17,7 +18,11 @@ namespace Shared.ViewModels
         public List<CIUser> OrganizationRoles { get; set; }
         public List<OrganizationToolDTO> MethodologyTool { get; set; }
         public ResponseHandler<ContinuousImprovementDTO> Projects { get; set; }
-        public ContinuousImprovement Project { get; set; }
+        public ContinuousImprovementDTO Project { get; set; }
+        public CITeamDTO ProjectTeam { get; set; }
+        public List<CIProjectToolDTO> ProjectTool { get; set; }
+        public CICommentDTO ProjectComment { get; set; }
+        public CIFinancialDTO ProjectFinancial { get; set; }
 
     }
 }

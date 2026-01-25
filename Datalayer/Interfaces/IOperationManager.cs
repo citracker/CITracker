@@ -1,5 +1,6 @@
 ﻿using Shared.DTO;
 using Shared.Models;
+using Shared.Request;
 
 namespace Datalayer.Interfaces
 {
@@ -44,7 +45,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateExistingSISubProject(SISubProject si, string adminEmail);
         Task<ResponseHandler<OperationalExcellenceDTO>> GetMiniOEProjects(int orgId);
         Task<ResponseHandler<StrategicInitiativeDTO>> GetMiniSIProjects(int orgId);
-        Task<ResponseHandler<OrganizationToolDTO>> GetAllOrganizationTools(int orgId, string method);
+        Task<ResponseHandler<OrganizationToolDTO>> GetAllOrganizationTools(int orgId, string method, long pid);
         Task<ResponseHandler<MethodologyPhase>> GetMethodologyPhases(string method = null);
         Task<ResponseHandler<OrganizationToolDTO>> GetAllMethodologyTools(string method);
         Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail);
@@ -59,5 +60,10 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateToolId(int toolId, string fileUrl);
         Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> si, string adminEmail);
         Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
+        Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(long projectId);
+        Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId);
+        Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId);
+        Task<ResponseHandler<CICommentDTO>> GetCIProjectComment(long projectId);
+        Task<ResponseHandler<CIFinancialDTO>> GetCIProjectFinancial(long projectId);
     }
 }

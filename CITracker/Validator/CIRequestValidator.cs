@@ -25,7 +25,6 @@ namespace CITracker.Validator
             RuleFor(x => x.ProblemStatement).NotEmpty().WithMessage("ProblemStatement is required.");
             RuleFor(x => x.Methodology).NotEmpty().WithMessage("Methodology is required.");
             RuleFor(x => x.Certification).NotEmpty().WithMessage("Certification is required.");
-            RuleFor(x => x.TotalExpectedRevenue).NotEmpty().WithMessage("TotalExpectedRevenue is required.");
             RuleFor(x => x.Currency).NotEmpty().WithMessage("Currency is required.");
             RuleFor(x => x.Status).NotEmpty().WithMessage("Project Status is required.");
             RuleFor(x => x.Phase).NotEmpty().WithMessage("Project Phase is required.");
