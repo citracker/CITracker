@@ -552,6 +552,7 @@
 
         const li = document.createElement("li");
                 li.textContent = error;
+                li.className = 'fs-18';
                 list.appendChild(li);
 
         // Show alert
@@ -576,6 +577,7 @@
             errors[field].forEach(message => {
                 const li = document.createElement("li");
                 li.textContent = message;
+                li.className = 'fs-18';
                 list.appendChild(li);
             });
         });

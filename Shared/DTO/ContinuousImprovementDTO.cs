@@ -39,6 +39,7 @@ namespace Shared.DTO
         public string FinancialReportComment { get; set; }
         public bool IsAudited { get; set; }
         public long AuditedBy { get; set; }
+        public string AuditedByStaff { get; set; }
         public DateTime? AuditedDate { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }

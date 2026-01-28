@@ -8,6 +8,7 @@ namespace DataRepository
         Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType) where T : class;
         Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType, IDbTransaction transaction) where T : class;
         Task<T?> GetSumOrCountAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType);
+        Task<T?> GetSumOrCountAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType, IDbTransaction transaction);
         Task<bool> GetAnyAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType) where T : class;
         Task<IEnumerable<T>> GetListAsync<T>(IDbConnection dbConnection) where T : class;
         Task<long> InsertAsync<T>(IDbConnection dbConnection, T t) where T : class;

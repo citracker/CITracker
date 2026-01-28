@@ -132,16 +132,9 @@
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" name="savingvalue" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
-                                <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">hr</button>
-                                <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
-                                    <li><a class="dropdown-item saving-unit" href="javascript:void(0);">hr</a></li>
-                                    <li><a class="dropdown-item saving-unit" href="javascript:void(0);">TRIR</a></li>
-                                    <li><a class="dropdown-item saving-unit" href="javascript:void(0);">month</a></li>
-                                    <li><a class="dropdown-item saving-unit" href="javascript:void(0);">sqft</a></li>
-                                    <li><a class="dropdown-item saving-unit" href="javascript:void(0);">#</a></li>
-                                </ul>
+                                <button class="btn btn-outline-primary" type="button"></button>
                             </div>
-                            <input type="hidden" name="savingUnit" id="savingUnit" value="hr">
+                            <input type="hidden" class="savingUnit" name="savingUnit" id="savingUnit" value="">
                         </div>
 
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
@@ -219,6 +212,34 @@
     </div>
 </div>
 <script>
+
+
+
+    const CATEGORY_UNIT_MAP = {
+        "Space": "sqft",
+        "Time": "hr",
+        "Quality": "#",
+        "Safety": "TRIR",
+        "Defect Rate": "#"
+    };
+
+        // Handle category change (works for dynamically added rows)
+    $(document).on('change', 'select[name="category"]', function () {
+
+        const selectedCategory = $(this).val();
+        if (!selectedCategory) return;
+
+        const unit = CATEGORY_UNIT_MAP[selectedCategory] || '';
+
+        // Find the unit button in the same row
+        const $row = $(this).closest('.finSftBody');
+        const $unitButton = $row.find('.btn-outline-primary');
+        const $savingUnit  = $row.find('.savingUnit');
+
+        // Update button text
+        $unitButton.text(unit);
+        $savingUnit.val(unit);
+    });
     document.addEventListener("DOMContentLoaded", function () {
         initMonthPicker($('.finCardBody'));
 
@@ -250,21 +271,6 @@
             const currencyInp = document.querySelector(".currency");
             currencyInp.innerHTML = window.AppState.CIProject.Currency.toString();
         }
-    });
-
-    document.querySelectorAll('.saving-unit').forEach(item => {
-        item.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            const unit = this.textContent.trim();
-
-            // Update button display
-            const button = this.closest('.input-group').querySelector('button');
-            button.innerHTML = unit;
-
-            // Store value for form submission
-            document.getElementById('savingUnit').value = unit;
-        });
     });
    
     const MAX_FORMS = 12;
@@ -565,6 +571,7 @@
 
         const li = document.createElement("li");
                 li.textContent = error;
+                li.className = 'fs-18';
                 list.appendChild(li);
 
         // Show alert
@@ -589,6 +596,7 @@
             errors[field].forEach(message => {
                 const li = document.createElement("li");
                 li.textContent = message;
+                li.className = 'fs-18';
                 list.appendChild(li);
             });
         });

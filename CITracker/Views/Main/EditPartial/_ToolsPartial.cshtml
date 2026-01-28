@@ -51,26 +51,69 @@
             });
         }
 
+        const phaseTooltips = {
+            Define: 'Project definition and alignment.',
+            Measure: 'Current state performance baseline.',
+            Analyze: 'Identify causes of variation.',
+            Improve: 'Develop, test and implement solutions.',
+            Control: 'Sustain gains and scale.',
+            'Concept & Initiation': 'Identify a business need, problem, or opportunity and brainstorm ways to meet this need, solve this problem or seize this opportunity.',
+            'Definition & Planning': 'Break down the larger project into smaller tasks, build your team and prepare a schedule for the completion of assignments.',
+            Execution: 'Track, organize team members, manage timelines and make sure the work is done according to the original plan.',
+            'Performance & Control': 'Project performance and monitoring ensures that results align with the management plan.',
+            'Project Closure': 'Provide financial deliverables, release project resources and determine the success of the project, evaluating what did and did not work with the project.'
+        };
+
+        const phaseColors = {
+            Define: '#bd5050 !important',
+            Measure: '#3b82f6 !important',
+            Analyze: '#f59e0b !important',
+            Improve: '#10b981 !important',
+            Control: '#6366f1 !important',
+            'Concept & Initiation': '#bd5050 !important',
+            'Definition & Planning': '#3b82f6 !important',
+            Execution: '#f59e0b !important',
+            'Performance & Control': '#10b981 !important',
+            'Project Closure': '#6366f1 !important'
+        };
+
         function createPhaseCard(key, tools) {
             const outer = document.createElement('div');
-            outer.className = 'form-control';
-            outer.style.cssText =
-                'border:2px solid #bbbbbb;border-radius:5px;padding:0;min-width:330px;';
+            outer.className = 'form-control border-dark rounded';
+            outer.style.padding = '0';
 
             const card = document.createElement('div');
             card.className = 'card custom-card';
 
-            // Header
+            /* ---------- HEADER ---------- */
             const header = document.createElement('div');
-            header.className = 'card-header justify-content-between';
+            header.className = 'card-header d-flex justify-content-between align-items-center';
+            header.style.backgroundColor = phaseColors[key] || '#6c757d';
 
-            // const title = document.createElement('div');
-            // title.className = 'card-title';
-            // title.textContent = key;
+            const titleWrapper = document.createElement('div');
+            titleWrapper.className = 'd-flex align-items-center gap-2';
 
-            // header.appendChild(title);
+            const title = document.createElement('div');
+            title.className = 'card-title mb-0';
+            title.textContent = key;
 
-            // Body
+            const infoLink = document.createElement('a');
+            infoLink.href = 'javascript:void(0);';
+            infoLink.className = 'text-primary';
+            infoLink.setAttribute('data-bs-toggle', 'tooltip');
+            infoLink.setAttribute('data-bs-custom-class', 'tooltip-primary');
+            infoLink.setAttribute(
+                'data-bs-original-title',
+                phaseTooltips[key] || 'More information'
+            );
+
+            infoLink.innerHTML = '<i class="fe fe-info"></i>';
+
+            titleWrapper.appendChild(title);
+            titleWrapper.appendChild(infoLink);
+            header.appendChild(titleWrapper);
+
+            /* ---------- BODY ---------- */
             const body = document.createElement('div');
             body.className = 'card-body';
             body.style.padding = '0.5rem';
@@ -83,8 +126,14 @@
             card.appendChild(body);
             outer.appendChild(card);
 
+            // 🔹 Initialize tooltip AFTER DOM insertion
+            setTimeout(() => {
+                new bootstrap.Tooltip(infoLink);
+            });
+
             return outer;
         }
+
 
         function createToolRow(tool, index, phase) {
             const row = document.createElement('div');

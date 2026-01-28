@@ -59,8 +59,8 @@ namespace Infastructure.Implementation
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error discovering sites: {ex.Message}");
-                throw;
+                _logger.LogError($"Error discovering sites: {ex.Message}");
+                return new List<DriveInfo>();
             }
         }
 

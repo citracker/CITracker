@@ -2,6 +2,7 @@
 using Datalayer.Interfaces;
 using DataRepository;
 using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Math;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Data.SqlClient;
@@ -91,35 +92,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                if (!_memoryCache.TryGetValue($"OrganizationCountry-{orgId}", out ResponseHandler<OrganizationCountry> country))
+                //if (!_memoryCache.TryGetValue($"OrganizationCountry-{orgId}", out ResponseHandler<OrganizationCountry> country))
+                //{
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
+                    "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+
+                if (resi.Any())
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
-                        "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
-                    if (resi.Any())
+                    return await Task.FromResult(new ResponseHandler<OrganizationCountry>
                     {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
 
-                        country = await Task.FromResult(new ResponseHandler<OrganizationCountry>
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful",
-                            Result = resi
-                        });
-
-                        await _memoryCacheManager.SetCache($"OrganizationCountry-{orgId}", country);
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler<OrganizationCountry>
-                        {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
-                        });
-                    }
+                    //await _memoryCacheManager.SetCache($"OrganizationCountry-{orgId}", country);
                 }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationCountry>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+                //}
 
-                return await Task.FromResult(country);
+                //return await Task.FromResult(country);
             }
             catch (Exception ex)
             {
@@ -136,35 +137,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                if (!_memoryCache.TryGetValue($"OrganizationFacility-{orgId}", out ResponseHandler<OrganizationFacility> facility))
+                //if (!_memoryCache.TryGetValue($"OrganizationFacility-{orgId}", out ResponseHandler<OrganizationFacility> facility))
+                //{
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
+                    "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+
+                if (resi.Any())
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
-                        "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
-                    if (resi.Any())
+                    return await Task.FromResult(new ResponseHandler<OrganizationFacility>
                     {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
 
-                        facility = await Task.FromResult(new ResponseHandler<OrganizationFacility>
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful",
-                            Result = resi
-                        });
-
-                        await _memoryCacheManager.SetCache($"OrganizationFacility-{orgId}", facility);
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler<OrganizationFacility>
-                        {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
-                        });
-                    }
+                    //await _memoryCacheManager.SetCache($"OrganizationFacility-{orgId}", facility);
                 }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationFacility>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+                //}
 
-                return await Task.FromResult(facility);
+                //return await Task.FromResult(facility);
             }
             catch (Exception ex)
             {
@@ -181,35 +182,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                if (!_memoryCache.TryGetValue($"OrganizationDepartment-{orgId}", out ResponseHandler<OrganizationDepartment> depart))
+                //if (!_memoryCache.TryGetValue($"OrganizationDepartment-{orgId}", out ResponseHandler<OrganizationDepartment> depart))
+                //{
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
+                    "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+
+                if (resi.Any())
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
-                        "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
-                    if (resi.Any())
+                    return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
                     {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
 
-                        depart = await Task.FromResult(new ResponseHandler<OrganizationDepartment>
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful",
-                            Result = resi
-                        });
-
-                        await _memoryCacheManager.SetCache($"OrganizationDepartment-{orgId}", depart);
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
-                        {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
-                        });
-                    }
+                    //await _memoryCacheManager.SetCache($"OrganizationDepartment-{orgId}", depart);
                 }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+                //}
 
-                return await Task.FromResult(depart);
+                //return await Task.FromResult(depart);
             }
             catch (Exception ex)
             {
@@ -226,35 +227,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                if (!_memoryCache.TryGetValue($"CIUser-{orgId}", out ResponseHandler<CIUser> users))
+                //if (!_memoryCache.TryGetValue($"CIUser-{orgId}", out ResponseHandler<CIUser> users))
+                //{
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetListAsync<CIUser>(dbConnection,
+                "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+
+                if (resi.Any())
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = await _repository.GetListAsync<CIUser>(dbConnection,
-                    "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
-                    if (resi.Any())
+                    return await Task.FromResult(new ResponseHandler<CIUser>
                     {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
 
-                        users = await Task.FromResult(new ResponseHandler<CIUser>
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful",
-                            Result = resi
-                        });
-
-                        await _memoryCacheManager.SetCache($"CIUser-{orgId}", users);
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler<CIUser>
-                        {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
-                        });
-                    }
+                    //await _memoryCacheManager.SetCache($"CIUser-{orgId}", users);
                 }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<CIUser>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+                //}
 
-                return await Task.FromResult(users);
+                //return await Task.FromResult(users);
             }
             catch (Exception ex)
             {
@@ -281,7 +282,7 @@ namespace Datalayer.Implementations
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                UpdateCountryListInMemory(dbConnection, dbTransaction, orgCountry.OrganizationId);
+                //UpdateCountryListInMemory(dbConnection, dbTransaction, orgCountry.OrganizationId);
 
                 dbTransaction.Commit();
 
@@ -327,7 +328,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateCountryListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                    //UpdateCountryListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
 
                     dbTransaction.Commit();
 
@@ -378,7 +379,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateCountryListInMemory(dbConnection, dbTransaction, orgId);
+                    //UpdateCountryListInMemory(dbConnection, dbTransaction, orgId);
 
                     dbTransaction.Commit();
 
@@ -427,7 +428,7 @@ namespace Datalayer.Implementations
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                UpdateFacilityListInMemory(dbConnection, dbTransaction, orgFacility.OrganizationId);
+                //UpdateFacilityListInMemory(dbConnection, dbTransaction, orgFacility.OrganizationId);
 
                 dbTransaction.Commit();
 
@@ -472,7 +473,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateFacilityListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                    //UpdateFacilityListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
 
                     dbTransaction.Commit();
 
@@ -523,7 +524,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateFacilityListInMemory(dbConnection, dbTransaction, orgId);
+                    //UpdateFacilityListInMemory(dbConnection, dbTransaction, orgId);
 
                     dbTransaction.Commit();
 
@@ -572,7 +573,7 @@ namespace Datalayer.Implementations
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgDepartment.OrganizationId);
+                //UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgDepartment.OrganizationId);
 
                 dbTransaction.Commit();
 
@@ -617,7 +618,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateDepartmentListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                    //UpdateDepartmentListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
 
                     dbTransaction.Commit();
 
@@ -668,7 +669,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgId);
+                    //UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgId);
 
                     dbTransaction.Commit();
 
@@ -717,7 +718,7 @@ namespace Datalayer.Implementations
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                 var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                UpdateUserListInMemory(dbConnection, dbTransaction, orgUsr.OrganizationId);
+                //UpdateUserListInMemory(dbConnection, dbTransaction, orgUsr.OrganizationId);
 
                 dbTransaction.Commit();
 
@@ -764,7 +765,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateUserListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                    //UpdateUserListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
 
                     dbTransaction.Commit();
 
@@ -815,7 +816,7 @@ namespace Datalayer.Implementations
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    UpdateUserListInMemory(dbConnection, dbTransaction, orgId);
+                    //UpdateUserListInMemory(dbConnection, dbTransaction, orgId);
 
                     dbTransaction.Commit();
 
@@ -856,7 +857,7 @@ namespace Datalayer.Implementations
             var re = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
                 "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
 
-            if (re.Any())
+            if (re.ToList().Any())
             {
                 var ctry = await Task.FromResult(new ResponseHandler<OrganizationCountry>
                 {
@@ -875,7 +876,7 @@ namespace Datalayer.Implementations
             var re = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
                 "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
 
-            if (re.Any())
+            if (re.ToList().Any())
             {
                 var ctry = await Task.FromResult(new ResponseHandler<OrganizationFacility>
                 {
@@ -894,7 +895,7 @@ namespace Datalayer.Implementations
             var re = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
                 "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
 
-            if (re.Any())
+            if (re.ToList().Any())
             {
                 var ctry = await Task.FromResult(new ResponseHandler<OrganizationDepartment>
                 {
@@ -912,7 +913,7 @@ namespace Datalayer.Implementations
             var re = await _repository.GetListAsync<CIUser>(dbConnection,
                 "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
 
-            if (re.Any())
+            if (re.ToList().Any())
             {
                 var ctry = await Task.FromResult(new ResponseHandler<CIUser>
                 {
@@ -2313,6 +2314,32 @@ namespace Datalayer.Implementations
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
+                //get count of all team members on this project
+
+                var count = await _repository.GetListAsync<CIProjectTeamMember>(dbConnection, "select * from CIProjectTeamMember WHERE ProjectId = @ProjectId", new { ci[0].ProjectId }, CommandType.Text, dbTransaction);
+
+                count = count.ToList();
+
+                if (count.Any())
+                {
+                    if(count.Count() > ci.Count)
+                    {
+                        //an item was deleted on the UI
+                        // 2. Extract IDs
+                        var incomingIds = ci.Select(x => x.Id).ToHashSet();
+
+                        // 3. Find deleted records
+                        var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
+
+                        foreach(var i in itemsToDelete)
+                        {
+                            if(i.Role != "Facilitator")
+                                await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectTeamMember where Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
+                        }
+                    }
+                }
+
+
                 foreach (var teamMember in ci)
                 {
                     try
@@ -2336,11 +2363,11 @@ namespace Datalayer.Implementations
                         var existing = await dbConnection.QuerySingleAsync<CIProjectTeamMember>(
                             @"SELECT * FROM CIProjectTeamMember WHERE ProjectId = @ProjectId AND UserId = @UserId AND Role = @Role", new { teamMember.ProjectId, teamMember.UserId, teamMember.Role }, dbTransaction);
 
-                        if (existing.SendNotification != teamMember.SendNotification)
+                        if (existing.SendNotification != teamMember.SendNotification || existing.UserId != teamMember.UserId || existing.Role != teamMember.Role)
                         {
+                            existing.UserId = teamMember.UserId;
+                            existing.Role = teamMember.Role;
                             existing.SendNotification = teamMember.SendNotification;
-                            existing.DateCreated = teamMember.DateCreated;
-                            existing.CreatedBy = teamMember.CreatedBy;
 
                             await _repository.UpdateAsync(dbConnection, existing, dbTransaction);
 
@@ -2771,7 +2798,7 @@ namespace Datalayer.Implementations
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 
                 var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.Id = @pid", new { pid = projectId }, CommandType.Text);
+                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream, a.IsOneTimeSavings, a.IsCarryOverSavings, a.FinancialVerificationDate, a.FinancialReportUrl, a.FinancialReportComment, a.IsAudited, a.AuditedBy, b2.Name as AuditedByStaff, a.AuditedDate FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN CIUser b2 ON a.AuditedBy = b2.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.Id = @pid", new { pid = projectId }, CommandType.Text);
 
                 if (resi != null)
                 {

@@ -515,6 +515,133 @@ namespace CITracker.Controllers
             }
         }
 
+        [HttpPost("UpdateCIProject")]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCIProject(CIRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var updateCIProject = new ContinuousImprovement
+                {
+                    Id = model.Id,
+                    OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                    Title = model.Title,
+                    StartDate = Convert.ToDateTime(model.StartDate).Date,
+                    EndDate = Convert.ToDateTime(model.EndDate).Date,
+                    Priority = model.Priority,
+                    BusinessObjectiveAlignment = String.Join('|', model.BusinessObjectiveAlignment),
+                    ProblemStatement = model.ProblemStatement,
+                    Methodology = model.Methodology,
+                    Certification = model.Certification,
+                    TotalExpectedRevenue = model.TotalExpectedRevenue,
+                    Currency = model.Currency,
+                    Status = model.Status,
+                    Phase = model.Phase,
+                    CountryId = Convert.ToInt32(model.CountryId),
+                    FacilityId = Convert.ToInt32(model.FacilityId),
+                    DepartmentId = Convert.ToInt32(model.DepartmentId),
+                    SupportingValueStream = model.SupportingValueStream,
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                    DateCreated = DateTime.UtcNow
+                };
+
+                var res = _opsManager.CreateNewCIProject(updateCIProject, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res.SingleResult);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res.SingleResult);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(UpdateCIProject)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while modifying the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateCIProjectTeam")]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCIProjectTeam(CITeamRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var newCIProjectTeam = new List<CIProjectTeamMember>();
+
+                foreach (var i in model.Team)
+                {
+                    newCIProjectTeam.Add(new CIProjectTeamMember
+                    {
+                        Id = i.Id == null ? 0 : (long)i.Id,
+                        ProjectId = model.ProjectId,
+                        Role = i.Role,
+                        SendNotification = i.SendNotification,
+                        UserId = i.UserId,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.CreateNewCIProjectTeam(newCIProjectTeam, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("CreateOEProject")]
         public IActionResult CreateOEProject()
         {
@@ -864,19 +991,24 @@ namespace CITracker.Controllers
 
             var coep = _opsManager.GetAllProjectSelectedTools(val)?.Result?.Result?.ToList();
 
-            var gcoep = coep.GroupBy(t => t.Phase).ToList();
+            if (coep.Any())
+            {
+                var gcoep = coep.GroupBy(t => t.Phase).ToList();
 
-            var result = gcoep.ToDictionary(
-                g => g.Key,
-                g => g.Select(x => new
-                {
-                    id = x.Id,
-                    name = x.Tool,
-                    url = x.Url
-                }).ToList()
-            );
+                var result = gcoep.ToDictionary(
+                    g => g.Key,
+                    g => g.Select(x => new
+                    {
+                        id = x.Id,
+                        name = x.Tool,
+                        url = x.Url
+                    }).ToList()
+                );
 
-            return Json(result);
+                return Json(result);
+            }
+
+            return StatusCode(StatusCodes.Status417ExpectationFailed);
         }
 
         [HttpPost]

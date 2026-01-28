@@ -147,13 +147,13 @@ namespace CITracker.Controllers
                 sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
             }
 
-            //var res = new ManageToolsVM
-            //{
-            //    Phases = _opsManager.GetMethodologyPhases().Result.Result.ToList(),
-            //    Sites = sites
-            //};
+            var res = new ManageToolsVM
+            {
+                Phases = _opsManager.GetMethodologyPhases().Result.Result.ToList(),
+                Sites = sites
+            };
 
-            return View();
+            return View(res);
         }
 
         [HttpGet("ManageSavingCategory")]

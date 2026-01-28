@@ -309,23 +309,25 @@
 <script>
     $(document).ready(function () {
         var table = $('#myOEInitiatives').DataTable({
-                        scrollX: true,
-                        scrollCollapse: true,
-                        paging: false,
-                        info: false,
-                        lengthChange: false,
-                        fixedColumns: {
-                            leftColumns: 3, 
-                            rightColumns: 1 // optional
-                        },
-                        language: {
-                            emptyTable: "No record found"
-                        },
-                        autoWidth: false,
-                        columnDefs: [
-                            { targets: 2, width: '160px' }
-                        ]
-                    });
+            order: [],
+            ordering: false,
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            info: false,
+            lengthChange: false,
+            fixedColumns: {
+                leftColumns: 3, 
+                rightColumns: 1 // optional
+            },
+            language: {
+                emptyTable: "No record found"
+            },
+            autoWidth: false,
+            columnDefs: [
+                { targets: 2, width: '160px' }
+            ]
+        });
 
         const endPicker = flatpickr("#enddate", {
             dateFormat: "Y-m-d"
