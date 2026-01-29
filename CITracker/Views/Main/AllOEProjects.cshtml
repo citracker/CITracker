@@ -198,8 +198,8 @@
                                                         </div>
 
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                                                            <label for="status" class="form-label">Status<span style="color:red">*</span></label>
                                                             <select class="form-control" name="status" id="status" required>
+                                                                <option selected disabled>Select a Status</option>
                                                                 @foreach (Status item in Enum.GetValues(typeof(Status)))
                                                                 {
                                                                     <option value="@item">@item</option>

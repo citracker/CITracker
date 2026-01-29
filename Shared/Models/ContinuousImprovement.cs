@@ -27,6 +27,7 @@ namespace Shared.Models
         public bool IsCarryOverSavings { get; set; }
         public DateTime? FinancialVerificationDate { get; set; }
         public string SupportingValueStream { get; set; }
+        public string FinalReportUrl { get; set; }
         public string FinancialReportUrl { get; set; }
         public string FinancialReportComment { get; set; }
         public bool IsAudited { get; set; }

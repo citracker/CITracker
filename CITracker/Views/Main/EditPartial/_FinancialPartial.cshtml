@@ -80,6 +80,7 @@
                                 <div class="input-group">
                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
                                     <input type="text" class="form-control flatpickr-input month-picker active" name="date" placeholder="Month" readonly="readonly">
+                                    <input class="savings-id" name="id" hidden />
                                 </div>
                             </div>
                         </div>
@@ -133,6 +134,7 @@
                                 <option value="Safety">Safety</option>
                                 <option value="Defect Rate">Defect Rate</option>
                             </select>
+                            <input class="sft-savings-id" name="sft-id" hidden />
                         </div>
 
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
@@ -158,8 +160,8 @@
                         <div class="card custom-card">
                             <div class="card-body">
                                 <label for="formFileLg" class="form-label">Financial Report (Supported Format: PPT, Excel, PDF, Word)</label>
-                                <input class="form-control form-control-lg lockable" type="file">
-                                <div class="col-xl-3"> 
+                                <input class="form-control form-control-lg lockable" type="file" onchange="uploadFinancialReportFile(this)">
+                                <div class="col-xs-12 mt-2"> 
                                     <div class="card border-0"> 
                                         <div class="alert alert-solid-warning border border-warning mb-0 p-2"> 
                                             <div class="d-flex align-items-start"> 
@@ -183,7 +185,7 @@
                         <div class="card custom-card">
                             <div class="card-body">
                                 <label for="formFileLg" class="form-label">Comment</label>
-                                <textarea class="form-control lockable" rows="3"></textarea>
+                                <textarea class="form-control lockable" name="finrpt" rows="3"></textarea>
                             </div>
                         </div>
                     </div>
@@ -205,7 +207,7 @@
                 <div class="row gy-4 mt-2 mb-2">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                         <div class="form-check form-check-lg d-flex align-items-center">
-                            <input class="form-check-input lockable" type="checkbox" value="">
+                            <input class="form-check-input lockable" type="checkbox" name="isaud" value="">
                         </div>
                     </div>
 
@@ -217,7 +219,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input active lockable" placeholder="Audited Date" readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input active lockable" name="auddate" placeholder="Audited Date" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -226,17 +228,15 @@
             </div>
             <div class="card-footer border-top-card">
                 <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save &amp; Next</button>
+                <button class="btn btn-success shadow-success" onclick="UpdateCIProjectFinancial(this)">Save &amp; Next</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    window.HardSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial.Hard == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial.Hard));
-    window.SoftSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial.Soft == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial.Soft));
-
-    console.log(window.SoftSavings);
+    window.HardSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial?.Hard == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial?.Hard));
+    window.SoftSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial?.Soft == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial?.Soft));
 
     const CATEGORY_UNIT_MAP = {
         "Space": "sqft",
@@ -409,6 +409,8 @@
             // Savings type
             $form.find('.savings-type').val(data.SavingType);
 
+            $form.find('.savings-id').val(data.Id);
+
             // Value
             $form.find('input[name="savingsvalue"]').val(
                 Number(data.SavingValue).toLocaleString()
@@ -531,6 +533,7 @@
         function fillForm($form, data) {
             // Category
             $form.find('select[name="category"]').val(data.Category);
+            $form.find('input[name="sft-id"]').val(data.Id);
 
             // Value
             $form.find('input[name="savingvalue"]').val(
@@ -540,7 +543,7 @@
             // Unit (hidden + button)
             $form.find('.savingUnit').val(data.SavingUnit);
             $form.find('.input-group button').text(data.SavingUnit);
-            $form.find('.input-group button').text(data.SavingUnit);
+            //$form.find('.input-group button').text(data.SavingUnit);
         }
 
         function resetForm($form) {
@@ -581,6 +584,7 @@
         const hardSavings = [];
 
         document.querySelectorAll('.finBody').forEach(section => {
+            const id = section.querySelector('input[name="id"]')?.value;
             const date = section.querySelector('input[name="date"]')?.value;
             const savingType = section.querySelector('select[name="savingstype"]')?.value;
             const savingValue = section.querySelector('input[name="savingsvalue"]')?.value;
@@ -588,6 +592,7 @@
             if (!date) return;
 
             hardSavings.push({
+                Id: id,
                 Date: date,
                 SavingType: savingType,
                 SavingValue: savingValue
@@ -601,6 +606,7 @@
         const softSavings = [];
 
         document.querySelectorAll('.finSftBody').forEach(section => {
+            const id = section.querySelector('input[name="sft-id"]')?.value;
             const category = section.querySelector('select[name="category"]')?.value;
             const savingValue = section.querySelector('input[name="savingvalue"]')?.value;
             const savingUnit = section.querySelector('input[name="savingUnit"]')?.value;
@@ -608,6 +614,7 @@
 
             if (category && category.trim() !== '') {
                 softSavings.push({
+                    Id: id,
                     Category: category,
                     SavingUnit: savingUnit,
                     SavingValue: savingValue
@@ -618,7 +625,45 @@
         return softSavings;
     }
 
-    async function CIProjectFinancial(ref) {
+    function uploadFinancialReportFile (fileInput) {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const extension = file.name.split('.').pop().toLowerCase();
+        const previewConfig = FILE_PREVIEW_MAP[extension];
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("projectId", window.AppState.CIProject.Id);
+        formData.append("__RequestVerificationToken", getAntiForgeryToken());
+
+        fetch("/UploadFinancialReportFile", {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin"
+        })
+        .then(r => {
+            if (!r.ok) throw new Error("Upload failed");
+            return r.json();
+        })
+        .then(data => {
+            // ⬇️ Replace upload input with preview
+            if (!previewConfig) return;
+
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+            const replacementHtml = buildFilePreviewHtml(
+                previewConfig,
+                fileSizeMB,
+                data.fileUrl
+            );
+
+            const uploadContainer = fileInput.closest('.col-3');
+            uploadContainer.innerHTML = replacementHtml;
+        })
+        .catch(console.error);
+    };
+
+    async function UpdateCIProjectFinancial(ref) {
         const seenMonths = new Set();
         let duplicateMonth = null;
         ref.innerHTML = '<i class="fas fa-cog fa-spin"></i>';
@@ -636,6 +681,7 @@
 
         // Append hard data savings using index notation for model binding
         hardData.forEach((member, index) => {
+            formData.append(`Hard[${index}].Id`, member.Id);
             formData.append(`Hard[${index}].Date`, member.Date);
             formData.append(`Hard[${index}].SavingType`, member.SavingType);
             formData.append(`Hard[${index}].SavingValue`, member.SavingValue);
@@ -652,6 +698,7 @@
         });
 
         softData.forEach((member, index) => {
+            formData.append(`Soft[${index}].Id`, member.Id);
             formData.append(`Soft[${index}].Category`, member.Category);
             formData.append(`Soft[${index}].SavingUnit`, member.SavingUnit);
             formData.append(`Soft[${index}].SavingValue`, member.SavingValue);
@@ -677,10 +724,14 @@
         formData.append(`OneTimeSaving`, !!document.querySelector('input[name="ots"]:checked'));
         formData.append(`CarryOverSaving`, !!document.querySelector('input[name="cos"]:checked'));
         formData.append(`FinancialVerificationDate`, document.querySelector('input[name="cosdate"]')?.value);
+        formData.append(`FinancialReportComment`, document.querySelector('textarea[name="finrpt"]')?.value);
+        formData.append(`IsAudited`, !!document.querySelector('input[name="isaud"]:checked'));
+        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
+        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
 
         try
         {
-            const response = await fetch('/NewCIProjectFinancial', {
+            const response = await fetch('/UpdateCIProjectFinancial', {
                 method: 'POST',
                 credentials: 'same-origin',
                 body: formData

@@ -5,7 +5,7 @@ namespace Shared.Request
     public class CICommentRequest
     {    
         public long ProjectId { get; set; }
-        public List<Commentz> Comment { get; set; }
+        public List<Commentz>? Comment { get; set; }
     }
 
     public class Commentz

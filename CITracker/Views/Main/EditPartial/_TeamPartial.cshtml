@@ -120,7 +120,7 @@
 
 <script>
     const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
-    window.initialTeamMembers = @Html.Raw(Json.Serialize(Model.ProjectTeam.Team == null ? new List<Shared.Request.TeamMembersDTO>() : Model.ProjectTeam.Team));
+    window.initialTeamMembers = @Html.Raw(Json.Serialize(Model.ProjectTeam?.Team == null ? new List<Shared.Request.TeamMembersDTO>() : Model.ProjectTeam?.Team));
 
     $(document).ready(function () {
 

@@ -60,5 +60,12 @@ namespace Shared.Request
         public long ProjectId { get; set; }
         public List<HardSavingsDTO> Hard { get; set; }
         public List<SoftSavingsDTO> Soft { get; set; }
+        public bool OneTimeSaving { get; set; } = false;
+        public bool CarryOverSaving { get; set; } = false;
+        public bool IsAudited { get; set; } = false;
+        public long? Auditor { get; set; }
+        public DateTime? AuditedDate { get; set; }
+        public DateTime? FinancialVerificationDate { get; set; }
+        public string? FinancialReportComment { get; set; }
     }
 }

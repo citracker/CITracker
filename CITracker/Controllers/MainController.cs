@@ -238,6 +238,9 @@ namespace CITracker.Controllers
 
             try
             {
+                if (!model.Comment.Any())
+                    return Ok();
+
                 var newCIProjectComm = new List<CIProjectComment>();
 
                 foreach (var i in model.Comment)
@@ -437,7 +440,7 @@ namespace CITracker.Controllers
                 OperationalExcellence = _opsManager.GetMiniOEProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 StrategicInitiative = _opsManager.GetMiniSIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                Project = _opsManager.GetCIProject(id)?.Result?.SingleResult,
+                Project = _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), id)?.Result?.SingleResult,
                 ProjectTeam = _opsManager.GetCIProjectTeam(id)?.Result?.SingleResult,
                 ProjectTool = _opsManager.GetCIProjectTool(id)?.Result,
                 ProjectComment = _opsManager.GetCIProjectComment(id).Result?.SingleResult,
@@ -637,6 +640,220 @@ namespace CITracker.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error Occurred at {nameof(NewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateCIProjectTool")]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCIProjectTool(CIToolRequest model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var tools = model.Tool.Split("||").ToList();
+
+                var updCIProjectTool = new List<CIProjectToolDTO>();
+
+                foreach (var i in tools)
+                {
+                    updCIProjectTool.Add(new CIProjectToolDTO
+                    {
+                        Id = Convert.ToInt64(i.Split('-')[2]),
+                        ProjectId = model.ProjectId,
+                        Methodology = model.Methodology,
+                        Phase = i.Split('-')[0],
+                        ToolId = Convert.ToInt32(i.Split('-')[1]),
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.UpdateCIProjectTool(updCIProjectTool, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(UpdateCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while updating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateCIProjectComment")]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCIProjectComment(CICommentDTO model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                if (!model.Comment.Any())
+                    return Ok();
+
+                var updCIProjectComm = new List<CIProjectComment>();
+
+                foreach (var i in model.Comment)
+                {
+                    updCIProjectComm.Add(new CIProjectComment
+                    {
+                        Id = i.Id,
+                        ProjectId = model.ProjectId,
+                        Comment = i.Comment,
+                        Date = i.Date,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var res = _opsManager.UpdateCIProjectComment(updCIProjectComm, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
+                TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("UpdateCIProjectFinancial")]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateCIProjectFinancial(CIFinancialDTO model)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            ///TECHNICAL DEBT
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .Where(x => x.Value.Errors.Any())
+                    .ToDictionary(
+                        x => x.Key,
+                        x => x.Value.Errors.Select(e => e.ErrorMessage)
+                    );
+
+                return BadRequest(new { errors });
+            }
+
+            try
+            {
+                var CIProjectSaving = new List<CIProjectSaving>();
+
+                foreach (var i in model.Hard)
+                {
+                    CIProjectSaving.Add(new CIProjectSaving
+                    {
+                        Id = (long)i.Id,
+                        ProjectId = model.ProjectId,
+                        Date = i.Date,
+                        SavingClassification = "Hard",
+                        SavingType = i.SavingType,
+                        SavingValue = i.SavingValue,
+                        IsCurrency = true,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                foreach (var i in model.Soft)
+                {
+                    CIProjectSaving.Add(new CIProjectSaving
+                    {
+                        Id = (long)i.Id,
+                        ProjectId = model.ProjectId,
+                        Category = i.Category,
+                        SavingClassification = "Soft",
+                        SavingUnit = i.SavingUnit,
+                        SavingValue = i.SavingValue,
+                        IsCurrency = false,
+                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                        DateCreated = DateTime.UtcNow
+                    });
+                }
+
+                var ci = new ContinuousImprovementDTO
+                {
+                    Id = model.ProjectId,
+                    IsOneTimeSavings = model.OneTimeSaving,
+                    IsCarryOverSavings = model.CarryOverSaving,
+                    FinancialVerificationDate = (DateTime) model.FinancialVerificationDate,
+                    FinancialReportComment = model.FinancialReportComment,
+                    IsAudited = model.IsAudited,
+                    AuditedBy = (long) model.Auditor,
+                    AuditedDate = model.AuditedDate
+                };
+
+                var res = _opsManager.UpdateCIProjectSaving(CIProjectSaving, ci, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+
+                if (res.StatusCode == (int)HttpStatusCode.OK)
+                    return Ok(res);
+                else
+                    return StatusCode(StatusCodes.Status417ExpectationFailed, res);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred at {nameof(NewCIProjectFinancial)} - {JsonConvert.SerializeObject(ex)}");
                 TempData["Message"] = $"An error occurred while creating the CI Project. {ex.Message}";
                 return StatusCode(500, ex.Message);
             }
@@ -961,6 +1178,7 @@ namespace CITracker.Controllers
                 g => g.Key,
                 g => g.Select(x => new
                 {
+                    projectToolId = x.Id,
                     id = x.ToolId,
                     name = x.Tool,
                     url = x.Url,
@@ -1011,7 +1229,7 @@ namespace CITracker.Controllers
             return StatusCode(StatusCodes.Status417ExpectationFailed);
         }
 
-        [HttpPost]
+        [HttpPost("UploadToolFile")]
         [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId)
@@ -1056,6 +1274,104 @@ namespace CITracker.Controllers
             return Ok(new
             {
                 toolId,
+                fileUrl
+            });
+        }
+
+        [HttpPost("UploadFinalReportFile")]
+        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadFinalReportFile(IFormFile file, int projectId)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty.");
+
+            // Whitelist allowed extensions
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".jpg" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest("Invalid file type.");
+
+            // Generate safe file name (never trust client filename)
+            var safeFileName = $"{Guid.NewGuid()}{extension}";
+
+            // Target directory
+            var uploadRoot = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                $"Org-{HttpContext.Session.GetString("OrganizationId")}",
+                "report"
+            );
+
+            if (!Directory.Exists(uploadRoot))
+                Directory.CreateDirectory(uploadRoot);
+
+            var fullPath = Path.Combine(uploadRoot, safeFileName);
+
+            // 4️⃣ Save file safely
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // 5️⃣ Return relative URL (never physical path)
+            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/report/{safeFileName}";
+            var res = _opsManager.UpdateReportFile(projectId, fileUrl);
+
+            return Ok(new
+            {
+                projectId,
+                fileUrl
+            });
+        }
+
+        [HttpPost("UploadFinancialReportFile")]
+        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadFinancialReportFile(IFormFile file, int projectId)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty.");
+
+            // Whitelist allowed extensions
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".ppt", ".jpg" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest("Invalid file type.");
+
+            // Generate safe file name (never trust client filename)
+            var safeFileName = $"{Guid.NewGuid()}{extension}";
+
+            // Target directory
+            var uploadRoot = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                $"Org-{HttpContext.Session.GetString("OrganizationId")}",
+                "financialreport"
+            );
+
+            if (!Directory.Exists(uploadRoot))
+                Directory.CreateDirectory(uploadRoot);
+
+            var fullPath = Path.Combine(uploadRoot, safeFileName);
+
+            // 4️⃣ Save file safely
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // 5️⃣ Return relative URL (never physical path)
+            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/financialreport/{safeFileName}";
+            var res = _opsManager.UpdateFinancialReportFile(projectId, fileUrl);
+
+            return Ok(new
+            {
+                projectId,
                 fileUrl
             });
         }

@@ -60,10 +60,15 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateToolId(int toolId, string fileUrl);
         Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> si, string adminEmail);
         Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
-        Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(long projectId);
+        Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(int orgId, long projectId);
         Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId);
         Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId);
         Task<ResponseHandler<CICommentDTO>> GetCIProjectComment(long projectId);
         Task<ResponseHandler<CIFinancialDTO>> GetCIProjectFinancial(long projectId);
+        Task<ResponseHandler> UpdateCIProjectTool(List<CIProjectToolDTO> si, string adminEmail);
+        Task<ResponseHandler> UpdateCIProjectComment(List<CIProjectComment> si, string adminEmail);
+        Task<ResponseHandler> UpdateReportFile(int projectId, string fileUrl);
+        Task<ResponseHandler> UpdateFinancialReportFile(int projectId, string fileUrl);
+        Task<ResponseHandler> UpdateCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
     }
 }

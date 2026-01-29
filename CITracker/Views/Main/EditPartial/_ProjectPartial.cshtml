@@ -266,8 +266,8 @@
     };
     const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
     const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
-    const preSelectedFacilityId = @(Model.Project.FacilityId);
-    const preSelectedDepartmentId = @(Model.Project.DepartmentId);
+    const preSelectedFacilityId = @(Model.Project?.FacilityId);
+    const preSelectedDepartmentId = @(Model.Project?.DepartmentId);
 
     document.addEventListener("DOMContentLoaded", function () {
         let endPicker;
