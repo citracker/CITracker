@@ -3624,7 +3624,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                return await _repository.GetAsync<CIUser>(conn, "select 1 from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = email, orgId }, CommandType.Text, tran);
+                return await _repository.GetAsync<CIUser>(conn, "select * from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = email, orgId }, CommandType.Text, tran);
             }
             catch (Exception ex)
             {

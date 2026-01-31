@@ -1,4 +1,6 @@
-﻿@inject IHttpContextAccessor hca
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHttpContextAccessor hca
+@inject IViewLocalizer Localizer
 @model Shared.DTO.ResponseHandler<Shared.Models.SubscriptionPlan>
 
 @{
@@ -15,8 +17,8 @@
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 animation-zidex position-relative">
                         @* <h4 class="fw-medium mt-7">Manage initiatives — track audits — realise benefits</h4> *@
-                        <p class="text-start fw-bold">Bring your continuous improvement into one place</p>
-                        <h6 class="pb-3">CI Tracker helps teams capture ideas, audit processes, and measure financial benefits — with documents stored in your tenant via SharePoint integration.</h6>
+                        <p class="text-start fw-bold">@Localizer["Bring your continuous improvement into one place"]</p>
+                        <h6 class="pb-3">@Localizer["CI Tracker helps teams capture ideas, audit processes, and measure financial benefits — with documents stored in your tenant via SharePoint integration."]</h6>
 
                         <div class="btn-list">
                             @if (String.IsNullOrEmpty(hca?.HttpContext?.Session?.GetString("UserEmail")?.ToString()))
@@ -28,7 +30,7 @@
                                     <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                     <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
                                     </svg>
-                                    Sign in with SSO
+                                    @Localizer["Sign in with SSO"]
                                 </a>
                             }
                             else
@@ -36,18 +38,18 @@
                                 if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                 {
                                     <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                        Select a Subscription Plan
+                                        @Localizer["Select a Subscription Plan"]
                                     </a>
                                 }
                                 else
                                 {                                    
                                     <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                        Proceed to CITracker
+                                        @Localizer["Proceed to CITracker"]
                                     </a>
                                 }
                             }
                         </div>
-                        <p class="mt-1" style="font-size:0.8rem !important">Listing: Microsoft AppSource — <a href="https://marketplace.microsoft.com/en-gb/product/office/WA200007156?tab=Overview" style="color:white; text-decoration: underline">View on Marketplace</a></p>
+                        <p class="mt-1" style="font-size:0.8rem !important">@Localizer["Listing: Microsoft AppSource"] — <a href="https://marketplace.microsoft.com/en-gb/product/office/WA200007156?tab=Overview" style="color:white; text-decoration: underline">@Localizer["View on Marketplace"]</a></p>
                     </div>
                     <div class="col-xl-6 col-lg-6 my-auto"> <img src="~/assets/landing/images/4.png" alt=""> </div>
                 </div>
@@ -58,7 +60,7 @@
     <section class="section highlights" id="faq">
         <div class="container">
             <div class="row">
-                <h4 class="text-center fw-medium landing-card-header">Manage initiatives — track audits — realise benefits</h4>
+                <h4 class="text-center fw-medium landing-card-header">@Localizer["Manage initiatives"] — @Localizer["track audits"] — @Localizer["realise benefits"]</h4>
                 <span class="landing-title"></span>
                 @* <h2 class="text-center fw-medium">We are here to help you</h2>
                 <div class="row justify-content-center">

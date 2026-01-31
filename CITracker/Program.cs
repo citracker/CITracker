@@ -9,12 +9,14 @@ using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using NLog.Extensions.Logging;
 using Shared;
 using Shared.Implementations;
 using Shared.Interfaces;
+using System.Globalization;
 
 namespace CITracker
 {
@@ -22,6 +24,12 @@ namespace CITracker
     {
         public static void Main(string[] args)
         {
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en-US"),
+                new CultureInfo("es")     // Spanish
+            };
+
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
             try
@@ -81,6 +89,28 @@ namespace CITracker
                     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 });
 
+                builder.Services.AddLocalization(options =>
+                {
+                    options.ResourcesPath = "Resources";
+                });
+
+                builder.Services.AddControllersWithViews()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
+
+                builder.Services.Configure<RequestLocalizationOptions>(options =>
+                {
+                    options.DefaultRequestCulture = new RequestCulture("en-US");
+                    options.SupportedCultures = supportedCultures;
+                    options.SupportedUICultures = supportedCultures;
+
+                    options.RequestCultureProviders = new IRequestCultureProvider[]
+                    {
+                        new CookieRequestCultureProvider(),
+                        new AcceptLanguageHeaderRequestCultureProvider()
+                    };
+                });
+
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
                 builder.Services.Configure<ADKeyValues>(builder.Configuration.GetSection("AzureAd"));
                 builder.Services.AddTransient<HttpClient>();
@@ -113,8 +143,9 @@ namespace CITracker
                     app.UseDeveloperExceptionPage();
                 }
 
-                    app.UseHttpsRedirection();
+                app.UseHttpsRedirection();
                 app.UseStaticFiles();
+                app.UseRequestLocalization();
                 app.UseRouting();
                 app.UseAuthentication();
                 app.UseAuthorization();

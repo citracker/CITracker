@@ -1,4 +1,6 @@
-﻿@inject IHttpContextAccessor hca
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IHttpContextAccessor hca
+@inject IViewLocalizer Localizer
 <!DOCTYPE html>
 
 <html lang="en" dir="ltr" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
@@ -65,7 +67,7 @@
                                         <rect x="13" y="1" width="10" height="10" fill="#81BC06"></rect>
                                         <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                         <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
-                                    </svg> Sign in with SSO
+                                    </svg> @Localizer["Sign in with SSO"]
                                 </a>
                             }
                             else
@@ -73,13 +75,13 @@
                                 if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                 {
                                     <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                        Select a Subscription Plan
+                                        @Localizer["Select a Subscription Plan"]
                                     </a>
                                 }
                                 else
                                 {
                                     <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                        Proceed to CITracker
+                                        @Localizer["Proceed to CITracker"]
                                     </a>
                                 }
                             }
@@ -115,15 +117,15 @@
                         </div>
                         <ul class="main-menu" style="margin-left: 0px; margin-right: 0px;">
                             <!-- Start::slide -->
-                            <li class="slide"> <a class="side-menu__item active" href="#home"> <span class="side-menu__label">Home</span> </a> </li>
+                            <li class="slide"> <a class="side-menu__item active" href="#home"> <span class="side-menu__label">@Localizer["Home"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">About</span> </a> </li>
+                            <li class="slide"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">@Localizer["About"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#features" class="side-menu__item"> <span class="side-menu__label">Features</span> </a> </li>
+                            <li class="slide"> <a href="#features" class="side-menu__item"> <span class="side-menu__label">@Localizer["Features"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">Pricing</span> </a> </li>
+                            <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">@Localizer["Pricing"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">Contact</span> </a> </li>
+                            <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">@Localizer["Contact"]</span> </a> </li>
                             <!-- End::slide -->
                         </ul>
                         <div class="slide-right d-none" id="slide-right">
@@ -142,7 +144,7 @@
                                             <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                             <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
                                         </svg>
-                                        Sign in with SSO
+                                        @Localizer["Sign in with SSO"]
                                     </a>
                                 }
                                 else
@@ -150,13 +152,13 @@
                                     if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                     {
                                         <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                            Select a Subscription Plan
+                                            @Localizer["Select a Subscription Plan"]
                                         </a>
                                     }
                                     else
                                     {
                                         <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                            Proceed to CITracker
+                                            @Localizer["Proceed to CITracker"]
                                         </a>
                                     }
                                 }

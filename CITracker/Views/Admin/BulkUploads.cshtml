@@ -36,7 +36,7 @@
                                     <option selected disabled>Select an Upload Type</option>
                                     <option value="1">Users</option>
                                     <option value="2">Operational Location</option>
-                                    <option value="3">Operationl Excellence Inititives</option>
+                                    <option value="3">Operationl Excellence Initiatives</option>
                                     @* <option value="4">Strategic Initiatives</option>
                                     <option value="5">Continuous Improvement Initiatives</option> *@
                                 </select>
@@ -108,10 +108,16 @@
 
         reader.onload = function (evt) {
             const data = new Uint8Array(evt.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
+            const workbook = XLSX.read(data, {
+                type: 'array',
+                cellDates: true
+            });
 
             const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+            const rows = XLSX.utils.sheet_to_json(sheet, {
+                header: 1,
+                raw: true
+            });
 
             if (rows.length < 2) {
                 alert("Excel must contain headers and at least one data row");
@@ -125,10 +131,21 @@
             const rawData = bodyRows.map(r => {
                 const obj = {};
                 headers.forEach((h, i) => {
-                    obj[h] = (r[i] ?? '').toString().trim();
+                    const value = r[i];
+
+                    if (value instanceof Date) {
+                        // FORCE yyyy-MM-dd
+                        const yyyy = value.getFullYear();
+                        const mm = String(value.getMonth() + 1).padStart(2, '0');
+                        const dd = String(value.getDate()).padStart(2, '0');
+                        obj[h] = `${yyyy}-${mm}-${dd}`;
+                    } else {
+                        obj[h] = (value ?? '').toString().trim();
+                    }
                 });
                 return obj;
             });
+
 
             // Remove duplicate rows (ALL columns must match)
             extractedRows = removeDuplicateRows(rawData, headers);
@@ -176,7 +193,9 @@
         dataTable = $('#previewTable').DataTable({
             pageLength: 10,
             searching: true,
-            ordering: true
+            ordering: true,
+            scrollX: true,
+            autoWidth: false
         });
     }
 
