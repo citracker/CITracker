@@ -1,14 +1,21 @@
-﻿using Datalayer.Interfaces;
+﻿using CITracker.Validator;
+using Datalayer.Interfaces;
+using DocumentFormat.OpenXml.Bibliography;
+using FluentValidation;
 using Infastructure.Interface;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Shared;
+using Shared.DTO;
 using Shared.ExternalModels;
 using Shared.Models;
 using Shared.Request;
 using Shared.Utilities;
 using Shared.ViewModels;
+using System.Net;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace CITracker.Controllers
@@ -176,6 +183,67 @@ namespace CITracker.Controllers
 
             return View(orgsc);
         }
+
+        [HttpGet("BulkUploads")]
+        public IActionResult BulkUploads()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
+        [HttpPost("BulkUpload")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> BulkUpload([FromBody] BulkUploadRequest request)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (request.Rows == null || !request.Rows.Any())
+                return BadRequest("No data submitted");
+
+            var resp = new ResponseHandler();
+
+            // Route logic by upload type
+            switch (request.UploadType)
+            {
+                case 1:
+                    resp = await HandleUserUpload(request.Rows);
+                    break;
+
+                case 2:
+                    resp = await HandleLocationUpload(request.Rows);
+                    break;
+
+                case 3:
+                    resp = await HandleOperationalExcellenceUpload(request.Rows);
+                    break;
+
+                default:
+                    return BadRequest(new { success = false, message = "Invalid upload type" });
+            }
+
+            if(resp.StatusCode != (int)HttpStatusCode.OK)
+                return StatusCode((int)HttpStatusCode.ExpectationFailed, new { message = resp.Message });
+            else
+                return Ok(resp.Message);
+        }
+
 
         [HttpPost("AddCountry")]
         [ValidateAntiForgeryToken]
@@ -548,6 +616,192 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Error Occurred at {nameof(DeleteSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
+            }
+        }
+
+        private async Task<ResponseHandler> HandleUserUpload(List<Dictionary<string, string>> rows)
+        {
+            try
+            {
+                // 1. Map rows → strongly typed DTO
+                var usrs = rows.Select(r => new BulkUser
+                {                    
+                    IsActive = true,
+                    Role = Shared.Enumerations.Role.User.ToString(),
+                    OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                    EmailAddress = r.GetValueOrDefault("EmailAddress")?.Trim(),
+                    Name = r.GetValueOrDefault("Name")?.Trim(),
+                    DateCreated = DateTime.UtcNow,
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId"))
+                }).ToList();
+
+                // 2. Validate
+                var validator = new BulkUserValidator();
+                var failures = usrs
+                    .Select((u, i) => new { Index = i, Result = validator.Validate(u) })
+                    .Where(x => !x.Result.IsValid)
+                    .ToList();
+
+                if (failures.Any())
+                {
+                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+
+                    return new ResponseHandler
+                    {
+                        Message = string.Join(", ", errors),
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
+                var users = usrs.Select(u => new CIUser
+                {
+                    CreatedBy = (long) u.CreatedBy,
+                    DateCreated = (DateTime) u.DateCreated,
+                    EmailAddress = u.EmailAddress,
+                    IsActive = (bool) u.IsActive,
+                    Name = u.Name,
+                    OrganizationId = (int) u.OrganizationId,
+                    Role = u.Role
+                }).ToList();
+
+                // 3. De-duplicate by Email (Excel + DB safety)
+                users = users
+                    .GroupBy(u => u.EmailAddress.ToLower())
+                    .Select(g => g.First())
+                    .ToList();
+
+                return await _opsManager.AddOrganizationUsers(users, HttpContext.Session.GetString("UserEmail"));
+            }
+            catch(Exception e)
+            {
+                _logger.LogError($"Error Occurred at {nameof(HandleUserUpload)} - {JsonConvert.SerializeObject(e)}");
+                return new ResponseHandler
+                {
+                    Message = e.Message,
+                    Error = e,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        private async Task<ResponseHandler> HandleLocationUpload(List<Dictionary<string, string>> rows)
+        {
+            try
+            {
+                // 1. Map rows → strongly typed DTO
+                var locs = rows.Select(r => new BulkLocation
+                {
+                    Country = r.GetValueOrDefault("Country")?.Trim(),
+                    Facility = r.GetValueOrDefault("Facility")?.Trim(),
+                    Department = r.GetValueOrDefault("Department")?.Trim()
+                }).ToList();
+
+                // 2. Validate
+                var validator = new BulkLocationValidator();
+                var failures = locs
+                    .Select((u, i) => new { Index = i, Result = validator.Validate(u) })
+                    .Where(x => !x.Result.IsValid)
+                    .ToList();
+
+                if (failures.Any())
+                {
+                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+
+                    return new ResponseHandler
+                    {
+                        Message = string.Join(", ", errors),
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
+                // 3. De-duplicate by Email (Excel + DB safety)
+                locs = locs
+                    .GroupBy(x => new
+                    {
+                        Country = x.Country.ToLower(),
+                        Facility = x.Facility.ToLower(),
+                        Department = x.Department.ToLower()
+                    })
+                    .Select(g => g.First())
+                    .ToList();
+
+                return await _opsManager.AddOrganizationLocations(locs, Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), Convert.ToInt64(HttpContext.Session.GetString("UserId")), HttpContext.Session.GetString("UserEmail"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error Occurred at {nameof(HandleLocationUpload)} - {JsonConvert.SerializeObject(e)}");
+                return new ResponseHandler
+                {
+                    Message = e.Message,
+                    Error = e,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        private async Task<ResponseHandler> HandleOperationalExcellenceUpload(List<Dictionary<string, string>> rows)
+        {
+            try
+            {
+                // 1. Map rows → strongly typed DTO
+                var oe = rows.Select(r => new BulkOE
+                {
+                    Title = r.GetValueOrDefault("Title")?.Trim(),
+                    Country = r.GetValueOrDefault("Country")?.Trim(),
+                    Facility = r.GetValueOrDefault("Facility")?.Trim(),
+                    Department = r.GetValueOrDefault("Department")?.Trim(),
+                    Currency = r.GetValueOrDefault("Currency")?.Trim(),
+                    Description = r.GetValueOrDefault("Description")?.Trim(),
+                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
+                    ExecutiveSponsorEmailAddress = r.GetValueOrDefault("ExecutiveSponsorEmailAddress")?.Trim(),
+                    FacilitatorEmailAddress = r.GetValueOrDefault("FacilitatorEmailAddress")?.Trim(),
+                    IsCarryOverProject = r.GetValueOrDefault("IsCarryOverProject?")?.Trim(),
+                    SavingsClassification = r.GetValueOrDefault("SavingsClassification")?.Trim(),
+                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
+                    SponsorEmailAddress = r.GetValueOrDefault("SponsorEmailAddress")?.Trim(),
+                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
+                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper(),
+                    TargetSavings = Convert.ToDecimal(r.GetValueOrDefault("TargetSavings")?.Trim())
+                }).ToList();
+
+                // 2. Validate
+                var validator = new BulkOEValidator();
+                var failures = oe
+                    .Select((u, i) => new { Index = i, Result = validator.Validate(u) })
+                    .Where(x => !x.Result.IsValid)
+                    .ToList();
+
+                if (failures.Any())
+                {
+                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+
+                    return new ResponseHandler
+                    {
+                        Message = string.Join(", ", errors),
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
+                // 3. De-duplicate by Email (Excel + DB safety)
+                oe = oe
+                    .GroupBy(x => new
+                    {
+                        Title = x.Title.ToLower()
+                    })
+                    .Select(g => g.First())
+                    .ToList();
+
+                return await _opsManager.AddBulkOEProjects(oe, Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), Convert.ToInt64(HttpContext.Session.GetString("UserId")), HttpContext.Session.GetString("UserEmail"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error Occurred at {nameof(HandleOperationalExcellenceUpload)} - {JsonConvert.SerializeObject(e)}");
+                return new ResponseHandler
+                {
+                    Message = e.Message,
+                    Error = e,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
             }
         }
 

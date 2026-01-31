@@ -70,5 +70,8 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateReportFile(int projectId, string fileUrl);
         Task<ResponseHandler> UpdateFinancialReportFile(int projectId, string fileUrl);
         Task<ResponseHandler> UpdateCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
+        Task<ResponseHandler> AddOrganizationUsers(List<CIUser> orgUsr, string adminEmail);
+        Task<ResponseHandler> AddOrganizationLocations(List<BulkLocation> orglocs, int orgId, long uid, string adminEmail);
+        Task<ResponseHandler> AddBulkOEProjects(List<BulkOE> opExel, int orgId, long uId, string adminEmail);
     }
 }

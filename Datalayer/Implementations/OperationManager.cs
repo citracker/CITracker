@@ -2,6 +2,7 @@
 using Dapper.Contrib.Extensions;
 using Datalayer.Interfaces;
 using DataRepository;
+using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Math;
@@ -18,10 +19,13 @@ using Shared.Models;
 using Shared.Request;
 using Shared.Utilities;
 using System.Data;
+using System.Data.Common;
 using System.Net;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Datalayer.Implementations
 {
@@ -3414,6 +3418,289 @@ namespace Datalayer.Implementations
             {
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(UpdateCIProjectSaving)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler> AddOrganizationUsers(List<CIUser> orgUsr, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                foreach(var i in orgUsr)
+                {
+                    var user = await _repository.GetAsync<CIUser>(dbConnection, "Select 1 from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = i.EmailAddress, orgId = i.OrganizationId }, CommandType.Text, dbTransaction);
+
+                    if (user != null)
+                        continue;
+
+                    i.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIUserTable);
+                    var resp = await _repository.InsertAsync(dbConnection, i, dbTransaction);
+
+                    var audit = ModelBuilder.BuildAuditLog("User Added", $"Company Admin added new Organization User.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+
+                //UpdateUserListInMemory(dbConnection, dbTransaction, orgUsr.OrganizationId);
+
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(AddOrganizationUsers)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler> AddOrganizationLocations(List<BulkLocation> orgLocs, int orgId, long uid, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                foreach (var i in orgLocs)
+                {
+                    var cty = new OrganizationCountry
+                    {
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationCountryTable),
+                        Country = i.Country,
+                        CreatedBy = uid,
+                        DateCreated = DateTime.UtcNow,
+                        IsActive = true,
+                        OrganizationId = orgId
+                    };
+
+                    var countryId = await GetOrCreateCountry(dbConnection, dbTransaction, cty, adminEmail);
+
+                    // 5. Facility (tied to Country)
+                    var fac = new OrganizationFacility
+                    {
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationFacilityTable),
+                        OrganizationCountryId = countryId,
+                        CreatedBy = uid,
+                        DateCreated = DateTime.UtcNow,
+                        IsActive = true,
+                        OrganizationId = orgId,
+                        Facility = i.Facility
+                    };
+                    var facilityId = await GetOrCreateFacility(dbConnection, dbTransaction, fac, adminEmail);
+
+                    // 6. Department (tied to Facility + Country)
+                    var dept = new OrganizationDepartment
+                    {
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationDepartmentTable),
+                        OrganizationCountryId = countryId,
+                        CreatedBy = uid,
+                        DateCreated = DateTime.UtcNow,
+                        IsActive = true,
+                        OrganizationId = orgId,
+                        Department = i.Department,
+                        OrganizationFacilityId = facilityId
+                    };
+                    await GetOrCreateDepartment(dbConnection, dbTransaction, dept, adminEmail);
+                }
+
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(AddOrganizationLocations)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        private async Task<long> GetOrCreateCountry(IDbConnection conn, IDbTransaction tran, OrganizationCountry cty, string email)
+        {
+            try
+            {
+                var ctry = await _repository.GetAsync<OrganizationCountry>(conn, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = cty.OrganizationId, cty = cty.Country }, CommandType.Text, tran);
+
+                if (ctry != null)
+                    return ctry.Id;
+
+                var resp = await _repository.InsertAsync(conn, cty, tran);
+
+                var audit = ModelBuilder.BuildAuditLog("Country Added", $"Company Admin added new Organization Country of operation.", email);
+                audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
+                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+
+                return cty.Id;
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
+
+        private async Task<long> GetOrCreateFacility(IDbConnection conn, IDbTransaction tran, OrganizationFacility fac, string email)
+        {
+            try
+            {
+                var facil = await _repository.GetAsync<OrganizationFacility>(conn, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = fac.OrganizationId, ocid = fac.OrganizationCountryId, fac = fac.Facility }, CommandType.Text, tran);
+
+                if (facil != null)
+                    return facil.Id;
+
+                var resp = await _repository.InsertAsync(conn, fac, tran);
+
+                var audit = ModelBuilder.BuildAuditLog("Facility Added", $"Company Admin added new Organization Facility of operation.", email);
+                audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
+                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+
+                return fac.Id;
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
+
+        private async Task<long> GetOrCreateDepartment(IDbConnection conn, IDbTransaction tran, OrganizationDepartment dept, string email)
+        {
+            try
+            {
+                var depart = await _repository.GetAsync<OrganizationDepartment>(conn, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = dept.OrganizationId, ocid = dept.OrganizationCountryId, orgfacId = dept.OrganizationFacilityId, dept = dept.Department }, CommandType.Text, tran);
+
+                if (depart != null)
+                    return depart.Id;
+
+                var resp = await _repository.InsertAsync(conn, dept, tran);
+
+                var audit = ModelBuilder.BuildAuditLog("Department Added", $"Company Admin added new Organization Department of operation.", email);
+                audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
+                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+
+                return dept.Id;
+            }
+            catch (Exception ex)
+            {
+                return -1;
+            }
+        }
+
+        private async Task<CIUser> GetUser(IDbConnection conn, IDbTransaction tran, long orgId, string email)
+        {
+            try
+            {
+                return await _repository.GetAsync<CIUser>(conn, "select 1 from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = email, orgId }, CommandType.Text, tran);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<ResponseHandler> AddBulkOEProjects(List<BulkOE> opExel, int orgId, long uId, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                foreach(var i in opExel)
+                {
+                    //check if project exist
+                    var opProj = await _repository.GetAsync<OperationalExcellence>(dbConnection, "select 1 from OperationalExcellence where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId = orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
+
+                    if (opProj != null)
+                        continue;
+
+                    var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
+
+                    var fid = await GetUser(dbConnection, dbTransaction, orgId, i.FacilitatorEmailAddress);
+
+                    var sid = await GetUser(dbConnection, dbTransaction, orgId, i.SponsorEmailAddress);
+
+                    var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+
+                    var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+
+                    var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+
+                    var op = new OperationalExcellence
+                    {
+                        CarryOverProject = i.IsCarryOverProject,
+                        CreatedBy = uId,
+                        Currency = Utils.GetSymbol(i.Currency),
+                        DateCreated = DateTime.UtcNow,
+                        Description = i.Description,
+                        EndDate = Convert.ToDateTime(i.EndDate),
+                        ExecutiveSponsorId = esid != null ? esid.Id : uId,
+                        FacilitatorId = fid != null ? fid.Id : uId,
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OperationalExcellenceTable),
+                        OrganizationCountryId = ctr.Id,
+                        OrganizationDepartmentId = depart.Id,
+                        OrganizationFacilityId = facil.Id,
+                        OrganizationId = orgId,
+                        Priority = i.Priority,
+                        SavingsClassification = i.SavingsClassification,
+                        SponsorId = sid != null ? sid.Id : uId,
+                        StartDate = Convert.ToDateTime(i.StartDate),
+                        Status = i.Status,
+                        TargetSavings = i.TargetSavings,
+                        Title = i.Title
+                    };
+                    var resp = await _repository.InsertAsync(dbConnection, op, dbTransaction);
+
+                    var audit = ModelBuilder.BuildAuditLog("Operational Excellence Initiative Added", $"Company Admin added new Operational Excellence Initiative.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(AddBulkOEProjects)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,

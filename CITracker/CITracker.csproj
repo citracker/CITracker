@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\libs\New folder\" />
+    <Folder Include="wwwroot\templates\" />
   </ItemGroup>
 
   <ItemGroup>
