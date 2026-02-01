@@ -24,6 +24,6 @@ namespace Shared.Request
     public class CICommentDTO
     {
         public long ProjectId { get; set; }
-        public List<CommentzDTO> Comment { get; set; }
+        public List<CommentzDTO>? Comment { get; set; }
     }
 }

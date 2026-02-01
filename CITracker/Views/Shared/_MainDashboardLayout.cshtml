@@ -189,8 +189,8 @@
                                         <a href="javascript:void(0);" class="side-menu__item"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-write side-menu__icon"></i> <span class="side-menu__label">Initiative Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a>
                                         <ul class="slide-menu child1" data-popper-placement="bottom" data-popper-reference-hidden="" data-popper-escaped="" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, -168px);">
                                             <li class="slide side-menu__label1"> <a href="javascript:void(0)">Initiative Management</a> </li>
-                                            <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>
-                                            <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
+@*                                             <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>
+ *@                                            <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
                                                 <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")"> Continuous Improvement </a>
                                                 <ul class="slide-menu child2 @(ViewBag.Active == "CICreateProject" || ViewBag.Active == "AllCIProjects" ? "active" : "")">
                                                     <li class="slide @(ViewBag.Active == "CICreateProject" ? "active" : "")"> <a href="@Url.Action("CreateCIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CICreateProject" ? "active" : "")"> New Project </a></li>

@@ -26,77 +26,6 @@
             <div class="col-sm-12 col-lg-12 col-xl-12">
                 <!-- Start::row -->
                 <div class="row row-sm">
-                    @* <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div class="card-item-icon card-icon">
-                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24">
-                                            <!-- SVG content -->
-                                        </svg>
-                                    </div>
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">Completed Projects</label>
-                                        <span class="d-block fs-12 mb-0 text-muted">All completed projects</span>
-                                    </div>
-                                    <div class="card-item-body">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">5,900</h4>
-                                            <small><b class="text-success">55%</b> success achieved</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div class="card-item-icon card-icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                                            <!-- SVG content -->
-                                        </svg>
-                                    </div>
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">Cummulative Savings</label>
-                                        <span class="d-block fs-12 mb-0 text-muted">Employees joined this month</span>
-                                    </div>
-                                    <div class="card-item-body">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">15</h4>
-                                            <small><b class="text-success">5%</b> Increased</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-4">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div class="card-item-icon card-icon">
-                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                                            <!-- SVG content -->
-                                        </svg>
-                                    </div>
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">Total Expenses</label>
-                                        <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
-                                    </div>
-                                    <div class="card-item-body">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$8,500</h4>
-                                            <small><b class="text-danger">12%</b> decrease</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> *@
                 </div>
                 <!-- End::row -->
                 <!-- Start::row -->
@@ -269,8 +198,8 @@
                                                                         <td>@i.OrganizationCountry</td>
                                                                         <td>@i.OrganizationFacility</td>
                                                                         <td>
-                                                                            <a class="align-content-start ms-2 me-2" href="@Url.Action("OEProjectDetail", "Main", new { id = i.Id })"><i class="fe fe-edit"></i></a>
-                                                                            <a class="align-content-end ms-3 me-2 details-control"><span><i class="fe fe-folder-plus"></i></span></a>
+                                                                            <a href="@Url.Action("OEProjectDetail", "Main", new { id = i.Id })" class="btn btn-icon btn-sm btn-info-transparent rounded-pill"><i class="ri-edit-line"></i></a>
+                                                                            <a class="btn btn-icon btn-warning btn-wave me-5 waves-effect waves-light details-control"><span><i class="ri-folder-add-line"></i></span></a>
                                                                         </td>
                                                                     </tr>
                                                                 }
@@ -409,9 +338,9 @@
             if (row.child.isShown()) {
                 // Close child
                 row.child.hide();
-                $(this).html('<span><i class="fe fe-folder-plus"></i></span>');
+                $(this).html('<span><i class="ri-folder-add-line"></i></span>');
             } else {
-                $(this).html('<span><i class="fe fe-folder-minus"></i></span>');
+                $(this).html('<span><i class="ri-folder-reduce-line"></i></span>');
 
                 loadChildItems(parentId, function (data) {
                     var html = formatChildTable(parentId, data);

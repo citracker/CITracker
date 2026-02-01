@@ -23,14 +23,46 @@
     <!-- Node Waves Css -->
     <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
     <!-- SwiperJS Css -->
-    <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <!-- Color Picker Css -->
     <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
     <link rel="stylesheet" href="~/assets/libs/@@simonwep/pickr/themes/nano.min.css">
     <!-- Choices Css -->
     <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
-    <!--Swiper-->
-    <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+    <style>
+        .swiper,
+        .swiper-wrapper,
+        .swiper-slide {
+            pointer-events: auto;
+            touch-action: pan-x !important;
+        }
+
+        .swiper-slide {
+            width: 580px;
+        }
+
+        @@media (min-width: 768px) {
+            .swiper-slide
+            {
+                width: 360px;
+            }
+        }
+
+        @@media (min-width: 1200px) {
+            .swiper-slide
+            {
+                width: 420px;
+            }
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 150%;
+            object-fit: cover; /* or 'contain' */
+            border-radius: 12px; /* optional */
+        }
+
+    </style>
 </head>
 <body class="landing-body">    
     <div class="landing-page-wrapper">
@@ -127,9 +159,9 @@
                             <!-- End::slide --> <!-- Start::slide -->
                             <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">@Localizer["Pricing"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">@Localizer["FAQs"]</span> </a> </li>
+                            <li class="slide d-none"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">@Localizer["FAQs"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#clients" class="side-menu__item"> <span class="side-menu__label">@Localizer["Clients"]</span> </a> </li>
+                            <li class="slide d-none"> <a href="#clients" class="side-menu__item"> <span class="side-menu__label">@Localizer["Clients"]</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
                             <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">@Localizer["Contact"]</span> </a> </li>
                             <!-- End::slide -->
@@ -235,7 +267,7 @@
                             <hr class="mb-0">
                             <footer class="main-footer px-0 text-center">
                                 <div class="row ">
-                                    <div class="col-md-12 col-sm-12"> Copyright &copy; <span id="year">@DateTime.Now.Year</span> <a href="javascript:void(0)">Spruha</a>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> CI Tracker </a> All rights reserved. </div>
+                                    <div class="col-md-12 col-sm-12"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> CI Tracker </a> All rights reserved. </div>
                                 </div>
                             </footer>
                         </div>
@@ -249,9 +281,43 @@
     <div id="responsive-overlay"></div>
     <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
     <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
     <script src="~/assets/js/landing.js"></script>
-    <script src="~/assets/libs/swiper/swiper-bundle.min.js"></script>
+
+    <script>
+        window.addEventListener('load', () => {
+            new Swiper('.swiper', {
+                effect: 'coverflow',
+                grabCursor: true,
+                centeredSlides: true,
+                slidesPerView: 'auto',
+                loop: true,
+
+                autoplay: {
+                    delay: 2500,              // time between slides (ms)
+                    disableOnInteraction: false, // IMPORTANT
+                    pauseOnMouseEnter: true   // optional
+                },
+
+                coverflowEffect: {
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true
+                },
+
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true
+                },
+
+                observer: true,
+                observeParents: true
+            });
+        });
+
+    </script>
 </body>
 </html>

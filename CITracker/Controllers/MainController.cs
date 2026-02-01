@@ -124,7 +124,7 @@ namespace CITracker.Controllers
                     ProblemStatement = model.ProblemStatement,
                     Methodology = model.Methodology,
                     Certification = model.Certification,
-                    TotalExpectedRevenue = model.TotalExpectedRevenue,
+                    TotalExpectedRevenue = model.TotalExpectedRevenue == null ? 0 : (decimal)model.TotalExpectedRevenue,
                     Currency = model.Currency,
                     Status = model.Status,
                     Phase = model.Phase,
@@ -557,7 +557,7 @@ namespace CITracker.Controllers
                     ProblemStatement = model.ProblemStatement,
                     Methodology = model.Methodology,
                     Certification = model.Certification,
-                    TotalExpectedRevenue = model.TotalExpectedRevenue,
+                    TotalExpectedRevenue = model.TotalExpectedRevenue == null ? 0 : (decimal)model.TotalExpectedRevenue,
                     Currency = model.Currency,
                     Status = model.Status,
                     Phase = model.Phase,
@@ -733,6 +733,9 @@ namespace CITracker.Controllers
 
             try
             {
+                if (model.Comment == null)
+                    return Ok();
+
                 if (!model.Comment.Any())
                     return Ok();
 

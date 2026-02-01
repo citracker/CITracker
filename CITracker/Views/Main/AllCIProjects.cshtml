@@ -267,7 +267,7 @@
                                                                         <td>@i.Facility</td>
                                                                         <td>@i.Department</td>
                                                                         <td>
-                                                                            <a class="align-content-start ms-2 me-2" href="@Url.Action("CIProjectDetail", "Main", new { id = i.Id })"><i class="fe fe-edit"></i></a>
+                                                                            <a href="@Url.Action("CIProjectDetail", "Main", new { id = i.Id })" class="btn btn-icon btn-sm btn-info-transparent rounded-pill"><i class="ri-edit-line"></i></a>
                                                                             @* <a class="align-content-end ms-3 me-2 details-control"><span><i class="fe fe-folder-plus"></i></span></a> *@
                                                                         </td>
                                                                     </tr>

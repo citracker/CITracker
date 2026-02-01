@@ -140,6 +140,29 @@
         // ============================
         document.addEventListener('partialShown', function (e) {
 
+            const FILE_PREVIEW_MAP = {
+                pdf: {
+                    img: "../assets/images/files/png/2.png",
+                    title: "PDF Document"
+                },
+                doc: {
+                    img: "../assets/images/files/png/6.png",
+                    title: "Word Document"
+                },
+                docx: {
+                    img: "../assets/images/files/png/6.png",
+                    title: "Word Document"
+                },
+                xlsx: {
+                    img: "../assets/images/files/png/3.png",
+                    title: "Excel Document"
+                },
+                csv: {
+                    img: "../assets/images/files/png/3.png",
+                    title: "Excel Document"
+                }
+            };
+
             // ----------------------------
             // Attachments tab logic
             // ----------------------------
@@ -189,31 +212,7 @@
                     // Create mode
                     initCommentRow(visibleRow);
                 }
-            }
-
-
-            const FILE_PREVIEW_MAP = {
-                pdf: {
-                    img: "../assets/images/files/png/2.png",
-                    title: "PDF Document"
-                },
-                doc: {
-                    img: "../assets/images/files/png/6.png",
-                    title: "Word Document"
-                },
-                docx: {
-                    img: "../assets/images/files/png/6.png",
-                    title: "Word Document"
-                },
-                xlsx: {
-                    img: "../assets/images/files/png/3.png",
-                    title: "Excel Document"
-                },
-                csv: {
-                    img: "../assets/images/files/png/3.png",
-                    title: "Excel Document"
-                }
-            };
+            }            
 
 
             function buildFilePreviewHtml({ img, title }, fileSize, fileUrl) {

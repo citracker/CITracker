@@ -101,7 +101,7 @@ namespace Datalayer.Implementations
                 //{
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
-                    "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1 order by Country", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -146,7 +146,7 @@ namespace Datalayer.Implementations
                 //{
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
-                    "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1 order by Facility", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -191,7 +191,7 @@ namespace Datalayer.Implementations
                 //{
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
-                    "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1 order by Department", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -2936,14 +2936,28 @@ namespace Datalayer.Implementations
                     return await Task.FromResult(new ResponseHandler<CICommentDTO>
                     {
                         StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
+                        Message = "Record not found",
+                        SingleResult = new CICommentDTO
+                        {
+                            ProjectId = projectId,
+                            Comment = new List<CommentzDTO>()
+                        }
                     });
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CICommentDTO>());
+                return await Task.FromResult(new ResponseHandler<CICommentDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = ex.Message,
+                    SingleResult = new CICommentDTO
+                    {
+                        ProjectId = projectId,
+                        Comment = new List<CommentzDTO>()
+                    }
+                });
             }
         }
 

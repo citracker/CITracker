@@ -17,7 +17,7 @@ namespace Shared.Request
         public string ProblemStatement { get; set; }
         public string Methodology { get; set; }
         public string Certification { get; set; }
-        public decimal TotalExpectedRevenue { get; set; } = 0;
+        public decimal? TotalExpectedRevenue { get; set; } = 0;
         public string Currency { get; set; }
         public string Status { get; set; }
         public string Phase { get; set; }
