@@ -120,8 +120,14 @@
   <data name="About" xml:space="preserve">
     <value>Acerca de</value>
   </data>
+  <data name="Clients" xml:space="preserve">
+    <value>Clientes</value>
+  </data>
   <data name="Contact" xml:space="preserve">
     <value>Contacto</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>Preguntas frecuentes</value>
   </data>
   <data name="Features" xml:space="preserve">
     <value>Características</value>
