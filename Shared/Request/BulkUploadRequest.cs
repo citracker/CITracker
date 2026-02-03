@@ -50,4 +50,41 @@ namespace Shared.Request
         public string Department { get; set; }
         public string Status { get; set; }
     }
+
+    public class BulkSI
+    {
+        public string Title { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string Priority { get; set; }
+        public string Description { get; set; }
+        public string Status { get; set; }
+        public string OwnerEmailAddress { get; set; }
+        public string ExecutiveSponsorEmailAddress { get; set; }
+        public string Country { get; set; }
+        public string Facility { get; set; }
+        public string Department { get; set; }
+    }
+
+    public class BulkCI
+    {
+        public string Title { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string Priority { get; set; }
+        public string BusinessObjectiveAlignment { get; set; }
+        public string ProblemStatement { get; set; }
+        public string Methodology { get; set; }
+        public string Certification { get; set; }
+        public decimal? TotalExpectedRevenue { get; set; } = 0;
+        public string Currency { get; set; }
+        public string Status { get; set; }
+        public int Phase { get; set; }
+        public string Country { get; set; }
+        public string Facility { get; set; }
+        public string Department { get; set; }
+        public bool IsOneTimeSavings { get; set; }
+        public bool IsCarryOverSavings { get; set; }
+        public string? SupportingValueStream { get; set; }
+    }
 }

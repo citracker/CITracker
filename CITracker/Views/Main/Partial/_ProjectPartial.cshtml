@@ -199,20 +199,7 @@
                         <label for="input-text" class="form-label">Supporting Value Stream
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
                         </label>
-                        <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control" data-trigger>
-                            <option selected default>Kindly select a Supporting Value Stream</option>
-                            <optgroup label="Operational Excellence">
-                                @foreach (var i in Model.OperationalExcellence)
-                                {
-                                    <option value="OE|@i.Id">@i.Title</option>
-                                }
-                            </optgroup>
-                            <optgroup label="Strategic Initiative">
-                                @foreach (var i in Model.StrategicInitiative)
-                                {
-                                    <option value="SI|@i.Id">@i.Title</option>
-                                }
-                            </optgroup>
+                        <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control">
                         </select>
                     </div>                    
                 </div>
@@ -251,6 +238,41 @@
                     const endDate = new Date(startDate);
                     endDate.setFullYear(endDate.getFullYear() + 1);
                     endPicker.setDate(endDate, true);
+                }
+            }
+        });
+
+
+        $('#supportingvaluestrings').select2({
+            placeholder: 'Kindly search for a project',
+            minimumInputLength: 3,
+            ajax: {
+                url: '/SearchSupportingValues',
+                dataType: 'json',
+                delay: 3,
+                data: function (params) {
+                    return {
+                        search: params.term
+                    };
+                },
+                processResults: function (data) {
+                    return {
+                        results: data.reduce((groups, item) => {
+                            let group = groups.find(g => g.text === item.group);
+
+                            if (!group) {
+                                group = { text: item.group, children: [] };
+                                groups.push(group);
+                            }
+
+                            group.children.push({
+                                id: item.id,
+                                text: item.text
+                            });
+
+                            return groups;
+                        }, [])
+                    };
                 }
             }
         });
@@ -325,15 +347,15 @@
 
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        new Choices('#supportingvaluestrings', {
-            shouldSort: false,
-            position: 'top',
-            searchEnabled: true,
-            itemSelectText: '',
-            allowHTML: false
-        });
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     new Choices('#supportingvaluestrings', {
+    //         shouldSort: false,
+    //         position: 'top',
+    //         searchEnabled: true,
+    //         itemSelectText: '',
+    //         allowHTML: false
+    //     });
+    // });
 
     function onCountryChange(selectEl, targetInputId) {
         const countryId = parseInt(selectEl.value);

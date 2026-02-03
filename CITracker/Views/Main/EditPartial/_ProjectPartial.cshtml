@@ -222,8 +222,8 @@
                             Supporting Value Stream
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
                         </label>
-                        <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control" @(isAdminOrFacilitator == true ? "" : "readonly") data-trigger>
-                            <optgroup label="OPERATIONAL EXCELLENCE">
+                        <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control" @(isAdminOrFacilitator == true ? "" : "readonly")>
+                            @* <optgroup label="OPERATIONAL EXCELLENCE">
                                 @foreach (var i in Model.OperationalExcellence)
                                 {
                                     if (Model.Project.SupportingValueStream.Equals($"OE|{i.Id}"))
@@ -248,7 +248,7 @@
                                         <option value="SI|@i.Id">@i.Title</option>
                                     }
                                 }
-                            </optgroup>
+                            </optgroup> *@
                         </select>
                     </div>
                 </div>
@@ -263,6 +263,9 @@
 <script>
     window.AppState = {
         selectedMethodology: null
+    };
+    window.preselectedProjectId = {
+        id: '@Model.Project.SupportingValueStream'
     };
     const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
     const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
@@ -292,6 +295,55 @@
                 }
             }
         });
+
+        const $select = $('#supportingvaluestrings');
+
+        function initSelect2() {
+            $select.select2({
+                placeholder: 'Kindly search for a project',
+                minimumInputLength: 3,
+                allowClear: true,
+                ajax: {
+                    url: '/SearchSupportingValues',
+                    dataType: 'json',
+                    delay: 3,
+                    data: params => ({ search: params.term }),
+                    processResults: data => {
+                        const grouped = {};
+
+                        data.forEach(item => {
+                            if (!grouped[item.group]) {
+                                grouped[item.group] = {
+                                    text: item.group,
+                                    children: []
+                                };
+                            }
+                            grouped[item.group].children.push({
+                                id: item.id,
+                                text: item.text
+                            });
+                        });
+
+                        return { results: Object.values(grouped) };
+                    }
+                }
+            });
+        }
+
+        // ✅ If we have a preselected ID, resolve it first
+        if (window.preselectedProjectId.id) {
+            $.getJSON('/GetSupportingValueById', {
+                id: window.preselectedProjectId.id
+            })
+            .done(function (item) {
+                console.log(item)
+                const option = new Option(item.text, item.id, true, true);
+                $select.append(option).trigger('change');
+                initSelect2();
+            });
+        } else {
+            initSelect2();
+        }
     });
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -392,15 +444,6 @@
         if (facilitySelect && facilitySelect.value) {
             onFacilityChange(facilitySelect, 'department');
         }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        new Choices('#supportingvaluestrings', {
-            shouldSort: false,
-            searchEnabled: true,
-            itemSelectText: '',
-            allowHTML: false
-        });
     });
 
     function onCountryChange(selectEl, targetInputId) {

@@ -48,5 +48,7 @@ namespace Shared.Utilities
         public const string CIProjectCommentTable = "CIProjectComment";
 
         public const string CIProjectSavingTable = "CIProjectSaving";
+
+        public const string OrganizationToolTable = "OrganizationTool";
     }
 }

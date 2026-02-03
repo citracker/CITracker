@@ -145,14 +145,14 @@ namespace CITracker.Controllers
             }
 
             var sites = new List<DriveInfo>();
-            //check if tenant has an existing sharepoint site
-            var hasSiteId = _opsManager.CheckIfTenantHasSiteId(HttpContext.Session.GetString("TenantId")).Result;
+            ////check if tenant has an existing sharepoint site
+            //var hasSiteId = _opsManager.CheckIfTenantHasSiteId(HttpContext.Session.GetString("TenantId")).Result;
 
-            if(!hasSiteId)
-            {
-                //discover sharepoint sites
-                sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
-            }
+            //if(!hasSiteId)
+            //{
+            //    //discover sharepoint sites
+            //    sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
+            //}
 
             var res = new ManageToolsVM
             {
@@ -234,6 +234,14 @@ namespace CITracker.Controllers
                     resp = await HandleOperationalExcellenceUpload(request.Rows);
                     break;
 
+                case 4:
+                    resp = await HandleStrategicInitiativeUpload(request.Rows);
+                    break;
+
+                case 5:
+                    resp = await HandleContinuousImprovementUpload(request.Rows);
+                    break;
+
                 default:
                     return BadRequest(new { success = false, message = "Invalid upload type" });
             }
@@ -243,7 +251,6 @@ namespace CITracker.Controllers
             else
                 return Ok(resp.Message);
         }
-
 
         [HttpPost("AddCountry")]
         [ValidateAntiForgeryToken]
@@ -428,31 +435,62 @@ namespace CITracker.Controllers
         }
 
         [HttpPost("UploadToolDocument")]
+        [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadToolDocument(ToolUploadRequest tool)
+        public async Task<IActionResult> UploadToolDocument(IFormFile file, int toolId, string toolName)
         {
-            if (tool.File == null || tool.File.Length == 0)
-                return BadRequest("No file uploaded");
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty.");
 
-            if (!Utils.IsValidWordDocument(tool.File))
-                return BadRequest("Invalid or corrupted Word document");
+            // 1️⃣ Whitelist allowed extensions
+            var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".jpg" };
+            var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
-            //// Upload to SharePoint
-            //var fileUrl = await _sharePointService.UploadAsync(
-            //    file,
-            //    toolName,
-            //    User.GetOrganizationId()
-            //);
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest("Invalid file type.");
 
-            //// Persist URL against tool + org
-            //await _repository.SaveToolUploadAsync(
-            //    toolId,
-            //    fileUrl,
-            //    User.GetOrganizationId()
-            //);
+            // 2️⃣ Generate safe file name (never trust client filename)
+            var safeFileName = $"{Guid.NewGuid()}{extension}";
 
-            //return Ok(new { url = fileUrl });
-            return Json("");
+            // 3️⃣ Target directory (wwwroot/uploads/tools)
+            var uploadRoot = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                $"Org-{HttpContext.Session.GetString("OrganizationId")}",
+                "toolTemplates"
+            );
+
+            if (!Directory.Exists(uploadRoot))
+                Directory.CreateDirectory(uploadRoot);
+
+            var fullPath = Path.Combine(uploadRoot, safeFileName);
+
+            // 4️⃣ Save file safely
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // 5️⃣ Return relative URL (never physical path)
+            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
+
+            var orgTool = new OrganizationTool
+            {
+                Url = fileUrl,
+                MethodologyTool = toolId,
+                DateCreated = DateTime.UtcNow,
+                OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId"))
+            };
+
+            var res = _opsManager.UpdateOrganizationTool(orgTool, HttpContext.Session.GetString("UserEmail"));
+
+            return Ok(new
+            {
+                toolId,
+                fileUrl
+            });
         }
 
         [HttpPost("DeleteDepartment")]
@@ -796,6 +834,135 @@ namespace CITracker.Controllers
             catch (Exception e)
             {
                 _logger.LogError($"Error Occurred at {nameof(HandleOperationalExcellenceUpload)} - {JsonConvert.SerializeObject(e)}");
+                return new ResponseHandler
+                {
+                    Message = e.Message,
+                    Error = e,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        private async Task<ResponseHandler> HandleStrategicInitiativeUpload(List<Dictionary<string, string>> rows)
+        {
+            try
+            {
+                // 1. Map rows → strongly typed DTO
+                var si = rows.Select(r => new BulkSI
+                {
+                    Title = r.GetValueOrDefault("Title")?.Trim(),
+                    Country = r.GetValueOrDefault("Country")?.Trim(),
+                    Facility = r.GetValueOrDefault("Facility")?.Trim(),
+                    Department = r.GetValueOrDefault("Department")?.Trim(),
+                    Description = r.GetValueOrDefault("Description")?.Trim(),
+                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
+                    ExecutiveSponsorEmailAddress = r.GetValueOrDefault("ExecutiveSponsorEmailAddress")?.Trim(),
+                    OwnerEmailAddress = r.GetValueOrDefault("OwnerEmailAddress")?.Trim(),
+                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
+                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
+                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()
+                }).ToList();
+
+                // 2. Validate
+                var validator = new BulkSIValidator();
+                var failures = si
+                    .Select((u, i) => new { Index = i, Result = validator.Validate(u) })
+                    .Where(x => !x.Result.IsValid)
+                    .ToList();
+
+                if (failures.Any())
+                {
+                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+
+                    return new ResponseHandler
+                    {
+                        Message = string.Join(", ", errors),
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
+                // 3. De-duplicate by Email (Excel + DB safety)
+                si = si
+                    .GroupBy(x => new
+                    {
+                        Title = x.Title.ToLower()
+                    })
+                    .Select(g => g.First())
+                    .ToList();
+
+                return await _opsManager.AddBulkSIProjects(si, Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), Convert.ToInt64(HttpContext.Session.GetString("UserId")), HttpContext.Session.GetString("UserEmail"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error Occurred at {nameof(HandleStrategicInitiativeUpload)} - {JsonConvert.SerializeObject(e)}");
+                return new ResponseHandler
+                {
+                    Message = e.Message,
+                    Error = e,
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        private async Task<ResponseHandler> HandleContinuousImprovementUpload(List<Dictionary<string, string>> rows)
+        {
+            try
+            {
+                // 1. Map rows → strongly typed DTO
+                var ci = rows.Select(r => new BulkCI
+                {
+                    Title = r.GetValueOrDefault("Title")?.Trim(),
+                    Country = r.GetValueOrDefault("Country")?.Trim(),
+                    Facility = r.GetValueOrDefault("Facility")?.Trim(),
+                    Department = r.GetValueOrDefault("Department")?.Trim(),
+                    ProblemStatement = r.GetValueOrDefault("ProblemStatement")?.Trim(),
+                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
+                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
+                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
+                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper(),
+                    BusinessObjectiveAlignment = r.GetValueOrDefault("BusinessObjectiveAlignment")?.Trim(),
+                    Methodology = r.GetValueOrDefault("Methodology")?.Trim(),
+                    Certification = r.GetValueOrDefault("Certification")?.Trim(),
+                    Currency = r.GetValueOrDefault("Currency")?.Trim(),
+                    IsCarryOverSavings = r.GetValueOrDefault("IsCarryOverSavings?")?.Trim().ToLower() == "yes" ? true : false,
+                    IsOneTimeSavings = r.GetValueOrDefault("IsOneTimeSavings?")?.Trim().ToLower() == "yes" ? true : false,
+                    Phase = Convert.ToInt32(r.GetValueOrDefault("Phase")?.Trim()),
+                    SupportingValueStream = r.GetValueOrDefault("SupportingValueStream")?.Trim(),
+                    TotalExpectedRevenue = Convert.ToDecimal(r.GetValueOrDefault("TotalExpectedRevenue")?.Trim())
+                }).ToList();
+
+                // 2. Validate
+                var validator = new BulkCIValidator();
+                var failures = ci
+                    .Select((u, i) => new { Index = i, Result = validator.Validate(u) })
+                    .Where(x => !x.Result.IsValid)
+                    .ToList();
+
+                if (failures.Any())
+                {
+                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+
+                    return new ResponseHandler
+                    {
+                        Message = string.Join(", ", errors),
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
+                // 3. De-duplicate by Email (Excel + DB safety)
+                ci = ci
+                    .GroupBy(x => new
+                    {
+                        Title = x.Title.ToLower()
+                    })
+                    .Select(g => g.First())
+                    .ToList();
+
+                return await _opsManager.AddBulkCIProjects(ci, Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), Convert.ToInt64(HttpContext.Session.GetString("UserId")), HttpContext.Session.GetString("UserEmail"));
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Error Occurred at {nameof(HandleContinuousImprovementUpload)} - {JsonConvert.SerializeObject(e)}");
                 return new ResponseHandler
                 {
                     Message = e.Message,

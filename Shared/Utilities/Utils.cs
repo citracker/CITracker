@@ -64,6 +64,15 @@ namespace Shared.Utilities
             "Low"
         };
 
+        public static readonly HashSet<string> CertificationAllowedValues =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Green Belt",
+            "Black Belt",
+            "PMP",
+            "Not Applicable"
+        };
+
         public static readonly HashSet<string> CarryOverAllowedValues =
         new(StringComparer.OrdinalIgnoreCase)
         {

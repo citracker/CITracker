@@ -43,8 +43,8 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateExistingSIProject(StrategicInitiative si, string adminEmail);
         Task<ResponseHandler<SISubProjectDTO>> GetSISubProject(long id);
         Task<ResponseHandler> UpdateExistingSISubProject(SISubProject si, string adminEmail);
-        Task<ResponseHandler<OperationalExcellenceDTO>> GetMiniOEProjects(int orgId);
-        Task<ResponseHandler<StrategicInitiativeDTO>> GetMiniSIProjects(int orgId);
+        Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProject(int orgId, string type, long pid);
+        Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProjects(int orgId, string search);
         Task<ResponseHandler<OrganizationToolDTO>> GetAllOrganizationTools(int orgId, string method, long pid);
         Task<ResponseHandler<MethodologyPhase>> GetMethodologyPhases(string method = null);
         Task<ResponseHandler<OrganizationToolDTO>> GetAllMethodologyTools(string method);
@@ -73,5 +73,8 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddOrganizationUsers(List<CIUser> orgUsr, string adminEmail);
         Task<ResponseHandler> AddOrganizationLocations(List<BulkLocation> orglocs, int orgId, long uid, string adminEmail);
         Task<ResponseHandler> AddBulkOEProjects(List<BulkOE> opExel, int orgId, long uId, string adminEmail);
+        Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail);
+        Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail);
+        Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail);
     }
 }

@@ -6,6 +6,7 @@ using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.InkML;
 using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
@@ -1858,27 +1859,37 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<OperationalExcellenceDTO>> GetMiniOEProjects(int orgId)
+        public async Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProject(int orgId, string type, long pid )
         {
             try
             {
+                SupportingValueSearchResultDTO item = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var resi = await _repository.GetListAsync<OperationalExcellenceDTO>(dbConnection,
-                "SELECT Id, Title FROM OperationalExcellence where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED')", new { oid = orgId }, CommandType.Text);
-
-                if (resi.Any())
+                if (type == "OE")
                 {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
+                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM OperationalExcellence WHERE Id = @id",
+                        new { id = pid }, CommandType.Text);
+                }
+
+                if (type == "SI")
+                {
+                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM StrategicInitiative WHERE Id = @id",
+                        new { id = pid }, CommandType.Text);
+                }
+
+                if (item != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
-                        Result = resi
+                        SingleResult = item
                     });
                 }
                 else
                 {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
+                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                     {
                         StatusCode = (int)HttpStatusCode.NotFound,
                         Message = "Record not found"
@@ -1887,8 +1898,8 @@ namespace Datalayer.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(GetMiniOEProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
+                _logger.LogError($"Exception at {nameof(GetMiniOESIProject)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
@@ -1896,18 +1907,18 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<StrategicInitiativeDTO>> GetMiniSIProjects(int orgId)
+        public async Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProjects(int orgId, string search)
         {
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection,
-                "SELECT Id, Title FROM StrategicInitiative where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED')", new { oid = orgId }, CommandType.Text);
+                var resi = await _repository.GetListAsync<SupportingValueSearchResultDTO>(dbConnection,
+                "SELECT Id, Title, 'OE' AS Source FROM OperationalExcellence WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' UNION ALL SELECT Id, Title, 'SI' AS Source FROM StrategicInitiative WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' ORDER BY Title", new { orgId, search }, CommandType.Text);
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
+                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
@@ -1916,7 +1927,7 @@ namespace Datalayer.Implementations
                 }
                 else
                 {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
+                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                     {
                         StatusCode = (int)HttpStatusCode.NotFound,
                         Message = "Record not found"
@@ -1925,8 +1936,8 @@ namespace Datalayer.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(GetMiniSIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
+                _logger.LogError($"Exception at {nameof(GetMiniOESIProjects)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
@@ -3715,6 +3726,207 @@ namespace Datalayer.Implementations
             {
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(AddBulkOEProjects)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                foreach (var i in sInit)
+                {
+                    //check if project exist
+                    var opProj = await _repository.GetAsync<StrategicInitiative>(dbConnection, "select 1 from StrategicInitiative where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId = orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
+
+                    if (opProj != null)
+                        continue;
+
+                    var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
+
+                    var fid = await GetUser(dbConnection, dbTransaction, orgId, i.OwnerEmailAddress);
+
+                    var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+
+                    var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+
+                    var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+
+                    var si = new StrategicInitiative
+                    {
+                        CreatedBy = uId,
+                        DateCreated = DateTime.UtcNow,
+                        Description = i.Description,
+                        EndDate = Convert.ToDateTime(i.EndDate),
+                        ExecutiveSponsorId = esid != null ? esid.Id : uId,
+                        OwnerId = fid != null ? fid.Id : uId,
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.StrategicInitiativeTable),
+                        OrganizationCountryId = ctr.Id,
+                        OrganizationDepartmentId = depart.Id,
+                        OrganizationFacilityId = facil.Id,
+                        OrganizationId = orgId,
+                        Priority = i.Priority,
+                        StartDate = Convert.ToDateTime(i.StartDate),
+                        Status = i.Status,
+                        Title = i.Title
+                    };
+                    var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+
+                    var audit = ModelBuilder.BuildAuditLog("Strategic Initiative Added", $"Company Admin added new Strategic Initiative.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(AddBulkSIProjects)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                //check if tool exist
+                var OrgT = await _repository.GetAsync<OrganizationTool>(dbConnection, "select * from OrganizationTool where MethodologyTool = @meth and OrganizationId = @orgId", new { meth = orgTool.MethodologyTool, orgId = orgTool.OrganizationId }, CommandType.Text, dbTransaction);
+
+                if (OrgT != null)
+                {
+                    OrgT.Url = orgTool.Url;
+                    await _repository.UpdateAsync(dbConnection, OrgT, dbTransaction);
+                    var audit = ModelBuilder.BuildAuditLog("Methodology Tool template Updated", $"Company Admin updated existing methodology tool template.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+                else
+                {
+                    orgTool.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationToolTable);
+                    var resp = await _repository.InsertAsync(dbConnection, orgTool, dbTransaction);
+                    var audit = ModelBuilder.BuildAuditLog("Methodology Tool template Added", $"Company Admin added new methodology tool template.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+                    
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(UpdateOrganizationTool)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                foreach (var i in ci)
+                {
+                    //check if project exist
+                    var ciProj = await _repository.GetAsync<ContinuousImprovement>(dbConnection, "select 1 from ContinuousImprovement where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
+
+                    if (ciProj != null)
+                        continue;
+
+                    var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+
+                    var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+
+                    var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+
+                    var si = new ContinuousImprovement
+                    {
+                        CreatedBy = uId,
+                        DateCreated = DateTime.UtcNow,
+                        ProblemStatement = i.ProblemStatement,
+                        EndDate = Convert.ToDateTime(i.EndDate),
+                        Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.ContinuousImprovementTable),
+                        CountryId = (int)ctr.Id,
+                        DepartmentId = (int)depart.Id,
+                        FacilityId = (int)facil.Id,
+                        OrganizationId = orgId,
+                        Priority = i.Priority,
+                        StartDate = Convert.ToDateTime(i.StartDate),
+                        Status = i.Status,
+                        Title = i.Title,
+                        BusinessObjectiveAlignment = i.BusinessObjectiveAlignment,
+                        Certification = i.Certification,
+                        Currency = i.Currency,
+                        IsCarryOverSavings = i.IsCarryOverSavings,
+                        IsOneTimeSavings = i.IsOneTimeSavings,
+                        Methodology = i.Methodology,
+                        Phase = i.Phase.ToString(),
+                        TotalExpectedRevenue = (decimal)i.TotalExpectedRevenue
+                    };
+                    var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+
+                    var audit = ModelBuilder.BuildAuditLog("Continuous Improvement Added", $"Company Admin added new Continuous Improvement.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                }
+
+                dbTransaction.Commit();
+
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(AddBulkCIProjects)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,

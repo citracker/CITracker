@@ -77,12 +77,71 @@ namespace CITracker.Controllers
                 OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OperationalExcellence = _opsManager.GetMiniOEProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                StrategicInitiative = _opsManager.GetMiniSIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
             };
 
             return View(coep);
+        }
+
+        [HttpGet("SearchSupportingValues")]
+        public async Task<IActionResult> SearchSupportingValues(string search)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrWhiteSpace(search) || search.Length < 3)
+                return Ok(Enumerable.Empty<SupportingValueSearchResultDTO>());
+
+            var results = await _opsManager.GetMiniOESIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), search);
+
+            return Ok(results.Result.Select(x => new
+            {
+                id = $"{x.Source}|{x.Id}",
+                text = x.Title,
+                group = x.Source == "OE" ? "Operational Excellence" : "Strategic Initiative"
+            }));
+        }
+
+        [HttpGet("GetSupportingValueById")]
+        public async Task<IActionResult> GetSupportingValueById(string id)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (string.IsNullOrWhiteSpace(id) || id.Length < 3)
+                return BadRequest(new SupportingValueSearchResultDTO());
+
+            var parts = id.Split('|');
+            var type = parts[0];
+            var realId = long.Parse(parts[1]);
+
+            var results = await _opsManager.GetMiniOESIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), type, realId);
+
+            if (results.SingleResult == null)
+            {
+                return Ok(new { });
+            }
+
+            return Ok(new
+            {
+                id = $"{results.SingleResult.Source}|{results.SingleResult.Id}",
+                text = results.SingleResult.Title,
+                group = results.SingleResult.Source == "OE" ? "Operational Excellence" : "Strategic Initiative"
+            });
         }
 
         [HttpPost("NewCIProject")]
@@ -437,8 +496,6 @@ namespace CITracker.Controllers
                 OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OperationalExcellence = _opsManager.GetMiniOEProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                StrategicInitiative = _opsManager.GetMiniSIProjects(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 Project = _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), id)?.Result?.SingleResult,
                 ProjectTeam = _opsManager.GetCIProjectTeam(id)?.Result?.SingleResult,
@@ -1233,7 +1290,7 @@ namespace CITracker.Controllers
         }
 
         [HttpPost("UploadToolFile")]
-        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId)
         {
@@ -1282,7 +1339,7 @@ namespace CITracker.Controllers
         }
 
         [HttpPost("UploadFinalReportFile")]
-        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinalReportFile(IFormFile file, int projectId)
         {
@@ -1331,7 +1388,7 @@ namespace CITracker.Controllers
         }
 
         [HttpPost("UploadFinancialReportFile")]
-        [RequestSizeLimit(10 * 1024 * 1024)] // 10 MB
+        [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinancialReportFile(IFormFile file, int projectId)
         {

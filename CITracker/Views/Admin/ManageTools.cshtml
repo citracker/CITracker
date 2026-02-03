@@ -191,8 +191,8 @@
         formData.append('file', file);
         formData.append('toolId', tool.id);
         formData.append('toolName', tool.name);
+        formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
-        const token = getAntiForgeryToken();
 
         fetch('/UploadToolDocument', {
             method: 'POST',
