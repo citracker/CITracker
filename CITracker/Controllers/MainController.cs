@@ -83,6 +83,29 @@ namespace CITracker.Controllers
             return View(coep);
         }
 
+        [HttpGet("GetOrganizationLocation")]
+        public IActionResult GetOrganizationLocation()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var coep = new OrganizationLocationVM
+            {
+                OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+            };
+
+            return Ok(coep);
+        }
+
         [HttpGet("SearchSupportingValues")]
         public async Task<IActionResult> SearchSupportingValues(string search)
         {

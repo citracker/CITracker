@@ -851,15 +851,15 @@ namespace CITracker.Controllers
                 var si = rows.Select(r => new BulkSI
                 {
                     Title = r.GetValueOrDefault("Title")?.Trim(),
+                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
+                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
+                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
+                    Description = r.GetValueOrDefault("Description")?.Trim(),
+                    ExecutiveSponsorEmailAddress = r.GetValueOrDefault("ExecutiveSponsorEmailAddress")?.Trim(),
+                    OwnerEmailAddress = r.GetValueOrDefault("OwnerEmailAddress")?.Trim(),
                     Country = r.GetValueOrDefault("Country")?.Trim(),
                     Facility = r.GetValueOrDefault("Facility")?.Trim(),
                     Department = r.GetValueOrDefault("Department")?.Trim(),
-                    Description = r.GetValueOrDefault("Description")?.Trim(),
-                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
-                    ExecutiveSponsorEmailAddress = r.GetValueOrDefault("ExecutiveSponsorEmailAddress")?.Trim(),
-                    OwnerEmailAddress = r.GetValueOrDefault("OwnerEmailAddress")?.Trim(),
-                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
-                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
                     Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()
                 }).ToList();
 
@@ -912,13 +912,13 @@ namespace CITracker.Controllers
                 var ci = rows.Select(r => new BulkCI
                 {
                     Title = r.GetValueOrDefault("Title")?.Trim(),
+                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
+                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
+                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
+                    ProblemStatement = r.GetValueOrDefault("ProblemStatement")?.Trim(),
                     Country = r.GetValueOrDefault("Country")?.Trim(),
                     Facility = r.GetValueOrDefault("Facility")?.Trim(),
                     Department = r.GetValueOrDefault("Department")?.Trim(),
-                    ProblemStatement = r.GetValueOrDefault("ProblemStatement")?.Trim(),
-                    EndDate = r.GetValueOrDefault("EndDate")?.Trim(),
-                    Priority = r.GetValueOrDefault("Priority")?.Trim(),
-                    StartDate = r.GetValueOrDefault("StartDate")?.Trim(),
                     Status = r.GetValueOrDefault("Status")?.Trim().ToUpper(),
                     BusinessObjectiveAlignment = r.GetValueOrDefault("BusinessObjectiveAlignment")?.Trim(),
                     Methodology = r.GetValueOrDefault("Methodology")?.Trim(),

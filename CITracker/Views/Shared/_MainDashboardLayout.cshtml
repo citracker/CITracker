@@ -1,4 +1,5 @@
-﻿@inject IHttpContextAccessor hca
+﻿@using Shared.Enumerations
+@inject IHttpContextAccessor hca
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
@@ -77,30 +78,92 @@
             <!-- Start::main-header-container -->
             <div class="main-header-container container-fluid">
                 <!-- Start::header-content-left -->
-                <div class="header-content-left">
-                    <!-- Start::header-element -->
-                    <div class="header-element">
-                        <div class="horizontal-logo">
-                            <a href="@Url.Action("Index", "Home")" class="header-logo">
-                                <img src="~/assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo">
-                                <img src="~/assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo">
-                                <img src="~/assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark">
-                                <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
-                                <img src="~/assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white">
-                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white">
-                            </a>
+                <div class="header-content-left"> 
+                    <div class="header-element"> 
+                        <div class="horizontal-logo"> 
+                            <a href="index.html" class="header-logo"> 
+                                <img src="../assets/images/brand-logos/desktop-logo.png" alt="logo" class="desktop-logo"> 
+                                <img src="../assets/images/brand-logos/toggle-logo.png" alt="logo" class="toggle-logo"> 
+                                <img src="../assets/images/brand-logos/desktop-dark.png" alt="logo" class="desktop-dark"> 
+                                <img src="../assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark"> 
+                                <img src="../assets/images/brand-logos/desktop-white.png" alt="logo" class="desktop-white"> 
+                                <img src="../assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-white"> 
+                            </a> 
+                        </div> 
+                    </div> 
+                    <div class="header-element"> 
+                        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a> 
+                    </div> 
+                    <div class="main-header-center d-lg-block header-link"> 
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" required>
+                            </div>
                         </div>
-                    </div>
-                    <!-- End::header-element -->
-                    <!-- Start::header-element -->
-                    <div class="header-element">
-                        <!-- Start::header-link -->
-                        <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);">
-                            <span></span>
-                        </a>
-                        <!-- End::header-link -->
-                    </div>
-                    <!-- End::header-element -->
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <div class="input-group">
+                                <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" required>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <select class="form-control input-group" name="priority" id="priority" required>
+                                <option selected disabled>Priority</option>
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <select class="form-control input-group" name="status" id="status" required>
+                                <option selected disabled> Select a Status </option>
+                                @foreach (Status item in Enum.GetValues(typeof(Status)))
+                                {                                    
+                                    <option value="@item">@item</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <select class="form-control input-group" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
+                                <option selected disabled>Select a Country</option>
+                            </select>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <select class="form-control input-group" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
+                            </select>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                            <select class="form-control input-group" name="department" id="department" required>
+                            </select>
+                        </div>
+                        <div id="headersearch" class="header-search"> 
+                            <div class="p-3"> 
+                                <div class=""> <p class="fw-semibold text-muted mb-2 fs-13">Recent Searches</p>
+                                    <div class="ps-2"> 
+                                        <a href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>People<span></span></a> 
+                                        <a href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Pages<span></span></a> 
+                                        <a href="javascript:void(0)" class="search-tags"><i class="fe fe-search me-2"></i>Articles<span></span></a> 
+                                    </div> 
+                                </div> 
+                                <div class="mt-3"> <p class="fw-semibold text-muted mb-2 fs-13">Apps and pages</p>
+                                    <ul class="ps-2 list-unstyled"> 
+                                        <li class="p-1 d-flex align-items-center text-muted mb-2 search-app"> <a href="full-calendar.html"><span><i class="bx bx-calendar me-2 fs-14 bg-primary-transparent p-2 rounded-circle "></i>Calendar</span></a> </li> 
+                                        <li class="p-1 d-flex align-items-center text-muted mb-2 search-app"> <a href="mail-inbox.html"><span><i class="bx bx-envelope me-2 fs-14 bg-primary-transparent p-2 rounded-circle"></i>Mail</span></a> </li> 
+                                        <li class="p-1 d-flex align-items-center text-muted mb-2 search-app"> <a href="buttons.html"><span><i class="bx bx-dice-1 me-2 fs-14 bg-primary-transparent p-2 rounded-circle "></i>Buttons</span></a> </li> 
+                                    </ul> 
+                                </div> 
+                                <div class="mt-3"> <p class="fw-semibold text-muted mb-2 fs-13">Links</p>
+                                    <ul class="ps-2 list-unstyled"> 
+                                        <li class="p-1 align-items-center text-muted mb-1 search-app"> <a href="javascript:void(0)" class="text-primary"><u>http://spruko/html/spruko.com</u></a> </li> 
+                                        <li class="p-1 align-items-center text-muted mb-1 search-app"> <a href="javascript:void(0)" class="text-primary"><u>http://spruko/demo/spruko.com</u></a> </li> 
+                                    </ul> 
+                                </div> 
+                            </div> 
+                            <div class="py-3 border-top px-0"> 
+                                <div class="text-center"> <a href="javascript:void(0)" class="text-primary text-decoration-underline fs-15">View all</a> </div> 
+                            </div> 
+                        </div> 
+                    </div> 
+                    <!-- End::header-element --> 
                 </div>
                 <!-- End::header-content-left -->
                 <!-- Start::header-content-right -->
@@ -124,8 +187,8 @@
                                     <img src="~/assets/images/faces/1.jpg" alt="img" width="32" height="32" class="rounded-circle">
                                 </div>
                                 <div class="d-none">
-                                    <p class="fw-semibold mb-0">Angelica</p>
-                                    <span class="op-7 fw-normal d-block fs-11">Web Designer</span>
+                                    <p class="fw-semibold mb-0">@hca.HttpContext.Session.GetString("UserName")?.ToString()</p>
+                                    <span class="op-7 fw-normal d-block fs-11">@hca.HttpContext.Session.GetString("UserRole")?.ToString()</span>
                                 </div>
                             </div>
                         </a>
@@ -134,8 +197,8 @@
                         <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
                             <li>
                                 <div class="header-navheading border-bottom">
-                                    <h6 class="main-notification-title">Sonia Taylor</h6>
-                                    <p class="main-notification-text mb-0">Web Designer</p>
+                                    <h6 class="main-notification-title">@hca.HttpContext.Session.GetString("UserName")?.ToString()</h6>
+                                    <p class="main-notification-text mb-0">@hca.HttpContext.Session.GetString("UserRole")?.ToString()</p>
                                 </div>
                             </li>
                             <li><a class="dropdown-item d-flex border-bottom" href="profile.html"><i class="fe fe-user fs-16 align-middle me-2"></i>Profile</a></li>
@@ -297,11 +360,125 @@
    <div id="responsive-overlay"></div>
    <!-- Scroll To Top -->
 
+    <div id="sensei-widget-container">
+        <div id="sensei-overlay" style="display:none; position:fixed; bottom:90px; right:20px; width:400px; height:600px; z-index:9999; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-radius:12px; overflow:hidden; background:#fff;">
+            <iframe src="https://ai-sensei-chat.lovable.app" style="width:100%; height:100%; border:none;" allow="clipboard-write"></iframe>
+        </div>
+
+        <button onclick="toggleSensei()" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#c53030; color:white; border:none; cursor:pointer; z-index:10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:24px;">
+            ⛩️
+        </button>
+    </div>
 
     <script>
+
+        let facilities = [];
+        let departments = [];
+
+        function toggleSensei() {
+            var overlay = document.getElementById('sensei-overlay');
+            if (overlay.style.display === "none") {
+                overlay.style.display = "block";
+            } else {
+                overlay.style.display = "none";
+            }
+        }
+
         function loadPartial(hide, show) {
             $("#"+hide).addClass("d-none")
             $("#"+show).removeClass("d-none")
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let endPicker;
+
+            endPicker = flatpickr("#enddate", {
+                dateFormat: "Y-m-d"
+            });
+
+            const startPicker = flatpickr("#startdate", {
+                dateFormat: "Y-m-d",
+                onChange: function (selectedDates) {
+                    if (selectedDates.length) {
+                        const startDate = selectedDates[0];
+
+                        // Set min date for end date
+                        endPicker.set("minDate", startDate);
+
+                        // Optional: auto-set end date to +12 months
+                        const endDate = new Date(startDate);
+                        endDate.setFullYear(endDate.getFullYear() + 1);
+                        endPicker.setDate(endDate, true);
+                    }
+                }
+            });
+
+            fetch(`/GetOrganizationLocation`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch location");
+                }
+                return response.json();
+            })
+            .then(data => populateCountrySelect(data))
+            .catch(error => console.log(error));
+        });
+
+        function populateCountrySelect(tools) {
+            const select = document.getElementById("country");
+
+            console.log(tools)
+
+            // Clear existing options
+            select.innerHTML = '<option value="">-- Select a Country --</option>';
+
+            tools.OrganizationCountry.forEach(tool => {
+                const option = document.createElement("option");
+                option.value = tool.Id;      // must match JSON property
+                option.textContent = tool.Country;
+                select.appendChild(option);
+            });
+
+            facilities = tools.OrganizationFacility;
+            departments = tools.OrganizationDepartment;
+        }
+
+        function onCountryChange(selectEl, targetInputId) {
+            const countryId = parseInt(selectEl.value);
+            const locationSelect = document.getElementById(targetInputId);
+
+            // Clear existing options
+            locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+
+            if (isNaN(countryId)) return;
+
+            const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+
+            filtered.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.Id;
+                option.textContent = item.Facility;
+                locationSelect.appendChild(option);
+            });
+        }
+
+        function onFacilityChange(selectEl, targetInputId) {
+            const facilityId = parseInt(selectEl.value);
+            const locationSelect = document.getElementById(targetInputId);
+
+            // Clear existing options
+            locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+
+            if (isNaN(facilityId)) return;
+
+            const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
+
+            filtered.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.Id;
+                option.textContent = item.Department;
+                locationSelect.appendChild(option);
+            });
         }
     </script>
 

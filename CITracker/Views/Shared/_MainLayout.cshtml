@@ -157,8 +157,8 @@
                         <ul class="main-header-dropdown dropdown-menu pt-0 overflow-hidden header-profile-dropdown dropdown-menu-end" aria-labelledby="mainHeaderProfile">
                             <li>
                                 <div class="header-navheading border-bottom">
-                                    <h6 class="main-notification-title">Sonia Taylor</h6>
-                                    <p class="main-notification-text mb-0">Web Designer</p>
+                                    <h6 class="main-notification-title">@hca.HttpContext.Session.GetString("UserName")?.ToString()</h6>
+                                    <p class="main-notification-text mb-0">@hca.HttpContext.Session.GetString("UserRole")?.ToString()</p>
                                 </div>
                             </li>
                             <li><a class="dropdown-item d-flex border-bottom" href="profile.html"><i class="fe fe-user fs-16 align-middle me-2"></i>Profile</a></li>
@@ -212,8 +212,7 @@
                                     <a href="javascript:void(0);" class="side-menu__item"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-write side-menu__icon"></i> <span class="side-menu__label">Initiative Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                     <ul class="slide-menu child1" data-popper-placement="bottom" data-popper-reference-hidden="" data-popper-escaped="" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, -168px);">
                                        <li class="slide side-menu__label1"> <a href="javascript:void(0)">Initiative Management</a> </li>
-                                       <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>
-                                       <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
+@*                                        <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>*@                                       <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
                                             <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")"> Continuous Improvement </a>
                                             <ul class="slide-menu child2 @(ViewBag.Active == "CICreateProject" || ViewBag.Active == "AllCIProjects" ? "active" : "")">
                                                 <li class="slide @(ViewBag.Active == "CICreateProject" ? "active" : "")"> <a href="@Url.Action("CreateCIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CICreateProject" ? "active" : "")"> New Project </a></li>
@@ -317,6 +316,26 @@
    <div id="responsive-overlay"></div>
    <!-- Scroll To Top -->
 
+    <div id="sensei-widget-container">
+        <div id="sensei-overlay" style="display:none; position:fixed; bottom:90px; right:20px; width:400px; height:600px; z-index:9999; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-radius:12px; overflow:hidden; background:#fff;">
+            <iframe src="https://ai-sensei-chat.lovable.app" style="width:100%; height:100%; border:none;" allow="clipboard-write"></iframe>
+        </div>
+
+        <button onclick="toggleSensei()" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#c53030; color:white; border:none; cursor:pointer; z-index:10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:24px;">
+            ⛩️
+        </button>
+    </div>
+
+    <script>
+        function toggleSensei() {
+            var overlay = document.getElementById('sensei-overlay');
+            if (overlay.style.display === "none") {
+                overlay.style.display = "block";
+            } else {
+                overlay.style.display = "none";
+            }
+        }
+    </script>
 
     <script>
         function loadPartial(hide, show) {

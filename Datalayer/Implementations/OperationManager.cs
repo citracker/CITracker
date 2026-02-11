@@ -3662,6 +3662,7 @@ namespace Datalayer.Implementations
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
+            var res = new ResponseHandler();
             try
             {
                 foreach(var i in opExel)
@@ -3673,16 +3674,79 @@ namespace Datalayer.Implementations
                         continue;
 
                     var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
+                    if (esid == null)
+                    {
+                        res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                        res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        continue;
+                    }
+
 
                     var fid = await GetUser(dbConnection, dbTransaction, orgId, i.FacilitatorEmailAddress);
+                    if (fid == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Email '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Email '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var sid = await GetUser(dbConnection, dbTransaction, orgId, i.SponsorEmailAddress);
+                    if (sid == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Email '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Email '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+                    if (ctr == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+                    if (facil == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+                    if (depart == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        continue;
+                    }
+
 
                     var op = new OperationalExcellence
                     {
@@ -3714,13 +3778,17 @@ namespace Datalayer.Implementations
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
-                dbTransaction.Commit();
-
-                return await Task.FromResult(new ResponseHandler
+                if (!String.IsNullOrEmpty(res.Message))
+                    return await Task.FromResult(res);
+                else
                 {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                    dbTransaction.Commit();
+                    return await Task.FromResult(new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful"
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -3743,6 +3811,7 @@ namespace Datalayer.Implementations
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
+            var res = new ResponseHandler();
             try
             {
                 foreach (var i in sInit)
@@ -3754,14 +3823,64 @@ namespace Datalayer.Implementations
                         continue;
 
                     var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
+                    if(esid == null)
+                    {
+                        res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                        res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var fid = await GetUser(dbConnection, dbTransaction, orgId, i.OwnerEmailAddress);
+                    if (fid == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Email '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Email '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+                    if (ctr == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+                    if (facil == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+                    if (depart == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var si = new StrategicInitiative
                     {
@@ -3788,13 +3907,18 @@ namespace Datalayer.Implementations
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
-                dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
+                if (!String.IsNullOrEmpty(res.Message))
+                    return await Task.FromResult(res);
+                else
                 {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                    dbTransaction.Commit();
+                    return await Task.FromResult(new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful"
+                    });
+                }
             }
             catch (Exception ex)
             {
@@ -3868,6 +3992,7 @@ namespace Datalayer.Implementations
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
+            var res = new ResponseHandler();
             try
             {
                 foreach (var i in ci)
@@ -3879,10 +4004,43 @@ namespace Datalayer.Implementations
                         continue;
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
+                    if (ctr == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
+                    if (facil == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
+                    if (depart == null)
+                    {
+                        if (String.IsNullOrEmpty(res.Message))
+                        {
+                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        }
+                        else
+                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                        continue;
+                    }
 
                     var si = new ContinuousImprovement
                     {
@@ -3915,13 +4073,18 @@ namespace Datalayer.Implementations
                     var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
-                dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
+                if (!String.IsNullOrEmpty(res.Message))
+                    return await Task.FromResult(res);
+                else
                 {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                    dbTransaction.Commit();
+                    return await Task.FromResult(new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful"
+                    });
+                }
             }
             catch (Exception ex)
             {
