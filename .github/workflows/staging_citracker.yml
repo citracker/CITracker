@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - citracker
+name: Build and deploy ASP.Net Core app to Azure Web App - CITracker
 
 on:
   push:
@@ -51,15 +51,15 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_82D5DC4AD7DC4E4BB8BCFCDEF9EA4EDB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B0C36624B675420FBA6B96B40036DF38 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F8CC5EB6B2F44245A7E85DFC297ED6A2 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1F981EF3B252426D9770158FFC151169 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DD66CF4791F43F292C44342DC8CDA8C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'citracker'
+          app-name: 'CITracker'
           slot-name: 'Production'
           package: .
           
