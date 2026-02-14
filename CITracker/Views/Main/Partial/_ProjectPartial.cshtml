@@ -10,7 +10,7 @@
             <div class="card-header justify-content-between">
                 <div class="card-title"> Project Details </div>
             </div>
-            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+            <div class="card-body custom-scroll">
                 <div class="row gy-4">
                     <div id="validationSummaryPP" class="alert alert-danger d-none" role="alert">
                         <ul class="mb-0"></ul>
@@ -58,7 +58,7 @@
                         <p class="mb-2 fw-medium">Business Objective Alignment <span style="color:red">*</span>
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
                         </p>
-                        <div class="card-body d-sm-flex justify-content-between">
+                        <div class="card-body d-sm-flex justify-content-between p-0">
                             <label class="form-check form-control m-2 p-2"> 
                                 <input type="checkbox" value="Safety" name="boa"> 
                                 <span class="form-check-label"> Safety </span>
@@ -94,7 +94,7 @@
                         <p class="mb-2 fw-medium">Methodology <span style="color:red">*</span>
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate approach for executing the initiative/project."> <i class="fe fe-info"></i></a>
                         </p>
-                        <div class="card-body d-sm-flex justify-content-between">
+                        <div class="card-body d-sm-flex justify-content-between p-0">
                             <label class="form-check form-control m-2 p-2">
                                 <input type="radio" name="methodology" value="General" alt="DMAIC" onchange="onMethodologyChanged()">
                                 <span class="form-check-label">DMAIC</span>
@@ -122,7 +122,7 @@
                         <p class="mb-2 fw-medium">Working towards a certification? <span style="color:red">*</span>
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This helps with tying the initiative/project to any Lean 6 sigma certification effort"> <i class="fe fe-info"></i></a>
                         </p>
-                        <div id="certificationContainer" class="card-body d-sm-flex justify-content-between"></div>
+                        <div id="certificationContainer" class="card-body d-sm-flex justify-content-between p-0"></div>
                     </div>
 
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
