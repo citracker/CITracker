@@ -179,6 +179,12 @@
                     fileInput.disabled = status !== "COMPLETED";
                 }
 
+                window.DownloadProjectFile = function (fileId) {
+                    const encodedFileName = encodeURIComponent(fileId);
+                    const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+                    window.location.href = url1;
+                };
+
 
                 fetch(`/GetSelectedTools?val=${window.AppState.CIProject.Id}`)
                     .then(r => {
@@ -219,7 +225,7 @@
                 return `
                     <div class="text-center">
                         <div class="file-manger-icon">
-                            <a href="#" onclick="DownloadFile(${fileId})" target="_blank">
+                            <a href="#" onclick="DownloadProjectFile(${fileId})" target="_blank">
                                 <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
                             </a>
                         </div>
@@ -272,7 +278,7 @@
                             } else {
                                 // fallback if extension is unknown
                                 uploadHtml = `
-                                    <a href="#" onclick="DownloadFile(${tool.id})" target="_blank">View uploaded file</a>
+                                    <a href="#" onclick="DownloadProjectFile(${tool.id})" target="_blank">View uploaded file</a>
                                 `;
                             }
                         }
@@ -302,15 +308,6 @@
                     container.appendChild(contentPanel);
                     root.appendChild(container);
                 });
-            }
-
-            function DownloadFile(fileId) {
-                const encodedFileName = encodeURIComponent(fileId);
-
-                const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
-
-                // Trigger browser download
-                window.location.href = url1;
             }
 
 

@@ -106,6 +106,13 @@
         });
 
         if (e.detail.id === 'attachments_info') {
+
+            window.DownloadProjectFile = function (fileId) {
+                const encodedFileName = encodeURIComponent(fileId);
+                const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+                window.location.href = url1;
+            };
+
             fetch(`/GetSelectedTools?val=${window.AppState.CIProject.Id}`)
                 .then(response => {
                     if (!response.ok) {
@@ -120,165 +127,156 @@
 
 
 
-            const FILE_PREVIEW_MAP = {
-                pdf: {
-                    img: "../assets/images/files/png/2.png",
-                    title: "PDF Document"
-                },
-                doc: {
-                    img: "../assets/images/files/png/6.png",
-                    title: "Word Document"
-                },
-                docx: {
-                    img: "../assets/images/files/png/6.png",
-                    title: "Word Document"
-                },
-                xlsx: {
-                    img: "../assets/images/files/png/3.png",
-                    title: "Excel Document"
-                },
-                csv: {
-                    img: "../assets/images/files/png/3.png",
-                    title: "Excel Document"
-                }
-            };
+        const FILE_PREVIEW_MAP = {
+            pdf: {
+                img: "../assets/images/files/png/2.png",
+                title: "PDF Document"
+            },
+            doc: {
+                img: "../assets/images/files/png/6.png",
+                title: "Word Document"
+            },
+            docx: {
+                img: "../assets/images/files/png/6.png",
+                title: "Word Document"
+            },
+            xlsx: {
+                img: "../assets/images/files/png/3.png",
+                title: "Excel Document"
+            },
+            csv: {
+                img: "../assets/images/files/png/3.png",
+                title: "Excel Document"
+            }
+        };
 
 
-            function buildFilePreviewHtml({ img, title }, fileSize, fileUrl) {
-                return `
-                    <div class="text-center">
-                        <div class="file-manger-icon">
-                            <a href="#" onclick="DownloadFile(${fileUrl})" target="_blank">
-                                <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
-                            </a>
+        function buildFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+            return `
+                <div class="text-center">
+                    <div class="file-manger-icon">
+                        <a href="#" onclick="DownloadProjectFile(${fileUrl})" target="_blank">
+                            <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
+                        </a>
+                    </div>
+                    <h6 class="mb-1 fw-medium mt-0">${title}</h6>
+                    <span class="text-muted">${fileSize}</span>
+                </div>
+            `;
+        }
+
+        function populateToolDiv(groups) {
+            const root = document.getElementById("contractRoot");
+            if (!root) return;
+
+            root.innerHTML = '';
+
+            Object.entries(groups).forEach(([phaseName, tools]) => {
+
+                const container = document.createElement("div");
+                container.className = "contract-container";
+                container.style.margin = "0.5rem 0";
+
+                container.innerHTML = `
+                    <div class="phase-sidebar">
+                        <div class="phase-title">
+                            <h1 class="phase-title-text">${phaseName}</h1>
                         </div>
-                        <h6 class="mb-1 fw-medium mt-0">${title}</h6>
-                        <span class="text-muted">${fileSize}</span>
                     </div>
                 `;
-            }
 
-            function DownloadFile(toolId) {
-                const encodedFileName = encodeURIComponent(toolId);
+                const contentPanel = document.createElement("div");
+                contentPanel.className = "content-panel";
 
-                const url = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+                tools.forEach(tool => {
+                    const section = document.createElement("div");
+                    section.className = "content-section";
 
-                // Trigger browser download
-                window.location.href = url;
-            }
+                    let uploadHtml = ``;
 
-            function populateToolDiv(groups) {
-                const root = document.getElementById("contractRoot");
-                if (!root) return;
+                    if (tool.url) {
+                        const ext = tool.url.split('.').pop().toLowerCase();
+                        const previewConfig = FILE_PREVIEW_MAP[ext];
 
-                root.innerHTML = '';
+                        if (previewConfig) {
+                            uploadHtml = buildFilePreviewHtml(
+                                previewConfig,
+                                '',          // size optional (not usually known on load)
+                                tool.url
+                            );
+                        } else {
+                            // fallback if extension is unknown
+                            uploadHtml = `
+                                <a href="#" onclick="DownloadProjectFile(${fileId})" target="_blank">View uploaded file</a>
+                            `;
+                        }
+                    }
+                    else{
+                        uploadHtml = `
+                        <input
+                            class="form-control"
+                            type="file"
+                            name="file_${tool.id}"
+                            data-tool-id="${tool.id}"
+                            onchange="uploadToolFile(this, ${tool.id}, ${tool.name})">
+                        `;
+                    }
 
-                Object.entries(groups).forEach(([phaseName, tools]) => {
-
-                    const container = document.createElement("div");
-                    container.className = "contract-container";
-                    container.style.margin = "0.5rem 0";
-
-                    container.innerHTML = `
-                        <div class="phase-sidebar">
-                            <div class="phase-title">
-                                <h1 class="phase-title-text">${phaseName}</h1>
-                            </div>
+                    section.innerHTML = `
+                        <div class="section-text">
+                            <h4>${tool.name}</h4>
+                        </div>
+                        <div class="col-3 mb-3">
+                            ${uploadHtml}
                         </div>
                     `;
 
-                    const contentPanel = document.createElement("div");
-                    contentPanel.className = "content-panel";
-
-                    tools.forEach(tool => {
-                        const section = document.createElement("div");
-                        section.className = "content-section";
-
-                        let uploadHtml = ``;
-
-                        if (tool.url) {
-                            const ext = tool.url.split('.').pop().toLowerCase();
-                            const previewConfig = FILE_PREVIEW_MAP[ext];
-
-                            if (previewConfig) {
-                                uploadHtml = buildFilePreviewHtml(
-                                    previewConfig,
-                                    '',          // size optional (not usually known on load)
-                                    tool.url
-                                );
-                            } else {
-                                // fallback if extension is unknown
-                                uploadHtml = `
-                                    <a href="#" onclick="DownloadFile(${fileId})" target="_blank">View uploaded file</a>
-                                `;
-                            }
-                        }
-                        else{
-                            uploadHtml = `
-                            <input
-                                class="form-control"
-                                type="file"
-                                name="file_${tool.id}"
-                                data-tool-id="${tool.id}"
-                                onchange="uploadToolFile(this, ${tool.id}, ${tool.name})">
-                            `;
-                        }
-
-                        section.innerHTML = `
-                            <div class="section-text">
-                                <h4>${tool.name}</h4>
-                            </div>
-                            <div class="col-3 mb-3">
-                                ${uploadHtml}
-                            </div>
-                        `;
-
-                        contentPanel.appendChild(section);
-                    });
-
-                    container.appendChild(contentPanel);
-                    root.appendChild(container);
+                    contentPanel.appendChild(section);
                 });
-            }
 
-            window.uploadToolFile = function (fileInput, toolId, toolName) {
-                const file = fileInput.files[0];
-                if (!file) return;
+                container.appendChild(contentPanel);
+                root.appendChild(container);
+            });
+        }
 
-                const extension = file.name.split('.').pop().toLowerCase();
-                const previewConfig = FILE_PREVIEW_MAP[extension];
+        window.uploadToolFile = function (fileInput, toolId, toolName) {
+            const file = fileInput.files[0];
+            if (!file) return;
 
-                const formData = new FormData();
-                formData.append("file", file);
-                formData.append("toolId", toolId);
-                formData.append("toolName", toolName);
-                formData.append("__RequestVerificationToken", getAntiForgeryToken());
+            const extension = file.name.split('.').pop().toLowerCase();
+            const previewConfig = FILE_PREVIEW_MAP[extension];
 
-                fetch("/UploadToolFile", {
-                    method: "POST",
-                    body: formData,
-                    credentials: "same-origin"
-                })
-                .then(r => {
-                    if (!r.ok) throw new Error("Upload failed");
-                    return r.json();
-                })
-                .then(data => {
-                    // ⬇️ Replace upload input with preview
-                    if (!previewConfig) return;
+            const formData = new FormData();
+            formData.append("file", file);
+            formData.append("toolId", toolId);
+            formData.append("toolName", toolName);
+            formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
-                    const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
-                    const replacementHtml = buildFilePreviewHtml(
-                        previewConfig,
-                        fileSizeMB,
-                        data.toolId
-                    );
+            fetch("/UploadToolFile", {
+                method: "POST",
+                body: formData,
+                credentials: "same-origin"
+            })
+            .then(r => {
+                if (!r.ok) throw new Error("Upload failed");
+                return r.json();
+            })
+            .then(data => {
+                // ⬇️ Replace upload input with preview
+                if (!previewConfig) return;
 
-                    const uploadContainer = fileInput.closest('.col-3');
-                    uploadContainer.innerHTML = replacementHtml;
-                })
-                .catch(console.error);
-            };
+                const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+                const replacementHtml = buildFilePreviewHtml(
+                    previewConfig,
+                    fileSizeMB,
+                    data.toolId
+                );
+
+                const uploadContainer = fileInput.closest('.col-3');
+                uploadContainer.innerHTML = replacementHtml;
+            })
+            .catch(console.error);
+        };
 
         function applyFileLock(status) {
             const fileInput = document.getElementById("finalReport");
