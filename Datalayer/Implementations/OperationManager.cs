@@ -1954,7 +1954,7 @@ namespace Datalayer.Implementations
                 method = !method.ToLower().Equals("project") ? "General" : "Project";
 
                 var resi = await _repository.GetListAsync<OrganizationToolDTO>(dbConnection,
-                "SELECT d.Id, a.Url, b.Id as ToolId, b.Tool, c.Phase, CASE WHEN d.ToolId IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsChecked FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid LEFT JOIN CIProjectTool d ON d.ToolId = b.Id AND d.ProjectId = @pid WHERE c.Methodology = @mth", new { oid = orgId, mth = method, pid = pid }, CommandType.Text);
+                "SELECT a.Id, d.Id as ProjectToolId, a.Url, b.Id as ToolId, b.Tool, c.Phase, CASE WHEN d.ToolId IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsChecked FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid LEFT JOIN CIProjectTool d ON d.ToolId = b.Id AND d.ProjectId = @pid WHERE c.Methodology = @mth", new { oid = orgId, mth = method, pid = pid }, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -4091,6 +4091,72 @@ namespace Datalayer.Implementations
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(AddBulkCIProjects)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                //check if tool exist
+                var OrgT = await _repository.GetAsync<OrganizationTool>(dbConnection, "select * from OrganizationTool where Id = @id and OrganizationId = @orgId", new { id = toolId, orgId }, CommandType.Text, dbTransaction);
+
+                return await Task.FromResult(new ResponseHandler<OrganizationTool>
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful",
+                    SingleResult = OrgT
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(GetToolFileName)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<OrganizationTool>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                //check if tool exist
+                var OrgT = await _repository.GetAsync<CIProjectTool>(dbConnection, "select * from CIProjectTool where Id = @id", new { id = projectToolId }, CommandType.Text, dbTransaction);
+
+                return await Task.FromResult(new ResponseHandler<CIProjectTool>
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Successful",
+                    SingleResult = OrgT
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(GetProjectToolFileName)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<CIProjectTool>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"

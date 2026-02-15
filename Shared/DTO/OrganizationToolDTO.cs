@@ -5,6 +5,7 @@ namespace Shared.DTO
     {
         public long Id { get; set; }
         public int OrganizationId { get; set; }
+        public int ProjectToolId { get; set; }
         public int ToolId { get; set; }
         public string Tool { get; set; }
         public string Phase { get; set; }

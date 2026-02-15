@@ -148,7 +148,7 @@
                 return `
                     <div class="text-center">
                         <div class="file-manger-icon">
-                            <a href="${fileUrl}" target="_blank">
+                            <a href="#" onclick="DownloadFile(${fileUrl})" target="_blank">
                                 <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
                             </a>
                         </div>
@@ -158,6 +158,14 @@
                 `;
             }
 
+            function DownloadFile(toolId) {
+                const encodedFileName = encodeURIComponent(toolId);
+
+                const url = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+
+                // Trigger browser download
+                window.location.href = url;
+            }
 
             function populateToolDiv(groups) {
                 const root = document.getElementById("contractRoot");
@@ -201,7 +209,7 @@
                             } else {
                                 // fallback if extension is unknown
                                 uploadHtml = `
-                                    <a href="${tool.url}" target="_blank">View uploaded file</a>
+                                    <a href="#" onclick="DownloadFile(${fileId})" target="_blank">View uploaded file</a>
                                 `;
                             }
                         }
@@ -212,7 +220,7 @@
                                 type="file"
                                 name="file_${tool.id}"
                                 data-tool-id="${tool.id}"
-                                onchange="uploadToolFile(this, ${tool.id})">
+                                onchange="uploadToolFile(this, ${tool.id}, ${tool.name})">
                             `;
                         }
 
@@ -233,7 +241,7 @@
                 });
             }
 
-            window.uploadToolFile = function (fileInput, toolId) {
+            window.uploadToolFile = function (fileInput, toolId, toolName) {
                 const file = fileInput.files[0];
                 if (!file) return;
 
@@ -243,6 +251,7 @@
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("toolId", toolId);
+                formData.append("toolName", toolName);
                 formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
                 fetch("/UploadToolFile", {
@@ -262,7 +271,7 @@
                     const replacementHtml = buildFilePreviewHtml(
                         previewConfig,
                         fileSizeMB,
-                        data.fileUrl
+                        data.toolId
                     );
 
                     const uploadContainer = fileInput.closest('.col-3');

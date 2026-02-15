@@ -1,4 +1,5 @@
 ﻿using Datalayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -146,7 +147,7 @@ namespace CITracker.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(id) || id.Length < 3)
-                return BadRequest(new SupportingValueSearchResultDTO());
+                return Ok(new { });
 
             var parts = id.Split('|');
             var type = parts[0];
@@ -1261,7 +1262,8 @@ namespace CITracker.Controllers
                 g => g.Key,
                 g => g.Select(x => new
                 {
-                    projectToolId = x.Id,
+                    orgToolId = x.Id,
+                    projectToolId = x.ProjectToolId,
                     id = x.ToolId,
                     name = x.Tool,
                     url = x.Url,
@@ -1315,25 +1317,35 @@ namespace CITracker.Controllers
         [HttpPost("UploadToolFile")]
         [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId)
+        public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId, string toolName)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
-            // 1️⃣ Whitelist allowed extensions
+            // Whitelist allowed extensions
             var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".jpg" };
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!allowedExtensions.Contains(extension))
                 return BadRequest("Invalid file type.");
 
-            // 2️⃣ Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            // Generate safe file name (never trust client filename)
+            var safeFileName = $"{toolName.Replace(" ", "").ToLower()}{extension}";
 
-            // 3️⃣ Target directory (wwwroot/uploads/tools)
+            // Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "tools"
@@ -1351,14 +1363,91 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/tools/{safeFileName}";
-            var res = _opsManager.UpdateToolId(toolId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/tools/{safeFileName}";
+            var fileName = $"/tools/{safeFileName}";
+            var res = _opsManager.UpdateToolId(toolId, fileName);
 
             return Ok(new
             {
                 toolId,
-                fileUrl
+                fileName
             });
+        }
+
+        [HttpGet("DownloadProjectToolDoc")]
+        public IActionResult DownloadProjectToolDoc(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetProjectToolFileName(toolId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
+        [HttpGet("DownloadToolDoc")]
+        public IActionResult DownloadToolDoc(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetToolFileName(toolId, orgId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
         }
 
         [HttpPost("UploadFinalReportFile")]
@@ -1366,6 +1455,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinalReportFile(IFormFile file, int projectId)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -1377,12 +1476,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{DateTime.Now.ToString("yyMMddhhmmss")}{extension}";
 
             // Target directory
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "report"
@@ -1400,13 +1499,13 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/report/{safeFileName}";
-            var res = _opsManager.UpdateReportFile(projectId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/report/{safeFileName}";
+            var fileName = $"/report/{safeFileName}";
+            var res = _opsManager.UpdateReportFile(projectId, fileName);
 
             return Ok(new
             {
-                projectId,
-                fileUrl
+                projectId
             });
         }
 
@@ -1415,6 +1514,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinancialReportFile(IFormFile file, int projectId)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -1426,12 +1535,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{DateTime.Now.ToString("yyMMddhhmmss")}{extension}";
 
             // Target directory
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "financialreport"
@@ -1449,13 +1558,14 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/financialreport/{safeFileName}";
-            var res = _opsManager.UpdateFinancialReportFile(projectId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/financialreport/{safeFileName}";
+            var fileName = $"/financialreport/{safeFileName}";
+            var res = _opsManager.UpdateFinancialReportFile(projectId, fileName);
 
             return Ok(new
             {
                 projectId,
-                fileUrl
+                fileName
             });
         }
 

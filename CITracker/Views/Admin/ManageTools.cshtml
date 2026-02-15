@@ -61,7 +61,7 @@
     function onMethodologyChanged(ref) {
         const methodology = ref.value;
 
-        fetch(`/GetMethodologyTools?val=${encodeURIComponent(methodology)}`)
+        fetch(`/GetMethodologyToolsAdm?val=${encodeURIComponent(methodology)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch tools");
@@ -138,10 +138,15 @@
         const action = document.createElement('a');
 
         if (tool.url) {
-            action.href = tool.url;
-            action.target = '_blank';
+            action.href = '#';
+            action.target = '_self';
             action.innerHTML =
                 '<i class="las la-download la-2x text-success"></i>';
+
+            action.addEventListener('click', function (e) {
+                e.preventDefault();
+                DownloadFile(tool.orgToolId);
+            });
         } else {
             action.innerHTML =
                 '<i class="las la-file-upload la-2x text-warning"></i>';
@@ -155,6 +160,15 @@
         row.appendChild(action);
 
         return row;
+    }
+
+    function DownloadFile(toolId) {
+        const encodedFileName = encodeURIComponent(toolId);
+
+        const url = `/DownloadToolDocument?toolId=${encodedFileName}`;
+
+        // Trigger browser download
+        window.location.href = url;
     }
 
     function triggerUpload(tool) {

@@ -215,11 +215,11 @@
             }            
 
 
-            function buildFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+            function buildFilePreviewHtml({ img, title }, fileSize, fileId) {
                 return `
                     <div class="text-center">
                         <div class="file-manger-icon">
-                            <a href="${fileUrl}" target="_blank">
+                            <a href="#" onclick="DownloadFile(${fileId})" target="_blank">
                                 <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
                             </a>
                         </div>
@@ -267,12 +267,12 @@
                                 uploadHtml = buildFilePreviewHtml(
                                     previewConfig,
                                     '',          // size optional (not usually known on load)
-                                    tool.url
+                                    tool.id
                                 );
                             } else {
                                 // fallback if extension is unknown
                                 uploadHtml = `
-                                    <a href="${tool.url}" target="_blank">View uploaded file</a>
+                                    <a href="#" onclick="DownloadFile(${tool.id})" target="_blank">View uploaded file</a>
                                 `;
                             }
                         }
@@ -283,7 +283,7 @@
                                 type="file"
                                 name="file_${tool.id}"
                                 data-tool-id="${tool.id}"
-                                onchange="uploadToolFile(this, ${tool.id})">
+                                onchange="uploadToolFile(this, ${tool.id}, '${tool.name}')">
                             `;
                         }
 
@@ -304,7 +304,17 @@
                 });
             }
 
-            window.uploadToolFile = function (fileInput, toolId) {
+            function DownloadFile(fileId) {
+                const encodedFileName = encodeURIComponent(fileId);
+
+                const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+
+                // Trigger browser download
+                window.location.href = url1;
+            }
+
+
+            window.uploadToolFile = function (fileInput, toolId, toolName) {
                 const file = fileInput.files[0];
                 if (!file) return;
 
@@ -314,6 +324,7 @@
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("toolId", toolId);
+                formData.append("toolName", toolName);
                 formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
                 fetch("/UploadToolFile", {
@@ -333,7 +344,7 @@
                     const replacementHtml = buildFilePreviewHtml(
                         previewConfig,
                         fileSizeMB,
-                        data.fileUrl
+                        data.toolId
                     );
 
                     const uploadContainer = fileInput.closest('.col-3');
@@ -411,7 +422,7 @@
             const replacementHtml = buildFilePreviewHtml(
                 previewConfig,
                 fileSizeMB,
-                data.fileUrl
+                window.AppState.CIProject.Id
             );
 
             const uploadContainer = fileInput.closest('.col-3');

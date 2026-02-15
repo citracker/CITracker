@@ -13,6 +13,9 @@
                 </div>
                 <p>Note: You can download the sample templates for each from the Download Icon <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
                 <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                <div id="validationSummaryToP" class="alert alert-danger d-none" role="alert">
+                    <ul class="mb-0"></ul>
+                </div>
                 @Html.AntiForgeryToken()
                 <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
                 </div>
@@ -157,17 +160,22 @@
             const action = document.createElement('a');
 
             if (tool.url) {
-                action.href = tool.url;
-                action.target = '_blank';
+                action.href = '#';
+                action.target = '_self';
                 action.innerHTML =
                     '<i class="las la-download la-2x text-success"></i>';
+
+                action.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    DownloadFile(tool.orgToolId);
+                });
             } else {
                 action.innerHTML =
                     '<i class="las la-file-upload la-2x text-warning"></i>';
 
-                action.addEventListener('click', function () {
-                    triggerUpload(tool);
-                });
+                // action.addEventListener('click', function () {
+                //     triggerUpload(tool);
+                // });
             }
 
             // Append in correct order
@@ -179,6 +187,15 @@
         }
 
     });
+
+    function DownloadFile(toolId) {
+        const encodedFileName = encodeURIComponent(toolId);
+
+        const url = `/DownloadToolDoc?toolId=${encodedFileName}`;
+
+        // Trigger browser download
+        window.location.href = url;
+    }
 
     async function UpdateCIProjectTools(ref, hide, show) {
         ref.innerHTML = '<i class="fas fa-cog fa-spin"></i>';
@@ -204,7 +221,7 @@
 
         // Validation
         if (toolvalue.length === 0) {
-            displayErrors('Please add at least one tool');
+            displayErrorToP('Please add at least one tool');
 
             ref.innerHTML = 'Save &amp; Next';
             ref.disabled = false;
@@ -221,7 +238,7 @@
 
             if (!response.ok) {
                 const result = await response.json();
-                displayErrors(result.errors);
+                displayErrorsToP(result.errors);
                 ref.innerHTML = 'Save &amp; Next';
                 ref.disabled = false;
                 return;
@@ -240,6 +257,55 @@
         }
         ref.innerHTML = 'Save &amp; Next';
         ref.disabled = false;
+    }
+
+    function displayErrorToP(error) {
+        const alertDiv = document.getElementById("validationSummaryToP");
+        const list = alertDiv.querySelector("ul");
+
+        // Clear previous errors
+        list.innerHTML = "";
+
+        const li = document.createElement("li");
+                li.textContent = error;
+                li.className = 'fs-18';
+                list.appendChild(li);
+
+        // Show alert
+        alertDiv.classList.remove("d-none");
+
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    function displayErrorsToP(errors) {
+        const alertDiv = document.getElementById("validationSummaryToP");
+        const list = alertDiv.querySelector("ul");
+
+        // Clear previous errors
+        list.innerHTML = "";
+
+        Object.keys(errors).forEach(field => {
+            errors[field].forEach(message => {
+                const li = document.createElement("li");
+                li.textContent = message;
+                li.className = 'fs-18';
+                list.appendChild(li);
+            });
+        });
+
+        // Show alert
+        alertDiv.classList.remove("d-none");
+        const div = document.querySelector('.card-body');
+        // For smooth scroll inside div
+        div.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     }
 
 </script>

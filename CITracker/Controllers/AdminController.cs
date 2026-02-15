@@ -145,14 +145,6 @@ namespace CITracker.Controllers
             }
 
             var sites = new List<DriveInfo>();
-            ////check if tenant has an existing sharepoint site
-            //var hasSiteId = _opsManager.CheckIfTenantHasSiteId(HttpContext.Session.GetString("TenantId")).Result;
-
-            //if(!hasSiteId)
-            //{
-            //    //discover sharepoint sites
-            //    sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
-            //}
 
             var res = new ManageToolsVM
             {
@@ -252,10 +244,53 @@ namespace CITracker.Controllers
                 return Ok(resp.Message);
         }
 
+        [HttpGet("GetMethodologyToolsAdm")]
+        public IActionResult GetMethodologyToolsAdm(string val, long pid)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var coep = _opsManager.GetAllOrganizationTools(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), val, pid)?.Result?.Result?.ToList();
+
+            var gcoep = coep.GroupBy(t => t.Phase).ToList();
+
+            var result = gcoep.ToDictionary(
+                g => g.Key,
+                g => g.Select(x => new
+                {
+                    orgToolId = x.Id,
+                    projectToolId = x.ProjectToolId,
+                    id = x.ToolId,
+                    name = x.Tool,
+                    url = x.Url,
+                    isChecked = x.IsChecked
+                }).ToList()
+            );
+
+            return Json(result);
+        }
+
         [HttpPost("AddCountry")]
         [ValidateAntiForgeryToken]
         public IActionResult AddCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordCty = new OrganizationCountry
@@ -284,6 +319,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationCountry(Convert.ToInt64(Request.Form["country"]), Request.Form["input"], HttpContext.Session.GetString("UserEmail")).Result;
@@ -303,6 +348,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationCountry(Convert.ToInt64(Request.Form["country"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
@@ -322,6 +377,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordFac = new OrganizationFacility
@@ -351,6 +416,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationFacility(Convert.ToInt64(Request.Form["facilityR"]), Request.Form["facilityN"], HttpContext.Session.GetString("UserEmail")).Result;
@@ -370,6 +445,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationFacility(Convert.ToInt64(Request.Form["facilityD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
@@ -389,6 +474,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordDep = new OrganizationDepartment
@@ -419,6 +514,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationDepartment(Convert.ToInt64(Request.Form["departmentR"]), Request.Form["departmentN"], HttpContext.Session.GetString("UserEmail")).Result;
@@ -439,6 +544,17 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadToolDocument(IFormFile file, int toolId, string toolName)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -450,12 +566,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // 2️⃣ Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{toolName.Replace(" ", "").ToLower()}{extension}";
 
             // 3️⃣ Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "toolTemplates"
@@ -473,11 +589,11 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
-
+            //var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
+            var fileName = $"/toolTemplates/{safeFileName}";
             var orgTool = new OrganizationTool
             {
-                Url = fileUrl,
+                Url = fileName,
                 MethodologyTool = toolId,
                 DateCreated = DateTime.UtcNow,
                 OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
@@ -489,14 +605,62 @@ namespace CITracker.Controllers
             return Ok(new
             {
                 toolId,
-                fileUrl
+                fileName
             });
+        }
+
+        [HttpGet("DownloadToolDocument")]
+        public IActionResult DownloadToolDocument(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetToolFileName(toolId, orgId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
         }
 
         [HttpPost("DeleteDepartment")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationDepartment(Convert.ToInt64(Request.Form["departmentD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
@@ -516,6 +680,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var orgUsr = new CIUser
@@ -546,6 +720,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var orgUsr = new CIUser
@@ -570,6 +754,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationUser(Convert.ToInt64(Request.Form["userD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
@@ -589,6 +783,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddSoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordss = new OrganizationSoftSaving
@@ -618,6 +822,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ModifySoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var orgUsr = new OrganizationSoftSaving
@@ -642,6 +856,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteSoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationSoftSaving(Convert.ToInt64(Request.Form["sssD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;

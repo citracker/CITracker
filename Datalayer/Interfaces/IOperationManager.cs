@@ -76,5 +76,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail);
         Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail);
         Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail);
+        Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId);
+        Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId);
     }
 }
