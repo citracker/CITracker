@@ -300,8 +300,12 @@ namespace CITracker.Controllers
             if(User.Identity.IsAuthenticated)
             {
                 //set user Email first if user email is null
-                if(String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                {
                     HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
+
+                    HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
+                }
 
                 return true;
             }
