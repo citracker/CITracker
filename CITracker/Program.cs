@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using NLog.Extensions.Logging;
+using NLog.Web;
 using Shared;
 using Shared.Implementations;
 using Shared.Interfaces;
@@ -77,13 +78,13 @@ namespace CITracker
                     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
                 builder.Services.AddAuthorization();
 
-                builder.Services.AddLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddConsole();
-                    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                    logging.AddNLog();
-                });
+                //builder.Services.AddLogging(logging =>
+                //{
+                //    logging.ClearProviders();
+                //    logging.AddConsole();
+                //    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+                //    logging.AddNLog();
+                //});
 
                 builder.Services.Configure<ForwardedHeadersOptions>(options =>
                 {
@@ -129,6 +130,9 @@ namespace CITracker
                 builder.Services.AddTransient<IConnectionStringsManager, ConnectionStringsManager>();
                 builder.Services.AddTransient<IRepository, Repository>();
                 builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();
+
+                builder.Logging.ClearProviders();
+                builder.Host.UseNLog();
 
                 var app = builder.Build();
 
@@ -189,6 +193,8 @@ namespace CITracker
                 {
                     endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
                 });
+
+                Console.WriteLine("THIS IS RAW CONSOLE OUTPUT TESTFROM CITRACKER");
 
                 app.Run();
             }
