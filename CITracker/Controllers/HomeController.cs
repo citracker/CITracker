@@ -44,8 +44,8 @@ namespace CITracker.Controllers
             {
                 _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
 
-                //check if user's detail is not in session
-                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                //check if organization's domain is not in session
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("Domain")))
                 {
                     _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user details and setting session variables.");
 
@@ -299,6 +299,10 @@ namespace CITracker.Controllers
         {
             if(User.Identity.IsAuthenticated)
             {
+                //set user Email first if user email is null
+                if(String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                    HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
+
                 return true;
             }
             return false;
