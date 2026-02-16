@@ -4,12 +4,15 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.Models;
 using Shared.ViewModels;
 using System.Net;
+using Organization = Shared.Models.Organization;
+using Subscription = Shared.Models.Subscription;
 
 namespace CITracker.Controllers
 {
@@ -162,6 +165,7 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult MakePayment()
         {
+            ResponseHandler<SubscriptionPlan> subscription = null;
             try
             {
                 //build Organisation details
@@ -188,7 +192,7 @@ namespace CITracker.Controllers
                 };
 
                 //get subscription Details
-                var subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
+                subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
 
                 if (subscription == null || subscription?.SingleResult == null)
                 {
@@ -222,7 +226,7 @@ namespace CITracker.Controllers
                 {
                     _logger.LogInformation($"Unable to Register Organization {org.Name}");
 
-                    return View(new CheckoutVM
+                    return RedirectToAction("Checkout", new CheckoutVM
                     {
                         StatusCode = (int)HttpStatusCode.ExpectationFailed,
                         Message = $"Unable to Register Organisation  {org.Name}",
@@ -243,10 +247,13 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at MakePayment || - {JsonConvert.SerializeObject(ex)}");
 
-                return Json(new ResponseHandler
+                return RedirectToAction("Checkout", new CheckoutVM
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = ex.Message
+                    Message = $"Unable to Register Organisation ",
+                    SubscriptionPlan = subscription.SingleResult,
+                    PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                    Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
                 });
             }
         }
