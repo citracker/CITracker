@@ -41,13 +41,19 @@ namespace CITracker.Controllers
             //check if user is Authenticated
             if(IsAuthenticated())
             {
+                _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
+
                 //check if user's detail is not in session
                 if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
                 {
+                    _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user details and setting session variables.");
+
                     //check if tenant of logged in user has existing subscription
                     var orgdetails = _subManager.GetOrganizationByTenantId(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
-                    
-                    if(orgdetails.StatusCode == (int)HttpStatusCode.OK)
+
+                    _logger.LogInformation($"Organization details for tenant {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} fetched with status code {orgdetails.StatusCode}");
+
+                    if (orgdetails.StatusCode == (int)HttpStatusCode.OK)
                     {
                         if (orgdetails.SingleResult.IsSubscribed)
                         {
