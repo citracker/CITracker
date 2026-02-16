@@ -41,7 +41,7 @@ namespace CITracker.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
-            _logger.LogInformation("Index page accessed");
+            Console.WriteLine("Index page accessed");
             //check if user is Authenticated
             if (IsAuthenticated())
             {
