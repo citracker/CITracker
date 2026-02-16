@@ -80,6 +80,7 @@ namespace CITracker
                 builder.Services.AddLogging(logging =>
                 {
                     logging.ClearProviders();
+                    logging.AddConsole();
                     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
                     logging.AddNLog();
                 });
