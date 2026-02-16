@@ -38,8 +38,9 @@ namespace CITracker.Controllers
         [HttpGet("")]
         public IActionResult Index()
         {
+            _logger.LogInformation("Index page accessed");
             //check if user is Authenticated
-            if(IsAuthenticated())
+            if (IsAuthenticated())
             {
                 _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
 
