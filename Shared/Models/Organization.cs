@@ -20,6 +20,6 @@ namespace Shared.Models
         public long CreatedBy { get; set; }
 
 
-        public string? SiteId { get; set; }
+        //public string? SiteId { get; set; }
     }
 }

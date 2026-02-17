@@ -226,7 +226,7 @@ namespace CITracker.Controllers
                 {
                     _logger.LogInformation($"Unable to Register Organization {org.Name}");
 
-                    return RedirectToAction("Checkout", new CheckoutVM
+                    return View("Checkout", new CheckoutVM
                     {
                         StatusCode = (int)HttpStatusCode.ExpectationFailed,
                         Message = $"Unable to Register Organisation  {org.Name}",
@@ -247,7 +247,7 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at MakePayment || - {JsonConvert.SerializeObject(ex)}");
 
-                return RedirectToAction("Checkout", new CheckoutVM
+                return View("Checkout", new CheckoutVM
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = $"Unable to Register Organisation ",

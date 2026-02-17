@@ -2309,7 +2309,7 @@ namespace Datalayer.Implementations
 
                 if (resi != null)
                 {
-                    return !String.IsNullOrEmpty(resi.SiteId);
+                    return false; //!String.IsNullOrEmpty(resi.SiteId);
                 }
                 else
                 {
