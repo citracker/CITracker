@@ -7,5 +7,6 @@ namespace Infastructure.Interface
     public interface IMicrosoftOperations
     {
         Task<List<DriveInfo>> DiscoverSharePointSites(string tenantId, string clientId, string clientSecret);
+        Task<string> GetOrganizationDomain(string accesstoken);
     }
 }

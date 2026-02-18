@@ -11,6 +11,7 @@ namespace Shared.DTO
         public long Id { get; set; }
         public int OrganizationId { get; set; }
         public string OrganizationTenantId { get; set; }
+        public string OrganizationDomain { get; set; }
         public string Name { get; set; }
         public string EmailAddress { get; set; }
         public string Role { get; set; }

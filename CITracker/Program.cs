@@ -73,16 +73,10 @@ namespace CITracker
                 builder.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
                 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"));
+                    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+                    .EnableTokenAcquisitionToCallDownstreamApi(new[] { "Organization.Read.All" })
+                    .AddInMemoryTokenCaches();
                 builder.Services.AddAuthorization();
-
-                //builder.Services.AddLogging(logging =>
-                //{
-                //    logging.ClearProviders();
-                //    logging.AddConsole();
-                //    logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                //    logging.AddNLog();
-                //});
 
                 builder.Services.Configure<ForwardedHeadersOptions>(options =>
                 {
@@ -119,7 +113,6 @@ namespace CITracker
                 builder.Services.AddTransient<IPathProvider, PathProvider>();
                 builder.Services.AddTransient<Mailer>();
                 //builder.Services.AddTransient<HelperFunctions>();
-                builder.Services.AddTransient<IMicrosoftOperations, MicrosoftOperations>();
                 builder.Services.AddTransient<IGenericManager, GenericManager>();
                 builder.Services.AddTransient<ISubscriptionManager, SubscriptionManager>();
                 builder.Services.AddTransient<IPaymentManager, PaymentManager>();
@@ -127,6 +120,7 @@ namespace CITracker
                 builder.Services.AddTransient<IUserManager, UserManager>();
                 builder.Services.AddTransient<IConnectionStringsManager, ConnectionStringsManager>();
                 builder.Services.AddTransient<IRepository, Repository>();
+                builder.Services.AddTransient<IMicrosoftOperations, MicrosoftOperations>();
                 builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();
 
                 builder.Logging.ClearProviders();

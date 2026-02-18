@@ -1,10 +1,13 @@
 ﻿using CITracker.Helpers;
 using Datalayer.Interfaces;
+using Infastructure.Implementation;
+using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
+using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
@@ -23,10 +26,12 @@ namespace CITracker.Controllers
         private readonly IPaymentManager _payManager;
         private readonly IOperationManager _opsManager;
         private readonly IUserManager _usrManager;
+        private readonly IMicrosoftOperations _msOps;
+        private readonly ITokenAcquisition _tokenAcquisition;
         private readonly IOptions<KeyValues> _config;
         private readonly Mailer _mail;
 
-        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail)
+        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail, IMicrosoftOperations msOps, ITokenAcquisition tokenAcquisition)
         {
             _logger = logger;
             _subManager = subManager;
@@ -35,6 +40,8 @@ namespace CITracker.Controllers
             _usrManager = usrManager;
             _mail = mail;
             _config = config;
+            _msOps = msOps;
+            _tokenAcquisition = tokenAcquisition;
         }
 
 
@@ -167,6 +174,9 @@ namespace CITracker.Controllers
             ResponseHandler<SubscriptionPlan> subscription = null;
             try
             {
+                var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
+
+                string domain = _msOps.GetOrganizationDomain(accessToken).Result;
                 //build Organisation details
                 var org = new Organization
                 {
@@ -178,6 +188,7 @@ namespace CITracker.Controllers
                     AdminPhoneNumber = Request.Form["phone"],
                     CountryId = int.Parse(Request.Form["country"]),
                     Provider = "Microsoft",
+                    Domain = domain,
                     DateCreated = DateTime.UtcNow                    
                 };
 
@@ -326,13 +337,13 @@ namespace CITracker.Controllers
         {
             HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
             HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
-            HttpContext.Session.SetString("Domain", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value.Split('@').Last());
             HttpContext.Session.SetString("TenantId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "");
             HttpContext.Session.SetString("ObjectId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? "");
 
             if (user != null)
             {
                 HttpContext.Session.SetString("UserRole", user.Role);
+            HttpContext.Session.SetString("Domain", user.OrganizationDomain);
                 HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 if ((bool)user?.IsOrganizationSubscribed)
