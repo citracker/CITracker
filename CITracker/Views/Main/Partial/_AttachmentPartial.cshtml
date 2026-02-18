@@ -82,7 +82,7 @@
                     <div class="card custom-card">
                         <div class="card-body">
                             <label for="formFileLg" class="form-label">Final Report (Supported Format: PPT, Excel, PDF, Word)</label>
-                            <input class="form-control form-control-lg" id="finalReport" type="file" > 
+                            <input class="form-control form-control-lg" id="finalReport" type="file" onchange="uploadFinalReportFile(this)">
                         </div>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
 <script>
     document.addEventListener('partialShown', function (e) {
 
-        applyFileLock(window.AppState.CIProject.Status);
+        //applyFileLock(window.AppState.CIProject.Status);
 
         flatpickr(".date-input", {
             dateFormat: "Y-m-d"
@@ -110,6 +110,12 @@
             window.DownloadProjectFile = function (fileId) {
                 const encodedFileName = encodeURIComponent(fileId);
                 const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+                window.location.href = url1;
+            };
+
+            window.DownloadReportFile = function (fileId) {
+                const encodedFileName = encodeURIComponent(fileId);
+                const url1 = `/DownloadReportToolDoc?projectId=${encodedFileName}`;
                 window.location.href = url1;
             };
 
@@ -156,6 +162,21 @@
                 <div class="text-center">
                     <div class="file-manger-icon">
                         <a href="#" onclick="DownloadProjectFile(${fileUrl})" target="_blank">
+                            <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
+                        </a>
+                    </div>
+                    <h6 class="mb-1 fw-medium mt-0">${title}</h6>
+                    <span class="text-muted">${fileSize}</span>
+                </div>
+            `;
+        }
+
+
+        function buildReportFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+            return `
+                <div class="text-center">
+                    <div class="file-manger-icon">
+                        <a href="#" onclick="DownloadReportFile(${fileUrl})" target="_blank">
                             <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
                         </a>
                     </div>
@@ -341,6 +362,44 @@
 
         return commenting;
     }
+
+    function uploadFinalReportFile (fileInput) {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const extension = file.name.split('.').pop().toLowerCase();
+        const previewConfig = FILE_PREVIEW_MAP[extension];
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("projectId", window.AppState.CIProject.Id);
+        formData.append("__RequestVerificationToken", getAntiForgeryToken());
+
+        fetch("/UploadFinalReportFile", {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin"
+        })
+        .then(r => {
+            if (!r.ok) throw new Error("Upload failed");
+            return r.json();
+        })
+        .then(data => {
+            // ⬇️ Replace upload input with preview
+            if (!previewConfig) return;
+
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+            const replacementHtml = buildReportFilePreviewHtml(
+                previewConfig,
+                fileSizeMB,
+                window.AppState.CIProject.Id
+            );
+
+            const uploadContainer = fileInput.closest('.col-3');
+            uploadContainer.innerHTML = replacementHtml;
+        })
+        .catch(console.error);
+    };
 
 
     async function CIProjectComment(ref, hide, show) {

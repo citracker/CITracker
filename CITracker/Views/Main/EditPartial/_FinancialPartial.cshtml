@@ -228,7 +228,7 @@
             </div>
             <div class="card-footer border-top-card">
                 <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="UpdateCIProjectFinancial(this)">Save &amp; Next</button>
+                <button class="btn btn-success shadow-success" onclick="UpdateCIProjectFinancial(this)">Save</button>
             </div>
         </div>
     </div>
@@ -282,7 +282,7 @@
         const $checkbox = $('#ots');
 
         initMonthPicker($container);
-        setDisabled('.lockable', true);
+        //setDisabled('.lockable', true);
 
         /* -------------------- PROJECT DATE LOGIC -------------------- */
 
@@ -625,6 +625,44 @@
         return softSavings;
     }
 
+    const FILE_PREVIEW_MAP = {
+        pdf: {
+            img: "../assets/images/files/png/2.png",
+            title: "PDF Document"
+        },
+        doc: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        docx: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        xlsx: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        },
+        csv: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        }
+    };
+
+
+    function buildFinReportFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+        return `
+            <div class="text-center">
+                <div class="file-manger-icon">
+                    <a href="#" onclick="DownloadFinReportFile(${fileUrl})" target="_blank">
+                        <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
+                    </a>
+                </div>
+                <h6 class="mb-1 fw-medium mt-0">${title}</h6>
+                <span class="text-muted">${fileSize}</span>
+            </div>
+        `;
+    }
+
     function uploadFinancialReportFile (fileInput) {
         const file = fileInput.files[0];
         if (!file) return;
@@ -651,16 +689,22 @@
             if (!previewConfig) return;
 
             const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
-            const replacementHtml = buildFilePreviewHtml(
+            const replacementHtml = buildFinReportFilePreviewHtml(
                 previewConfig,
                 fileSizeMB,
-                data.fileUrl
+                window.AppState.CIProject.Id
             );
 
             const uploadContainer = fileInput.closest('.col-3');
             uploadContainer.innerHTML = replacementHtml;
         })
         .catch(console.error);
+    };
+
+    window.DownloadFinReportFile = function (fileId) {
+        const encodedFileName = encodeURIComponent(fileId);
+        const url1 = `/DownloadFinReportDoc?projectId=${encodedFileName}`;
+        window.location.href = url1;
     };
 
     async function UpdateCIProjectFinancial(ref) {

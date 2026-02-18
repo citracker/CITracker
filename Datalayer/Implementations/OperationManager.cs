@@ -2845,6 +2845,44 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProjectMini(int orgId, long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
+                "SELECT Id, FinalReportUrl, FinancialReportUrl FROM Continuousimprovement WHERE a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
+
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCIProject)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId)
         {
             try

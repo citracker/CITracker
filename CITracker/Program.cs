@@ -195,6 +195,7 @@ namespace CITracker
                 });
 
                 Console.WriteLine("THIS IS RAW CONSOLE OUTPUT TESTFROM CITRACKER");
+                logger.Info("THIS IS RAW CONSOLE OUTPUT TESTFROM CITRACKER 111");
 
                 app.Run();
             }

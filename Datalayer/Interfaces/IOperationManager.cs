@@ -61,6 +61,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> si, string adminEmail);
         Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
         Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(int orgId, long projectId);
+        Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProjectMini(int orgId, long projectId);
         Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId);
         Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId);
         Task<ResponseHandler<CICommentDTO>> GetCIProjectComment(long projectId);

@@ -152,7 +152,7 @@
                         <div class="card custom-card">
                             <div class="card-body">
                                 <label for="formFileLg" class="form-label">Financial Report (Supported Format: PPT, Excel, PDF, Word)</label>
-                                <input class="form-control form-control-lg lockable" type="file">
+                                <input class="form-control form-control-lg lockable" type="file" onchange="uploadFinancialReportFile(this)">
                                 <p class="text-danger text-sm-start"> Note: To attach the financial report, ensure to enter in hard savings, upload final report under the attachment status and move project to completed status under the project detail tab.</p>
                             </div>
                         </div>
@@ -206,7 +206,7 @@
             </div>
             <div class="card-footer border-top-card">
                 <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save &amp; Next</button>
+                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save</button>
             </div>
         </div>
     </div>
@@ -243,7 +243,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         initMonthPicker($('.finCardBody'));
 
-        setDisabled('.lockable', true);
+        //setDisabled('.lockable', true);
 
         const dateInput = document.querySelector(".pj-date-input");
 
@@ -473,6 +473,89 @@
 
         return softSavings;
     }
+
+
+    const FILE_PREVIEW_MAP = {
+        pdf: {
+            img: "../assets/images/files/png/2.png",
+            title: "PDF Document"
+        },
+        doc: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        docx: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        xlsx: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        },
+        csv: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        }
+    };
+
+
+    function buildFinReportFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+        return `
+            <div class="text-center">
+                <div class="file-manger-icon">
+                    <a href="#" onclick="DownloadFinReportFile(${fileUrl})" target="_blank">
+                        <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
+                    </a>
+                </div>
+                <h6 class="mb-1 fw-medium mt-0">${title}</h6>
+                <span class="text-muted">${fileSize}</span>
+            </div>
+        `;
+    }
+
+    function uploadFinancialReportFile (fileInput) {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const extension = file.name.split('.').pop().toLowerCase();
+        const previewConfig = FILE_PREVIEW_MAP[extension];
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("projectId", window.AppState.CIProject.Id);
+        formData.append("__RequestVerificationToken", getAntiForgeryToken());
+
+        fetch("/UploadFinancialReportFile", {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin"
+        })
+        .then(r => {
+            if (!r.ok) throw new Error("Upload failed");
+            return r.json();
+        })
+        .then(data => {
+            // ⬇️ Replace upload input with preview
+            if (!previewConfig) return;
+
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+            const replacementHtml = buildFinReportFilePreviewHtml(
+                previewConfig,
+                fileSizeMB,
+                window.AppState.CIProject.Id
+            );
+
+            const uploadContainer = fileInput.closest('.col-3');
+            uploadContainer.innerHTML = replacementHtml;
+        })
+        .catch(console.error);
+    };
+
+    window.DownloadFinReportFile = function (fileId) {
+        const encodedFileName = encodeURIComponent(fileId);
+        const url1 = `/DownloadFinReportDoc?projectId=${encodedFileName}`;
+        window.location.href = url1;
+    };
 
     async function CIProjectFinancial(ref) {
         const seenMonths = new Set();

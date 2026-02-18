@@ -170,7 +170,7 @@
                 // ----------------------------
                 // File lock logic (unchanged)
                 // ----------------------------
-                applyFileLock(window.AppState.CIProject.Status);
+                //applyFileLock(window.AppState.CIProject.Status);
 
                 function applyFileLock(status) {
                     const fileInput = document.getElementById("finalReport");
@@ -181,7 +181,7 @@
 
                 window.DownloadProjectFile = function (fileId) {
                     const encodedFileName = encodeURIComponent(fileId);
-                    const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
+                    const url1 = `/DownloadReportToolDoc?toolId=${encodedFileName}`;
                     window.location.href = url1;
                 };
 

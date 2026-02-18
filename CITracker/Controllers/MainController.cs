@@ -1412,6 +1412,82 @@ namespace CITracker.Controllers
             return PhysicalFile(filePath, contentType, fileName);
         }
 
+        [HttpGet("DownloadReportToolDoc")]
+        public IActionResult DownloadReportToolDoc(long projectId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetCIProjectMini(orgId, projectId).Result?.SingleResult?.FinalReportUrl;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
+        [HttpGet("DownloadFinReportDoc")]
+        public IActionResult DownloadFinReportDoc(long projectId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetCIProjectMini(orgId, projectId).Result?.SingleResult?.FinancialReportUrl;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
         [HttpGet("DownloadToolDoc")]
         public IActionResult DownloadToolDoc(long toolId)
         {
