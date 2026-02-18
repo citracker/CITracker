@@ -171,6 +171,8 @@ namespace Datalayer.Implementations
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
+
+            //TODO. Check for duplicate
             try
             {
                 //create organisation

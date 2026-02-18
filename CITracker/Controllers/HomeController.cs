@@ -236,6 +236,9 @@ namespace CITracker.Controllers
                 }
 
                 HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
+                //get user's detail
+                var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
+                SetSessionVariables(user.SingleResult);
 
                 //send OTP email
                 var re = _mail.sendEmail(org.AdminEmailAddress, "Welcome to CITracker", "CITracker", _mail.PopulateRegistrationBody(org.Name));
