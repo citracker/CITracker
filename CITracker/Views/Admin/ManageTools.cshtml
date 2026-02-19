@@ -123,15 +123,15 @@
         row.className = 'form-check form-check-lg mt-3';
         row.style.display = 'flex';
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'form-check-input';
-        checkbox.id = `${phase}-${index}`;
-        checkbox.value = tool.id;
+        // const checkbox = document.createElement('input');
+        // checkbox.type = 'checkbox';
+        // checkbox.className = 'form-check-input';
+        // checkbox.id = `${phase}-${index}`;
+        // checkbox.value = tool.id;
 
         const label = document.createElement('label');
         label.className = 'form-check-label me-3';
-        label.setAttribute('for', checkbox.id);
+        // label.setAttribute('for', checkbox.id);
         label.style.cssText = 'width:85%;max-width:85%';
         label.textContent = tool.name;
 
@@ -155,7 +155,7 @@
             });
         }
 
-        row.appendChild(checkbox);
+        //row.appendChild(checkbox);
         row.appendChild(label);
         row.appendChild(action);
 

@@ -298,6 +298,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Country Exists"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -353,7 +362,16 @@ namespace Datalayer.Implementations
                     });
                 }
             }
-            catch(Exception ex)
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Country Exists"
+                });
+            }
+            catch (Exception ex)
             {
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(RenameOrganizationCountry)} - {JsonConvert.SerializeObject(ex)}");
@@ -444,6 +462,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate facility insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Facility Exists"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -497,6 +524,15 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate facility insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Facility Exists"
+                });
             }
             catch (Exception ex)
             {
@@ -589,6 +625,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate department insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Department Exists"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -642,6 +687,15 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate department insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Department Exists"
+                });
             }
             catch (Exception ex)
             {

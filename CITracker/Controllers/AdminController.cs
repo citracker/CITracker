@@ -52,6 +52,7 @@ namespace CITracker.Controllers
             var orgCountries = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgCountries.Message = TempData["Message"]?.ToString() ?? orgCountries.Message;
+            orgCountries.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgCountries);
         }
@@ -75,6 +76,7 @@ namespace CITracker.Controllers
             var faci = new OperationLocationVM
             {
                 Message = TempData["Message"]?.ToString() ?? orgCountries.Message,
+                StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString()),
                 Country = orgCountries.Result?.ToList(),
                 Facility = orgFacilities.Result?.ToList()
             };
@@ -102,6 +104,7 @@ namespace CITracker.Controllers
             var depart = new OperationLocationVM
             {
                 Message = TempData["Message"]?.ToString() ?? orgCountries.Message,
+                StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString()),
                 Country = orgCountries.Result?.ToList(),
                 Facility = orgFacilities.Result?.ToList(),
                 Department = orgDepartments.Result?.ToList()
@@ -305,11 +308,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationCountry(ordCty, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch(Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -334,11 +340,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationCountry(Convert.ToInt64(Request.Form["country"]), Request.Form["input"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -363,11 +372,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.DeleteOrganizationCountry(Convert.ToInt64(Request.Form["country"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -402,11 +414,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationFacility(ordFac, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -431,11 +446,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationFacility(Convert.ToInt64(Request.Form["facilityR"]), Request.Form["facilityN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -460,11 +478,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.DeleteOrganizationFacility(Convert.ToInt64(Request.Form["facilityD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -500,11 +521,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationDepartment(ordDep, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }
@@ -529,11 +553,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationDepartment(Convert.ToInt64(Request.Form["departmentR"]), Request.Form["departmentN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }
@@ -666,11 +693,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.DeleteOrganizationDepartment(Convert.ToInt64(Request.Form["departmentD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }

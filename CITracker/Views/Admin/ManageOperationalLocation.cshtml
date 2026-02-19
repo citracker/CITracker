@@ -23,6 +23,23 @@
         <!-- Page Header Close -->
         <!-- Page Header Close -->
         <div id="project_info" class="row row-sm">
+            @if(Model.StatusCode > 0)
+            {
+                if(Model.StatusCode == 200)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert"> 
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button> 
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>                
+                }
+            }
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
@@ -35,9 +52,10 @@
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
                                         Country <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control" name="country" placeholder="Name of Country" required>
+                                    <input type="text" class="form-control country-input" name="country" pattern="^[A-Za-z]+$"
+                                           title="Only letters are allowed" placeholder="Name of Country" required>
                                 </div>
                             </div>
                         </div>
@@ -75,9 +93,9 @@
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
                                         Country <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control" name="input" id="input" placeholder="Name of Country" required>
+                                    <input type="text" class="form-control country-input" name="input" id="input" placeholder="Name of Country" required>
                                 </div>
                             </div>
                         </div>
@@ -125,6 +143,32 @@
 </div>
 
 <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const countryRegex = /^[\p{L}\s\-.'()]+$/u;
+
+        const inputs = document.querySelectorAll(".country-input");
+
+        inputs.forEach(function (input) {
+
+            input.addEventListener("input", function () {
+
+                if (this.value === "") {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (!countryRegex.test(this.value)) {
+                    this.setCustomValidity("Invalid country name.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+        });
+
+    });
+
     function setInputFromSelect(selectEl, targetInputId) {
       if (!selectEl || !targetInputId) return;
 

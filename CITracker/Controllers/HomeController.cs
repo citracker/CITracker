@@ -343,7 +343,7 @@ namespace CITracker.Controllers
             if (user != null)
             {
                 HttpContext.Session.SetString("UserRole", user.Role);
-            HttpContext.Session.SetString("Domain", user.OrganizationDomain);
+            HttpContext.Session.SetString("Domain", user.OrganizationDomain ?? "");
                 HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 if ((bool)user?.IsOrganizationSubscribed)
