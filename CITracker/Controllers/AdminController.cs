@@ -181,6 +181,28 @@ namespace CITracker.Controllers
             return View(orgsc);
         }
 
+        [HttpGet("ManageBOA")]
+        public IActionResult ManageBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Dashboard", "Main");
+            }
+
+
+            var orgsc = _opsManager.GetAllOrganizationBOA(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+            orgsc.Message = TempData["Message"]?.ToString() ?? orgsc.Message;
+            orgsc.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
+
+            return View(orgsc);
+        }
+
         [HttpGet("BulkUploads")]
         public IActionResult BulkUploads()
         {
@@ -929,6 +951,116 @@ namespace CITracker.Controllers
                 TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
+            }
+        }
+
+        [HttpPost("AddBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var ordss = new OrganizationBOA
+                {
+                    DateCreated = DateTime.UtcNow,
+                    OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                    BOA = Request.Form["boa"],
+                    IsActive = true
+                };
+
+                var res = _opsManager.AddOrganizationBOA(ordss, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(AddBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+        }
+
+        [HttpPost("ModifyBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ModifyBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var orgUsr = new OrganizationBOA
+                {
+                    BOA = Request.Form["boaM"]
+                };
+                var res = _opsManager.RenameOrganizationBOA(Convert.ToInt64(Request.Form["sss"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(ModifyBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+        }
+
+        [HttpPost("DeleteBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var res = _opsManager.DeleteOrganizationBOA(Convert.ToInt64(Request.Form["boaD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(DeleteBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
             }
         }
 

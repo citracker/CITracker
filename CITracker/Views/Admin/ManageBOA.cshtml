@@ -1,9 +1,9 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.CIUser>
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationBOA>
 
 @{
     ViewData["Title"] = "CI Tracker";
-    ViewData["Base"] = "UserManagement";
-    ViewData["Active"] = "ManageUsers";
+    ViewData["Base"] = "ToolManagement";
+    ViewData["Active"] = "ManageBOA";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
 
@@ -13,10 +13,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Manage Users</h2>
+                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
                 </ol>
             </div>
         </div>
@@ -42,22 +42,18 @@
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add a User </div>
+                        <div class="card-title"> Add Business Objective Alignment </div>
                     </div>
-                    @using (Html.BeginForm("AddUser", "Admin", FormMethod.Post))
+                    @using (Html.BeginForm("AddBOA", "Admin", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        Business Objective Alignment <span style="color:red">*</span>
                                     </p>
-                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="First Name">
-                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="Last Name">
-                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="Email Address">
-                                @* <input type="text" class="form-control mt-3 mb-3" id="ph" name="ph" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
+                                    <input type="text" class="form-control mt-3 mb-3" id="boa" name="boa" placeholder="Business objective alignment" required>
                                 </div>
                             </div>
                         </div>
@@ -70,25 +66,25 @@
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a User </div>
+                        <div class="card-title"> Rename a Business Objective Alignment </div>
                     </div>
-                    @using (Html.BeginForm("RenameUser", "Admin", FormMethod.Post))
+                    @using (Html.BeginForm("ModifyBOA", "Admin", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
 
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
-                                    <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
-                                        <option selected disabled>Select a User</option>
+                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'boaM')" required>
+                                        <option selected disabled>Select a Business Objective Alignment</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
                                             {
                                                 foreach (var i in Model.Result)
                                                 {
-                                                    <option value="@i.Id">@i.Name</option>
+                                                    <option value="@i.Id">@i.BOA</option>
                                                 }
                                             }
                                         }
@@ -96,13 +92,9 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User Details <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
+                                        Business Objective Alignment Details
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="fnN" name="fnN" placeholder="First Name">
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="lnN" name="lnN" placeholder="Last Name">
-                                    <input type="email" class="form-control mt-3 mb-3 country-input" id="emN" name="emN" placeholder="Email Address">
-                                    @* <input type="text" class="form-control mt-3 mb-3" id="phN" name="phN" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="boaM" name="boaM" placeholder="Business Objective Alignment" required>
                                 </div>
                             </div>
                         </div>
@@ -115,25 +107,25 @@
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a User </div>
+                        <div class="card-title"> Delete a Business Objective Alignment </div>
                     </div>
-                    @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
+                    @using (Html.BeginForm("DeleteBOA", "Admin", FormMethod.Post))
                     {
                         @Html.AntiForgeryToken()
 
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
-                                    <select class="form-control" name="userD" id="userD">
-                                        <option selected disabled>Select a User</option>
+                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <select class="form-control" name="boaD" id="boaD">
+                                        <option selected disabled>Select a Business Objective Alignment</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
                                             {
                                                 foreach (var i in Model.Result)
                                                 {
-                                                    <option value="@i.Id">@i.Name</option>
+                                                    <option value="@i.Id">@i.BOA</option>
                                                 }
                                             }
                                         }
@@ -150,9 +142,10 @@
         </div>
     </div>
 </div>
+<!--APP-CONTENT CLOSE-->
 <script>
-    const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
-    
+    const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
     document.addEventListener("DOMContentLoaded", function () {
 
         const countryRegex = /^[\p{L}\s\-.'()]+$/u;
@@ -169,7 +162,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid user name.");
+                    this.setCustomValidity("Invalid Business Objective Alignment.");
                 } else {
                     this.setCustomValidity("");
                 }
@@ -179,21 +172,16 @@
 
     });
 
-    function onUserChange(selectEl, fnId, lnId, emId) {
-        const userId = parseInt(selectEl.value);
-        const fnInp = document.getElementById(fnId);
-        const lnInp = document.getElementById(lnId);
-        const emInp = document.getElementById(emId);
+    function onCategoryChange(selectEl, boa) {
+        const catId = parseInt(selectEl.value);
+        const sscInp = document.getElementById(boa);
 
 
-        if (isNaN(userId)) return;
+        if (isNaN(catId)) return;
 
-        const filtered = users.filter(l => l.Id === userId);
-
+        const filtered = categories.filter(l => l.Id === catId);
         filtered.forEach(item => {
-           fnInp.value = item.Name.split(' ')[0];
-           lnInp.value = item.Name.split(' ')[1];
-           emInp.value = item.EmailAddress;
+           sscInp.value = item.BOA;
         });
     }
 </script>

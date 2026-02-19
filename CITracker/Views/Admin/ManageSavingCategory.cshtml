@@ -94,11 +94,11 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User Details <span style="color:red">*</span>
+                                        Soft Saving Category Details <span style="color:red">*</span>
                                         <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
-                                    <input type="text" class="form-control mt-3 mb-3" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
                                 </div>
                             </div>
                         </div>
@@ -149,6 +149,32 @@
 <!--APP-CONTENT CLOSE-->
 <script>
     const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const countryRegex = /^[\p{L}\s\-.'()]+$/u;
+
+        const inputs = document.querySelectorAll(".country-input");
+
+        inputs.forEach(function (input) {
+
+            input.addEventListener("input", function () {
+
+                if (this.value === "") {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (!countryRegex.test(this.value)) {
+                    this.setCustomValidity("Invalid saving category name.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+        });
+
+    });
 
     function onCategoryChange(selectEl, ssc, ssu) {
         const catId = parseInt(selectEl.value);

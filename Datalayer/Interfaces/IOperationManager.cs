@@ -13,6 +13,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<OrganizationDepartment>> GetAllOrganizationDepartments(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOrganizationUsers(int orgId);
         Task<ResponseHandler<OrganizationSoftSaving>> GetAllOrganizationSavingCategory(int orgId);
+        Task<ResponseHandler<OrganizationBOA>> GetAllOrganizationBOA(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOperationalExcellenceUsers(int orgId);
         Task<ResponseHandler<CIUser>> GetAllStrategicInitiativeUsers(int orgId);
         Task<ResponseHandler> AddOrganizationCountry(OrganizationCountry orgCountry, string adminEmail);
@@ -52,6 +53,9 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail);
         Task<ResponseHandler> RenameOrganizationSoftSaving(long ssId, OrganizationSoftSaving usr, string adminEmail);
         Task<ResponseHandler> DeleteOrganizationSoftSaving(long ssId, string adminEmail, int orgId);
+        Task<ResponseHandler> AddOrganizationBOA(OrganizationBOA orgSs, string adminEmail);
+        Task<ResponseHandler> RenameOrganizationBOA(long ssId, OrganizationBOA usr, string adminEmail);
+        Task<ResponseHandler> DeleteOrganizationBOA(long ssId, string adminEmail, int orgId);
         Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement si, string adminEmail);
         Task<bool> CheckIfTenantHasSiteId(string tenantId);
         Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> si, string adminEmail);

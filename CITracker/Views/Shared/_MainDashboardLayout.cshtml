@@ -306,11 +306,12 @@
                                             </ul>
                                         </li>
                                         <li class="slide has-sub @(ViewBag.Base == "ToolManagement" ? "open active" : "")">
-                                            <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a>
-                                            <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
+                                            <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a>
+                                            <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
                                                 <li class="slide side-menu__label1"> <a href="javascript:void(0)">Tool Management</a> </li>
                                                 <li class="slide @(ViewBag.Active == "ManageTools" ? "active" : "")"> <a href="@Url.Action("ManageTools", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageTools" ? "active" : "")">Manage Tools</a> </li>
                                                 <li class="slide @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <a href="@Url.Action("ManageSavingCategory", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")">Manage Saving Category</a> </li>
+                                                <li class="slide @(ViewBag.Active == "ManageBOA" ? "active" : "")"> <a href="@Url.Action("ManageBOA", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageBOA" ? "active" : "")">Manage Business Objective Alignment</a> </li>
                                             </ul>
                                         </li>
                                         <li class="slide has-sub @(ViewBag.Base == "Uploads" ? "open active" : "")">

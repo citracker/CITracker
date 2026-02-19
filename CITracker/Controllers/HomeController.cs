@@ -181,7 +181,7 @@ namespace CITracker.Controllers
                 var org = new Organization
                 {
                     Name = Request.Form["companyName"],
-                    TenantId = HttpContext.Session.GetString("TenantId"),
+                    TenantId = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "",
                     Address = Request.Form["address"],
                     AdminName = Request.Form["firstName"],
                     AdminEmailAddress = Request.Form["adminEmail"],

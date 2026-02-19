@@ -72,17 +72,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var defaultMap = new Dictionary<string, string>
-                {
-                    { "Space", "sqft" },
-                    { "Time", "hr" },
-                    { "Quality", "#" },
-                    { "Safety", "TRIR" },
-                    { "Defect Rate", "#" }
-                };
-
-            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit); ;
-
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -90,7 +79,7 @@ namespace CITracker.Controllers
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OrganizationSoftSaving = org ?? defaultMap
+                OrganizationSoftSaving = GetOrganizationSoftSavingCategory()
             };
 
             return View(coep);
@@ -525,18 +514,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var defaultMap = new Dictionary<string, string>
-                {
-                    { "Space", "sqft" },
-                    { "Time", "hr" },
-                    { "Quality", "#" },
-                    { "Safety", "TRIR" },
-                    { "Defect Rate", "#" }
-                };
-
-            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit); ;
-
-
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -549,7 +526,7 @@ namespace CITracker.Controllers
                 ProjectTool = _opsManager.GetCIProjectTool(id)?.Result,
                 ProjectComment = _opsManager.GetCIProjectComment(id).Result?.SingleResult,
                 ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult,
-                OrganizationSoftSaving = org ?? defaultMap
+                OrganizationSoftSaving = GetOrganizationSoftSavingCategory()
             };
 
             return View(coep);
@@ -2088,6 +2065,22 @@ namespace CITracker.Controllers
                 TempData["Message"] = $"An error occurred while updating the SI Sub Project. {ex.Message}";
                 return RedirectToAction("SISubProjectDetail", "Main", new { id = id });
             }
+        }
+
+        private Dictionary<string, string> GetOrganizationSoftSavingCategory()
+        {
+            var defaultMap = new Dictionary<string, string>
+                {
+                    { "Space", "sqft" },
+                    { "Time", "hr" },
+                    { "Quality", "#" },
+                    { "Safety", "TRIR" },
+                    { "Defect Rate", "#" }
+                };
+
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit);
+
+            return org ?? defaultMap;
         }
 
         private bool IsAuthenticated()
