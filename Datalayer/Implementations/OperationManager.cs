@@ -788,6 +788,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "User Exists"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -843,6 +852,15 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "User Exists"
+                });
             }
             catch (Exception ex)
             {
@@ -2184,6 +2202,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Soft Saving Exists"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -2237,6 +2264,15 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Soft Saving Exists"
+                });
             }
             catch (Exception ex)
             {

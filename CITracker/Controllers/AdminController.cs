@@ -130,6 +130,7 @@ namespace CITracker.Controllers
             var orgUsers = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgUsers.Message = TempData["Message"]?.ToString() ?? orgUsers.Message;
+            orgUsers.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgUsers);
         }
@@ -175,6 +176,7 @@ namespace CITracker.Controllers
             var orgsc = _opsManager.GetAllOrganizationSavingCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgsc.Message = TempData["Message"]?.ToString() ?? orgsc.Message;
+            orgsc.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgsc);
         }
@@ -736,11 +738,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationUser(orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -770,11 +775,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationUser(Convert.ToInt64(Request.Form["user"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -799,11 +807,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.DeleteOrganizationUser(Convert.ToInt64(Request.Form["userD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -838,11 +849,15 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationSoftSaving(ordss, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
@@ -872,11 +887,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationSoftSaving(Convert.ToInt64(Request.Form["sss"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(ModifySoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
@@ -901,11 +919,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.DeleteOrganizationSoftSaving(Convert.ToInt64(Request.Form["sssD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }

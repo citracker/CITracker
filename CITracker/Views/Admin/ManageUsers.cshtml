@@ -22,6 +22,23 @@
         </div>
         <!-- Page Header Close -->
         <div id="project_info" class="row row-sm">
+            @if (Model.StatusCode > 0)
+            {
+                if (Model.StatusCode == 200)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+            }
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
