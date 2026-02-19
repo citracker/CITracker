@@ -72,13 +72,25 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var defaultMap = new Dictionary<string, string>
+                {
+                    { "Space", "sqft" },
+                    { "Time", "hr" },
+                    { "Quality", "#" },
+                    { "Safety", "TRIR" },
+                    { "Defect Rate", "#" }
+                };
+
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit); ;
+
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
                 OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
+                OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationSoftSaving = org ?? defaultMap
             };
 
             return View(coep);
@@ -513,6 +525,17 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var defaultMap = new Dictionary<string, string>
+                {
+                    { "Space", "sqft" },
+                    { "Time", "hr" },
+                    { "Quality", "#" },
+                    { "Safety", "TRIR" },
+                    { "Defect Rate", "#" }
+                };
+
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit); ;
+
 
             var coep = new ContinuousImprovementVM
             {
@@ -525,7 +548,8 @@ namespace CITracker.Controllers
                 ProjectTeam = _opsManager.GetCIProjectTeam(id)?.Result?.SingleResult,
                 ProjectTool = _opsManager.GetCIProjectTool(id)?.Result,
                 ProjectComment = _opsManager.GetCIProjectComment(id).Result?.SingleResult,
-                ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult
+                ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult,
+                OrganizationSoftSaving = org ?? defaultMap
             };
 
             return View(coep);

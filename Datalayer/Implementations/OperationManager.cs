@@ -184,6 +184,44 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<OrganizationSoftSaving>> GetOrganizationSoftSaving(int orgId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetListAsync<OrganizationSoftSaving>(dbConnection,
+                    "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1 order by Category", new { oid = orgId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+
+                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationSoftSaving)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler<OrganizationDepartment>> GetAllOrganizationDepartments(int orgId)
         {
             try

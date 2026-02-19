@@ -17,6 +17,7 @@ namespace Shared.ViewModels
         public List<CIUser> OrganizationUser { get; set; }
         public List<CIUser> OrganizationRoles { get; set; }
         public List<OrganizationToolDTO> MethodologyTool { get; set; }
+        public Dictionary<string, string> OrganizationSoftSaving { get; set; }
         public ResponseHandler<ContinuousImprovementDTO> Projects { get; set; }
         public ContinuousImprovementDTO Project { get; set; }
         public CITeamDTO ProjectTeam { get; set; }

@@ -9,6 +9,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<Country>> FetchOperationalCountry();
         Task<ResponseHandler<OrganizationCountry>> GetAllOrganizationCountries(int orgId);
         Task<ResponseHandler<OrganizationFacility>> GetAllOrganizationFacilities(int orgId);
+        Task<ResponseHandler<OrganizationSoftSaving>> GetOrganizationSoftSaving(int orgId);
         Task<ResponseHandler<OrganizationDepartment>> GetAllOrganizationDepartments(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOrganizationUsers(int orgId);
         Task<ResponseHandler<OrganizationSoftSaving>> GetAllOrganizationSavingCategory(int orgId);

@@ -127,12 +127,12 @@
                     <div class="row gy-4 finSftBody mt-2 mb-2">
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                             <select class="form-control" name="category">
-                                <option selected disabled>Select a Category</option>
+                                @* <option selected disabled>Select a Category</option>
                                 <option value="Space">Space</option>
-                                <option value="Time">Time</option>
+                                <option value="hr">Time</option>
                                 <option value="Quality">Quality</option>
                                 <option value="Safety">Safety</option>
-                                <option value="Defect Rate">Defect Rate</option>
+                                <option value="Defect Rate">Defect Rate</option> *@
                             </select>
                             <input class="sft-savings-id" name="sft-id" hidden />
                         </div>
@@ -237,16 +237,12 @@
 <script>
     window.HardSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial?.Hard == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial?.Hard));
     window.SoftSavings = @Html.Raw(Json.Serialize(Model.ProjectFinancial?.Soft == null ? new List<Shared.Request.CIFinancialDTO>() : Model.ProjectFinancial?.Soft));
+    window.CATEGORY_UNIT_MAP = @Html.Raw(Json.Serialize(Model.OrganizationSoftSaving == null ? new Dictionary<string, string>() : Model.OrganizationSoftSaving));
 
-    const CATEGORY_UNIT_MAP = {
-        "Space": "sqft",
-        "Time": "hr",
-        "Quality": "#",
-        "Safety": "TRIR",
-        "Defect Rate": "#"
-    };
+    const CATEGORY_UNIT_MAP = window.CATEGORY_UNIT_MAP || {};
 
-        // Handle category change (works for dynamically added rows)
+
+    // Handle category change (works for dynamically added rows)
     $(document).on('change', 'select[name="category"]', function () {
 
         const selectedCategory = $(this).val();
@@ -272,6 +268,20 @@
 
         }
     });
+
+    $(document).ready(function () {
+
+        $('.finSftBody').each(function () {
+
+            const $row = $(this);
+            const $select = $row.find('select[name="category"]');
+
+            populateCategorySelect($select);
+
+        });
+
+    });
+
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -480,16 +490,30 @@
         $(document).on('click', '.addSftFin', function (e) {
             e.preventDefault();
 
-            const $template = $('.finSftBody').first();
-            const $clone = $template.clone(false);
+            // const $template = $('.finSftBody').first();
+            // const $clone = $template.clone(false);
 
-            resetForm($clone);
+            // resetForm($clone);
 
-            $clone.find('.addSftFin').addClass('d-none');
-            $clone.find('.removeSftFin').removeClass('d-none');
+            // $clone.find('.addSftFin').addClass('d-none');
+            // $clone.find('.removeSftFin').removeClass('d-none');
 
-            $container.append($clone);
+            // $container.append($clone);
+
+            const $newRow = $('.finSftBody:first').clone();
+
+            // Reset values
+            $newRow.find('input').val('');
+            $newRow.find('.btn-outline-primary').text('');
+
+            // Repopulate select for cloned row
+            const $select = $newRow.find('select[name="category"]');
+            populateCategorySelect($select);
+
+            $('.finSftCardBody').append($newRow);
         });
+
+        
 
         /* -------------------- REMOVE -------------------- */
 
@@ -554,6 +578,30 @@
         }
 
     });
+
+    function populateCategorySelect($select, selectedValue = null) {
+
+        const map = window.CATEGORY_UNIT_MAP || {};
+
+        $select.empty();
+
+        $select.append('<option value="">-- Select Category --</option>');
+
+        Object.keys(map).forEach(category => {
+
+            const option = $('<option>', {
+                value: category,
+                text: category
+            });
+
+            if (selectedValue && selectedValue === category) {
+                option.prop('selected', true);
+            }
+
+            $select.append(option);
+        });
+    }
+
 
     function initMonthPicker($scope) {
         $scope.find('.month-picker').each(function () {

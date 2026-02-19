@@ -120,12 +120,12 @@
                     <div class="row gy-4 finSftBody mt-2 mb-2">
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                             <select class="form-control" name="category">
-                                <option selected disabled>Select a Category</option>
+                                @* <option selected disabled>Select a Category</option>
                                 <option value="Space">Space</option>
                                 <option value="Time">Time</option>
                                 <option value="Quality">Quality</option>
                                 <option value="Safety">Safety</option>
-                                <option value="Defect Rate">Defect Rate</option>
+                                <option value="Defect Rate">Defect Rate</option> *@
                             </select>
                         </div>
 
@@ -212,16 +212,9 @@
     </div>
 </div>
 <script>
+    window.CATEGORY_UNIT_MAP = @Html.Raw(Json.Serialize(Model.OrganizationSoftSaving == null ? new List<Shared.Models.OrganizationSoftSaving>() : Model.OrganizationSoftSaving));
 
-
-
-    const CATEGORY_UNIT_MAP = {
-        "Space": "sqft",
-        "Time": "hr",
-        "Quality": "#",
-        "Safety": "TRIR",
-        "Defect Rate": "#"
-    };
+    const CATEGORY_UNIT_MAP = window.CATEGORY_UNIT_MAP || {};
 
         // Handle category change (works for dynamically added rows)
     $(document).on('change', 'select[name="category"]', function () {
@@ -385,18 +378,30 @@
         $('.addSftFin').click(function() {
             sftFormCount++;
 
-            // Clone the first form section
-            const newSftForm = $('.finSftBody').first().clone();
+            // // Clone the first form section
+            // const newSftForm = $('.finSftBody').first().clone();
 
-            // Clear input values
-            newSftForm.find('input').val('');
+            // // Clear input values
+            // newSftForm.find('input').val('');
 
-            // Show remove button for cloned forms
-            newSftForm.find('.addSftFin').addClass("d-none");
-            newSftForm.find('.removeSftFin').removeClass("d-none");
+            // // Show remove button for cloned forms
+            // newSftForm.find('.addSftFin').addClass("d-none");
+            // newSftForm.find('.removeSftFin').removeClass("d-none");
 
-            // Append to container
-            $('.finSftCardBody').append(newSftForm);
+            // // Append to container
+            // $('.finSftCardBody').append(newSftForm);
+
+            const $newRow = $('.finSftBody:first').clone();
+
+            // Reset values
+            $newRow.find('input').val('');
+            $newRow.find('.btn-outline-primary').text('');
+
+            // Repopulate select for cloned row
+            const $select = $newRow.find('select[name="category"]');
+            populateCategorySelect($select);
+
+            $('.finSftCardBody').append($newRow);
         });
 
         // Remove functionality for initial form (if needed)
@@ -407,6 +412,43 @@
             }
         });
     });
+
+
+    $(document).ready(function () {
+
+        $('.finSftBody').each(function () {
+
+            const $row = $(this);
+            const $select = $row.find('select[name="category"]');
+
+            populateCategorySelect($select);
+
+        });
+
+    });
+
+    function populateCategorySelect($select, selectedValue = null) {
+
+        const map = window.CATEGORY_UNIT_MAP || {};
+
+        $select.empty();
+
+        $select.append('<option value="">-- Select Category --</option>');
+
+        Object.keys(map).forEach(category => {
+
+            const option = $('<option>', {
+                value: category,
+                text: category
+            });
+
+            if (selectedValue && selectedValue === category) {
+                option.prop('selected', true);
+            }
+
+            $select.append(option);
+        });
+    }
 
     function initMonthPicker($scope) {
         $scope.find('.month-picker').each(function () {
