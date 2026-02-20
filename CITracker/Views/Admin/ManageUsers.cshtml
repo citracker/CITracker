@@ -81,7 +81,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
                                     <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
-                                        <option selected disabled>Select a User</option>
+                                        <option disabled>Select a User</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -126,7 +126,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
                                     <select class="form-control" name="userD" id="userD">
-                                        <option selected disabled>Select a User</option>
+                                        <option disabled>Select a User</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())

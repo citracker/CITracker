@@ -62,26 +62,65 @@
                             <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
                         </p>
                         <div class="card-body d-sm-flex justify-content-between p-0">
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Safety </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Sustainability </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Cost/Revenue </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Efficiency </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Customer Experience </span>
-                            </label>
+                            @if (Model.BusinessObjectiveAlignment != null)
+                            {
+                                if (Model.BusinessObjectiveAlignment.Any())
+                                {
+                                    foreach (var i in Model.BusinessObjectiveAlignment)
+                                    {
+                                        <label class="form-check form-control m-2 p-2">
+                                            <input type="checkbox" value="@i.BOA" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains(i.BOA) ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                            <span class="form-check-label"> @i.BOA </span>
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Safety </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Sustainability </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Cost/Revenue </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Efficiency </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Customer Experience </span>
+                                    </label>
+                                }
+                            }
+                            else
+                            {
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Safety </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Sustainability </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Cost/Revenue </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Efficiency </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Customer Experience </span>
+                                </label>
+                            }
                         </div>
                     </div>
 

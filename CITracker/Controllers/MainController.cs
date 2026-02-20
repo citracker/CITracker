@@ -79,7 +79,8 @@ namespace CITracker.Controllers
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OrganizationSoftSaving = GetOrganizationSoftSavingCategory()
+                OrganizationSoftSaving = GetOrganizationSoftSavingCategory(),
+                BusinessObjectiveAlignment = _opsManager.GetAllOrganizationBOA(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
             };
 
             return View(coep);

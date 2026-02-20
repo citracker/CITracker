@@ -22,6 +22,7 @@ namespace Shared.ViewModels
         public ContinuousImprovementDTO Project { get; set; }
         public CITeamDTO ProjectTeam { get; set; }
         public List<CIProjectToolDTO> ProjectTool { get; set; }
+        public List<OrganizationBOA> BusinessObjectiveAlignment { get; set; }
         public CICommentDTO ProjectComment { get; set; }
         public CIFinancialDTO ProjectFinancial { get; set; }
 

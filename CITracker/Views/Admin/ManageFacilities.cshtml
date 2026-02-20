@@ -53,7 +53,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" id="country" required>
-                                        <option selected disabled>Select a Country</option>
+                                        <option disabled>Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -95,7 +95,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryR" id="countryR" onchange="onCountryChange(this, 'facilityR')" required>
-                                        <option selected disabled>Select a Country</option>
+                                        <option disabled>Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -111,7 +111,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityR" id="facilityR" onchange="setInputFromSelect(this, 'facilityN')" required>
-                                        <option selected disabled>Select a Facility</option>
+                                        <option disabled>Select a Facility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
@@ -142,7 +142,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryD" id="countryD" onchange="onCountryChange(this, 'facilityD')" required>
-                                        <option selected disabled>Select a Country</option>
+                                        <option disabled>Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -158,7 +158,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityD" id="facilityD" required>
-                                        <option selected disabled>Select a Facility</option>
+                                        <option disabled>Select a Facility</option>
                                     </select>
                                 </div>
                             </div>
@@ -181,7 +181,7 @@
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+        locationSelect.innerHTML = '<option disabled>Select a Facility</option>';
 
         if (isNaN(countryId)) return;
 
