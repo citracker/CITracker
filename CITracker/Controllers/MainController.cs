@@ -2068,6 +2068,77 @@ namespace CITracker.Controllers
             }
         }
 
+        [HttpGet("MethodologyCount")]
+        public IActionResult MethodologyCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { name = "Search Engine", value = 1048 },
+                new { name = "Direct", value = 735 },
+                new { name = "Email", value = 580 },
+                new { name = "Union Ads", value = 484 },
+                new { name = "Video Ads", value = 300 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("ProjectStatusCount")]
+        public IActionResult ProjectStatusCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { name = "DMAIC", value = 1048 },
+                new { name = "Gemba", value = 735 },
+                new { name = "Project", value = 580 },
+                new { name = "JDI", value = 484 },
+                new { name = "Others", value = 300 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MethodologiesbyMonth")]
+        public IActionResult MethodologiesbyMonth()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { label = "January", value = 120 },
+                new { label = "February", value = 190 },
+                new { label = "March", value = 300 },
+                new { label = "April", value = 250 }
+            };
+
+            return Ok(data);
+        }
+
         private Dictionary<string, string> GetOrganizationSoftSavingCategory()
         {
             var defaultMap = new Dictionary<string, string>
