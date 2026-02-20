@@ -72,7 +72,10 @@ namespace CITracker.Controllers
 
                         //get user's detail
                         var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
-                        SetSessionVariables(user.SingleResult);
+                        if(user.StatusCode != 404)
+                        {
+                            SetSessionVariables(user.SingleResult);
+                        }
                     }
                 }
             }
