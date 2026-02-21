@@ -8,7 +8,7 @@
     <div class="container-fluid">
         <div class="row row-sm">
             <div class="col-sm-12 col-lg-12 col-xl-12">
-                <div class="row row-sm mt-2">
+                <div class="row row-sm mt-4">
                     <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
                         <div class="card custom-card">
                             <div class="card-body">
@@ -116,31 +116,76 @@
                     </div>
                 </div>
                 <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-3 col-lg-4 col-xl-4">
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
                         <div class="card custom-card">
                             <div class="card-body">
                                 <div class="card-item">
-                                    <div id="pieChart" style="width: 100%; height: 400px;"></div>                                    
+                                    <div id="projCountbyMethodology" class="chart-container"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-3 col-lg-4 col-xl-4">
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
                         <div class="card custom-card">
                             <div class="card-body">
                                 <div class="card-item">
-                                    <div id="pieChart1" style="width: 100%; height: 400px;"></div>
+                                    <div id="projCountbyStatus" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <canvas id="projCountInCert" class="chart-container"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div id="savingsByCategory" class="chart-container"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-3 col-lg-6 col-xl-6">
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
                         <div class="card custom-card">
                             <div class="card-body">
-                                <div class="card-item">
-                                    <canvas id="barChart" height="100"></canvas>
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyProjectsStatus"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlySavings"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="completedProjectsByUser"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyProjectsbyMeth"></canvas>
                                 </div>
                             </div>
                         </div>
@@ -151,20 +196,20 @@
     </div>
 </div>
 <script>
-    const chartDom = document.getElementById('pieChart');
+    const chartDom = document.getElementById('projCountbyMethodology');
     const myChart = echarts.init(chartDom);
 
     const option = {
-        title: {
-            text: 'PIE CHART',
-            left: 'left'
-        },
+        // title: {
+        //     text: 'Project Count by Methodology',
+        //     left: 'left'
+        // },
         tooltip: {
             trigger: 'item'
         },
         legend: {
-            orient: 'vertical',
-            left: 'left'
+            orient: 'horizontal',
+            bottom: 'bottom'
         },
         emphasis: {
             itemStyle: {
@@ -176,7 +221,7 @@
         },
         series: [
             {
-                name: 'Access From',
+                //name: 'Access From',
                 type: 'pie',
                 radius: ['70%'],
                 label: {
@@ -195,7 +240,7 @@
 
     async function loadChartData() {
         try {
-            const response = await fetch('/MethodologyCount');
+            const response = await fetch('/ProjectCountByMethodology');
             const data = await response.json();
 
             myChart.setOption({
@@ -213,28 +258,33 @@
     myChart.showLoading();
     myChart.hideLoading();
     setInterval(loadChartData, 30000);
+    window.addEventListener('resize', function () {
+        myChart.resize();
+    });
 
 
 
 
-    const chartDom1 = document.getElementById('pieChart1');
+
+
+    const chartDom1 = document.getElementById('projCountbyStatus');
     const myChart1 = echarts.init(chartDom1);
 
     const option1 = {
-        title: {
-            text: 'PIE CHART',
-            left: 'left'
-        },
+        // title: {
+        //     text: 'METHODOLOGY',
+        //     left: 'left'
+        // },
         tooltip: {
             trigger: 'item'
         },
         legend: {
-            orient: 'vertical',
-            left: 'left'
+            orient: 'horizontal',
+            bottom: 'bottom'
         },
         series: [
             {
-                name: 'Access From',
+                //name: 'Access From',
                 type: 'pie',
                 radius: ['40%', '70%'],
                 label: {
@@ -271,29 +321,192 @@
     myChart1.showLoading();
     myChart1.hideLoading();
     setInterval(loadChartData1, 30000);
+    window.addEventListener('resize', function () {
+        myChart1.resize();
+    });
 
 
-    const ctx = document.getElementById('barChart').getContext('2d');
 
-    const barChart = new Chart(ctx, {
-        type: 'bar',
+
+
+
+
+
+    const ctx = document.getElementById('projCountInCert').getContext('2d');
+
+    const polarChart = new Chart(ctx, {
+        type: 'polarArea',
         data: {
-            labels: [],     // will be filled dynamically
+            labels: [],
             datasets: [{
-                label: 'Sales',
+                //label: 'Distribution',
                 data: [],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                borderRadius: 6
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ]
             }]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true
+                }
+            },
             plugins: {
-                legend: { display: true },
+                legend: {
+                    position: 'bottom',
+                    align: 'center',
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15
+                    }
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadPolarData() {
+        try {
+            const response = await fetch('/ProjectCertificationCount');
+            const result = await response.json();
+
+            const labels = result.map(x => x.label);
+            const values = result.map(x => x.value);
+
+            polarChart.data.labels = labels;
+            polarChart.data.datasets[0].data = values;
+
+            polarChart.update();
+
+        } catch (error) {
+            console.error('Error loading polar chart:', error);
+        }
+    }
+
+    loadPolarData();
+    setInterval(loadPolarData, 30000);
+
+
+
+
+
+
+
+
+
+    const chartDom2 = document.getElementById('savingsByCategory');
+    const myChart2 = echarts.init(chartDom2);
+
+    const option2 = {
+        // title: {
+        //     text: 'METHODOLOGY',
+        //     left: 'left'
+        // },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: 'bottom'
+        },
+        series: [
+            {
+                //name: 'Access From',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                label: {
+                    show: true,
+                    formatter: '{b}'
+                },
+                labelLine: {
+                    show: true
+                },
+                data: []
+            }
+        ]
+    };
+
+    myChart2.setOption(option2);
+
+    async function loadChartData2() {
+        try {
+            const response = await fetch('/SavingsByCategory');
+            const data = await response.json();
+
+            myChart2.setOption({
+                series: [{
+                    data: data
+                }]
+            });
+
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+        }
+    }
+
+    loadChartData2();
+    myChart2.showLoading();
+    myChart2.hideLoading();
+    setInterval(loadChartData2, 30000);
+    window.addEventListener('resize', function () {
+        myChart2.resize();
+    });
+
+
+
+
+
+
+
+
+
+    const ctx1 = document.getElementById('monthlyProjectsStatus').getContext('2d');
+
+    const barChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Completed',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Ongoing',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'On Hold',
+                    data: [],
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
                 tooltip: { enabled: true }
             },
             scales: {
+                x: {
+                    stacked: true
+                },
                 y: {
+                    stacked: true,
                     beginAtZero: true
                 }
             },
@@ -304,16 +517,18 @@
         }
     });
 
+
     async function loadBarChartData() {
         try {
             const response = await fetch('/MethodologiesbyMonth');
             const result = await response.json();
 
-            const labels = result.map(x => x.label);
-            const values = result.map(x => x.value);
+            const labels = result.map(x => x.month);
 
             barChart.data.labels = labels;
-            barChart.data.datasets[0].data = values;
+            barChart.data.datasets[0].data = result.map(x => x.completed);
+            barChart.data.datasets[1].data = result.map(x => x.ongoing);
+            barChart.data.datasets[2].data = result.map(x => x.onHold);
 
             barChart.update();
 
@@ -324,6 +539,240 @@
 
     loadBarChartData();
     setInterval(loadBarChartData, 30000);
+
+
+
+
+
+
+
+
+    const ctx2 = document.getElementById('monthlySavings').getContext('2d');
+
+    const barChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Cost Avoidance',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Revenue',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Cost Reduction',
+                    data: [],
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadBarChartData2() {
+        try {
+            const response = await fetch('/MonthlySavings');
+            const result = await response.json();
+
+            const labels = result.map(x => x.month);
+
+            barChart2.data.labels = labels;
+            barChart2.data.datasets[0].data = result.map(x => x.CostAvoidance);
+            barChart2.data.datasets[1].data = result.map(x => x.Revenue);
+            barChart2.data.datasets[2].data = result.map(x => x.CostReduction);
+                    
+            barChart2.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadBarChartData2();
+    setInterval(loadBarChartData2, 30000);
+
+
+
+
+
+
+    const ctx3 = document.getElementById('completedProjectsByUser').getContext('2d');
+
+    const completedChart = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                //label: 'Completed Projects',
+                data: [],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4,              // smooth curve
+                fill: true,                // shaded area
+                pointRadius: 5,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    enabled: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadCompletedProjectsData() {
+        try {
+            const response = await fetch('/CompletedProjectsByUser');
+            const result = await response.json();
+
+            const labels = result.map(x => x.name);
+            const values = result.map(x => x.completed);
+
+            completedChart.data.labels = labels;
+            completedChart.data.datasets[0].data = values;
+
+            completedChart.update();
+
+        } catch (error) {
+            console.error('Error loading line chart:', error);
+        }
+    }
+
+    loadCompletedProjectsData();
+    setInterval(loadCompletedProjectsData, 30000);
+
+
+
+
+
+
+
+
+    const ctx4 = document.getElementById('monthlyProjectsbyMeth').getContext('2d');
+
+    const barChart3 = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'DMAIC',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                },
+                {
+                    label: 'Gemba Kaizen',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Project',
+                    data: [],
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                },
+                {
+                    label: 'JDI',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                },
+                {
+                    label: 'Others',
+                    data: [],
+                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadBarChartData3() {
+        try {
+            const response = await fetch('/MonthlyProjectsByMethodologies');
+            const result = await response.json();
+
+            const labels = result.map(x => x.month);
+
+            barChart3.data.labels = labels;
+            barChart3.data.datasets[0].data = result.map(x => x.dmaic);
+            barChart3.data.datasets[1].data = result.map(x => x.gemba);
+            barChart3.data.datasets[2].data = result.map(x => x.project);
+            barChart3.data.datasets[3].data = result.map(x => x.jdi);
+            barChart3.data.datasets[4].data = result.map(x => x.others);
+                    
+            barChart3.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadBarChartData3();
+    setInterval(loadBarChartData3, 30000);
+
 
 </script>
 

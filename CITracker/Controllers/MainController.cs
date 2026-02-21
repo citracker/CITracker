@@ -2068,7 +2068,7 @@ namespace CITracker.Controllers
             }
         }
 
-        [HttpGet("MethodologyCount")]
+        [HttpGet("ProjectCountByMethodology")]
         public IActionResult MethodologyCount()
         {
             if (!IsAuthenticated())
@@ -2082,11 +2082,11 @@ namespace CITracker.Controllers
 
             var data = new[]
             {
-                new { name = "Search Engine", value = 1048 },
-                new { name = "Direct", value = 735 },
-                new { name = "Email", value = 580 },
-                new { name = "Union Ads", value = 484 },
-                new { name = "Video Ads", value = 300 }
+                new { name = "DMAIC", value = 1048 },
+                new { name = "Gemba Kaizen", value = 735 },
+                new { name = "Project", value = 580 },
+                new { name = "JDI", value = 484 },
+                new { name = "Others", value = 300 }
             };
 
             return Ok(data);
@@ -2106,11 +2106,11 @@ namespace CITracker.Controllers
 
             var data = new[]
             {
-                new { name = "DMAIC", value = 1048 },
-                new { name = "Gemba", value = 735 },
-                new { name = "Project", value = 580 },
-                new { name = "JDI", value = 484 },
-                new { name = "Others", value = 300 }
+                new { name = "PROPOSED", value = 1048 },
+                new { name = "INITIATED", value = 735 },
+                new { name = "COMPLETED", value = 580 },
+                new { name = "CLOSED", value = 484 },
+                new { name = "CANCELLED", value = 300 }
             };
 
             return Ok(data);
@@ -2130,14 +2130,136 @@ namespace CITracker.Controllers
 
             var data = new[]
             {
-                new { label = "January", value = 120 },
-                new { label = "February", value = 190 },
-                new { label = "March", value = 300 },
-                new { label = "April", value = 250 }
+                new { month = "January", completed = 12, ongoing = 7, onHold = 3 },
+                new { month = "February", completed = 9, ongoing = 10, onHold = 2 },
+                new { month = "March", completed = 15, ongoing = 5, onHold = 4 },
+                new { month = "April", completed = 11, ongoing = 8, onHold = 6 },
+                new { month = "May", completed = 18, ongoing = 6, onHold = 1 },
+                new { month = "June", completed = 14, ongoing = 9, onHold = 2 }
             };
 
             return Ok(data);
         }
+
+        [HttpGet("ProjectCertificationCount")]
+        public IActionResult ProjectCertificationCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { label = "Black Belt", value = 11 },
+                new { label = "Green Belt", value = 16 },
+                new { label = "PMP", value = 7 },
+                new { label = "Not Applicable", value = 3 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("SavingsByCategory")]
+        public IActionResult SavingsByCategory()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { name = "Revenue", value = 1048000 },
+                new { name = "Cost Avoidance", value = 735000 },
+                new { name = "Cost Reduction", value = 580000 },
+                new { name = "Cost Contianment", value = 484000 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MonthlySavings")]
+        public IActionResult MonthlySavings()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { month = "January", CostAvoidance = 12, Revenue = 7, CostReduction = 3 },
+                new { month = "February", CostAvoidance = 9, Revenue = 10, CostReduction = 2 },
+                new { month = "March", CostAvoidance = 15, Revenue = 5, CostReduction = 4 },
+                new { month = "April", CostAvoidance = 11, Revenue = 8, CostReduction = 6 },
+                new { month = "May", CostAvoidance = 18, Revenue = 6, CostReduction = 1 },
+                new { month = "June", CostAvoidance = 14, Revenue = 9, CostReduction = 2 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("CompletedProjectsByUser")]
+        public IActionResult CompletedProjectsByUser()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { name = "Alice", completed = 12 },
+                new { name = "John", completed = 18 },
+                new { name = "Michael", completed = 9 },
+                new { name = "Sarah", completed = 15 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MonthlyProjectsByMethodologies")]
+        public IActionResult MonthlyProjectsByMethodologies()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = new[]
+            {
+                new { month = "January", dmaic = 12, gemba = 7, project = 3, jdi = 6, others = 2 },
+                new { month = "February", dmaic = 9, gemba = 10, project = 2, jdi = 6, others = 2 },
+                new { month = "March", dmaic = 15, gemba = 5, project = 4, jdi = 6, others = 2 },
+                new { month = "April", dmaic = 11, gemba = 8, project = 6, jdi = 6, others = 2 },
+                new { month = "May", dmaic = 18, gemba = 6, project = 1, jdi = 6, others = 2 },
+                new { month = "June", dmaic = 14, gemba = 9, project = 2, jdi = 6, others = 2 }
+            };
+
+            return Ok(data);
+        }
+
 
         private Dictionary<string, string> GetOrganizationSoftSavingCategory()
         {
