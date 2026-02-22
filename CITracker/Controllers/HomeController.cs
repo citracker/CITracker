@@ -180,6 +180,22 @@ namespace CITracker.Controllers
                 var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
 
                 string domain = _msOps.GetOrganizationDomain(accessToken).Result;
+
+                //check if organization has existing subscription
+                var orgSubscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+
+                if(orgSubscription.SingleResult.EndDate > DateTime.Now)
+                {
+                    return View("Checkout", new CheckoutVM
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = $"Organisation - {Request.Form["companyName"]} - has existing subscription.",
+                        SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
+                        PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                        Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                    });
+                }
+
                 //build Organisation details
                 var org = new Organization
                 {

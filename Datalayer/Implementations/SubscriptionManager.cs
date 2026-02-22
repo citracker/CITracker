@@ -124,6 +124,48 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscription(string tenantId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
+                    "SELECT o.Id AS OrganizationId, s.SubscriptionPlanId, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM dbo.Organization o INNER JOIN dbo.Subscription s ON o.SubscriptionId = s.Id INNER JOIN dbo.SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN dbo.CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, s.SubscriptionPlanId, s.StartDate, s.EndDate, sp.NumberOfLicences;", new
+                    {
+                        tid = tenantId
+                    }, CommandType.Text);
+
+                if (resi != null)
+                {
+
+                    return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationSubscription)} - {JsonConvert.SerializeObject(ex)}");
+
+                return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler<SubscriptionPlan>> GetSubscriptionPlanById(int id)
         {
             try
