@@ -2260,6 +2260,67 @@ namespace CITracker.Controllers
             return Ok(data);
         }
 
+        [HttpGet("MonthlyProjectsByDepartment")]
+        public IActionResult MonthlyProjectsByDepartment()
+        {
+            var data = new
+            {
+                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+                datasets = new[]
+                {
+                    new {
+                        department = "IT",
+                        data = new[] { 5, 7, 3, 8, 6, 9 }
+                    },
+                    new {
+                        department = "HR",
+                        data = new[] { 2, 4, 6, 5, 3, 4 }
+                    },
+                    new {
+                        department = "Finance",
+                        data = new[] { 3, 5, 4, 7, 6, 8 }
+                    }
+                }
+            };
+
+            return Json(data);
+        }
+
+        [HttpGet("MonthlyProjectsByPhase")]
+        public IActionResult MonthlyProjectsByPhase()
+        {
+            var data = new
+            {
+                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+                datasets = new[]
+                {
+                    new {
+                        phase = "Define",
+                        data = new[] { 3, 5, 4, 6, 7, 8 }
+                    },
+                    new {
+                        phase = "Measure",
+                        data = new[] { 2, 3, 5, 4, 6, 7 }
+                    },
+                    new {
+                        phase = "Analyze",
+                        data = new[] { 1, 2, 3, 2, 4, 5 }
+                    },
+                    new {
+                        phase = "Improve",
+                        data = new[] { 4, 6, 5, 7, 8, 9 }
+                    },
+                    new {
+                        phase = "Control",
+                        data = new[] { 2, 1, 2, 3, 4, 3 }
+                    }
+                }
+            };
+
+            return Json(data);
+        }
+
+
 
         private Dictionary<string, string> GetOrganizationSoftSavingCategory()
         {
@@ -2276,6 +2337,7 @@ namespace CITracker.Controllers
 
             return org ?? defaultMap;
         }
+
 
         private bool IsAuthenticated()
         {

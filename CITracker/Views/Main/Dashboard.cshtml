@@ -190,6 +190,24 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyDeptChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyPhaseChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,10 +218,10 @@
     const myChart = echarts.init(chartDom);
 
     const option = {
-        // title: {
-        //     text: 'Project Count by Methodology',
-        //     left: 'left'
-        // },
+        title: {
+            text: 'Methodology #',
+            top: 'top'
+        },
         tooltip: {
             trigger: 'item'
         },
@@ -271,10 +289,10 @@
     const myChart1 = echarts.init(chartDom1);
 
     const option1 = {
-        // title: {
-        //     text: 'METHODOLOGY',
-        //     left: 'left'
-        // },
+        title: {
+            text: 'Project Status',
+            top: 'top'
+        },
         tooltip: {
             trigger: 'item'
         },
@@ -359,6 +377,13 @@
                 }
             },
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Certification',
+                    font: {
+                        size: 18
+                    }
+                },
                 legend: {
                     position: 'bottom',
                     align: 'center',
@@ -408,10 +433,10 @@
     const myChart2 = echarts.init(chartDom2);
 
     const option2 = {
-        // title: {
-        //     text: 'METHODOLOGY',
-        //     left: 'left'
-        // },
+        title: {
+            text: 'Savings Category',
+            top: 'top'
+        },
         tooltip: {
             trigger: 'item'
         },
@@ -480,17 +505,17 @@
                 {
                     label: 'Completed',
                     data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                    backgroundColor: 'rgba(153, 102, 255, 0.85)'
                 },
                 {
                     label: 'Ongoing',
                     data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    backgroundColor: 'rgba(75, 192, 192, 0.85)'
                 },
                 {
                     label: 'On Hold',
                     data: [],
-                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                    backgroundColor: 'rgba(255, 159, 64, 0.85)'
                 }
             ]
         },
@@ -498,6 +523,19 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects Status',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
                 legend: { position: 'bottom' },
                 tooltip: { enabled: true }
             },
@@ -557,17 +595,17 @@
                 {
                     label: 'Cost Avoidance',
                     data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                    backgroundColor: 'rgba(54, 162, 235, 0.85)'
                 },
                 {
                     label: 'Revenue',
                     data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    backgroundColor: 'rgba(255, 99, 132, 0.85)'
                 },
                 {
                     label: 'Cost Reduction',
                     data: [],
-                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                    backgroundColor: 'rgba(255, 159, 64, 0.85)' //rgba(75, 192, 192, 0.85) // Teal    rgba(153, 102, 255, 0.85)  // Royal Purple
                 }
             ]
         },
@@ -575,6 +613,19 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Savings',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
                 legend: { position: 'bottom' },
                 tooltip: { enabled: true }
             },
@@ -622,26 +673,36 @@
 
 
     const ctx3 = document.getElementById('completedProjectsByUser').getContext('2d');
-
     const completedChart = new Chart(ctx3, {
-        type: 'line',
+        type: 'bar',
         data: {
             labels: [],
             datasets: [{
-                //label: 'Completed Projects',
+                label: 'Completed Projects',
                 data: [],
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                tension: 0.4,              // smooth curve
-                fill: true,                // shaded area
-                pointRadius: 5,
-                pointHoverRadius: 7
+                backgroundColor: 'rgba(41, 128, 185, 0.85)',
+                borderColor: 'rgba(41, 128, 185, 1)',
+                borderWidth: 1,
+                borderRadius: 6,          // rounded bars
+                barThickness: 40         // optional fixed width
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Facilitators Projects',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
                 legend: {
                     position: 'bottom'
                 },
@@ -678,7 +739,7 @@
             completedChart.update();
 
         } catch (error) {
-            console.error('Error loading line chart:', error);
+            console.error('Error loading bar chart:', error);
         }
     }
 
@@ -702,27 +763,27 @@
                 {
                     label: 'DMAIC',
                     data: [],
-                    backgroundColor: 'rgba(75, 192, 192, 0.7)'
+                    backgroundColor: 'rgba(41, 128, 185, 0.9)'
                 },
                 {
                     label: 'Gemba Kaizen',
                     data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    backgroundColor: 'rgba(231, 76, 60, 0.9)'
                 },
                 {
                     label: 'Project',
                     data: [],
-                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                    backgroundColor: 'rgba(39, 174, 96, 0.9)'
                 },
                 {
                     label: 'JDI',
                     data: [],
-                    backgroundColor: 'rgba(54, 162, 235, 0.7)'
+                    backgroundColor: 'rgba(243, 156, 18, 0.9)'
                 },
                 {
                     label: 'Others',
                     data: [],
-                    backgroundColor: 'rgba(255, 206, 86, 0.7)'
+                    backgroundColor: 'rgba(142, 68, 173, 0.9)'
                 }
             ]
         },
@@ -730,6 +791,19 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects #',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
                 legend: { position: 'bottom' },
                 tooltip: { enabled: true }
             },
@@ -772,6 +846,127 @@
 
     loadBarChartData3();
     setInterval(loadBarChartData3, 30000);
+
+
+
+
+
+
+
+
+    const deptCtx = document.getElementById('monthlyDeptChart').getContext('2d');
+
+    const monthlyDeptChart = new Chart(deptCtx, {
+        type: 'line',
+        data: {
+            labels: [], // months
+            datasets: [] // departments will be added dynamically
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects per Department',
+                    font: { size: 18, weight: 'bold' }
+                },
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    async function loadDepartmentData() {
+        try {
+            const response = await fetch('/MonthlyProjectsByDepartment');
+            const result = await response.json();
+
+            monthlyDeptChart.data.labels = result.labels;
+
+            monthlyDeptChart.data.datasets = result.datasets.map(dep => ({
+                label: dep.department,
+                data: dep.data,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+            }));
+
+            monthlyDeptChart.update();
+
+        } catch (error) {
+            console.error('Error loading department data:', error);
+        }
+    }
+
+
+    loadDepartmentData();
+    setInterval(loadDepartmentData, 30000);
+
+
+
+
+
+
+
+
+    const phaseCtx = document.getElementById('monthlyPhaseChart').getContext('2d');
+
+    const monthlyPhaseChart = new Chart(phaseCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: []
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects per Phase',
+                    font: { size: 18, weight: 'bold' }
+                },
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    async function loadPhaseData() {
+        try {
+            const response = await fetch('/MonthlyProjectsByPhase');
+            const result = await response.json();
+
+            monthlyPhaseChart.data.labels = result.labels;
+
+            monthlyPhaseChart.data.datasets = result.datasets.map(phase => ({
+                label: phase.phase,
+                data: phase.data,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+            }));
+
+            monthlyPhaseChart.update();
+
+        } catch (error) {
+            console.error('Error loading phase data:', error);
+        }
+    }
+
+    loadPhaseData();
+    setInterval(loadPhaseData, 30000);
 
 
 </script>
