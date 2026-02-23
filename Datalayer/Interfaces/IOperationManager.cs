@@ -84,5 +84,15 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail);
         Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId);
         Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId);
+        Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetMethodologyCountByMonth(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId);
+        Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId);
+        Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUser(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId);
     }
 }

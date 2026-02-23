@@ -405,7 +405,7 @@
             const response = await fetch('/ProjectCertificationCount');
             const result = await response.json();
 
-            const labels = result.map(x => x.label);
+            const labels = result.map(x => x.name);
             const values = result.map(x => x.value);
 
             polarChart.data.labels = labels;

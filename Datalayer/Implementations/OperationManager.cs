@@ -1669,7 +1669,7 @@ namespace Datalayer.Implementations
                 IEnumerable<StrategicInitiativeDTO> resi = null; int count = 0;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
+                var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Status, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
                 var countquery = "SELECT count(id) from StrategicInitiative where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
@@ -4486,6 +4486,7 @@ namespace Datalayer.Implementations
         }
 
         public async Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId)
+
         {
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
@@ -4518,5 +4519,134 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetProjectCountByMethodology)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetProjectCountByStatus)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetMethodologyCountByMonth(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetMethodologyCountByMonth)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<MethodologyMonthlyStatusDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetProjectCountByCertification)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetSavingsByCategory)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetMonthlySavings)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<MonthlySavingsDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUser(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetCompletedProjectsByUser)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<UserCompletedProjectsDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByMethodologies)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByMethodologyDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByDepartment)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId)
+        {
+            try
+            {
+                return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByPhase)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>());
+            }
+        }
     }
 }

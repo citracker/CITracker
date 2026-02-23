@@ -1898,6 +1898,12 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
+                if(newSISubProject.SIId <= 0)
+                {
+                    TempData["Message"] = "Kindly select a Strategic Initiative Project";
+                    return RedirectToAction("CreateSISubProject", "Main");
+                }
+
                 var res = _opsManager.CreateNewSISubProject(newSISubProject, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -2080,6 +2086,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { name = "DMAIC", value = 1048 },
@@ -2104,6 +2112,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { name = "PROPOSED", value = 1048 },
@@ -2128,6 +2138,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<MethodologyMonthlyStatusDTO>
+            var res = _opsManager.GetMethodologyCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { month = "January", completed = 12, ongoing = 7, onHold = 3 },
@@ -2153,12 +2165,14 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
-                new { label = "Black Belt", value = 11 },
-                new { label = "Green Belt", value = 16 },
-                new { label = "PMP", value = 7 },
-                new { label = "Not Applicable", value = 3 }
+                new { name = "Black Belt", value = 11 },
+                new { name = "Green Belt", value = 16 },
+                new { name = "PMP", value = 7 },
+                new { name = "Not Applicable", value = 3 }
             };
 
             return Ok(data);
@@ -2176,6 +2190,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<NameValueDTO>
+            var res = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { name = "Revenue", value = 1048000 },
@@ -2199,6 +2215,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<MonthlySavingsDTO>
+            var res = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { month = "January", CostAvoidance = 12, Revenue = 7, CostReduction = 3 },
@@ -2224,6 +2242,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<UserCompletedProjectsDTO>
+            var res = _opsManager.GetCompletedProjectsByUser(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { name = "Alice", completed = 12 },
@@ -2247,6 +2267,8 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            //List<MonthlyProjectsByMethodologyDTO>
+            var res = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new[]
             {
                 new { month = "January", dmaic = 12, gemba = 7, project = 3, jdi = 6, others = 2 },
@@ -2263,6 +2285,18 @@ namespace CITracker.Controllers
         [HttpGet("MonthlyProjectsByDepartment")]
         public IActionResult MonthlyProjectsByDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
+            //List<MonthlyProjectsByDepartmentDTO>
+            var res = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new
             {
                 labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
@@ -2289,6 +2323,17 @@ namespace CITracker.Controllers
         [HttpGet("MonthlyProjectsByPhase")]
         public IActionResult MonthlyProjectsByPhase()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<MonthlyProjectsByPhaseDTO>
+            var res = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
             var data = new
             {
                 labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
