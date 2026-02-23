@@ -1898,9 +1898,15 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
-                if(newSISubProject.SIId <= 0)
+                if (newSISubProject.SIId <= 0)
                 {
                     TempData["Message"] = "Kindly select a Strategic Initiative Project";
+                    return RedirectToAction("CreateSISubProject", "Main");
+                }
+
+                if (newSISubProject.FacilitatorId <= 0)
+                {
+                    TempData["Message"] = "Kindly select a Facilitator";
                     return RedirectToAction("CreateSISubProject", "Main");
                 }
 

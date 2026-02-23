@@ -1158,7 +1158,7 @@ namespace CITracker.Controllers
                 {
                     return new ResponseHandler
                     {
-                        Message = "You have used up your available licenses, Kindly upgrade your subscription plan.",
+                        Message = (orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) > 0 ? $"You have {(orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences)} licences available. Kindly upgrade your subscription plan for more user licenses" : "You have used up your available user licenses, Kindly upgrade your subscription plan.",
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }

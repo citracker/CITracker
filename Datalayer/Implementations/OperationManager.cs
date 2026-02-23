@@ -1051,6 +1051,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
+                {
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                    Message = "Duplicate Project. Project Name already exist for the selected Department",
+                    SingleResult = ci
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -1534,6 +1543,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
+                {
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                    Message = "Duplicate Project. Project Name already exist for the selected Department",
+                    SingleResult = ci
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -1570,6 +1588,15 @@ namespace Datalayer.Implementations
                 {
                     StatusCode = (int)HttpStatusCode.OK,
                     Message = "Successful"
+                });
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
+                {
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                    Message = "Duplicate Project. Project Name already exist for the selected Department",
+                    SingleResult = ci
                 });
             }
             catch (Exception ex)
@@ -2592,6 +2619,15 @@ namespace Datalayer.Implementations
                 {
                     StatusCode = (int)HttpStatusCode.OK,
                     Message = "Successful",
+                    SingleResult = ci
+                });
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
+                {
+                    StatusCode = (int)HttpStatusCode.ExpectationFailed  ,
+                    Message = "Duplicate Project. Project Name already exist for the selected Department",
                     SingleResult = ci
                 });
             }
