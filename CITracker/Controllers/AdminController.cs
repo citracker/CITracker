@@ -26,13 +26,15 @@ namespace CITracker.Controllers
         private readonly IOptions<ADKeyValues> _config;
         private readonly IOperationManager _opsManager;
         private readonly IMicrosoftOperations _micOps;
+        private readonly ISubscriptionManager _subManager;
 
-        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps)
+        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription)
         {
             _logger = logger;
             _config = config;
             _opsManager = opsManager;
             _micOps = micOps;
+            _subManager = subscription;
         }
 
 
@@ -744,6 +746,15 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!Utils.IsValidEmail(Request.Form["em"]))
+            {
+
+                TempData["Message"] = "Invalid Email Address";
+                TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+
             try
             {
                 var orgUsr = new CIUser
@@ -757,11 +768,22 @@ namespace CITracker.Controllers
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId"))
                 };
 
-                var res = _opsManager.AddOrganizationUser(orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+                //check organization's license limit
+                var orgSubscrip = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId")).Result;
 
-                TempData["Message"] = res.Message;
-                TempData["StatusCode"] = res.StatusCode;
+                if((orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) >= 1 )
+                {
+                    var res = _opsManager.AddOrganizationUser(orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
+                    TempData["Message"] = res.Message;
+                    TempData["StatusCode"] = res.StatusCode;
+                }
+                else
+                {
+                    TempData["Message"] = "You have used up your available licenses, Kindly upgrade your subscription plan.";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+                }
+                    
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
@@ -785,6 +807,15 @@ namespace CITracker.Controllers
             if (!IsUserAdmin())
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (!Utils.IsValidEmail(Request.Form["emN"]))
+            {
+
+                TempData["Message"] = "Invalid Email Address";
+                TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                return RedirectToAction("ManageUsers", "Admin");
             }
 
             try
@@ -1115,7 +1146,23 @@ namespace CITracker.Controllers
                     .Select(g => g.First())
                     .ToList();
 
-                return await _opsManager.AddOrganizationUsers(users, HttpContext.Session.GetString("UserEmail"));
+
+                //check organization's license limit
+                var orgSubscrip = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId")).Result;
+
+                if ((orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) >= users.Count)
+                {
+                    return await _opsManager.AddOrganizationUsers(users, HttpContext.Session.GetString("UserEmail"));
+                }
+                else
+                {
+                    return new ResponseHandler
+                    {
+                        Message = "You have used up your available licenses, Kindly upgrade your subscription plan.",
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
             }
             catch(Exception e)
             {
@@ -1381,20 +1428,34 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if (User.Identity.IsAuthenticated)
+            try
             {
-                return true;
+                if (User.Identity.IsAuthenticated)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private bool IsUserAdmin()
         {
-            if (HttpContext.Session.GetString("UserRole").Equals("Admin"))
+            try
             {
-                return true;
+                if (HttpContext.Session.GetString("UserRole").Equals("Admin"))
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

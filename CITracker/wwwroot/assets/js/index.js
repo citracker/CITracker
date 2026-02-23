@@ -394,8 +394,8 @@ var options = {
 // chart.render();
 
 //document.querySelector('#todaytask').innerHTML = ''
-var chart3 = new ApexCharts(document.querySelector("#todaytask"), options);
-chart3.render();
+//var chart3 = new ApexCharts(document.querySelector("#todaytask"), options);
+//chart3.render();
 
 function todaytask() {
 	chart3.updateOptions({

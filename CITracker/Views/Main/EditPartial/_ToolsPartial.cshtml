@@ -163,15 +163,21 @@
                 action.href = '#';
                 action.target = '_self';
                 action.innerHTML =
-                    '<i class="las la-download la-2x text-success"></i>';
+                    '<button data-action="download" class="btn btn-icon btn-success-transparent rounded-pill btn-wave waves-effect waves-light me-1"> <i class="ri-arrow-down-line"></i> </button>';
 
                 action.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    DownloadFile(tool.orgToolId);
+                    const button = e.target.closest('button');
+                    if (!button) return;
+
+                    const actionType = button.getAttribute('data-action');
+
+                    if (actionType === 'download') {
+                        DownloadFile(tool.orgToolId);
+                    }
                 });
             } else {
                 action.innerHTML =
-                    '<i class="las la-file-upload la-2x text-warning"></i>';
+                    '<button class="btn btn-icon btn-warning-transparent rounded-pill btn-wave waves-effect waves-light"> <i class="ri-arrow-up-line"></i> </button>';
 
                 // action.addEventListener('click', function () {
                 //     triggerUpload(tool);

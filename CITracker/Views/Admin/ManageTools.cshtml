@@ -45,6 +45,7 @@
                         <div class="row gy-4">
                             @Html.AntiForgeryToken()
                             <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                            <div class="alert alert-info" role="alert">  <strong>NOTE:</strong> Each file must be less than 20MB!!! </div>
                             <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
                                 
                             </div>
@@ -132,7 +133,7 @@
         const label = document.createElement('label');
         label.className = 'form-check-label me-3';
         // label.setAttribute('for', checkbox.id);
-        label.style.cssText = 'width:85%;max-width:85%';
+        label.style.cssText = 'width:60%;max-width:60%';
         label.textContent = tool.name;
 
         const action = document.createElement('a');
@@ -141,15 +142,25 @@
             action.href = '#';
             action.target = '_self';
             action.innerHTML =
-                '<i class="las la-download la-2x text-success"></i>';
+                '<button data-action="download" class="btn btn-icon btn-success-transparent rounded-pill btn-wave waves-effect waves-light me-1"> <i class="ri-arrow-down-line"></i> </button><button data-action="upload" class="btn btn-icon btn-warning-transparent rounded-pill btn-wave waves-effect waves-light"> <i class="ri-arrow-up-line"></i> </button>';
 
             action.addEventListener('click', function (e) {
-                e.preventDefault();
-                DownloadFile(tool.orgToolId);
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const actionType = button.getAttribute('data-action');
+
+                if (actionType === 'download') {
+                    DownloadFile(tool.orgToolId);
+                }
+
+                if (actionType === 'upload') {
+                    triggerUpload(tool);
+                }
             });
         } else {
-            action.innerHTML =
-                '<i class="las la-file-upload la-2x text-warning"></i>';
+            action.href = '#';
+            action.innerHTML = '<button class="btn btn-icon btn-warning-transparent rounded-pill btn-wave waves-effect waves-light"> <i class="ri-arrow-up-line"></i> </button>';
             action.addEventListener('click', function () {
                 triggerUpload(tool);
             });

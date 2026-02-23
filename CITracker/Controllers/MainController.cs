@@ -2341,19 +2341,33 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if (User.Identity.IsAuthenticated && UserHasValidRole())
+            try
             {
-                return true;
+                if (User.Identity.IsAuthenticated && UserHasValidRole())
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private bool UserHasValidRole()
         {
-            if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))){
+            try
+            {
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))){
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
                 return false;
             }
-            return true;
         }
     }
 }
