@@ -1056,8 +1056,7 @@ namespace Datalayer.Implementations
                 return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
                 {
                     StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department",
-                    SingleResult = ci
+                    Message = "Duplicate Project. Project Name already exist for the selected Department"
                 });
             }
             catch (Exception ex)
@@ -1548,8 +1547,7 @@ namespace Datalayer.Implementations
                 return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
                 {
                     StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department",
-                    SingleResult = ci
+                    Message = "Duplicate Project. Project Name already exist for the selected Department"
                 });
             }
             catch (Exception ex)
@@ -1595,8 +1593,7 @@ namespace Datalayer.Implementations
                 return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
                 {
                     StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department",
-                    SingleResult = ci
+                    Message = "Duplicate Project. Project Name already exist for the selected Department"
                 });
             }
             catch (Exception ex)
