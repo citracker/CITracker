@@ -36,6 +36,7 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
+    environment: Production
     runs-on: windows-latest
     needs: build
     
@@ -52,4 +53,5 @@ jobs:
           app-name: 'leansensei'
           slot-name: 'Production'
           package: .
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_687AE3FF8C3A4936B9F00053240294A8 }}
