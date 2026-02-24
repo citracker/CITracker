@@ -4,7 +4,10 @@ using Infastructure.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using Newtonsoft.Json;
+using Shared.DTO;
 using Shared.ExternalModels;
+using System.Net.Http.Headers;
 using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace Infastructure.Implementation
@@ -105,5 +108,26 @@ namespace Infastructure.Implementation
 
             return new GraphServiceClient(credential, scopes);
         }
+
+        public async Task<string> GetOrganizationDomain(string accessToken)
+        {
+            try
+            {
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await client.GetAsync("https://graph.microsoft.com/v1.0/organization");
+                var content = await response.Content.ReadAsStringAsync();
+
+                var json = JsonConvert.DeserializeObject<OrganizationResponse>(content);
+
+                var domain = json.value[0].verifiedDomains.First(d => d.isDefault == true).name;
+
+                return domain;
+            }
+            catch (Exception ex) { return String.Empty; }
+        }
+
     }
 }

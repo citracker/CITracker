@@ -5,11 +5,15 @@
             <div class="card-header justify-content-between">
                 <div class="card-title"> Attachments </div>
             </div>
-            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+            <div class="card-body custom-scroll">
                 <div id="validationSummaryAP" class="alert alert-danger d-none" role="alert">
                     <ul class="mb-0"></ul>
                 </div>
                 @Html.AntiForgeryToken()
+                <label for="text-area" class="form-label">
+                    Project Update(s)
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Relevant information to provide recent activity and updates to the initiative"> <i class="fe fe-info"></i></a>
+                </label>
                 <nav class="navbar navbar-expand-lg bg-light">
                     <div class="container-fluid">
                         <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">Comments</a>
@@ -179,6 +183,12 @@
                     fileInput.disabled = status !== "COMPLETED";
                 }
 
+                window.DownloadProjectFile = function (fileId) {
+                    const encodedFileName = encodeURIComponent(fileId);
+                    const url1 = `/DownloadReportToolDoc?toolId=${encodedFileName}`;
+                    window.location.href = url1;
+                };
+
 
                 fetch(`/GetSelectedTools?val=${window.AppState.CIProject.Id}`)
                     .then(r => {
@@ -215,11 +225,11 @@
             }            
 
 
-            function buildFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+            function buildFilePreviewHtml({ img, title }, fileSize, fileId) {
                 return `
                     <div class="text-center">
                         <div class="file-manger-icon">
-                            <a href="${fileUrl}" target="_blank">
+                            <a href="#" onclick="DownloadProjectFile(${fileId})" target="_blank">
                                 <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
                             </a>
                         </div>
@@ -267,12 +277,12 @@
                                 uploadHtml = buildFilePreviewHtml(
                                     previewConfig,
                                     '',          // size optional (not usually known on load)
-                                    tool.url
+                                    tool.id
                                 );
                             } else {
                                 // fallback if extension is unknown
                                 uploadHtml = `
-                                    <a href="${tool.url}" target="_blank">View uploaded file</a>
+                                    <a href="#" onclick="DownloadProjectFile(${tool.id})" target="_blank">View uploaded file</a>
                                 `;
                             }
                         }
@@ -283,7 +293,7 @@
                                 type="file"
                                 name="file_${tool.id}"
                                 data-tool-id="${tool.id}"
-                                onchange="uploadToolFile(this, ${tool.id})">
+                                onchange="uploadToolFile(this, ${tool.id}, '${tool.name}')">
                             `;
                         }
 
@@ -304,7 +314,8 @@
                 });
             }
 
-            window.uploadToolFile = function (fileInput, toolId) {
+
+            window.uploadToolFile = function (fileInput, toolId, toolName) {
                 const file = fileInput.files[0];
                 if (!file) return;
 
@@ -314,6 +325,7 @@
                 const formData = new FormData();
                 formData.append("file", file);
                 formData.append("toolId", toolId);
+                formData.append("toolName", toolName);
                 formData.append("__RequestVerificationToken", getAntiForgeryToken());
 
                 fetch("/UploadToolFile", {
@@ -333,7 +345,7 @@
                     const replacementHtml = buildFilePreviewHtml(
                         previewConfig,
                         fileSizeMB,
-                        data.fileUrl
+                        data.toolId
                     );
 
                     const uploadContainer = fileInput.closest('.col-3');
@@ -411,7 +423,7 @@
             const replacementHtml = buildFilePreviewHtml(
                 previewConfig,
                 fileSizeMB,
-                data.fileUrl
+                window.AppState.CIProject.Id
             );
 
             const uploadContainer = fileInput.closest('.col-3');

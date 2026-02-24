@@ -9,7 +9,7 @@
             <div class="card-header justify-content-between">
                 <div class="card-title"> Project Details </div>
             </div>
-            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+            <div class="card-body custom-scroll">
                 <div class="row gy-4">
                     <div id="validationSummaryPP" class="alert alert-danger d-none" role="alert">
                         <ul class="mb-0"></ul>
@@ -21,7 +21,7 @@
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                         <p class="mb-2 fw-medium">
                             Title <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
                         </p>
                         <input type="text" class="form-control" id="title" name="title" placeholder="Project Title" value="@Model.Project.Title" @(isAdminOrFacilitator == true ? "" : "readonly") required>
                         <input type="text" class="form-control" id="id" name="id" value="@Model.Project.Id" hidden>
@@ -59,36 +59,75 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <p class="mb-2 fw-medium">
                             Business Objective Alignment <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select the most appropriate objectives based on your business focus"> <i class="fe fe-info"></i></a>
                         </p>
-                        <div class="card-body d-sm-flex justify-content-between">
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Safety </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Sustainability </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Cost/Revenue </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Efficiency </span>
-                            </label>
-                            <label class="form-check form-control m-2 p-2">
-                                <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
-                                <span class="form-check-label"> Customer Experience </span>
-                            </label>
+                        <div class="card-body d-sm-flex justify-content-between p-0">
+                            @if (Model.BusinessObjectiveAlignment != null)
+                            {
+                                if (Model.BusinessObjectiveAlignment.Any())
+                                {
+                                    foreach (var i in Model.BusinessObjectiveAlignment)
+                                    {
+                                        <label class="form-check form-control m-2 p-2">
+                                            <input type="checkbox" value="@i.BOA" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains(i.BOA) ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                            <span class="form-check-label"> @i.BOA </span>
+                                        </label>
+                                    }
+                                }
+                                else
+                                {
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Safety </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Sustainability </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Cost/Revenue </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Efficiency </span>
+                                    </label>
+                                    <label class="form-check form-control m-2 p-2">
+                                        <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                        <span class="form-check-label"> Customer Experience </span>
+                                    </label>
+                                }
+                            }
+                            else
+                            {
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Safety" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Safety") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Safety </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Sustainability" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Sustainability") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Sustainability </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Cost/Revenue" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Cost/Revenue") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Cost/Revenue </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Efficiency" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Efficiency") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Efficiency </span>
+                                </label>
+                                <label class="form-check form-control m-2 p-2">
+                                    <input type="checkbox" value="Customer Experience" name="boa" @(Model.Project.BusinessObjectiveAlignment.Contains("Customer Experience") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
+                                    <span class="form-check-label"> Customer Experience </span>
+                                </label>
+                            }
                         </div>
                     </div>
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <label for="problemstatement" class="form-label">
                             Problem Statement <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
                         </label>
                         <textarea class="form-control" name="problemstatement" rows="4" @(isAdminOrFacilitator == true ? "" : "readonly") required>@Model.Project.ProblemStatement</textarea>
                     </div>
@@ -96,9 +135,9 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <p class="mb-2 fw-medium">
                             Methodology <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select the most appropriate approach for executing the initiative/project."> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select the most appropriate approach for executing the initiative/project."> <i class="fe fe-info"></i></a>
                         </p>
-                        <div class="card-body d-sm-flex justify-content-between">
+                        <div class="card-body d-sm-flex justify-content-between p-0">
                             <label class="form-check form-control m-2 p-2">
                                 <input type="radio" name="methodology" value="General" alt="DMAIC" onchange="onMethodologyChanged()" @(Model.Project.Methodology.Equals("DMAIC") ? "checked" : "") @(isAdminOrFacilitator == true ? "" : "readonly")>
                                 <span class="form-check-label">DMAIC</span>
@@ -125,9 +164,9 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <p class="mb-2 fw-medium">
                             Working towards a certification? <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This helps with tying the initiative/project to any Lean 6 sigma certification effort"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="This helps with tying the initiative/project to any Lean 6 sigma certification effort"> <i class="fe fe-info"></i></a>
                         </p>
-                        <div id="certificationContainer" class="card-body d-sm-flex justify-content-between"></div>
+                        <div id="certificationContainer" class="card-body d-sm-flex justify-content-between p-0"></div>
                         <input type="hidden" id="preselectedCertification" value="@Model.Project.Certification">
                     </div>
 
@@ -150,7 +189,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                         <label for="status" class="form-label">
                             Status<span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select and modify the status as the initiative/project progress"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select and modify the status as the initiative/project progress"> <i class="fe fe-info"></i></a>
                         </label>
                         <select class="form-control" name="status" id="status" @(isAdminOrFacilitator == true ? "" : "readonly") required>
                             @{
@@ -211,7 +250,7 @@
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                         <label for="department" class="form-label">
                             Department<span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
                         </label>
                         <select class="form-control" name="department" id="department" @(isAdminOrFacilitator == true ? "" : "readonly") required>
                         </select>
@@ -220,35 +259,9 @@
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                         <label for="input-text" class="form-label">
                             Supporting Value Stream
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="The name of the value stream this initiative is tied to"> <i class="fe fe-info"></i></a>
                         </label>
                         <select id="supportingvaluestrings" name="supportingvaluestrings" class="form-control" @(isAdminOrFacilitator == true ? "" : "readonly")>
-                            @* <optgroup label="OPERATIONAL EXCELLENCE">
-                                @foreach (var i in Model.OperationalExcellence)
-                                {
-                                    if (Model.Project.SupportingValueStream.Equals($"OE|{i.Id}"))
-                                    {
-                                        <option value="OE|@i.Id" selected>@i.Title</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="OE|@i.Id">@i.Title</option>
-                                    }
-                                }
-                            </optgroup>
-                            <optgroup label="STRATEGIC INITIATIVES">
-                                @foreach (var i in Model.StrategicInitiative)
-                                {
-                                    if (Model.Project.SupportingValueStream.Equals($"SI|{i.Id}"))
-                                    {
-                                        <option value="SI|@i.Id" selected>@i.Title</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="SI|@i.Id">@i.Title</option>
-                                    }
-                                }
-                            </optgroup> *@
                         </select>
                     </div>
                 </div>

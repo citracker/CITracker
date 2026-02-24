@@ -22,6 +22,23 @@
         </div>
         <!-- Page Header Close -->
         <div id="project_info" class="row row-sm">
+            @if (Model.StatusCode > 0)
+            {
+                if (Model.StatusCode == 200)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+            }
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
@@ -35,7 +52,7 @@
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
                                         Soft Saving Category <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
                                     </p>
                                     <input type="text" class="form-control mt-3 mb-3" id="ssc" name="ssc" placeholder="Category (e.g. Time, Space, quality)" required>
                                     <input type="text" class="form-control mt-3 mb-3" id="ssu" name="ssu" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
@@ -62,7 +79,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
                                     <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'sscM', 'ssuM')" required>
-                                        <option selected disabled>Select a Soft Saving Category</option>
+                                        <option disabled>Select a Soft Saving Category</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -77,11 +94,11 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User Details <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Organization User"> <i class="fe fe-info"></i></a>
+                                        Soft Saving Category Details <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
-                                    <input type="text" class="form-control mt-3 mb-3" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
                                 </div>
                             </div>
                         </div>
@@ -105,7 +122,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
                                     <select class="form-control" name="sssD" id="sssD">
-                                        <option selected disabled>Select a Soft Saving Category</option>
+                                        <option disabled>Select a Soft Saving Category</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -132,6 +149,32 @@
 <!--APP-CONTENT CLOSE-->
 <script>
     const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const countryRegex = /^[\p{L}\s\-.'()]+$/u;
+
+        const inputs = document.querySelectorAll(".country-input");
+
+        inputs.forEach(function (input) {
+
+            input.addEventListener("input", function () {
+
+                if (this.value === "") {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (!countryRegex.test(this.value)) {
+                    this.setCustomValidity("Invalid saving category name.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+        });
+
+    });
 
     function onCategoryChange(selectEl, ssc, ssu) {
         const catId = parseInt(selectEl.value);

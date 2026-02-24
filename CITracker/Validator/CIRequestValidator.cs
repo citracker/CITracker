@@ -31,7 +31,7 @@ namespace CITracker.Validator
             RuleFor(x => x.CountryId).GreaterThan(0).WithMessage("Country is Required.");
             RuleFor(x => x.FacilityId).GreaterThan(0).WithMessage("Facility is Required.");
             RuleFor(x => x.DepartmentId).GreaterThan(0).WithMessage("Department is Required.");
-            RuleFor(x => x.SupportingValueStream).NotEmpty().WithMessage("Supporting Value Stream is required.");
+            //RuleFor(x => x.SupportingValueStream).NotEmpty().WithMessage("Supporting Value Stream is required.");
 
             RuleFor(x => x)
             .Custom((model, context) =>

@@ -38,9 +38,13 @@
       <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
       <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-      <!-- Prism CSS --> 
+@*       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+ *@      <!-- Prism CSS --> 
       <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
       <meta http-equiv="imagetoolbar" content="no" />    
       <style>
         a.details-control {
@@ -151,12 +155,12 @@
                                         <li class="p-1 d-flex align-items-center text-muted mb-2 search-app"> <a href="buttons.html"><span><i class="bx bx-dice-1 me-2 fs-14 bg-primary-transparent p-2 rounded-circle "></i>Buttons</span></a> </li> 
                                     </ul> 
                                 </div> 
-                                <div class="mt-3"> <p class="fw-semibold text-muted mb-2 fs-13">Links</p>
+                                @* <div class="mt-3"> <p class="fw-semibold text-muted mb-2 fs-13">Links</p>
                                     <ul class="ps-2 list-unstyled"> 
                                         <li class="p-1 align-items-center text-muted mb-1 search-app"> <a href="javascript:void(0)" class="text-primary"><u>http://spruko/html/spruko.com</u></a> </li> 
                                         <li class="p-1 align-items-center text-muted mb-1 search-app"> <a href="javascript:void(0)" class="text-primary"><u>http://spruko/demo/spruko.com</u></a> </li> 
                                     </ul> 
-                                </div> 
+                                </div>  *@
                             </div> 
                             <div class="py-3 border-top px-0"> 
                                 <div class="text-center"> <a href="javascript:void(0)" class="text-primary text-decoration-underline fs-15">View all</a> </div> 
@@ -206,7 +210,7 @@
                             <li><a class="dropdown-item d-flex border-bottom border-block-end" href="notifications-list.html"><i class="fe fe-compass fs-16 align-middle me-2"></i>Activity</a></li>
                             <li><a class="dropdown-item d-flex border-bottom" href="settings.html"><i class="fe fe-settings fs-16 align-middle me-2"></i>Settings</a></li>
                             <li><a class="dropdown-item d-flex border-bottom" href="chat.html"><i class="fe fe-headphones fs-16 align-middle me-2"></i>Support</a></li>*@
-                            <li><a class="dropdown-item d-flex" href="@Url.Action("Main", "Logout")"><i class="fe fe-power fs-16 align-middle me-2"></i>Log Out</a></li>
+                            <li><a class="dropdown-item d-flex" href="@Url.Action("Logout", "Main")"><i class="fe fe-power fs-16 align-middle me-2"></i>Log Out</a></li>
                         </ul>
                     </div>
                     <!-- End::header-element -->
@@ -306,11 +310,12 @@
                                             </ul>
                                         </li>
                                         <li class="slide has-sub @(ViewBag.Base == "ToolManagement" ? "open active" : "")">
-                                            <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a>
-                                            <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
+                                            <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a>
+                                            <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
                                                 <li class="slide side-menu__label1"> <a href="javascript:void(0)">Tool Management</a> </li>
                                                 <li class="slide @(ViewBag.Active == "ManageTools" ? "active" : "")"> <a href="@Url.Action("ManageTools", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageTools" ? "active" : "")">Manage Tools</a> </li>
                                                 <li class="slide @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <a href="@Url.Action("ManageSavingCategory", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")">Manage Saving Category</a> </li>
+                                                <li class="slide @(ViewBag.Active == "ManageBOA" ? "active" : "")"> <a href="@Url.Action("ManageBOA", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageBOA" ? "active" : "")">Manage Business Objective Alignment</a> </li>
                                             </ul>
                                         </li>
                                         <li class="slide has-sub @(ViewBag.Base == "Uploads" ? "open active" : "")">
@@ -351,7 +356,7 @@
 
       <!-- Footer Start --> 
       <footer class="footer mt-auto py-3 bg-white text-center">
-         <div class="container"> <span class="text-muted"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="bi bi-heart-fill text-danger"></span> by <a href="https://spruko.com/" target="_blank"> <span class="fw-semibold text-primary text-decoration-underline">CI Tracker</span> </a> All rights reserved </span> </div>
+         <div class="container"> <span class="text-muted"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="bi bi-heart-fill text-danger"></span> by <a href="https://citracker.org" target="_blank"> <span class="fw-semibold text-primary text-decoration-underline">CI Tracker</span> </a> All rights reserved </span> </div>
       </footer>
       
    </div>
@@ -490,13 +495,13 @@
    <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
    <script src="~/assets/libs/jsvectormap/js/jsvectormap.min.js"></script>
    <script src="~/assets/libs/jsvectormap/maps/world-merc.js"></script>
-   <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script>
+   @* <script src="~/assets/libs/apexcharts/apexcharts.min.js"></script> *@
    <script src="~/assets/js/index.js"></script>
    <script src="~/assets/js/custom-switcher.min.js"></script>
    <script src="~/assets/libs/prismjs/prism.js"></script>
    <script src="~/assets/js/prism-custom.js"></script>
-   <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
-   <script src="~/assets/js/simplebar.js"></script>
+   @* <script src="~/assets/libs/simplebar/simplebar.min.js"></script>
+   <script src="~/assets/js/simplebar.js"></script> *@
    <script src="~/assets/js/custom.js"></script>
    <script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
    <script src="~/assets/js/date&time_pickers.js"></script>

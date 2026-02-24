@@ -26,13 +26,15 @@ namespace CITracker.Controllers
         private readonly IOptions<ADKeyValues> _config;
         private readonly IOperationManager _opsManager;
         private readonly IMicrosoftOperations _micOps;
+        private readonly ISubscriptionManager _subManager;
 
-        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps)
+        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription)
         {
             _logger = logger;
             _config = config;
             _opsManager = opsManager;
             _micOps = micOps;
+            _subManager = subscription;
         }
 
 
@@ -52,6 +54,7 @@ namespace CITracker.Controllers
             var orgCountries = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgCountries.Message = TempData["Message"]?.ToString() ?? orgCountries.Message;
+            orgCountries.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgCountries);
         }
@@ -75,6 +78,7 @@ namespace CITracker.Controllers
             var faci = new OperationLocationVM
             {
                 Message = TempData["Message"]?.ToString() ?? orgCountries.Message,
+                StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString()),
                 Country = orgCountries.Result?.ToList(),
                 Facility = orgFacilities.Result?.ToList()
             };
@@ -102,6 +106,7 @@ namespace CITracker.Controllers
             var depart = new OperationLocationVM
             {
                 Message = TempData["Message"]?.ToString() ?? orgCountries.Message,
+                StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString()),
                 Country = orgCountries.Result?.ToList(),
                 Facility = orgFacilities.Result?.ToList(),
                 Department = orgDepartments.Result?.ToList()
@@ -127,6 +132,7 @@ namespace CITracker.Controllers
             var orgUsers = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgUsers.Message = TempData["Message"]?.ToString() ?? orgUsers.Message;
+            orgUsers.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgUsers);
         }
@@ -145,14 +151,6 @@ namespace CITracker.Controllers
             }
 
             var sites = new List<DriveInfo>();
-            ////check if tenant has an existing sharepoint site
-            //var hasSiteId = _opsManager.CheckIfTenantHasSiteId(HttpContext.Session.GetString("TenantId")).Result;
-
-            //if(!hasSiteId)
-            //{
-            //    //discover sharepoint sites
-            //    sites = _micOps.DiscoverSharePointSites(HttpContext.Session.GetString("TenantId"), _config.Value.ClientId, _config.Value.ClientSecret).Result;
-            //}
 
             var res = new ManageToolsVM
             {
@@ -180,6 +178,29 @@ namespace CITracker.Controllers
             var orgsc = _opsManager.GetAllOrganizationSavingCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             orgsc.Message = TempData["Message"]?.ToString() ?? orgsc.Message;
+            orgsc.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
+
+            return View(orgsc);
+        }
+
+        [HttpGet("ManageBOA")]
+        public IActionResult ManageBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Dashboard", "Main");
+            }
+
+
+            var orgsc = _opsManager.GetAllOrganizationBOA(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+            orgsc.Message = TempData["Message"]?.ToString() ?? orgsc.Message;
+            orgsc.StatusCode = Convert.ToInt32(TempData["StatusCode"]?.ToString());
 
             return View(orgsc);
         }
@@ -252,10 +273,53 @@ namespace CITracker.Controllers
                 return Ok(resp.Message);
         }
 
+        [HttpGet("GetMethodologyToolsAdm")]
+        public IActionResult GetMethodologyToolsAdm(string val, long pid)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var coep = _opsManager.GetAllOrganizationTools(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), val, pid)?.Result?.Result?.ToList();
+
+            var gcoep = coep.GroupBy(t => t.Phase).ToList();
+
+            var result = gcoep.ToDictionary(
+                g => g.Key,
+                g => g.Select(x => new
+                {
+                    orgToolId = x.Id,
+                    projectToolId = x.ProjectToolId,
+                    id = x.ToolId,
+                    name = x.Tool,
+                    url = x.Url,
+                    isChecked = x.IsChecked
+                }).ToList()
+            );
+
+            return Json(result);
+        }
+
         [HttpPost("AddCountry")]
         [ValidateAntiForgeryToken]
         public IActionResult AddCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordCty = new OrganizationCountry
@@ -270,11 +334,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationCountry(ordCty, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch(Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -284,16 +351,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationCountry(Convert.ToInt64(Request.Form["country"]), Request.Form["input"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -303,16 +383,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteCountry()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationCountry(Convert.ToInt64(Request.Form["country"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteCountry)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageOperationalLocation", "Admin");
             }
@@ -322,6 +415,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordFac = new OrganizationFacility
@@ -337,11 +440,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationFacility(ordFac, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -351,16 +457,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationFacility(Convert.ToInt64(Request.Form["facilityR"]), Request.Form["facilityN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -370,16 +489,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteFacility()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationFacility(Convert.ToInt64(Request.Form["facilityD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageFacilities", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteFacility)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageFacilities", "Admin");
             }
@@ -389,6 +521,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordDep = new OrganizationDepartment
@@ -405,11 +547,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationDepartment(ordDep, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }
@@ -419,16 +564,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.RenameOrganizationDepartment(Convert.ToInt64(Request.Form["departmentR"]), Request.Form["departmentN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }
@@ -439,6 +597,17 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadToolDocument(IFormFile file, int toolId, string toolName)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -450,12 +619,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // 2️⃣ Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{toolName.Replace(" ", "").ToLower()}{extension}";
 
             // 3️⃣ Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "toolTemplates"
@@ -473,11 +642,11 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
-
+            //var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
+            var fileName = $"/toolTemplates/{safeFileName}";
             var orgTool = new OrganizationTool
             {
-                Url = fileUrl,
+                Url = fileName,
                 MethodologyTool = toolId,
                 DateCreated = DateTime.UtcNow,
                 OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
@@ -489,24 +658,75 @@ namespace CITracker.Controllers
             return Ok(new
             {
                 toolId,
-                fileUrl
+                fileName
             });
+        }
+
+        [HttpGet("DownloadToolDocument")]
+        public IActionResult DownloadToolDocument(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetToolFileName(toolId, orgId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
         }
 
         [HttpPost("DeleteDepartment")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteDepartment()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationDepartment(Convert.ToInt64(Request.Form["departmentD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageDepartments", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteDepartment)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageDepartments", "Admin");
             }
@@ -516,6 +736,25 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!Utils.IsValidEmail(Request.Form["em"]))
+            {
+
+                TempData["Message"] = "Invalid Email Address";
+                TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+
             try
             {
                 var orgUsr = new CIUser
@@ -529,14 +768,28 @@ namespace CITracker.Controllers
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId"))
                 };
 
-                var res = _opsManager.AddOrganizationUser(orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+                //check organization's license limit
+                var orgSubscrip = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId")).Result;
 
-                TempData["Message"] = res.Message;
+                if((orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) >= 1 )
+                {
+                    var res = _opsManager.AddOrganizationUser(orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
+                    TempData["Message"] = res.Message;
+                    TempData["StatusCode"] = res.StatusCode;
+                }
+                else
+                {
+                    TempData["Message"] = "You have used up your available licenses, Kindly upgrade your subscription plan.";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+                }
+                    
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -546,6 +799,25 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenameUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!Utils.IsValidEmail(Request.Form["emN"]))
+            {
+
+                TempData["Message"] = "Invalid Email Address";
+                TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+
             try
             {
                 var orgUsr = new CIUser
@@ -556,11 +828,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationUser(Convert.ToInt64(Request.Form["user"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -570,16 +845,29 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteUser()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationUser(Convert.ToInt64(Request.Form["userD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageUsers", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
             }
@@ -589,6 +877,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AddSoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var ordss = new OrganizationSoftSaving
@@ -604,11 +902,15 @@ namespace CITracker.Controllers
                 var res = _opsManager.AddOrganizationSoftSaving(ordss, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(AddSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
@@ -618,6 +920,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult ModifySoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var orgUsr = new OrganizationSoftSaving
@@ -628,11 +940,14 @@ namespace CITracker.Controllers
                 var res = _opsManager.RenameOrganizationSoftSaving(Convert.ToInt64(Request.Form["sss"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(ModifySoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
@@ -642,18 +957,141 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteSoftSavingCategory()
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             try
             {
                 var res = _opsManager.DeleteOrganizationSoftSaving(Convert.ToInt64(Request.Form["sssD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
 
                 return RedirectToAction("ManageSavingCategory", "Admin");
             }
             catch (Exception e)
             {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteSoftSavingCategory)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageSavingCategory", "Admin");
+            }
+        }
+
+        [HttpPost("AddBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var ordss = new OrganizationBOA
+                {
+                    DateCreated = DateTime.UtcNow,
+                    OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                    BOA = Request.Form["boa"],
+                    IsActive = true
+                };
+
+                var res = _opsManager.AddOrganizationBOA(ordss, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(AddBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+        }
+
+        [HttpPost("ModifyBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult ModifyBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var orgUsr = new OrganizationBOA
+                {
+                    BOA = Request.Form["boaM"]
+                };
+                var res = _opsManager.RenameOrganizationBOA(Convert.ToInt64(Request.Form["sss"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(ModifyBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+        }
+
+        [HttpPost("DeleteBOA")]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteBOA()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var res = _opsManager.DeleteOrganizationBOA(Convert.ToInt64(Request.Form["boaD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("ManageBOA", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(DeleteBOA)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageBOA", "Admin");
             }
         }
 
@@ -708,7 +1146,23 @@ namespace CITracker.Controllers
                     .Select(g => g.First())
                     .ToList();
 
-                return await _opsManager.AddOrganizationUsers(users, HttpContext.Session.GetString("UserEmail"));
+
+                //check organization's license limit
+                var orgSubscrip = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId")).Result;
+
+                if ((orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) >= users.Count)
+                {
+                    return await _opsManager.AddOrganizationUsers(users, HttpContext.Session.GetString("UserEmail"));
+                }
+                else
+                {
+                    return new ResponseHandler
+                    {
+                        Message = (orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences) > 0 ? $"You have {(orgSubscrip.SingleResult.NumberOfLicences - orgSubscrip.SingleResult.NumberOfUsedLicences)} licences available. Kindly upgrade your subscription plan for more user licenses" : "You have used up your available user licenses, Kindly upgrade your subscription plan.",
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed
+                    };
+                }
+
             }
             catch(Exception e)
             {
@@ -974,20 +1428,34 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if (User.Identity.IsAuthenticated)
+            try
             {
-                return true;
+                if (User.Identity.IsAuthenticated)
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private bool IsUserAdmin()
         {
-            if (HttpContext.Session.GetString("UserRole").Equals("Admin"))
+            try
             {
-                return true;
+                if (HttpContext.Session.GetString("UserRole").Equals("Admin"))
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

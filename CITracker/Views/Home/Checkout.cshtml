@@ -55,6 +55,14 @@
 
             <!-- Right: form and payment -->
             <section class="md:col-span-2 bg-white p-6 rounded-lg shadow">
+                @if (Model.StatusCode > 0 && Model.StatusCode != 200)
+                {
+                    <div role="alert" class="p-1 rounded-lg" style="background-color:mistyrose">
+                        <ul class="mb-2">
+                            <li style="color: red"> @Model.Message</li>
+                        </ul>
+                    </div>
+                }
                 <div id="orgForm" class="space-y-4" onsubmit="return false;">
                     <h3 class="text-lg font-semibold">Organization details</h3>
 

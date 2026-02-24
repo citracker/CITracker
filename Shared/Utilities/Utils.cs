@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Globalization;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 
 namespace Shared.Utilities
 {
@@ -162,5 +164,16 @@ namespace Shared.Utilities
                 ? symbol
                 : null;
         }
+
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            return Regex.IsMatch(email,
+                @"^[^@\s]+@[^@\s]+\.[^@\s]+$",
+                RegexOptions.IgnoreCase);
+        }
+
     }
 }

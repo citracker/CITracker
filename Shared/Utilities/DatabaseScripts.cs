@@ -50,5 +50,7 @@ namespace Shared.Utilities
         public const string CIProjectSavingTable = "CIProjectSaving";
 
         public const string OrganizationToolTable = "OrganizationTool";
+
+        public const string OrganizationBOATable = "OrganizationBOA";
     }
 }

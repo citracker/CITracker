@@ -3,3 +3,971 @@
     ViewData["Active"] = "Dashboard";
     Layout = "~/Views/Shared/_MainDashboardLayout.cshtml";
 }
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <div class="row row-sm">
+            <div class="col-sm-12 col-lg-12 col-xl-12">
+                <div class="row row-sm mt-4">
+                    <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Total Savings</label>
+@*                                         <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+ *@                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$5,900.00</h4>
+@*                                             <small><b class="text-success">55%</b> higher</small>
+ *@                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    @* <div class="card-item-icon card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8 0 1.82.62 3.49 1.64 4.83 1.43-1.74 4.9-2.33 6.36-2.33s4.93.59 6.36 2.33C19.38 15.49 20 13.82 20 12c0-4.41-3.59-8-8-8zm0 9c-1.94 0-3.5-1.56-3.5-3.5S10.06 6 12 6s3.5 1.56 3.5 3.5S13.94 13 12 13z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z"></path> </svg>
+                                    </div> *@
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Project Count</label>
+@*                                         <span class="d-block fs-12 mb-0 text-muted">Employees joined this month</span>
+ *@                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">15</h4>
+@*                                             <small><b class="text-success">5%</b> Increased</small>
+ *@                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
+                                    </div> *@
+                                    <div class="card-item-title  mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Audits</label>
+@*                                         <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+ *@                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$8,500</h4>
+@*                                             <small><b class="text-danger">12%</b> decrease</small>
+ *@                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                    <div class="card-item-title mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">Total Expected Savings</label>
+                                        @*                                         <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+ *@                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$5,900.00</h4>
+                                            @*                                             <small><b class="text-success">55%</b> higher</small>
+ *@                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-3 col-lg-2 col-xl-2">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
+                                    </div> *@
+                                    <div class="card-item-title  mb-2">
+                                        <label class="main-content-label fs-13 fw-bold mb-1">ROI</label>
+                                        @*                                         <span class="d-block fs-12 mb-0 text-muted">Previous month vs this months</span>
+ *@                                    </div>
+                                    <div class="card-item-body">
+                                        <div class="card-item-stat">
+                                            <h4 class="fw-bold">$8,500</h4>
+                                            @*                                             <small><b class="text-danger">12%</b> decrease</small>
+ *@                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-sm mt-2">
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div id="projCountbyMethodology" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div id="projCountbyStatus" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <canvas id="projCountInCert" class="chart-container"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-4 col-lg-3 col-xl-3">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="card-item">
+                                    <div id="savingsByCategory" class="chart-container"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-sm mt-2">
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyProjectsStatus"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlySavings"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="completedProjectsByUser"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyProjectsbyMeth"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyDeptChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                        <div class="card custom-card">
+                            <div class="card-body">
+                                <div class="chart-wrapper">
+                                    <canvas id="monthlyPhaseChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const chartDom = document.getElementById('projCountbyMethodology');
+    const myChart = echarts.init(chartDom);
+
+    const option = {
+        title: {
+            text: 'Methodology #',
+            top: 'top'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: 'bottom'
+        },
+        emphasis: {
+            itemStyle: {
+                shadowBlur: 25,
+                shadowOffsetX: 0,
+                shadowOffsetY: 8,
+                shadowColor: 'rgba(0, 0, 0, 0.4)'
+            }
+        },
+        series: [
+            {
+                //name: 'Access From',
+                type: 'pie',
+                radius: ['70%'],
+                label: {
+                    show: true,
+                    formatter: '{b}'
+                },
+                labelLine: {
+                    show: true
+                },
+                data: []
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+
+    async function loadChartData() {
+        try {
+            const response = await fetch('/ProjectCountByMethodology');
+            const data = await response.json();
+
+            myChart.setOption({
+                series: [{
+                    data: data
+                }]
+            });
+
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+        }
+    }
+
+    loadChartData();
+    myChart.showLoading();
+    myChart.hideLoading();
+    setInterval(loadChartData, 30000);
+    window.addEventListener('resize', function () {
+        myChart.resize();
+    });
+
+
+
+
+
+
+    const chartDom1 = document.getElementById('projCountbyStatus');
+    const myChart1 = echarts.init(chartDom1);
+
+    const option1 = {
+        title: {
+            text: 'Project Status',
+            top: 'top'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: 'bottom'
+        },
+        series: [
+            {
+                //name: 'Access From',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                label: {
+                    show: true,
+                    formatter: '{b}'
+                },
+                labelLine: {
+                    show: true
+                },
+                data: []
+            }
+        ]
+    };
+
+    myChart1.setOption(option1);
+
+    async function loadChartData1() {
+        try {
+            const response = await fetch('/ProjectStatusCount');
+            const data = await response.json();
+
+            myChart1.setOption({
+                series: [{
+                    data: data
+                }]
+            });
+
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+        }
+    }
+
+    loadChartData1();
+    myChart1.showLoading();
+    myChart1.hideLoading();
+    setInterval(loadChartData1, 30000);
+    window.addEventListener('resize', function () {
+        myChart1.resize();
+    });
+
+
+
+
+
+
+
+
+    const ctx = document.getElementById('projCountInCert').getContext('2d');
+
+    const polarChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: [],
+            datasets: [{
+                //label: 'Distribution',
+                data: [],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(153, 102, 255, 0.6)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Certification',
+                    font: {
+                        size: 18
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    align: 'center',
+                    labels: {
+                        boxWidth: 15,
+                        padding: 15
+                    }
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadPolarData() {
+        try {
+            const response = await fetch('/ProjectCertificationCount');
+            const result = await response.json();
+
+            const labels = result.map(x => x.name);
+            const values = result.map(x => x.value);
+
+            polarChart.data.labels = labels;
+            polarChart.data.datasets[0].data = values;
+
+            polarChart.update();
+
+        } catch (error) {
+            console.error('Error loading polar chart:', error);
+        }
+    }
+
+    loadPolarData();
+    setInterval(loadPolarData, 30000);
+
+
+
+
+
+
+
+
+
+    const chartDom2 = document.getElementById('savingsByCategory');
+    const myChart2 = echarts.init(chartDom2);
+
+    const option2 = {
+        title: {
+            text: 'Savings Category',
+            top: 'top'
+        },
+        tooltip: {
+            trigger: 'item'
+        },
+        legend: {
+            orient: 'horizontal',
+            bottom: 'bottom'
+        },
+        series: [
+            {
+                //name: 'Access From',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                label: {
+                    show: true,
+                    formatter: '{b}'
+                },
+                labelLine: {
+                    show: true
+                },
+                data: []
+            }
+        ]
+    };
+
+    myChart2.setOption(option2);
+
+    async function loadChartData2() {
+        try {
+            const response = await fetch('/SavingsByCategory');
+            const data = await response.json();
+
+            myChart2.setOption({
+                series: [{
+                    data: data
+                }]
+            });
+
+        } catch (error) {
+            console.error('Error loading chart data:', error);
+        }
+    }
+
+    loadChartData2();
+    myChart2.showLoading();
+    myChart2.hideLoading();
+    setInterval(loadChartData2, 30000);
+    window.addEventListener('resize', function () {
+        myChart2.resize();
+    });
+
+
+
+
+
+
+
+
+
+    const ctx1 = document.getElementById('monthlyProjectsStatus').getContext('2d');
+
+    const barChart = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Completed',
+                    data: [],
+                    backgroundColor: 'rgba(153, 102, 255, 0.85)'
+                },
+                {
+                    label: 'Ongoing',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.85)'
+                },
+                {
+                    label: 'On Hold',
+                    data: [],
+                    backgroundColor: 'rgba(255, 159, 64, 0.85)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects Status',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+
+    async function loadBarChartData() {
+        try {
+            const response = await fetch('/MethodologiesbyMonth');
+            const result = await response.json();
+
+            const labels = result.map(x => x.month);
+
+            barChart.data.labels = labels;
+            barChart.data.datasets[0].data = result.map(x => x.completed);
+            barChart.data.datasets[1].data = result.map(x => x.ongoing);
+            barChart.data.datasets[2].data = result.map(x => x.onHold);
+
+            barChart.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadBarChartData();
+    setInterval(loadBarChartData, 30000);
+
+
+
+
+
+
+
+
+    const ctx2 = document.getElementById('monthlySavings').getContext('2d');
+
+    const barChart2 = new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Cost Avoidance',
+                    data: [],
+                    backgroundColor: 'rgba(54, 162, 235, 0.85)'
+                },
+                {
+                    label: 'Revenue',
+                    data: [],
+                    backgroundColor: 'rgba(255, 99, 132, 0.85)'
+                },
+                {
+                    label: 'Cost Reduction',
+                    data: [],
+                    backgroundColor: 'rgba(255, 159, 64, 0.85)' //rgba(75, 192, 192, 0.85) // Teal    rgba(153, 102, 255, 0.85)  // Royal Purple
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Savings',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadBarChartData2() {
+        try {
+            const response = await fetch('/MonthlySavings');
+            const result = await response.json();
+
+            const labels = result.map(x => x.month);
+
+            barChart2.data.labels = labels;
+            barChart2.data.datasets[0].data = result.map(x => x.CostAvoidance);
+            barChart2.data.datasets[1].data = result.map(x => x.Revenue);
+            barChart2.data.datasets[2].data = result.map(x => x.CostReduction);
+                    
+            barChart2.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadBarChartData2();
+    setInterval(loadBarChartData2, 30000);
+
+
+
+
+
+
+    const ctx3 = document.getElementById('completedProjectsByUser').getContext('2d');
+    const completedChart = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [{
+                label: 'Completed Projects',
+                data: [],
+                backgroundColor: 'rgba(41, 128, 185, 0.85)',
+                borderColor: 'rgba(41, 128, 185, 1)',
+                borderWidth: 1,
+                borderRadius: 6,          // rounded bars
+                barThickness: 40         // optional fixed width
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Facilitators Projects',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    enabled: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadCompletedProjectsData() {
+        try {
+            const response = await fetch('/CompletedProjectsByUser');
+            const result = await response.json();
+
+            const labels = result.map(x => x.name);
+            const values = result.map(x => x.completed);
+
+            completedChart.data.labels = labels;
+            completedChart.data.datasets[0].data = values;
+
+            completedChart.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadCompletedProjectsData();
+    setInterval(loadCompletedProjectsData, 30000);
+
+
+
+
+
+
+
+
+    const ctx4 = document.getElementById('monthlyProjectsbyMeth').getContext('2d');
+
+    const barChart3 = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'DMAIC',
+                    data: [],
+                    backgroundColor: 'rgba(41, 128, 185, 0.9)'
+                },
+                {
+                    label: 'Gemba Kaizen',
+                    data: [],
+                    backgroundColor: 'rgba(231, 76, 60, 0.9)'
+                },
+                {
+                    label: 'Project',
+                    data: [],
+                    backgroundColor: 'rgba(39, 174, 96, 0.9)'
+                },
+                {
+                    label: 'JDI',
+                    data: [],
+                    backgroundColor: 'rgba(243, 156, 18, 0.9)'
+                },
+                {
+                    label: 'Others',
+                    data: [],
+                    backgroundColor: 'rgba(142, 68, 173, 0.9)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects #',
+                    top: 'top',
+                    font: {
+                        size: 18,
+                        weight: 'bold'
+                    },
+                    padding: {
+                        top: 10,
+                        bottom: 20
+                    }
+                },
+                legend: { position: 'bottom' },
+                tooltip: { enabled: true }
+            },
+            scales: {
+                x: {
+                    stacked: true
+                },
+                y: {
+                    stacked: true,
+                    beginAtZero: true
+                }
+            },
+            animation: {
+                duration: 800,
+                easing: 'easeOutQuart'
+            }
+        }
+    });
+
+    async function loadBarChartData3() {
+        try {
+            const response = await fetch('/MonthlyProjectsByMethodologies');
+            const result = await response.json();
+
+            const labels = result.map(x => x.month);
+
+            barChart3.data.labels = labels;
+            barChart3.data.datasets[0].data = result.map(x => x.dmaic);
+            barChart3.data.datasets[1].data = result.map(x => x.gemba);
+            barChart3.data.datasets[2].data = result.map(x => x.project);
+            barChart3.data.datasets[3].data = result.map(x => x.jdi);
+            barChart3.data.datasets[4].data = result.map(x => x.others);
+                    
+            barChart3.update();
+
+        } catch (error) {
+            console.error('Error loading bar chart:', error);
+        }
+    }
+
+    loadBarChartData3();
+    setInterval(loadBarChartData3, 30000);
+
+
+
+
+
+
+
+
+    const deptCtx = document.getElementById('monthlyDeptChart').getContext('2d');
+
+    const monthlyDeptChart = new Chart(deptCtx, {
+        type: 'line',
+        data: {
+            labels: [], // months
+            datasets: [] // departments will be added dynamically
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects per Department',
+                    font: { size: 18, weight: 'bold' }
+                },
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    async function loadDepartmentData() {
+        try {
+            const response = await fetch('/MonthlyProjectsByDepartment');
+            const result = await response.json();
+
+            monthlyDeptChart.data.labels = result.labels;
+
+            monthlyDeptChart.data.datasets = result.datasets.map(dep => ({
+                label: dep.department,
+                data: dep.data,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+            }));
+
+            monthlyDeptChart.update();
+
+        } catch (error) {
+            console.error('Error loading department data:', error);
+        }
+    }
+
+
+    loadDepartmentData();
+    setInterval(loadDepartmentData, 30000);
+
+
+
+
+
+
+
+
+    const phaseCtx = document.getElementById('monthlyPhaseChart').getContext('2d');
+
+    const monthlyPhaseChart = new Chart(phaseCtx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: []
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Projects per Phase',
+                    font: { size: 18, weight: 'bold' }
+                },
+                legend: { position: 'bottom' }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            }
+        }
+    });
+
+    async function loadPhaseData() {
+        try {
+            const response = await fetch('/MonthlyProjectsByPhase');
+            const result = await response.json();
+
+            monthlyPhaseChart.data.labels = result.labels;
+
+            monthlyPhaseChart.data.datasets = result.datasets.map(phase => ({
+                label: phase.phase,
+                data: phase.data,
+                borderWidth: 2,
+                tension: 0.3,
+                fill: false
+            }));
+
+            monthlyPhaseChart.update();
+
+        } catch (error) {
+            console.error('Error loading phase data:', error);
+        }
+    }
+
+    loadPhaseData();
+    setInterval(loadPhaseData, 30000);
+
+
+</script>
+

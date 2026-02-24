@@ -1,15 +1,21 @@
 ﻿using CITracker.Helpers;
 using Datalayer.Interfaces;
+using Infastructure.Implementation;
+using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Models;
+using Microsoft.Identity.Web;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.Models;
 using Shared.ViewModels;
 using System.Net;
+using Organization = Shared.Models.Organization;
+using Subscription = Shared.Models.Subscription;
 
 namespace CITracker.Controllers
 {
@@ -20,10 +26,12 @@ namespace CITracker.Controllers
         private readonly IPaymentManager _payManager;
         private readonly IOperationManager _opsManager;
         private readonly IUserManager _usrManager;
+        private readonly IMicrosoftOperations _msOps;
+        private readonly ITokenAcquisition _tokenAcquisition;
         private readonly IOptions<KeyValues> _config;
         private readonly Mailer _mail;
 
-        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail)
+        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail, IMicrosoftOperations msOps, ITokenAcquisition tokenAcquisition)
         {
             _logger = logger;
             _subManager = subManager;
@@ -32,6 +40,8 @@ namespace CITracker.Controllers
             _usrManager = usrManager;
             _mail = mail;
             _config = config;
+            _msOps = msOps;
+            _tokenAcquisition = tokenAcquisition;
         }
 
 
@@ -39,15 +49,21 @@ namespace CITracker.Controllers
         public IActionResult Index()
         {
             //check if user is Authenticated
-            if(IsAuthenticated())
+            if (IsAuthenticated())
             {
-                //check if user's detail is not in session
-                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
+
+                //check if organization's domain is not in session
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("Domain")))
                 {
+                    _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user details and setting session variables.");
+
                     //check if tenant of logged in user has existing subscription
                     var orgdetails = _subManager.GetOrganizationByTenantId(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
-                    
-                    if(orgdetails.StatusCode == (int)HttpStatusCode.OK)
+
+                    _logger.LogInformation($"Organization details for tenant {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} fetched with status code {orgdetails.StatusCode}");
+
+                    if (orgdetails.StatusCode == (int)HttpStatusCode.OK)
                     {
                         if (orgdetails.SingleResult.IsSubscribed)
                         {
@@ -56,7 +72,10 @@ namespace CITracker.Controllers
 
                         //get user's detail
                         var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
-                        SetSessionVariables(user.SingleResult);
+                        if(user.StatusCode != 404)
+                        {
+                            SetSessionVariables(user.SingleResult);
+                        }
                     }
                 }
             }
@@ -155,19 +174,40 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult MakePayment()
         {
+            ResponseHandler<SubscriptionPlan> subscription = null;
             try
             {
+                var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
+
+                string domain = _msOps.GetOrganizationDomain(accessToken).Result;
+
+                //check if organization has existing subscription
+                var orgSubscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+
+                if(orgSubscription.SingleResult.EndDate > DateTime.Now)
+                {
+                    return View("Checkout", new CheckoutVM
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = $"Organisation - {Request.Form["companyName"]} - has existing subscription.",
+                        SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
+                        PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                        Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                    });
+                }
+
                 //build Organisation details
                 var org = new Organization
                 {
                     Name = Request.Form["companyName"],
-                    TenantId = HttpContext.Session.GetString("TenantId"),
+                    TenantId = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "",
                     Address = Request.Form["address"],
                     AdminName = Request.Form["firstName"],
                     AdminEmailAddress = Request.Form["adminEmail"],
                     AdminPhoneNumber = Request.Form["phone"],
                     CountryId = int.Parse(Request.Form["country"]),
                     Provider = "Microsoft",
+                    Domain = domain,
                     DateCreated = DateTime.UtcNow                    
                 };
 
@@ -181,7 +221,7 @@ namespace CITracker.Controllers
                 };
 
                 //get subscription Details
-                var subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
+                subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
 
                 if (subscription == null || subscription?.SingleResult == null)
                 {
@@ -215,7 +255,7 @@ namespace CITracker.Controllers
                 {
                     _logger.LogInformation($"Unable to Register Organization {org.Name}");
 
-                    return View(new CheckoutVM
+                    return View("Checkout", new CheckoutVM
                     {
                         StatusCode = (int)HttpStatusCode.ExpectationFailed,
                         Message = $"Unable to Register Organisation  {org.Name}",
@@ -226,6 +266,9 @@ namespace CITracker.Controllers
                 }
 
                 HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
+                //get user's detail
+                var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
+                SetSessionVariables(user.SingleResult);
 
                 //send OTP email
                 var re = _mail.sendEmail(org.AdminEmailAddress, "Welcome to CITracker", "CITracker", _mail.PopulateRegistrationBody(org.Name));
@@ -236,10 +279,13 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at MakePayment || - {JsonConvert.SerializeObject(ex)}");
 
-                return Json(new ResponseHandler
+                return View("Checkout", new CheckoutVM
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = ex.Message
+                    Message = $"Unable to Register Organisation ",
+                    SubscriptionPlan = subscription.SingleResult,
+                    PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                    Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
                 });
             }
         }
@@ -292,6 +338,14 @@ namespace CITracker.Controllers
         {
             if(User.Identity.IsAuthenticated)
             {
+                //set user Email first if user email is null
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
+                {
+                    HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
+
+                    HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
+                }
+
                 return true;
             }
             return false;
@@ -302,13 +356,13 @@ namespace CITracker.Controllers
         {
             HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
             HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
-            HttpContext.Session.SetString("Domain", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value.Split('@').Last());
             HttpContext.Session.SetString("TenantId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "");
             HttpContext.Session.SetString("ObjectId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? "");
 
             if (user != null)
             {
                 HttpContext.Session.SetString("UserRole", user.Role);
+                HttpContext.Session.SetString("Domain", user.OrganizationDomain ?? "");
                 HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
                 if ((bool)user?.IsOrganizationSubscribed)

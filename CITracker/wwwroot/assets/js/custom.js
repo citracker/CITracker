@@ -391,24 +391,9 @@
   };
   /* back to top */
 
-  /* header dropdowns scroll */
-  //var myHeaderShortcut = document.getElementById("header-shortcut-scroll");
-  //new SimpleBar(myHeaderShortcut, { autoHide: true });
-
   var myHeadernotification = document.getElementById(
     "header-notification-scroll"
   );
-  new SimpleBar(myHeadernotification, { autoHide: true });
-
-  var myHeaderCart = document.getElementById("header-cart-items-scroll");
-  new SimpleBar(myHeaderCart, { autoHide: true });
-  /* header dropdowns scroll */
-
-  ///* header search dropdown */
-  //let typehead = document.querySelector('#typehead');
-  //typehead.addEventListener('click', showSearchResult);
-  //document.body.addEventListener('click', removeSearchResult);
-  
 })();
 
 /* header search dropdown */

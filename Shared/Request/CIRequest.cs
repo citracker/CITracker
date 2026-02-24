@@ -24,6 +24,6 @@ namespace Shared.Request
         public int CountryId { get; set; }
         public int FacilityId { get; set; }
         public int DepartmentId { get; set; }
-        public string SupportingValueStream { get; set; }
+        public string? SupportingValueStream { get; set; }
     }
 }

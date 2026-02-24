@@ -9,9 +9,11 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<Country>> FetchOperationalCountry();
         Task<ResponseHandler<OrganizationCountry>> GetAllOrganizationCountries(int orgId);
         Task<ResponseHandler<OrganizationFacility>> GetAllOrganizationFacilities(int orgId);
+        Task<ResponseHandler<OrganizationSoftSaving>> GetOrganizationSoftSaving(int orgId);
         Task<ResponseHandler<OrganizationDepartment>> GetAllOrganizationDepartments(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOrganizationUsers(int orgId);
         Task<ResponseHandler<OrganizationSoftSaving>> GetAllOrganizationSavingCategory(int orgId);
+        Task<ResponseHandler<OrganizationBOA>> GetAllOrganizationBOA(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOperationalExcellenceUsers(int orgId);
         Task<ResponseHandler<CIUser>> GetAllStrategicInitiativeUsers(int orgId);
         Task<ResponseHandler> AddOrganizationCountry(OrganizationCountry orgCountry, string adminEmail);
@@ -51,6 +53,9 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail);
         Task<ResponseHandler> RenameOrganizationSoftSaving(long ssId, OrganizationSoftSaving usr, string adminEmail);
         Task<ResponseHandler> DeleteOrganizationSoftSaving(long ssId, string adminEmail, int orgId);
+        Task<ResponseHandler> AddOrganizationBOA(OrganizationBOA orgSs, string adminEmail);
+        Task<ResponseHandler> RenameOrganizationBOA(long ssId, OrganizationBOA usr, string adminEmail);
+        Task<ResponseHandler> DeleteOrganizationBOA(long ssId, string adminEmail, int orgId);
         Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement si, string adminEmail);
         Task<bool> CheckIfTenantHasSiteId(string tenantId);
         Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> si, string adminEmail);
@@ -61,6 +66,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> si, string adminEmail);
         Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail);
         Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProject(int orgId, long projectId);
+        Task<ResponseHandler<ContinuousImprovementDTO>> GetCIProjectMini(int orgId, long projectId);
         Task<ResponseHandler<CITeamDTO>> GetCIProjectTeam(long projectId);
         Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId);
         Task<ResponseHandler<CICommentDTO>> GetCIProjectComment(long projectId);
@@ -76,5 +82,17 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail);
         Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail);
         Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail);
+        Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId);
+        Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId);
+        Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetMethodologyCountByMonth(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId);
+        Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId);
+        Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId);
+        Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUser(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId);
+        Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId);
     }
 }

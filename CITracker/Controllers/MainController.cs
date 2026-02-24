@@ -1,4 +1,5 @@
 ﻿using Datalayer.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -77,7 +78,9 @@ namespace CITracker.Controllers
                 OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
                 OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
-                OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
+                OrganizationUser = _opsManager.GetAllOrganizationUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationSoftSaving = GetOrganizationSoftSavingCategory(),
+                BusinessObjectiveAlignment = _opsManager.GetAllOrganizationBOA(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
             };
 
             return View(coep);
@@ -146,7 +149,7 @@ namespace CITracker.Controllers
             }
 
             if (string.IsNullOrWhiteSpace(id) || id.Length < 3)
-                return BadRequest(new SupportingValueSearchResultDTO());
+                return Ok(new { });
 
             var parts = id.Split('|');
             var type = parts[0];
@@ -512,7 +515,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -524,7 +526,8 @@ namespace CITracker.Controllers
                 ProjectTeam = _opsManager.GetCIProjectTeam(id)?.Result?.SingleResult,
                 ProjectTool = _opsManager.GetCIProjectTool(id)?.Result,
                 ProjectComment = _opsManager.GetCIProjectComment(id).Result?.SingleResult,
-                ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult
+                ProjectFinancial = _opsManager.GetCIProjectFinancial(id).Result?.SingleResult,
+                OrganizationSoftSaving = GetOrganizationSoftSavingCategory()
             };
 
             return View(coep);
@@ -1261,7 +1264,8 @@ namespace CITracker.Controllers
                 g => g.Key,
                 g => g.Select(x => new
                 {
-                    projectToolId = x.Id,
+                    orgToolId = x.Id,
+                    projectToolId = x.ProjectToolId,
                     id = x.ToolId,
                     name = x.Tool,
                     url = x.Url,
@@ -1315,25 +1319,35 @@ namespace CITracker.Controllers
         [HttpPost("UploadToolFile")]
         [RequestSizeLimit(20 * 1024 * 1024)] // 20 MB
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId)
+        public async Task<IActionResult> UploadToolFile(IFormFile file, int toolId, string toolName)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
-            // 1️⃣ Whitelist allowed extensions
+            // Whitelist allowed extensions
             var allowedExtensions = new[] { ".pdf", ".docx", ".xlsx", ".png", ".jpg" };
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!allowedExtensions.Contains(extension))
                 return BadRequest("Invalid file type.");
 
-            // 2️⃣ Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            // Generate safe file name (never trust client filename)
+            var safeFileName = $"{toolName.Replace(" ", "").ToLower()}{extension}";
 
-            // 3️⃣ Target directory (wwwroot/uploads/tools)
+            // Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "tools"
@@ -1351,14 +1365,167 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/tools/{safeFileName}";
-            var res = _opsManager.UpdateToolId(toolId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/tools/{safeFileName}";
+            var fileName = $"/tools/{safeFileName}";
+            var res = _opsManager.UpdateToolId(toolId, fileName);
 
             return Ok(new
             {
                 toolId,
-                fileUrl
+                fileName
             });
+        }
+
+        [HttpGet("DownloadProjectToolDoc")]
+        public IActionResult DownloadProjectToolDoc(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetProjectToolFileName(toolId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
+        [HttpGet("DownloadReportToolDoc")]
+        public IActionResult DownloadReportToolDoc(long projectId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetCIProjectMini(orgId, projectId).Result?.SingleResult?.FinalReportUrl;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
+        [HttpGet("DownloadFinReportDoc")]
+        public IActionResult DownloadFinReportDoc(long projectId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetCIProjectMini(orgId, projectId).Result?.SingleResult?.FinancialReportUrl;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
+
+        [HttpGet("DownloadToolDoc")]
+        public IActionResult DownloadToolDoc(long toolId)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var orgId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"));
+
+            var fileName = _opsManager.GetToolFileName(toolId, orgId).Result?.SingleResult?.Url;
+
+            if (string.IsNullOrEmpty(fileName))
+                return NotFound();
+
+            fileName = fileName.TrimStart('/', '\\');
+
+            var filePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "SecureUploads",
+                "uploads",
+                $"Org-{orgId}",
+                fileName
+            );
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, fileName);
         }
 
         [HttpPost("UploadFinalReportFile")]
@@ -1366,6 +1533,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinalReportFile(IFormFile file, int projectId)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -1377,12 +1554,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{DateTime.Now.ToString("yyMMddhhmmss")}{extension}";
 
             // Target directory
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "report"
@@ -1400,13 +1577,13 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/report/{safeFileName}";
-            var res = _opsManager.UpdateReportFile(projectId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/report/{safeFileName}";
+            var fileName = $"/report/{safeFileName}";
+            var res = _opsManager.UpdateReportFile(projectId, fileName);
 
             return Ok(new
             {
-                projectId,
-                fileUrl
+                projectId
             });
         }
 
@@ -1415,6 +1592,16 @@ namespace CITracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadFinancialReportFile(IFormFile file, int projectId)
         {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (file == null || file.Length == 0)
                 return BadRequest("File is empty.");
 
@@ -1426,12 +1613,12 @@ namespace CITracker.Controllers
                 return BadRequest("Invalid file type.");
 
             // Generate safe file name (never trust client filename)
-            var safeFileName = $"{Guid.NewGuid()}{extension}";
+            var safeFileName = $"{DateTime.Now.ToString("yyMMddhhmmss")}{extension}";
 
             // Target directory
             var uploadRoot = Path.Combine(
                 Directory.GetCurrentDirectory(),
-                "wwwroot",
+                "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
                 "financialreport"
@@ -1449,13 +1636,14 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/financialreport/{safeFileName}";
-            var res = _opsManager.UpdateFinancialReportFile(projectId, fileUrl);
+            //var fileName = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/financialreport/{safeFileName}";
+            var fileName = $"/financialreport/{safeFileName}";
+            var res = _opsManager.UpdateFinancialReportFile(projectId, fileName);
 
             return Ok(new
             {
                 projectId,
-                fileUrl
+                fileName
             });
         }
 
@@ -1710,6 +1898,18 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
+                if (newSISubProject.SIId <= 0)
+                {
+                    TempData["Message"] = "Kindly select a Strategic Initiative Project";
+                    return RedirectToAction("CreateSISubProject", "Main");
+                }
+
+                if (newSISubProject.FacilitatorId <= 0)
+                {
+                    TempData["Message"] = "Kindly select a Facilitator";
+                    return RedirectToAction("CreateSISubProject", "Main");
+                }
+
                 var res = _opsManager.CreateNewSISubProject(newSISubProject, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -1880,21 +2080,345 @@ namespace CITracker.Controllers
             }
         }
 
+        [HttpGet("ProjectCountByMethodology")]
+        public IActionResult MethodologyCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { name = "DMAIC", value = 1048 },
+                new { name = "Gemba Kaizen", value = 735 },
+                new { name = "Project", value = 580 },
+                new { name = "JDI", value = 484 },
+                new { name = "Others", value = 300 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("ProjectStatusCount")]
+        public IActionResult ProjectStatusCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { name = "PROPOSED", value = 1048 },
+                new { name = "INITIATED", value = 735 },
+                new { name = "COMPLETED", value = 580 },
+                new { name = "CLOSED", value = 484 },
+                new { name = "CANCELLED", value = 300 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MethodologiesbyMonth")]
+        public IActionResult MethodologiesbyMonth()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<MethodologyMonthlyStatusDTO>
+            var res = _opsManager.GetMethodologyCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { month = "January", completed = 12, ongoing = 7, onHold = 3 },
+                new { month = "February", completed = 9, ongoing = 10, onHold = 2 },
+                new { month = "March", completed = 15, ongoing = 5, onHold = 4 },
+                new { month = "April", completed = 11, ongoing = 8, onHold = 6 },
+                new { month = "May", completed = 18, ongoing = 6, onHold = 1 },
+                new { month = "June", completed = 14, ongoing = 9, onHold = 2 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("ProjectCertificationCount")]
+        public IActionResult ProjectCertificationCount()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<NameValueDTO>
+            var res = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { name = "Black Belt", value = 11 },
+                new { name = "Green Belt", value = 16 },
+                new { name = "PMP", value = 7 },
+                new { name = "Not Applicable", value = 3 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("SavingsByCategory")]
+        public IActionResult SavingsByCategory()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<NameValueDTO>
+            var res = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { name = "Revenue", value = 1048000 },
+                new { name = "Cost Avoidance", value = 735000 },
+                new { name = "Cost Reduction", value = 580000 },
+                new { name = "Cost Contianment", value = 484000 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MonthlySavings")]
+        public IActionResult MonthlySavings()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<MonthlySavingsDTO>
+            var res = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { month = "January", CostAvoidance = 12, Revenue = 7, CostReduction = 3 },
+                new { month = "February", CostAvoidance = 9, Revenue = 10, CostReduction = 2 },
+                new { month = "March", CostAvoidance = 15, Revenue = 5, CostReduction = 4 },
+                new { month = "April", CostAvoidance = 11, Revenue = 8, CostReduction = 6 },
+                new { month = "May", CostAvoidance = 18, Revenue = 6, CostReduction = 1 },
+                new { month = "June", CostAvoidance = 14, Revenue = 9, CostReduction = 2 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("CompletedProjectsByUser")]
+        public IActionResult CompletedProjectsByUser()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<UserCompletedProjectsDTO>
+            var res = _opsManager.GetCompletedProjectsByUser(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { name = "Alice", completed = 12 },
+                new { name = "John", completed = 18 },
+                new { name = "Michael", completed = 9 },
+                new { name = "Sarah", completed = 15 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MonthlyProjectsByMethodologies")]
+        public IActionResult MonthlyProjectsByMethodologies()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<MonthlyProjectsByMethodologyDTO>
+            var res = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new[]
+            {
+                new { month = "January", dmaic = 12, gemba = 7, project = 3, jdi = 6, others = 2 },
+                new { month = "February", dmaic = 9, gemba = 10, project = 2, jdi = 6, others = 2 },
+                new { month = "March", dmaic = 15, gemba = 5, project = 4, jdi = 6, others = 2 },
+                new { month = "April", dmaic = 11, gemba = 8, project = 6, jdi = 6, others = 2 },
+                new { month = "May", dmaic = 18, gemba = 6, project = 1, jdi = 6, others = 2 },
+                new { month = "June", dmaic = 14, gemba = 9, project = 2, jdi = 6, others = 2 }
+            };
+
+            return Ok(data);
+        }
+
+        [HttpGet("MonthlyProjectsByDepartment")]
+        public IActionResult MonthlyProjectsByDepartment()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+
+            //List<MonthlyProjectsByDepartmentDTO>
+            var res = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new
+            {
+                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+                datasets = new[]
+                {
+                    new {
+                        department = "IT",
+                        data = new[] { 5, 7, 3, 8, 6, 9 }
+                    },
+                    new {
+                        department = "HR",
+                        data = new[] { 2, 4, 6, 5, 3, 4 }
+                    },
+                    new {
+                        department = "Finance",
+                        data = new[] { 3, 5, 4, 7, 6, 8 }
+                    }
+                }
+            };
+
+            return Json(data);
+        }
+
+        [HttpGet("MonthlyProjectsByPhase")]
+        public IActionResult MonthlyProjectsByPhase()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            //List<MonthlyProjectsByPhaseDTO>
+            var res = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = new
+            {
+                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+                datasets = new[]
+                {
+                    new {
+                        phase = "Define",
+                        data = new[] { 3, 5, 4, 6, 7, 8 }
+                    },
+                    new {
+                        phase = "Measure",
+                        data = new[] { 2, 3, 5, 4, 6, 7 }
+                    },
+                    new {
+                        phase = "Analyze",
+                        data = new[] { 1, 2, 3, 2, 4, 5 }
+                    },
+                    new {
+                        phase = "Improve",
+                        data = new[] { 4, 6, 5, 7, 8, 9 }
+                    },
+                    new {
+                        phase = "Control",
+                        data = new[] { 2, 1, 2, 3, 4, 3 }
+                    }
+                }
+            };
+
+            return Json(data);
+        }
+
+
+
+        private Dictionary<string, string> GetOrganizationSoftSavingCategory()
+        {
+            var defaultMap = new Dictionary<string, string>
+                {
+                    { "Space", "sqft" },
+                    { "Time", "hr" },
+                    { "Quality", "#" },
+                    { "Safety", "TRIR" },
+                    { "Defect Rate", "#" }
+                };
+
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit);
+
+            return org ?? defaultMap;
+        }
+
+
         private bool IsAuthenticated()
         {
-            if (User.Identity.IsAuthenticated && UserHasValidRole())
+            try
             {
-                return true;
+                if (User.Identity.IsAuthenticated && UserHasValidRole())
+                {
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         private bool UserHasValidRole()
         {
-            if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))){
+            try
+            {
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))){
+                    return false;
+                }
+                return true;
+            }
+            catch (Exception)
+            {
                 return false;
             }
-            return true;
         }
     }
 }

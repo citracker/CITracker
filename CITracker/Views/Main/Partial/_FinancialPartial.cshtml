@@ -5,7 +5,7 @@
             <div class="card-header justify-content-between">
                 <div class="card-title"> Financial Verification </div>
             </div>
-            <div class="card-body" style="min-height: 650px;height: 650px;overflow-y:scroll;">
+            <div class="card-body custom-scroll">
                 <div id="validationSummaryFP" class="alert alert-danger d-none" role="alert">
                     <ul class="mb-0"></ul>
                 </div>
@@ -14,7 +14,7 @@
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
                         <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
                             One time savings
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Savings that will not be recurring overtime"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Savings that will not be recurring overtime"> <i class="fe fe-info"></i></a>
                         </label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
@@ -29,7 +29,7 @@
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
                         <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
                             Carry over savings
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Savings spanning over more than a year"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Savings spanning over more than a year"> <i class="fe fe-info"></i></a>
                         </label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
@@ -56,7 +56,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     Hard Savings                    
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Financial Benefits"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Financial Benefits"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -106,7 +106,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     Soft Savings
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="This includes non-financial savings (e.g. time, space, quality, safety)"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="This includes non-financial savings (e.g. time, space, quality, safety)"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -120,12 +120,12 @@
                     <div class="row gy-4 finSftBody mt-2 mb-2">
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                             <select class="form-control" name="category">
-                                <option selected disabled>Select a Category</option>
+                                @* <option selected disabled>Select a Category</option>
                                 <option value="Space">Space</option>
                                 <option value="Time">Time</option>
                                 <option value="Quality">Quality</option>
                                 <option value="Safety">Safety</option>
-                                <option value="Defect Rate">Defect Rate</option>
+                                <option value="Defect Rate">Defect Rate</option> *@
                             </select>
                         </div>
 
@@ -152,7 +152,7 @@
                         <div class="card custom-card">
                             <div class="card-body">
                                 <label for="formFileLg" class="form-label">Financial Report (Supported Format: PPT, Excel, PDF, Word)</label>
-                                <input class="form-control form-control-lg lockable" type="file">
+                                <input class="form-control form-control-lg lockable" type="file" onchange="uploadFinancialReportFile(this)">
                                 <p class="text-danger text-sm-start"> Note: To attach the financial report, ensure to enter in hard savings, upload final report under the attachment status and move project to completed status under the project detail tab.</p>
                             </div>
                         </div>
@@ -172,7 +172,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     Audited Details (Auditor Only)
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Closed projects can be randomly selected for auditing"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Closed projects can be randomly selected for auditing"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -206,22 +206,15 @@
             </div>
             <div class="card-footer border-top-card">
                 <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save &amp; Next</button>
+                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save</button>
             </div>
         </div>
     </div>
 </div>
 <script>
+    window.CATEGORY_UNIT_MAP = @Html.Raw(Json.Serialize(Model.OrganizationSoftSaving == null ? new List<Shared.Models.OrganizationSoftSaving>() : Model.OrganizationSoftSaving));
 
-
-
-    const CATEGORY_UNIT_MAP = {
-        "Space": "sqft",
-        "Time": "hr",
-        "Quality": "#",
-        "Safety": "TRIR",
-        "Defect Rate": "#"
-    };
+    const CATEGORY_UNIT_MAP = window.CATEGORY_UNIT_MAP || {};
 
         // Handle category change (works for dynamically added rows)
     $(document).on('change', 'select[name="category"]', function () {
@@ -243,7 +236,7 @@
     document.addEventListener("DOMContentLoaded", function () {
         initMonthPicker($('.finCardBody'));
 
-        setDisabled('.lockable', true);
+        //setDisabled('.lockable', true);
 
         const dateInput = document.querySelector(".pj-date-input");
 
@@ -385,18 +378,30 @@
         $('.addSftFin').click(function() {
             sftFormCount++;
 
-            // Clone the first form section
-            const newSftForm = $('.finSftBody').first().clone();
+            // // Clone the first form section
+            // const newSftForm = $('.finSftBody').first().clone();
 
-            // Clear input values
-            newSftForm.find('input').val('');
+            // // Clear input values
+            // newSftForm.find('input').val('');
 
-            // Show remove button for cloned forms
-            newSftForm.find('.addSftFin').addClass("d-none");
-            newSftForm.find('.removeSftFin').removeClass("d-none");
+            // // Show remove button for cloned forms
+            // newSftForm.find('.addSftFin').addClass("d-none");
+            // newSftForm.find('.removeSftFin').removeClass("d-none");
 
-            // Append to container
-            $('.finSftCardBody').append(newSftForm);
+            // // Append to container
+            // $('.finSftCardBody').append(newSftForm);
+
+            const $newRow = $('.finSftBody:first').clone();
+
+            // Reset values
+            $newRow.find('input').val('');
+            $newRow.find('.btn-outline-primary').text('');
+
+            // Repopulate select for cloned row
+            const $select = $newRow.find('select[name="category"]');
+            populateCategorySelect($select);
+
+            $('.finSftCardBody').append($newRow);
         });
 
         // Remove functionality for initial form (if needed)
@@ -407,6 +412,43 @@
             }
         });
     });
+
+
+    $(document).ready(function () {
+
+        $('.finSftBody').each(function () {
+
+            const $row = $(this);
+            const $select = $row.find('select[name="category"]');
+
+            populateCategorySelect($select);
+
+        });
+
+    });
+
+    function populateCategorySelect($select, selectedValue = null) {
+
+        const map = window.CATEGORY_UNIT_MAP || {};
+
+        $select.empty();
+
+        $select.append('<option value="">-- Select Category --</option>');
+
+        Object.keys(map).forEach(category => {
+
+            const option = $('<option>', {
+                value: category,
+                text: category
+            });
+
+            if (selectedValue && selectedValue === category) {
+                option.prop('selected', true);
+            }
+
+            $select.append(option);
+        });
+    }
 
     function initMonthPicker($scope) {
         $scope.find('.month-picker').each(function () {
@@ -473,6 +515,89 @@
 
         return softSavings;
     }
+
+
+    const FILE_PREVIEW_MAP = {
+        pdf: {
+            img: "../assets/images/files/png/2.png",
+            title: "PDF Document"
+        },
+        doc: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        docx: {
+            img: "../assets/images/files/png/6.png",
+            title: "Word Document"
+        },
+        xlsx: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        },
+        csv: {
+            img: "../assets/images/files/png/3.png",
+            title: "Excel Document"
+        }
+    };
+
+
+    function buildFinReportFilePreviewHtml({ img, title }, fileSize, fileUrl) {
+        return `
+            <div class="text-center">
+                <div class="file-manger-icon">
+                    <a href="#" onclick="DownloadFinReportFile(${fileUrl})" target="_blank">
+                        <img src="${img}" alt="file" class="br-7" style="width:35px;height:35px">
+                    </a>
+                </div>
+                <h6 class="mb-1 fw-medium mt-0">${title}</h6>
+                <span class="text-muted">${fileSize}</span>
+            </div>
+        `;
+    }
+
+    function uploadFinancialReportFile (fileInput) {
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        const extension = file.name.split('.').pop().toLowerCase();
+        const previewConfig = FILE_PREVIEW_MAP[extension];
+
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("projectId", window.AppState.CIProject.Id);
+        formData.append("__RequestVerificationToken", getAntiForgeryToken());
+
+        fetch("/UploadFinancialReportFile", {
+            method: "POST",
+            body: formData,
+            credentials: "same-origin"
+        })
+        .then(r => {
+            if (!r.ok) throw new Error("Upload failed");
+            return r.json();
+        })
+        .then(data => {
+            // ⬇️ Replace upload input with preview
+            if (!previewConfig) return;
+
+            const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2) + " MB";
+            const replacementHtml = buildFinReportFilePreviewHtml(
+                previewConfig,
+                fileSizeMB,
+                window.AppState.CIProject.Id
+            );
+
+            const uploadContainer = fileInput.closest('.col-3');
+            uploadContainer.innerHTML = replacementHtml;
+        })
+        .catch(console.error);
+    };
+
+    window.DownloadFinReportFile = function (fileId) {
+        const encodedFileName = encodeURIComponent(fileId);
+        const url1 = `/DownloadFinReportDoc?projectId=${encodedFileName}`;
+        window.location.href = url1;
+    };
 
     async function CIProjectFinancial(ref) {
         const seenMonths = new Set();

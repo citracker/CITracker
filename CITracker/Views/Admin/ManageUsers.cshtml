@@ -22,6 +22,23 @@
         </div>
         <!-- Page Header Close -->
         <div id="project_info" class="row row-sm">
+            @if (Model.StatusCode > 0)
+            {
+                if (Model.StatusCode == 200)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+            }
             <div class="col-4">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
@@ -35,11 +52,11 @@
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
                                         User <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
                                     </p>
-                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="First Name">
-                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="Last Name">
-                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="Email Address">
+                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="First Name" required>
+                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="Last Name" required>
+                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="Email Address" required>
                                 @* <input type="text" class="form-control mt-3 mb-3" id="ph" name="ph" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
@@ -64,7 +81,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
                                     <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
-                                        <option selected disabled>Select a User</option>
+                                        <option disabled>Select a User</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -80,11 +97,11 @@
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
                                         User Details <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="Organization User"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3" id="fnN" name="fnN" placeholder="First Name">
-                                    <input type="text" class="form-control mt-3 mb-3" id="lnN" name="lnN" placeholder="Last Name">
-                                    <input type="email" class="form-control mt-3 mb-3" id="emN" name="emN" placeholder="Email Address">
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="fnN" name="fnN" placeholder="First Name" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="lnN" name="lnN" placeholder="Last Name" required>
+                                    <input type="email" class="form-control mt-3 mb-3 country-input" id="emN" name="emN" placeholder="Email Address" required>
                                     @* <input type="text" class="form-control mt-3 mb-3" id="phN" name="phN" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
@@ -109,7 +126,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
                                     <select class="form-control" name="userD" id="userD">
-                                        <option selected disabled>Select a User</option>
+                                        <option disabled>Select a User</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -135,6 +152,32 @@
 </div>
 <script>
     const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+    
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const countryRegex = /^[\p{L}\s\-.'()]+$/u;
+
+        const inputs = document.querySelectorAll(".country-input");
+
+        inputs.forEach(function (input) {
+
+            input.addEventListener("input", function () {
+
+                if (this.value === "") {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (!countryRegex.test(this.value)) {
+                    this.setCustomValidity("Invalid user name.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+        });
+
+    });
 
     function onUserChange(selectEl, fnId, lnId, emId) {
         const userId = parseInt(selectEl.value);

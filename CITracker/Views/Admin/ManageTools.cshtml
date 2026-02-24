@@ -45,6 +45,7 @@
                         <div class="row gy-4">
                             @Html.AntiForgeryToken()
                             <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
+                            <div class="alert alert-info" role="alert">  <strong>NOTE:</strong> Each file must be less than 20MB!!! </div>
                             <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
                                 
                             </div>
@@ -61,7 +62,7 @@
     function onMethodologyChanged(ref) {
         const methodology = ref.value;
 
-        fetch(`/GetMethodologyTools?val=${encodeURIComponent(methodology)}`)
+        fetch(`/GetMethodologyToolsAdm?val=${encodeURIComponent(methodology)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error("Failed to fetch tools");
@@ -123,38 +124,62 @@
         row.className = 'form-check form-check-lg mt-3';
         row.style.display = 'flex';
 
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'form-check-input';
-        checkbox.id = `${phase}-${index}`;
-        checkbox.value = tool.id;
+        // const checkbox = document.createElement('input');
+        // checkbox.type = 'checkbox';
+        // checkbox.className = 'form-check-input';
+        // checkbox.id = `${phase}-${index}`;
+        // checkbox.value = tool.id;
 
         const label = document.createElement('label');
         label.className = 'form-check-label me-3';
-        label.setAttribute('for', checkbox.id);
-        label.style.cssText = 'width:85%;max-width:85%';
+        // label.setAttribute('for', checkbox.id);
+        label.style.cssText = 'width:60%;max-width:60%';
         label.textContent = tool.name;
 
         const action = document.createElement('a');
 
         if (tool.url) {
-            action.href = tool.url;
-            action.target = '_blank';
+            action.href = '#';
+            action.target = '_self';
             action.innerHTML =
-                '<i class="las la-download la-2x text-success"></i>';
+                '<button data-action="download" class="btn btn-icon btn-success-transparent rounded-pill btn-wave waves-effect waves-light me-1"> <i class="ri-arrow-down-line"></i> </button><button data-action="upload" class="btn btn-icon btn-warning-transparent rounded-pill btn-wave waves-effect waves-light"> <i class="ri-arrow-up-line"></i> </button>';
+
+            action.addEventListener('click', function (e) {
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const actionType = button.getAttribute('data-action');
+
+                if (actionType === 'download') {
+                    DownloadFile(tool.orgToolId);
+                }
+
+                if (actionType === 'upload') {
+                    triggerUpload(tool);
+                }
+            });
         } else {
-            action.innerHTML =
-                '<i class="las la-file-upload la-2x text-warning"></i>';
+            action.href = '#';
+            action.innerHTML = '<button class="btn btn-icon btn-warning-transparent rounded-pill btn-wave waves-effect waves-light"> <i class="ri-arrow-up-line"></i> </button>';
             action.addEventListener('click', function () {
                 triggerUpload(tool);
             });
         }
 
-        row.appendChild(checkbox);
+        //row.appendChild(checkbox);
         row.appendChild(label);
         row.appendChild(action);
 
         return row;
+    }
+
+    function DownloadFile(toolId) {
+        const encodedFileName = encodeURIComponent(toolId);
+
+        const url = `/DownloadToolDocument?toolId=${encodedFileName}`;
+
+        // Trigger browser download
+        window.location.href = url;
     }
 
     function triggerUpload(tool) {

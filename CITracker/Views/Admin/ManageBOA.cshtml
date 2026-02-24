@@ -1,0 +1,187 @@
+﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationBOA>
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "ToolManagement";
+    ViewData["Active"] = "ManageBOA";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<!--APP-CONTENT START-->
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header -->
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
+            <div>
+                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                </ol>
+            </div>
+        </div>
+        <!-- Page Header Close -->
+        <div id="project_info" class="row row-sm">
+            @if (Model.StatusCode > 0)
+            {
+                if (Model.StatusCode == 200)
+                {
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>@Model.Message</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
+                    </div>
+                }
+            }
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Add Business Objective Alignment </div>
+                    </div>
+                    @using (Html.BeginForm("AddBOA", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Business Objective Alignment <span style="color:red">*</span>
+                                    </p>
+                                    <input type="text" class="form-control mt-3 mb-3" id="boa" name="boa" placeholder="Business objective alignment" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Rename a Business Objective Alignment </div>
+                    </div>
+                    @using (Html.BeginForm("ModifyBOA", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'boaM')" required>
+                                        <option selected disabled>Select a Business Objective Alignment</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.BOA</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <p class="mb-2 fw-medium">
+                                        Business Objective Alignment Details
+                                    </p>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="boaM" name="boaM" placeholder="Business Objective Alignment" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> Delete a Business Objective Alignment </div>
+                    </div>
+                    @using (Html.BeginForm("DeleteBOA", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <select class="form-control" name="boaD" id="boaD">
+                                        <option selected disabled>Select a Business Objective Alignment</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    <option value="@i.Id">@i.BOA</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--APP-CONTENT CLOSE-->
+<script>
+    const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const countryRegex = /^[\p{L}\s\-.'()]+$/u;
+
+        const inputs = document.querySelectorAll(".country-input");
+
+        inputs.forEach(function (input) {
+
+            input.addEventListener("input", function () {
+
+                if (this.value === "") {
+                    this.setCustomValidity("");
+                    return;
+                }
+
+                if (!countryRegex.test(this.value)) {
+                    this.setCustomValidity("Invalid Business Objective Alignment.");
+                } else {
+                    this.setCustomValidity("");
+                }
+            });
+
+        });
+
+    });
+
+    function onCategoryChange(selectEl, boa) {
+        const catId = parseInt(selectEl.value);
+        const sscInp = document.getElementById(boa);
+
+
+        if (isNaN(catId)) return;
+
+        const filtered = categories.filter(l => l.Id === catId);
+        filtered.forEach(item => {
+           sscInp.value = item.BOA;
+        });
+    }
+</script>
