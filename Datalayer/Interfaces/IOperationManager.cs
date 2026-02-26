@@ -86,7 +86,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId);
         Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId);
         Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId);
-        Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetMethodologyCountByMonth(int orgId);
+        Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetStatusCountByMonth(int orgId);
         Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId);
         Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId);
         Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId);

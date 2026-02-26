@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
@@ -2093,17 +2094,9 @@ namespace CITracker.Controllers
             }
 
             //List<NameValueDTO>
-            var res = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "DMAIC", value = 1048 },
-                new { name = "Gemba Kaizen", value = 735 },
-                new { name = "Project", value = 580 },
-                new { name = "JDI", value = 484 },
-                new { name = "Others", value = 300 }
-            };
+            var data = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("ProjectStatusCount")]
@@ -2119,21 +2112,13 @@ namespace CITracker.Controllers
             }
 
             //List<NameValueDTO>
-            var res = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "PROPOSED", value = 1048 },
-                new { name = "INITIATED", value = 735 },
-                new { name = "COMPLETED", value = 580 },
-                new { name = "CLOSED", value = 484 },
-                new { name = "CANCELLED", value = 300 }
-            };
+            var data = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
-        [HttpGet("MethodologiesbyMonth")]
-        public IActionResult MethodologiesbyMonth()
+        [HttpGet("MonthlyProjectsByStatus")]
+        public IActionResult MonthlyProjectsByStatus()
         {
             if (!IsAuthenticated())
             {
@@ -2144,19 +2129,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MethodologyMonthlyStatusDTO>
-            var res = _opsManager.GetMethodologyCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { month = "January", completed = 12, ongoing = 7, onHold = 3 },
-                new { month = "February", completed = 9, ongoing = 10, onHold = 2 },
-                new { month = "March", completed = 15, ongoing = 5, onHold = 4 },
-                new { month = "April", completed = 11, ongoing = 8, onHold = 6 },
-                new { month = "May", completed = 18, ongoing = 6, onHold = 1 },
-                new { month = "June", completed = 14, ongoing = 9, onHold = 2 }
-            };
-
-            return Ok(data);
+            var data = _opsManager.GetStatusCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("ProjectCertificationCount")]
@@ -2171,17 +2146,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<NameValueDTO>
-            var res = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "Black Belt", value = 11 },
-                new { name = "Green Belt", value = 16 },
-                new { name = "PMP", value = 7 },
-                new { name = "Not Applicable", value = 3 }
-            };
+            var data = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("SavingsByCategory")]
@@ -2196,17 +2163,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<NameValueDTO>
-            var res = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "Revenue", value = 1048000 },
-                new { name = "Cost Avoidance", value = 735000 },
-                new { name = "Cost Reduction", value = 580000 },
-                new { name = "Cost Contianment", value = 484000 }
-            };
+            var data = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlySavings")]
@@ -2221,19 +2180,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MonthlySavingsDTO>
-            var res = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { month = "January", CostAvoidance = 12, Revenue = 7, CostReduction = 3 },
-                new { month = "February", CostAvoidance = 9, Revenue = 10, CostReduction = 2 },
-                new { month = "March", CostAvoidance = 15, Revenue = 5, CostReduction = 4 },
-                new { month = "April", CostAvoidance = 11, Revenue = 8, CostReduction = 6 },
-                new { month = "May", CostAvoidance = 18, Revenue = 6, CostReduction = 1 },
-                new { month = "June", CostAvoidance = 14, Revenue = 9, CostReduction = 2 }
-            };
+            var data = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("CompletedProjectsByUser")]

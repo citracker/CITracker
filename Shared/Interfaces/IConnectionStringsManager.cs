@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shared.Interfaces
 {
-    public interface IConnectionStringsManager
+    public interface IAppSettingsManager
     {
         Task<string> SQLDBConnection();
     }

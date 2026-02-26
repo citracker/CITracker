@@ -8,10 +8,10 @@ namespace Shared.DTO
 {
     public class MonthlySavingsDTO
     {
-        public string Month { get; set; } = default!;
-        public decimal CostAvoidance { get; set; }
-        public decimal Revenue { get; set; }
-        public decimal CostReduction { get; set; }
-        public decimal CostContainment { get; set; }
+        public string month { get; set; } = default!;
+        public decimal costavoidance { get; set; }
+        public decimal revenue { get; set; }
+        public decimal costceduction { get; set; }
+        public decimal costcontainment { get; set; }
     }
 }

@@ -112,13 +112,12 @@ namespace CITracker
                 builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
                 builder.Services.AddTransient<IPathProvider, PathProvider>();
                 builder.Services.AddTransient<Mailer>();
-                //builder.Services.AddTransient<HelperFunctions>();
                 builder.Services.AddTransient<IGenericManager, GenericManager>();
                 builder.Services.AddTransient<ISubscriptionManager, SubscriptionManager>();
                 builder.Services.AddTransient<IPaymentManager, PaymentManager>();
                 builder.Services.AddTransient<IOperationManager, OperationManager>();
                 builder.Services.AddTransient<IUserManager, UserManager>();
-                builder.Services.AddTransient<IConnectionStringsManager, ConnectionStringsManager>();
+                builder.Services.AddTransient<IAppSettingsManager, AppSettingsManager>();
                 builder.Services.AddTransient<IRepository, Repository>();
                 builder.Services.AddTransient<IMicrosoftOperations, MicrosoftOperations>();
                 builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();

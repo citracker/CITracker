@@ -20,16 +20,16 @@ namespace Datalayer.Implementations
     public class SubscriptionManager : BaseManager, ISubscriptionManager
     {
         private readonly ILogger<SubscriptionManager> _logger;
-        private readonly IConnectionStringsManager _connection;
+        private readonly IAppSettingsManager _connection;
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
         private readonly IGenericManager _genManager;
 
-        public SubscriptionManager(ILogger<SubscriptionManager> logger, IRepository repository, IConnectionStringsManager connectionStringsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
+        public SubscriptionManager(ILogger<SubscriptionManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
         {
             _logger = logger;
             _repository = repository;
-            _connection = connectionStringsManager;
+            _connection = AppSettingsManager;
             _memoryCache = memoryCache;
             _memoryCacheManager = memoryCacheManager;
             _genManager = genManager;
