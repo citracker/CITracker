@@ -112,7 +112,6 @@ namespace CITracker
                 builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
                 builder.Services.AddTransient<IPathProvider, PathProvider>();
                 builder.Services.AddTransient<Mailer>();
-                //builder.Services.AddTransient<HelperFunctions>();
                 builder.Services.AddTransient<IGenericManager, GenericManager>();
                 builder.Services.AddTransient<ISubscriptionManager, SubscriptionManager>();
                 builder.Services.AddTransient<IPaymentManager, PaymentManager>();

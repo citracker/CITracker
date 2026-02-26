@@ -261,6 +261,11 @@
             const response = await fetch('/ProjectCountByMethodology');
             const data = await response.json();
 
+            if (!data || data.length === 0) {
+                showNoData(myChart);
+                return;
+            }
+
             myChart.setOption({
                 series: [{
                     data: data
@@ -275,7 +280,7 @@
     loadChartData();
     myChart.showLoading();
     myChart.hideLoading();
-    setInterval(loadChartData, 30000);
+    setInterval(loadChartData, 60000);
     window.addEventListener('resize', function () {
         myChart.resize();
     });
@@ -324,6 +329,11 @@
             const response = await fetch('/ProjectStatusCount');
             const data = await response.json();
 
+            if (!data || data.length === 0) {
+                showNoData(myChart1);
+                return;
+            }
+
             myChart1.setOption({
                 series: [{
                     data: data
@@ -338,7 +348,7 @@
     loadChartData1();
     myChart1.showLoading();
     myChart1.hideLoading();
-    setInterval(loadChartData1, 30000);
+    setInterval(loadChartData1, 60000);
     window.addEventListener('resize', function () {
         myChart1.resize();
     });
@@ -405,6 +415,11 @@
             const response = await fetch('/ProjectCertificationCount');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(polarChart);
+                return;
+            }
+
             const labels = result.map(x => x.name);
             const values = result.map(x => x.value);
 
@@ -419,7 +434,7 @@
     }
 
     loadPolarData();
-    setInterval(loadPolarData, 30000);
+    setInterval(loadPolarData, 60000);
 
 
 
@@ -468,6 +483,11 @@
             const response = await fetch('/SavingsByCategory');
             const data = await response.json();
 
+            if (!data || data.length === 0) {
+                showNoData(myChart2);
+                return;
+            }
+
             myChart2.setOption({
                 series: [{
                     data: data
@@ -482,7 +502,7 @@
     loadChartData2();
     myChart2.showLoading();
     myChart2.hideLoading();
-    setInterval(loadChartData2, 30000);
+    setInterval(loadChartData2, 60000);
     window.addEventListener('resize', function () {
         myChart2.resize();
     });
@@ -508,12 +528,12 @@
                     backgroundColor: 'rgba(153, 102, 255, 0.85)'
                 },
                 {
-                    label: 'Ongoing',
+                    label: 'Proposed',
                     data: [],
                     backgroundColor: 'rgba(75, 192, 192, 0.85)'
                 },
                 {
-                    label: 'On Hold',
+                    label: 'Initiated',
                     data: [],
                     backgroundColor: 'rgba(255, 159, 64, 0.85)'
                 }
@@ -558,15 +578,20 @@
 
     async function loadBarChartData() {
         try {
-            const response = await fetch('/MethodologiesbyMonth');
+            const response = await fetch('/MonthlyProjectsByStatus');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(barChart);
+                return;
+            }
+            console.log(result)
             const labels = result.map(x => x.month);
 
             barChart.data.labels = labels;
             barChart.data.datasets[0].data = result.map(x => x.completed);
-            barChart.data.datasets[1].data = result.map(x => x.ongoing);
-            barChart.data.datasets[2].data = result.map(x => x.onHold);
+            barChart.data.datasets[1].data = result.map(x => x.proposed);
+            barChart.data.datasets[2].data = result.map(x => x.initiated);
 
             barChart.update();
 
@@ -576,7 +601,7 @@
     }
 
     loadBarChartData();
-    setInterval(loadBarChartData, 30000);
+    setInterval(loadBarChartData, 60000);
 
 
 
@@ -605,7 +630,12 @@
                 {
                     label: 'Cost Reduction',
                     data: [],
-                    backgroundColor: 'rgba(255, 159, 64, 0.85)' //rgba(75, 192, 192, 0.85) // Teal    rgba(153, 102, 255, 0.85)  // Royal Purple
+                    backgroundColor: 'rgba(255, 159, 64, 0.85)'
+                },
+                {
+                    label: 'Cost Containment',
+                    data: [],
+                    backgroundColor: 'rgba(75, 192, 192, 0.85)' // Teal    rgba(153, 102, 255, 0.85)  // Royal Purple
                 }
             ]
         },
@@ -650,12 +680,18 @@
             const response = await fetch('/MonthlySavings');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(barChart2);
+                return;
+            }
+
             const labels = result.map(x => x.month);
 
             barChart2.data.labels = labels;
-            barChart2.data.datasets[0].data = result.map(x => x.CostAvoidance);
-            barChart2.data.datasets[1].data = result.map(x => x.Revenue);
-            barChart2.data.datasets[2].data = result.map(x => x.CostReduction);
+            barChart2.data.datasets[0].data = result.map(x => x.costavoidance);
+            barChart2.data.datasets[1].data = result.map(x => x.revenue);
+            barChart2.data.datasets[2].data = result.map(x => x.costreduction);
+            barChart2.data.datasets[3].data = result.map(x => x.costcontainment);
                     
             barChart2.update();
 
@@ -665,7 +701,7 @@
     }
 
     loadBarChartData2();
-    setInterval(loadBarChartData2, 30000);
+    setInterval(loadBarChartData2, 60000);
 
 
 
@@ -730,6 +766,11 @@
             const response = await fetch('/CompletedProjectsByUser');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(completedChart);
+                return;
+            }
+
             const labels = result.map(x => x.name);
             const values = result.map(x => x.completed);
 
@@ -744,7 +785,7 @@
     }
 
     loadCompletedProjectsData();
-    setInterval(loadCompletedProjectsData, 30000);
+    setInterval(loadCompletedProjectsData, 60000);
 
 
 
@@ -828,6 +869,11 @@
             const response = await fetch('/MonthlyProjectsByMethodologies');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(barChart3);
+                return;
+            }
+
             const labels = result.map(x => x.month);
 
             barChart3.data.labels = labels;
@@ -845,7 +891,7 @@
     }
 
     loadBarChartData3();
-    setInterval(loadBarChartData3, 30000);
+    setInterval(loadBarChartData3, 60000);
 
 
 
@@ -887,6 +933,11 @@
             const response = await fetch('/MonthlyProjectsByDepartment');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(monthlyDeptChart);
+                return;
+            }
+
             monthlyDeptChart.data.labels = result.labels;
 
             monthlyDeptChart.data.datasets = result.datasets.map(dep => ({
@@ -906,7 +957,7 @@
 
 
     loadDepartmentData();
-    setInterval(loadDepartmentData, 30000);
+    setInterval(loadDepartmentData, 60000);
 
 
 
@@ -948,6 +999,11 @@
             const response = await fetch('/MonthlyProjectsByPhase');
             const result = await response.json();
 
+            if (!result || result.length === 0) {
+                showNoData(monthlyPhaseChart);
+                return;
+            }
+
             monthlyPhaseChart.data.labels = result.labels;
 
             monthlyPhaseChart.data.datasets = result.datasets.map(phase => ({
@@ -966,7 +1022,25 @@
     }
 
     loadPhaseData();
-    setInterval(loadPhaseData, 30000);
+    setInterval(loadPhaseData, 60000);
+
+
+
+    function showNoData(chart, message = 'No data available') {
+        chart.clear();
+        chart.setOption({
+            title: {
+                text: message,
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: 'normal',
+                    color: '#999'
+                }
+            }
+        });
+    }
 
 
 </script>

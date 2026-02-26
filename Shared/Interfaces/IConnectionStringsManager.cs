@@ -8,6 +8,6 @@ namespace Shared.Interfaces
 {
     public interface IConnectionStringsManager
     {
-        Task<string> SQLDBConnection();
+        Task<string> DefaultConnection();
     }
 }
