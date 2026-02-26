@@ -2,7 +2,7 @@
 {
     public class KeyValues
     {
-        public string? SQLDBConnection { get; set; }
+        public string? DefaultConnection { get; set; }
 
         public string ImageBaseUrl { get; set; }
 

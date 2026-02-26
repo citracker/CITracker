@@ -8,7 +8,7 @@ namespace Shared.DTO
 {
     public class NameValueDTO
     {
-        public string Name { get; set; } = default!;
-        public int Value { get; set; }
+        public string name { get; set; } = default!;
+        public int value { get; set; }
     }
 }

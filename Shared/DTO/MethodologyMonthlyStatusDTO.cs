@@ -8,11 +8,11 @@ namespace Shared.DTO
 {
     public class MethodologyMonthlyStatusDTO
     {
-        public string Month { get; set; } = default!;
-        public int Proposed { get; set; }
-        public int Initiated { get; set; }
-        public int Completed { get; set; }
-        public int Closed { get; set; }
-        public int Cancelled { get; set; }
+        public string month { get; set; } = default!;
+        public int proposed { get; set; }
+        public int initiated { get; set; }
+        public int completed { get; set; }
+        //public int closed { get; set; }
+        //public int cancelled { get; set; }
     }
 }
