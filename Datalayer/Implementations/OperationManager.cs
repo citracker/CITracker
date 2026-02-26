@@ -21,16 +21,16 @@ namespace Datalayer.Implementations
     public class OperationManager : BaseManager, IOperationManager
     {
         private readonly ILogger<OperationManager> _logger;
-        private readonly IConnectionStringsManager _connection;
+        private readonly IAppSettingsManager _connection;
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
         private readonly IGenericManager _genManager;
 
-        public OperationManager(ILogger<OperationManager> logger, IRepository repository, IConnectionStringsManager connectionStringsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
+        public OperationManager(ILogger<OperationManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
         {
             _logger = logger;
             _repository = repository;
-            _connection = connectionStringsManager;
+            _connection = AppSettingsManager;
             _memoryCache = memoryCache;
             _memoryCacheManager = memoryCacheManager;
             _genManager = genManager;
@@ -42,7 +42,7 @@ namespace Datalayer.Implementations
             {
                 if (!_memoryCache.TryGetValue("Country", out ResponseHandler<Country> country))
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                     var resi = await _repository.GetListAsync<Country>(dbConnection,"Select * from Country", CommandType.Text);
 
                     if (resi.Any())
@@ -88,7 +88,7 @@ namespace Datalayer.Implementations
             {
                 //if (!_memoryCache.TryGetValue($"OrganizationCountry-{orgId}", out ResponseHandler<OrganizationCountry> country))
                 //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
                     "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1 order by Country", new { oid = orgId }, CommandType.Text);
 
@@ -133,7 +133,7 @@ namespace Datalayer.Implementations
             {
                 //if (!_memoryCache.TryGetValue($"OrganizationFacility-{orgId}", out ResponseHandler<OrganizationFacility> facility))
                 //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
                     "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1 order by Facility", new { oid = orgId }, CommandType.Text);
 
@@ -176,7 +176,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationSoftSaving>(dbConnection,
                     "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1 order by Category", new { oid = orgId }, CommandType.Text);
 
@@ -216,7 +216,7 @@ namespace Datalayer.Implementations
             {
                 //if (!_memoryCache.TryGetValue($"OrganizationDepartment-{orgId}", out ResponseHandler<OrganizationDepartment> depart))
                 //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
                     "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1 order by Department", new { oid = orgId }, CommandType.Text);
 
@@ -261,7 +261,7 @@ namespace Datalayer.Implementations
             {
                 //if (!_memoryCache.TryGetValue($"CIUser-{orgId}", out ResponseHandler<CIUser> users))
                 //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
                 "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
@@ -302,7 +302,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationCountry(OrganizationCountry orgCountry, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -351,7 +351,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationCountry(long countryId, string countryName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -415,7 +415,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationCountry(long countryId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -466,7 +466,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationFacility(OrganizationFacility orgFacility, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -515,7 +515,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationFacility(long facilityId, string facilityName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -578,7 +578,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationFacility(long facilityId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -629,7 +629,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationDepartment(OrganizationDepartment orgDepartment, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -678,7 +678,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationDepartment(long departmentId, string departmentName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -741,7 +741,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationDepartment(long departmentId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -792,7 +792,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationUser(CIUser orgUsr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -841,7 +841,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationUser(long usrId, CIUser usr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -906,7 +906,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationUser(long usrId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1032,7 +1032,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewOEProject(OperationalExcellence opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1081,7 +1081,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<OperationalExcellenceDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
@@ -1207,7 +1207,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 
                 var resi = await _repository.GetAsync<OperationalExcellenceDTO>(dbConnection,
                 "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
@@ -1245,7 +1245,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
                 "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT SponsorId AS UserId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT ExecutiveSponsorId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT FacilitatorId FROM OperationalExcellence where OrganizationId = @orgId ) x )", new { orgId }, CommandType.Text);
 
@@ -1283,7 +1283,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
                 "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT ExecutiveSponsorId As UserId FROM StrategicInitiative where OrganizationId = @orgId UNION ALL SELECT OwnerId FROM StrategicInitiative where OrganizationId = @orgId ) x )", new { orgId }, CommandType.Text);
 
@@ -1319,7 +1319,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateExistingOEProject(OperationalExcellence opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1365,7 +1365,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewOEProjectMonthlySavings(OperationalExcellenceMonthlySaving opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1405,7 +1405,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OperationalExcellenceMonthlySavingDTO>(dbConnection,
                 "select a.Id, a.ProjectId, a.OrganizationId, a.MonthYear, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b.Name as CreatedByUser from OperationalExcellenceMonthlySaving a left join CIUser b on a.CreatedBy = b.Id where ProjectId = @pid order by a.DateCreated desc", new { pid = projectId }, CommandType.Text);
 
@@ -1442,7 +1442,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OperationalExcellenceMonthlySavingDTO>(dbConnection,
                 "select * from OperationalExcellenceMonthlySaving where Id = @msid", new { msid = monthlySavingId }, CommandType.Text);
 
@@ -1477,7 +1477,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateOEProjectMonthlySavings(OperationalExcellenceMonthlySaving opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1523,7 +1523,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewSIProject(StrategicInitiative si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1569,7 +1569,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewSISubProject(SISubProject si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1617,7 +1617,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, "SELECT a.Id, a.Title, COALESCE(AVG(b.Percentage), 0) AS CumulativePercent FROM StrategicInitiative a LEFT JOIN SISubProject b ON b.SIId = a.Id WHERE a.OrganizationId = @oid GROUP BY a.Id, a.Title HAVING COALESCE(AVG(b.Percentage), 0) < 100", new {oid = orgId}, CommandType.Text);
 
@@ -1654,7 +1654,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<SISubProjectDTO>(dbConnection,
                 "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.SIId = @pid order by a.DateCreated desc", new { pid = projectId }, CommandType.Text);
 
@@ -1692,7 +1692,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<StrategicInitiativeDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Status, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
@@ -1818,7 +1818,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<StrategicInitiativeDTO>(dbConnection,
                 "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Status, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
@@ -1854,7 +1854,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateExistingSIProject(StrategicInitiative si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1902,7 +1902,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<SISubProjectDTO>(dbConnection,
                 "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.Id = @pid order by a.DateCreated desc", new { pid = Id }, CommandType.Text);
 
@@ -1937,7 +1937,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateExistingSISubProject(SISubProject si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -1986,7 +1986,7 @@ namespace Datalayer.Implementations
             try
             {
                 SupportingValueSearchResultDTO item = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 if (type == "OE")
                 {
@@ -2033,7 +2033,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<SupportingValueSearchResultDTO>(dbConnection,
                 "SELECT Id, Title, 'OE' AS Source FROM OperationalExcellence WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' UNION ALL SELECT Id, Title, 'SI' AS Source FROM StrategicInitiative WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' ORDER BY Title", new { orgId, search }, CommandType.Text);
@@ -2071,7 +2071,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 method = !method.ToLower().Equals("project") ? "General" : "Project";
 
@@ -2112,7 +2112,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MethodologyPhase> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 if (!String.IsNullOrEmpty(method))
                 {
@@ -2157,7 +2157,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<OrganizationToolDTO>(dbConnection,
                 "SELECT a.Id, a.Url, b.Tool, c.Phase FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id WHERE c.Methodology = @mth", new { mth = method }, CommandType.Text);
@@ -2195,7 +2195,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationSoftSaving>(dbConnection,
                 "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
@@ -2234,7 +2234,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetListAsync<OrganizationBOA>(dbConnection,
                 "Select * from OrganizationBOA where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
@@ -2271,7 +2271,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2318,7 +2318,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationSoftSaving(long ssId, OrganizationSoftSaving oss, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2381,7 +2381,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationSoftSaving(long ssId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2430,7 +2430,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationBOA(OrganizationBOA orgSs, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2477,7 +2477,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> RenameOrganizationBOA(long ssId, OrganizationBOA oss, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2539,7 +2539,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> DeleteOrganizationBOA(long ssId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2588,7 +2588,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2649,7 +2649,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<Organization>(dbConnection,
                 "Select * from Organization where TenantId = @tid", new { tid = tenantId }, CommandType.Text);
 
@@ -2671,7 +2671,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2776,7 +2776,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewCIProjectTool(List<CIProjectToolDTO> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -2833,7 +2833,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<ContinuousImprovementDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid AND a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
 
@@ -2959,7 +2959,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<CIProjectToolDTO>(dbConnection,
                 "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where a.ProjectId = @pid", new { pid = pid }, CommandType.Text);
@@ -2997,7 +2997,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<CIProjectTool>(dbConnection,
                 "select * from CIProjectTool where Id = @pid", new { pid = toolId }, CommandType.Text);
@@ -3047,7 +3047,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3092,7 +3092,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3157,7 +3157,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 
                 var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
                 "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream, a.IsOneTimeSavings, a.IsCarryOverSavings, a.FinancialVerificationDate, a.FinancialReportUrl, a.FinancialReportComment, a.IsAudited, a.AuditedBy, b2.Name as AuditedByStaff, a.AuditedDate FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN CIUser b2 ON a.AuditedBy = b2.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
@@ -3195,7 +3195,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
                 "SELECT Id, FinalReportUrl, FinancialReportUrl FROM Continuousimprovement WHERE a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
@@ -3233,7 +3233,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<TeamMembersDTO>(dbConnection,
                 "select a.Id, a.ProjectId, a.UserId, b.Name as [User], a.Role, a.SendNotification from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid", new { pid = projectId }, CommandType.Text);
@@ -3283,7 +3283,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<CIProjectToolDTO>(dbConnection,
                 "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
@@ -3308,7 +3308,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<CommentzDTO>(dbConnection,
                 "select Id, Comment, Date from CIProjectComment where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
@@ -3360,7 +3360,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetListAsync<SavingsDTO>(dbConnection,
                 "select Id, Category, SavingClassification, SavingType, SavingValue, SavingUnit, IsCurrency, [Date] from CIProjectSaving where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
@@ -3409,7 +3409,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateCIProjectTool(List<CIProjectToolDTO> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3520,7 +3520,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateCIProjectComment(List<CIProjectComment> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3618,7 +3618,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<ContinuousImprovement>(dbConnection,
                 "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
@@ -3670,7 +3670,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var resi = await _repository.GetAsync<ContinuousImprovement>(dbConnection,
                 "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
@@ -3720,7 +3720,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3841,7 +3841,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationUsers(List<CIUser> orgUsr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -3889,7 +3889,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddOrganizationLocations(List<BulkLocation> orgLocs, int orgId, long uid, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -4043,7 +4043,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddBulkOEProjects(List<BulkOE> opExel, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
@@ -4192,7 +4192,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
@@ -4322,7 +4322,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -4373,7 +4373,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
@@ -4488,7 +4488,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -4522,7 +4522,7 @@ namespace Datalayer.Implementations
         public async Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId)
 
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
@@ -4558,7 +4558,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "select Methodology as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Methodology";
 
@@ -4673,7 +4673,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "select Status as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Status";
 
@@ -4788,7 +4788,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MethodologyMonthlyStatusDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "SELECT DATENAME(MONTH, DateCreated) AS [Month], SUM(CASE WHEN Status = 'COMPLETED' THEN 1 ELSE 0 END) AS Completed, SUM(CASE WHEN Status = 'INITIATED' THEN 1 ELSE 0 END) AS Initiated, SUM(CASE WHEN Status = 'PROPOSED' THEN 1 ELSE 0 END) AS Proposed FROM ContinuousImprovement WHERE Status NOT IN ('CLOSED', 'CANCELLED') AND DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND DateCreated <= GETDATE() and OrganizationId = @oid @where GROUP BY YEAR(DateCreated), MONTH(DateCreated), DATENAME(MONTH, DateCreated) ORDER BY YEAR(DateCreated), MONTH(DateCreated)";
 
@@ -4903,7 +4903,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "select Certification as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Certification";
 
@@ -5018,7 +5018,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "select b.Category as Name, Count(b.Id) as Value from CITracker.dbo.ContinuousImprovement a left join CITracker.dbo.CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by b.Category";
 
@@ -5133,7 +5133,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MonthlySavingsDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var query = "SELECT DATENAME(MONTH, s.DateCreated) AS [Month], YEAR(s.DateCreated) AS [Year], SUM(CASE WHEN s.SavingType = 'Cost Avoidance' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostAvoidance, SUM(CASE WHEN s.SavingType = 'Revenue' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS Revenue, SUM(CASE WHEN s.SavingType = 'Cost Reduction' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostReduction, SUM(CASE WHEN s.SavingType = 'Cost Containment' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostContainment FROM CIProjectSaving s INNER JOIN ContinuousImprovement p ON s.ProjectId = p.Id WHERE s.SavingClassification = 'Hard' AND p.Status NOT IN ('CLOSED', 'CANCELLED') AND p.DateCreated >= DATEADD(DAY, -365, GETDATE()) AND s.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND s.DateCreated <= GETDATE() and p.OrganizationId = @oid @where GROUP BY YEAR(s.DateCreated), MONTH(s.DateCreated), DATENAME(MONTH, s.DateCreated) ORDER BY YEAR(s.DateCreated), MONTH(s.DateCreated)";
 

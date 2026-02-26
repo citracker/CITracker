@@ -3,15 +3,15 @@ using Shared.Interfaces;
 
 namespace Shared.Implementations
 {
-    public class ConnectionStringsManager : IConnectionStringsManager
+    public class AppSettingsManager : IAppSettingsManager
     {
         private readonly KeyValues keyValues;
 
-        public ConnectionStringsManager(IOptions<KeyValues> options)
+        public AppSettingsManager(IOptions<KeyValues> options)
         {
             keyValues = options.Value;
         }
 
-        public async Task<string> DefaultConnection() => await Task.FromResult(keyValues.DefaultConnection);
+        public async Task<string> SQLDBConnection() => await Task.FromResult(keyValues.SQLDBConnection);
     }
 }
