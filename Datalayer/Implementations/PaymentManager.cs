@@ -34,7 +34,7 @@ namespace Datalayer.Implementations
             {
                 if (!_memoryCache.TryGetValue("PaymentProviders", out ResponseHandler<PaymentProvider> repsMan))
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                     var resi = await _repository.GetListAsync<PaymentProvider>(dbConnection,
                         "Select * from PaymentProvider where IsActive = 1", CommandType.Text);
 
