@@ -1406,7 +1406,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1444,7 +1444,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1482,7 +1482,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1520,7 +1520,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1565,7 +1565,7 @@ namespace CITracker.Controllers
 
             // Target directory
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -1624,7 +1624,7 @@ namespace CITracker.Controllers
 
             // Target directory
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
