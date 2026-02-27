@@ -262,7 +262,7 @@
             const data = await response.json();
 
             if (!data || data.length === 0) {
-                showNoData(myChart);
+                showNoData(myChart, 'Methodology # - No data available');
                 return;
             }
 
@@ -273,6 +273,7 @@
             });
 
         } catch (error) {
+            showNoData(myChart, 'Methodology # - An Error Occured');
             console.error('Error loading chart data:', error);
         }
     }
@@ -330,7 +331,7 @@
             const data = await response.json();
 
             if (!data || data.length === 0) {
-                showNoData(myChart1);
+                showNoData(myChart1, 'Project Status - No data available');
                 return;
             }
 
@@ -341,6 +342,7 @@
             });
 
         } catch (error) {
+            showNoData(myChart1, 'Project Status - An Error Occured');
             console.error('Error loading chart data:', error);
         }
     }
@@ -416,7 +418,7 @@
             const result = await response.json();
 
             if (!result || result.length === 0) {
-                showNoData(polarChart);
+                showNoData(polarChart, 'Certification - No data available');
                 return;
             }
 
@@ -429,6 +431,7 @@
             polarChart.update();
 
         } catch (error) {
+            showNoData(polarChart, 'Certification - An Error Occured')
             console.error('Error loading polar chart:', error);
         }
     }
@@ -484,7 +487,7 @@
             const data = await response.json();
 
             if (!data || data.length === 0) {
-                showNoData(myChart2);
+                showNoData(myChart2, 'Savings Category - No data available');
                 return;
             }
 
@@ -495,6 +498,7 @@
             });
 
         } catch (error) {
+            showNoData(myChart2, 'Savings Category - An Error Occured')
             console.error('Error loading chart data:', error);
         }
     }
@@ -582,7 +586,7 @@
             const result = await response.json();
 
             if (!result || result.length === 0) {
-                showNoData(barChart);
+                showNoDataCjs(barChart, 'Monthly Projects Status - No Data Available');
                 return;
             }
             console.log(result)
@@ -596,6 +600,7 @@
             barChart.update();
 
         } catch (error) {
+            showNoDataCjs(barChart, 'Monthly Projects Status - An Error Occured');
             console.error('Error loading bar chart:', error);
         }
     }
@@ -678,10 +683,22 @@
     async function loadBarChartData2() {
         try {
             const response = await fetch('/MonthlySavings');
-            const result = await response.json();
+            if (!response.ok) {
+                showNoDataCjs(barChart2, 'Monthly Savings - No data available');
+                return;
+            }
 
-            if (!result || result.length === 0) {
-                showNoData(barChart2);
+            let result = [];
+
+            try {
+                result = await response.json();
+            } catch {
+                showNoDataCjs(barChart2, 'Monthly Savings - No data available');
+                return;
+            }
+
+            if (!Array.isArray(result) || result.length === 0) {
+                showNoDataCjs(barChart2, 'Monthly Savings - No data available');
                 return;
             }
 
@@ -696,6 +713,7 @@
             barChart2.update();
 
         } catch (error) {
+            showNoDataCjs(barChart2, 'Monthly Savings - An Error Occured')
             console.error('Error loading bar chart:', error);
         }
     }
@@ -1026,7 +1044,7 @@
 
 
 
-    function showNoData(chart, message = 'No data available') {
+    function showNoData(chart, message) {
         chart.clear();
         chart.setOption({
             title: {
@@ -1040,6 +1058,31 @@
                 }
             }
         });
+    }
+
+    function showNoDataCjs(chart, message) {
+
+        // Clear chart data
+        chart.data.labels = [];
+        chart.data.datasets.forEach(ds => ds.data = []);
+
+        // Remove legend (optional)
+        chart.options.plugins.legend.display = false;
+
+        // Add centered title message
+        chart.options.plugins.title.display = true;
+            chart.options.plugins.title = {
+            display: true,
+            text: message,
+            align: 'center',
+            padding: 20,
+            font: {
+                size: 16,
+                weight: 'normal'
+            }
+        };
+
+        chart.update();
     }
 
 

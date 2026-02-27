@@ -1195,6 +1195,11 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
+                if(String.IsNullOrEmpty(newOEProjectMS.MonthYear)){
+                    TempData["Message"] = "Kindly select a Month and Year.";
+                    return RedirectToAction("OEProjectDetail", "Main", new { id = id });
+                }
+
                 var res = _opsManager.CreateNewOEProjectMonthlySavings(newOEProjectMS, HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -2333,9 +2338,12 @@ namespace CITracker.Controllers
                     { "Defect Rate", "#" }
                 };
 
-            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit);
-
-            return org ?? defaultMap;
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList();
+            
+            if (org == null || !org.Any())
+                return defaultMap;
+            
+            return org.ToDictionary(x => x.Category, x => x.Unit);
         }
 
 
