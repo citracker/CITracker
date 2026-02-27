@@ -20,6 +20,7 @@ namespace CITracker.Controllers
         private readonly IOperationManager _opsManager;
         private readonly IOptions<KeyValues> _config;
 
+
         public MainController(ILogger<MainController> logger, IOptions<KeyValues> config, IOperationManager opsManager)
         {
             _opsManager = opsManager;
@@ -1352,7 +1353,7 @@ namespace CITracker.Controllers
 
             // Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
