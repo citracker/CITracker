@@ -257,6 +257,15 @@
                             @Html.AntiForgeryToken()
                             <div class="card-body">
                                 <div class="row gy-4">
+                                    @if (Model.Message.Length > 5)
+                                    {
+                                        if (!Model.Message.ToLower().Contains("success"))
+                                        {
+                                            <div class="alert alert-danger" role="alert">
+                                                @Model.Message
+                                            </div>
+                                        }
+                                    }
 
                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
                                         <label for="input-text" class="form-label">Choose Month of Year<span style="color:red">*</span></label>
