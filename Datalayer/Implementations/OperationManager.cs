@@ -5619,14 +5619,14 @@ namespace Datalayer.Implementations
         {
             try
             {
-                IEnumerable<MonthlyDepartmentRaw> resi = null;
+                IEnumerable<MonthlyPhaseRaw> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, YEAR(ci.DateCreated) AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, od.Department, COUNT(ci.Id) AS TotalProjects FROM dbo.ContinuousImprovement ci INNER JOIN dbo.OrganizationDepartment od ON ci.DepartmentId = od.Id WHERE ci.OrganizationId = @oid and ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), od.Department @where ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), od.Department";
+                var query = "";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
-                resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 //}
                 //else
                 //{
@@ -5707,7 +5707,7 @@ namespace Datalayer.Implementations
 
                 if (resi.Any())
                 {
-                    var result = new MonthlyProjectsByDepartmentDTO();
+                    var result = new MonthlyProjectsByPhaseDTO();
 
                     // Labels (ordered months)
                     result.labels = resi
@@ -5721,9 +5721,9 @@ namespace Datalayer.Implementations
 
                     foreach (var group in grouped)
                     {
-                        var dataset = new DepartmentDatasetDTO
+                        var dataset = new PhaseDatasetDTO
                         {
-                            department = group.Key,
+                            phase = group.Key,
                             data = result.labels
                                 .Select(month =>
                                     group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0
@@ -5734,16 +5734,16 @@ namespace Datalayer.Implementations
                         result.datasets.Add(dataset);
                     }
 
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>
+                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
-                        SingleResult = (result.labels.Count() == 1 && String.IsNullOrEmpty(result.labels.ElementAt(0))) ? new MonthlyProjectsByDepartmentDTO() : result
+                        SingleResult = (result.labels.Count() == 1 && String.IsNullOrEmpty(result.labels.ElementAt(0))) ? new MonthlyProjectsByPhaseDTO() : result
                     });
                 }
                 else
                 {
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>
+                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>
                     {
                         StatusCode = (int)HttpStatusCode.NotFound,
                         Message = "Record not found"
