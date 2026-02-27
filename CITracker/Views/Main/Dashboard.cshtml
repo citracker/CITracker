@@ -782,10 +782,23 @@
     async function loadCompletedProjectsData() {
         try {
             const response = await fetch('/CompletedProjectsByUser');
-            const result = await response.json();
 
-            if (!result || result.length === 0) {
-                showNoData(completedChart);
+            if (!response.ok) {
+                showNoDataCjs(completedChart, 'Facilitators Projects - No data available');
+                return;
+            }
+
+            let result = [];
+
+            try {
+                result = await response.json();
+            } catch {
+                showNoDataCjs(completedChart, 'Facilitators Projects - No data available');
+                return;
+            }
+
+            if (!Array.isArray(result) || result.length === 0) {
+                showNoDataCjs(completedChart, 'Facilitators Projects - No data available');
                 return;
             }
 
@@ -798,6 +811,7 @@
             completedChart.update();
 
         } catch (error) {
+            showNoDataCjs(completedChart, 'Facilitators Projects - An Error Occured');
             console.error('Error loading bar chart:', error);
         }
     }
@@ -885,10 +899,23 @@
     async function loadBarChartData3() {
         try {
             const response = await fetch('/MonthlyProjectsByMethodologies');
-            const result = await response.json();
 
-            if (!result || result.length === 0) {
-                showNoData(barChart3);
+            if (!response.ok) {
+                showNoDataCjs(barChart3, 'Monthly Projects # - No data available');
+                return;
+            }
+
+            let result = [];
+
+            try {
+                result = await response.json();
+            } catch {
+                showNoDataCjs(barChart3, 'Monthly Projects # - No data available');
+                return;
+            }
+
+            if (!Array.isArray(result) || result.length === 0) {
+                showNoDataCjs(barChart3, 'Monthly Projects # - No data available');
                 return;
             }
 
@@ -904,6 +931,7 @@
             barChart3.update();
 
         } catch (error) {
+            showNoDataCjs(barChart3, 'Monthly Projects # - An Error Occured');
             console.error('Error loading bar chart:', error);
         }
     }
@@ -949,6 +977,7 @@
     async function loadDepartmentData() {
         try {
             const response = await fetch('/MonthlyProjectsByDepartment');
+
             const result = await response.json();
 
             if (!result || result.length === 0) {

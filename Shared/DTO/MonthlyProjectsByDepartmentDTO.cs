@@ -8,12 +8,20 @@ namespace Shared.DTO
 {
     public class MonthlyProjectsByDepartmentDTO
     {
-        public List<string> Labels { get; set; } = new();
-        public List<DepartmentDatasetDTO> Datasets { get; set; } = new();
+        public List<string> labels { get; set; } = new();
+        public List<DepartmentDatasetDTO> datasets { get; set; } = new();
     }
     public class DepartmentDatasetDTO
     {
+        public string department { get; set; } = default!;
+        public List<int> data { get; set; } = new();
+    }
+
+    public class MonthlyDepartmentRaw
+    {
+        public string MonthLabel { get; set; } = default!;
+        public int MonthNumber { get; set; }
         public string Department { get; set; } = default!;
-        public List<int> Data { get; set; } = new();
+        public int TotalProjects { get; set; }
     }
 }
