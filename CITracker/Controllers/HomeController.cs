@@ -184,16 +184,19 @@ namespace CITracker.Controllers
                 //check if organization has existing subscription
                 var orgSubscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
 
-                if(orgSubscription.SingleResult.EndDate > DateTime.Now)
+                if(orgSubscription.SingleResult != null)
                 {
-                    return View("Checkout", new CheckoutVM
+                    if(orgSubscription.SingleResult.EndDate > DateTime.Now)
                     {
-                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                        Message = $"Organisation - {Request.Form["companyName"]} - has existing subscription.",
-                        SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
-                        PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
-                        Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
-                    });
+                        return View("Checkout", new CheckoutVM
+                        {
+                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                            Message = $"Organisation - {Request.Form["companyName"]} - has existing subscription.",
+                            SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
+                            PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                        });
+                    }
                 }
 
                 //build Organisation details

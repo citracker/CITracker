@@ -2116,7 +2116,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<NameValueDTO>
             var data = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             return Ok(data?.Result?.ToArray());
@@ -2202,17 +2201,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<UserCompletedProjectsDTO>
-            var res = _opsManager.GetCompletedProjectsByUser(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "Alice", completed = 12 },
-                new { name = "John", completed = 18 },
-                new { name = "Michael", completed = 9 },
-                new { name = "Sarah", completed = 15 }
-            };
+            var data = _opsManager.GetCompletedProjectsByUserCI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByMethodologies")]
@@ -2227,19 +2218,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MonthlyProjectsByMethodologyDTO>
-            var res = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { month = "January", dmaic = 12, gemba = 7, project = 3, jdi = 6, others = 2 },
-                new { month = "February", dmaic = 9, gemba = 10, project = 2, jdi = 6, others = 2 },
-                new { month = "March", dmaic = 15, gemba = 5, project = 4, jdi = 6, others = 2 },
-                new { month = "April", dmaic = 11, gemba = 8, project = 6, jdi = 6, others = 2 },
-                new { month = "May", dmaic = 18, gemba = 6, project = 1, jdi = 6, others = 2 },
-                new { month = "June", dmaic = 14, gemba = 9, project = 2, jdi = 6, others = 2 }
-            };
+            var data = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByDepartment")]
@@ -2254,30 +2235,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var data = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            //List<MonthlyProjectsByDepartmentDTO>
-            var res = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new
-            {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-                datasets = new[]
-                {
-                    new {
-                        department = "IT",
-                        data = new[] { 5, 7, 3, 8, 6, 9 }
-                    },
-                    new {
-                        department = "HR",
-                        data = new[] { 2, 4, 6, 5, 3, 4 }
-                    },
-                    new {
-                        department = "Finance",
-                        data = new[] { 3, 5, 4, 7, 6, 8 }
-                    }
-                }
-            };
-
-            return Json(data);
+            return Json(data?.SingleResult);
         }
 
         [HttpGet("MonthlyProjectsByPhase")]
@@ -2292,37 +2252,36 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MonthlyProjectsByPhaseDTO>
-            var res = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new
-            {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-                datasets = new[]
-                {
-                    new {
-                        phase = "Define",
-                        data = new[] { 3, 5, 4, 6, 7, 8 }
-                    },
-                    new {
-                        phase = "Measure",
-                        data = new[] { 2, 3, 5, 4, 6, 7 }
-                    },
-                    new {
-                        phase = "Analyze",
-                        data = new[] { 1, 2, 3, 2, 4, 5 }
-                    },
-                    new {
-                        phase = "Improve",
-                        data = new[] { 4, 6, 5, 7, 8, 9 }
-                    },
-                    new {
-                        phase = "Control",
-                        data = new[] { 2, 1, 2, 3, 4, 3 }
-                    }
-                }
-            };
+            var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            //var data = new
+            //{
+            //    labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+            //    datasets = new[]
+            //    {
+            //        new {
+            //            phase = "Define",
+            //            data = new[] { 3, 5, 4, 6, 7, 8 }
+            //        },
+            //        new {
+            //            phase = "Measure",
+            //            data = new[] { 2, 3, 5, 4, 6, 7 }
+            //        },
+            //        new {
+            //            phase = "Analyze",
+            //            data = new[] { 1, 2, 3, 2, 4, 5 }
+            //        },
+            //        new {
+            //            phase = "Improve",
+            //            data = new[] { 4, 6, 5, 7, 8, 9 }
+            //        },
+            //        new {
+            //            phase = "Control",
+            //            data = new[] { 2, 1, 2, 3, 4, 3 }
+            //        }
+            //    }
+            //};
 
-            return Json(data);
+            return Json(data?.SingleResult);
         }
 
 

@@ -90,7 +90,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId);
         Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId);
         Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId);
-        Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUser(int orgId);
+        Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUserCI(int orgId);
         Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId);
         Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId);
         Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId);
