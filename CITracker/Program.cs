@@ -52,7 +52,7 @@ namespace CITracker
 
                 builder.Services.AddSession(options =>
                 {
-                    options.IdleTimeout = TimeSpan.FromMinutes(Convert.ToInt32(builder.Configuration["ConnectionStrings:SessionTimeout"]));
+                    options.IdleTimeout = TimeSpan.FromMinutes(Convert.ToInt32(builder.Configuration["AppSettings:SessionTimeout"]));
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                     options.Cookie.IsEssential = true;
@@ -105,7 +105,7 @@ namespace CITracker
                     };
                 });
 
-                builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("ConnectionStrings"));
+                builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
                 builder.Services.Configure<ADKeyValues>(builder.Configuration.GetSection("AzureAd"));
                 builder.Services.AddTransient<HttpClient>();
                 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

@@ -12,6 +12,6 @@ namespace Shared.Implementations
             keyValues = options.Value;
         }
 
-        public async Task<string> DefaultConnection() => await Task.FromResult(keyValues.DefaultConnection);
+        public async Task<string> SQLDBConnection() => await Task.FromResult(keyValues.SQLDBConnection);
     }
 }

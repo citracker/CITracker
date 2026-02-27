@@ -37,7 +37,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<CIUserDTO>> GetUserByEmail(string email)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.DefaultConnection());
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 
             try
             {
