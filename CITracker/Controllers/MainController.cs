@@ -1872,6 +1872,12 @@ namespace CITracker.Controllers
                 Initiative = _opsManager.GetAllInProgressOrganizationSI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result
             };
 
+            if (!coep.Initiative.Result.Any())
+            {
+                TempData["Message"] = "Kindly Create a Strategic Initiative Project first";
+                return RedirectToAction("CreateSIProject");
+            }
+
             return View(coep);
         }
 
@@ -2254,35 +2260,25 @@ namespace CITracker.Controllers
             }
 
             var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            //var data = new
-            //{
-            //    labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-            //    datasets = new[]
-            //    {
-            //        new {
-            //            phase = "Define",
-            //            data = new[] { 3, 5, 4, 6, 7, 8 }
-            //        },
-            //        new {
-            //            phase = "Measure",
-            //            data = new[] { 2, 3, 5, 4, 6, 7 }
-            //        },
-            //        new {
-            //            phase = "Analyze",
-            //            data = new[] { 1, 2, 3, 2, 4, 5 }
-            //        },
-            //        new {
-            //            phase = "Improve",
-            //            data = new[] { 4, 6, 5, 7, 8, 9 }
-            //        },
-            //        new {
-            //            phase = "Control",
-            //            data = new[] { 2, 1, 2, 3, 4, 3 }
-            //        }
-            //    }
-            //};
-
+            
             return Json(data?.SingleResult);
+        }
+
+        [HttpGet("DashboardAnalytics")]
+        public IActionResult DashboardAnalytics()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = _opsManager.GetOrganizationData(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+            return Ok(data?.Result?.ToArray());
         }
 
 

@@ -1385,6 +1385,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate OE Monthly Value insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = $"Saving already Exist for {opExel.MonthYear}"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -1505,6 +1514,15 @@ namespace Datalayer.Implementations
                     Message = "Successful"
                 });
             }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate OE Monthly Value insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = $"Saving already Exist for {opExel.MonthYear}"
+                });
+            }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
@@ -1619,7 +1637,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, "SELECT a.Id, a.Title, COALESCE(AVG(b.Percentage), 0) AS CumulativePercent FROM StrategicInitiative a LEFT JOIN SISubProject b ON b.SIId = a.Id WHERE a.OrganizationId = @oid GROUP BY a.Id, a.Title HAVING COALESCE(AVG(b.Percentage), 0) < 100", new {oid = orgId}, CommandType.Text);
+                var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, "SELECT a.Id, a.Title, b.Currency, COALESCE(AVG(b.Percentage), 0) AS CumulativePercent FROM StrategicInitiative a LEFT JOIN SISubProject b ON b.SIId = a.Id WHERE a.OrganizationId = @oid GROUP BY a.Id, a.Title, b.Currency HAVING COALESCE(AVG(b.Percentage), 0) < 100", new {oid = orgId}, CommandType.Text);
 
                 if (resi.Any())
                 {
@@ -5622,7 +5640,7 @@ namespace Datalayer.Implementations
                 IEnumerable<MonthlyPhaseRaw> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS [Month], MONTH(ci.DateCreated) AS MonthNumber, SUM(CASE WHEN mp.Phase = 'Define' THEN 1 ELSE 0 END) AS Define, SUM(CASE WHEN mp.Phase = 'Measure' THEN 1 ELSE 0 END) AS Measure, SUM(CASE WHEN mp.Phase = 'Analyze' THEN 1 ELSE 0 END) AS Analyze, SUM(CASE WHEN mp.Phase = 'Improve' THEN 1 ELSE 0 END) AS Improve, SUM(CASE WHEN mp.Phase = 'Control' THEN 1 ELSE 0 END) AS [Control], SUM(CASE WHEN mp.Phase = 'Concept & Initiation' THEN 1 ELSE 0 END) AS ConceptInitiation, SUM(CASE WHEN mp.Phase = 'Definition & Planning' THEN 1 ELSE 0 END) AS DefinitionPlanning, SUM(CASE WHEN mp.Phase = 'Execution' THEN 1 ELSE 0 END) AS Execution, SUM(CASE WHEN mp.Phase = 'Performance & Control' THEN 1 ELSE 0 END) AS PerformanceControl, SUM(CASE WHEN mp.Phase = 'Project Closure' THEN 1 ELSE 0 END) AS ProjectClosure FROM dbo.ContinuousImprovement ci LEFT JOIN dbo.MethodologyPhase mp ON ci.Phase = mp.Id WHERE ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM') ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated)";
+                var query = "SELECT YEAR(ci.DateCreated)  AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, mp.Phase, COUNT(ci.Id) AS TotalProjects FROM dbo.ContinuousImprovement ci INNER JOIN dbo.MethodologyPhase mp ON ci.Phase = mp.Id\tWHERE ci.Status NOT IN ('CLOSED', 'CANCELLED')  AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), mp.Phase ORDER BY YearNumber, MonthNumber, mp.Phase";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
@@ -5712,27 +5730,27 @@ namespace Datalayer.Implementations
                     // Labels (ordered months)
                     result.labels = resi
                         .OrderBy(x => x.MonthNumber)
-                        .Select(x => x.Month)
+                        .Select(x => x.MonthLabel)
                         .Distinct()
                         .ToList();
 
-                    // Group by department
-                    //var grouped = resi.GroupBy(x => x.Phase);
+                   // Group by Phase
+                   var grouped = resi.GroupBy(x => x.Phase);
 
-                    //foreach (var group in grouped)
-                    //{
-                    //    var dataset = new PhaseDatasetDTO
-                    //    {
-                    //        phase = group.Key,
-                    //        data = result.labels
-                    //            .Select(month =>
-                    //                group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0
-                    //            )
-                    //            .ToList()
-                    //    };
+                    foreach (var group in grouped)
+                    {
+                        var dataset = new PhaseDatasetDTO
+                        {
+                            phase = group.Key,
+                            data = result.labels
+                                .Select(month =>
+                                    group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0
+                                )
+                                .ToList()
+                        };
 
-                    //    result.datasets.Add(dataset);
-                    //}
+                        result.datasets.Add(dataset);
+                    }
 
                     return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>
                     {
@@ -5754,6 +5772,160 @@ namespace Datalayer.Implementations
             {
                 _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByPhase)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>());
+            }
+        }
+
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId)
+        {
+            try
+            {
+                List<DashboardAnalytics> resi = null;
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM CITracker.dbo.ContinuousImprovement ci LEFT JOIN CITracker.dbo.CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
+
+                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM CITracker.dbo.OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM CITracker.dbo.OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+
+                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM CITracker.dbo.StrategicInitiative si INNER JOIN CITracker.dbo.SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+
+                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                //{
+                var cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+
+                var oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+
+                var sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+
+                var dict = new Dictionary<string, DashboardAnalytics>();
+
+                void Merge(IEnumerable<DashboardAnalytics> items)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!dict.TryGetValue(item.Currency, out var existing))
+                        {
+                            dict[item.Currency] = new DashboardAnalytics
+                            {
+                                Currency = item.Currency,
+                                ProjectCount = item.ProjectCount,
+                                TotalExpectedRevenue = item.TotalExpectedRevenue,
+                                TotalHardSavings = item.TotalHardSavings
+                            };
+                        }
+                        else
+                        {
+                            existing.ProjectCount += item.ProjectCount;
+                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
+                            existing.TotalHardSavings += item.TotalHardSavings;
+                        }
+                    }
+                }
+
+                Merge(cire);
+                Merge(oere);
+                Merge(sire);
+
+                //}
+                //else
+                //{
+                //    var where = new StringBuilder();
+                //    var where1 = new StringBuilder();
+                //    var parameters = new DynamicParameters();
+
+                //    if (!string.IsNullOrWhiteSpace(filt.Title))
+                //    {
+                //        where.Append(" AND a.Title LIKE @Title");
+                //        where1.Append(" AND Title LIKE @Title");
+                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
+                //    }
+
+                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                //    {
+                //        where.Append(" AND a.Priority = @Priority");
+                //        where1.Append(" AND Priority = @Priority");
+                //        parameters.Add("@Priority", filt.Priority.Trim());
+                //    }
+
+                //    if (!string.IsNullOrWhiteSpace(filt.Status))
+                //    {
+                //        where.Append(" AND a.Status = @Stat");
+                //        where1.Append(" AND Status LIKE @Stat");
+                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                //    }
+
+                //    if (filt.UserId > 0)
+                //    {
+                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
+                //        parameters.Add("@UserId", filt.UserId);
+                //    }
+
+                //    if (filt.CountryId > 0)
+                //    {
+                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
+                //        where1.Append(" AND OrganizationCountryId = @CountryId");
+                //        parameters.Add("@CountryId", filt.CountryId);
+                //    }
+
+                //    if (filt.DepartmentId > 0)
+                //    {
+                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
+                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
+                //        parameters.Add("@DepartmentId", filt.DepartmentId);
+                //    }
+
+                //    if (filt.StartDate != DateTime.MinValue)
+                //    {
+                //        where.Append(" AND a.StartDate >= @StartDate");
+                //        where1.Append(" AND StartDate >= @StartDate");
+                //        parameters.Add("@StartDate", filt.StartDate.Date);
+                //    }
+
+                //    if (filt.EndDate != DateTime.MinValue)
+                //    {
+                //        where.Append(" AND a.EndDate <= @EndDate");
+                //        where1.Append(" AND EndDate <= @EndDate");
+                //        parameters.Add("@EndDate", filt.EndDate.Date);
+                //    }
+
+                //    var finalQuery = query.Replace("@where", where.ToString());
+
+
+                //    parameters.Add("@oid", orgId);
+
+                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
+
+                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
+
+                //    parameters.Add("@pageNumber", pageNumber);
+                //    parameters.Add("@pageSize", pageSize);
+
+                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                //}
+
+                if (dict.Any())
+                {
+                    resi = dict.Values.ToList();
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationData)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
             }
         }
     }
