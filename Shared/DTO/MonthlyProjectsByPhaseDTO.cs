@@ -20,17 +20,10 @@ namespace Shared.DTO
 
     public class MonthlyPhaseRaw
     {
-        public string Month { get; set; } = default!;
+        public int YearNumber { get; set; }
         public int MonthNumber { get; set; }
-        public int Define { get; set; }
-        public int Measure { get; set; }
-        public int Analyze { get; set; }
-        public int Improve { get; set; }
-        public int Control { get; set; }
-        public int ConceptInitiation { get; set; }
-        public int DefinitionPlanning { get; set; }
-        public int Execution { get; set; }
-        public int PerformanceControl { get; set; }
-        public int ProjectClosure { get; set; }
+        public string MonthLabel { get; set; } = default!;
+        public string Phase { get; set; } = default!;
+        public int TotalProjects { get; set; }
     }
 }

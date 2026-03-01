@@ -99,17 +99,17 @@
                         <a aria-label="Hide Sidebar" class="sidemenu-toggle header-link animated-arrow hor-toggle horizontal-navtoggle" data-bs-toggle="sidebar" href="javascript:void(0);"><span></span></a> 
                     </div> 
                     <div class="main-header-center d-lg-block header-link"> 
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <div class="input-group">
                                 <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" required>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <div class="input-group">
                                 <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" required>
                             </div>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <select class="form-control input-group" name="priority" id="priority" required>
                                 <option selected disabled>Priority</option>
                                 <option value="High">High</option>
@@ -117,7 +117,7 @@
                                 <option value="Low">Low</option>
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <select class="form-control input-group" name="status" id="status" required>
                                 <option selected disabled> Select a Status </option>
                                 @foreach (Status item in Enum.GetValues(typeof(Status)))
@@ -126,16 +126,16 @@
                                 }
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <select class="form-control input-group" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
                                 <option selected disabled>Select a Country</option>
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <select class="form-control input-group" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2">
+                        <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12 mr-2 d-none">
                             <select class="form-control input-group" name="department" id="department" required>
                             </select>
                         </div>
@@ -394,95 +394,95 @@
             $("#"+show).removeClass("d-none")
         }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            let endPicker;
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     let endPicker;
 
-            endPicker = flatpickr("#enddate", {
-                dateFormat: "Y-m-d"
-            });
+        //     endPicker = flatpickr("#enddate", {
+        //         dateFormat: "Y-m-d"
+        //     });
 
-            const startPicker = flatpickr("#startdate", {
-                dateFormat: "Y-m-d",
-                onChange: function (selectedDates) {
-                    if (selectedDates.length) {
-                        const startDate = selectedDates[0];
+        //     const startPicker = flatpickr("#startdate", {
+        //         dateFormat: "Y-m-d",
+        //         onChange: function (selectedDates) {
+        //             if (selectedDates.length) {
+        //                 const startDate = selectedDates[0];
 
-                        // Set min date for end date
-                        endPicker.set("minDate", startDate);
+        //                 // Set min date for end date
+        //                 endPicker.set("minDate", startDate);
 
-                        // Optional: auto-set end date to +12 months
-                        const endDate = new Date(startDate);
-                        endDate.setFullYear(endDate.getFullYear() + 1);
-                        endPicker.setDate(endDate, true);
-                    }
-                }
-            });
+        //                 // Optional: auto-set end date to +12 months
+        //                 const endDate = new Date(startDate);
+        //                 endDate.setFullYear(endDate.getFullYear() + 1);
+        //                 endPicker.setDate(endDate, true);
+        //             }
+        //         }
+        //     });
 
-            fetch(`/GetOrganizationLocation`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch location");
-                }
-                return response.json();
-            })
-            .then(data => populateCountrySelect(data))
-            .catch(error => console.log(error));
-        });
+        //     fetch(`/GetOrganizationLocation`)
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error("Failed to fetch location");
+        //         }
+        //         return response.json();
+        //     })
+        //     .then(data => populateCountrySelect(data))
+        //     .catch(error => console.log(error));
+        // });
 
-        function populateCountrySelect(tools) {
-            const select = document.getElementById("country");
+        // function populateCountrySelect(tools) {
+        //     const select = document.getElementById("country");
 
-            // Clear existing options
-            select.innerHTML = '<option value="">-- Select a Country --</option>';
+        //     // Clear existing options
+        //     select.innerHTML = '<option value="">-- Select a Country --</option>';
 
-            tools.OrganizationCountry.forEach(tool => {
-                const option = document.createElement("option");
-                option.value = tool.Id;      // must match JSON property
-                option.textContent = tool.Country;
-                select.appendChild(option);
-            });
+        //     tools.OrganizationCountry.forEach(tool => {
+        //         const option = document.createElement("option");
+        //         option.value = tool.Id;      // must match JSON property
+        //         option.textContent = tool.Country;
+        //         select.appendChild(option);
+        //     });
 
-            facilities = tools.OrganizationFacility;
-            departments = tools.OrganizationDepartment;
-        }
+        //     facilities = tools.OrganizationFacility;
+        //     departments = tools.OrganizationDepartment;
+        // }
 
-        function onCountryChange(selectEl, targetInputId) {
-            const countryId = parseInt(selectEl.value);
-            const locationSelect = document.getElementById(targetInputId);
+        // function onCountryChange(selectEl, targetInputId) {
+        //     const countryId = parseInt(selectEl.value);
+        //     const locationSelect = document.getElementById(targetInputId);
 
-            // Clear existing options
-            locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+        //     // Clear existing options
+        //     locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
 
-            if (isNaN(countryId)) return;
+        //     if (isNaN(countryId)) return;
 
-            const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
+        //     const filtered = facilities.filter(l => l.OrganizationCountryId === countryId);
 
-            filtered.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.Id;
-                option.textContent = item.Facility;
-                locationSelect.appendChild(option);
-            });
-        }
+        //     filtered.forEach(item => {
+        //         const option = document.createElement('option');
+        //         option.value = item.Id;
+        //         option.textContent = item.Facility;
+        //         locationSelect.appendChild(option);
+        //     });
+        // }
 
-        function onFacilityChange(selectEl, targetInputId) {
-            const facilityId = parseInt(selectEl.value);
-            const locationSelect = document.getElementById(targetInputId);
+        // function onFacilityChange(selectEl, targetInputId) {
+        //     const facilityId = parseInt(selectEl.value);
+        //     const locationSelect = document.getElementById(targetInputId);
 
-            // Clear existing options
-            locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+        //     // Clear existing options
+        //     locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
 
-            if (isNaN(facilityId)) return;
+        //     if (isNaN(facilityId)) return;
 
-            const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
+        //     const filtered = departments.filter(l => l.OrganizationFacilityId === facilityId);
 
-            filtered.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.Id;
-                option.textContent = item.Department;
-                locationSelect.appendChild(option);
-            });
-        }
+        //     filtered.forEach(item => {
+        //         const option = document.createElement('option');
+        //         option.value = item.Id;
+        //         option.textContent = item.Department;
+        //         locationSelect.appendChild(option);
+        //     });
+        // }
     </script>
 
    <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
