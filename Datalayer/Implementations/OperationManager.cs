@@ -3146,7 +3146,8 @@ namespace Datalayer.Implementations
 
                     if (String.IsNullOrEmpty(proj.FinancialReportComment))
                         proj.FinancialVerificationDate = DateTime.UtcNow;
-                    proj.FinancialVerificationDate = ci.FinancialVerificationDate;
+                    else
+                        proj.FinancialVerificationDate = ci.FinancialVerificationDate;
 
                     await _repository.UpdateAsync(dbConnection, proj, dbTransaction);
 
@@ -3828,7 +3829,10 @@ namespace Datalayer.Implementations
                 {
                     proj.IsOneTimeSavings = ci.IsOneTimeSavings;
                     proj.IsCarryOverSavings = ci.IsCarryOverSavings;
-                    proj.FinancialVerificationDate = ci.FinancialVerificationDate;
+                    if (String.IsNullOrEmpty(proj.FinancialReportComment))
+                        proj.FinancialVerificationDate = DateTime.UtcNow;
+                    else
+                        proj.FinancialVerificationDate = ci.FinancialVerificationDate;
                     proj.IsAudited = ci.IsAudited;
                     proj.AuditedBy = ci.AuditedBy;
                     proj.AuditedDate = ci.AuditedDate;
