@@ -54,7 +54,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input pj-date-input active" name="cosdate" placeholder="Date" value="@(Model.Project.FinancialVerificationDate.ToString("yyyy-MM-dd"))" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input pj-date-input active" name="cosdate" placeholder="Date" value="@(Model.Project.FinancialVerificationDate?.ToString("yyyy-MM-dd"))" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
                             </div>
                         </div>
                     </div>
