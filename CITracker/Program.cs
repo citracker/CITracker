@@ -15,6 +15,7 @@ using NLog.Web;
 using Shared;
 using Shared.Implementations;
 using Shared.Interfaces;
+using Stripe;
 using System.Globalization;
 
 namespace CITracker
@@ -107,6 +108,7 @@ namespace CITracker
 
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
                 builder.Services.Configure<ADKeyValues>(builder.Configuration.GetSection("AzureAd"));
+                builder.Services.Configure<StripeKeyValues>(builder.Configuration.GetSection("Stripe"));
                 builder.Services.AddTransient<HttpClient>();
                 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
@@ -120,7 +122,10 @@ namespace CITracker
                 builder.Services.AddTransient<IAppSettingsManager, AppSettingsManager>();
                 builder.Services.AddTransient<IRepository, Repository>();
                 builder.Services.AddTransient<IMicrosoftOperations, MicrosoftOperations>();
+                builder.Services.AddTransient<IStripePayment, StripePayment>();
                 builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();
+
+                StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
                 builder.Logging.ClearProviders();
                 builder.Host.UseNLog();

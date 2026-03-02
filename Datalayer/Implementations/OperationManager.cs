@@ -2815,11 +2815,18 @@ namespace Datalayer.Implementations
                         DateCreated = i.DateCreated
                     };
 
-                    var resp = await _repository.InsertAsync(dbConnection, ce, dbTransaction);
+                    try
+                    {
+                        var resp = await _repository.InsertAsync(dbConnection, ce, dbTransaction);
 
-                    var audit = ModelBuilder.BuildAuditLog("CI Project Tool Added", $"Company Rep added new CI Project tool.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                        var audit = ModelBuilder.BuildAuditLog("CI Project Tool Added", $"Company Rep added new CI Project tool.", adminEmail);
+                        audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                        var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    }
+                    catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+                    {
+                        continue;
+                    }
                 }
 
                 dbTransaction.Commit();
@@ -3136,6 +3143,9 @@ namespace Datalayer.Implementations
                 {
                     proj.IsOneTimeSavings = ci.IsOneTimeSavings;
                     proj.IsCarryOverSavings = ci.IsCarryOverSavings;
+
+                    if (String.IsNullOrEmpty(proj.FinancialReportComment))
+                        proj.FinancialVerificationDate = DateTime.UtcNow;
                     proj.FinancialVerificationDate = ci.FinancialVerificationDate;
 
                     await _repository.UpdateAsync(dbConnection, proj, dbTransaction);

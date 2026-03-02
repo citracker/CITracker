@@ -1076,7 +1076,7 @@
             const response = await fetch('/MonthlyProjectsByDepartment');
 
             if (!response.ok) {
-                showNoData(monthlyDeptChart, 'Monthly Projects per Department - No data available');
+                showNoDataCjs(monthlyDeptChart, 'Monthly Projects per Department - No data available');
                 return;
             }
 
@@ -1085,12 +1085,12 @@
             try {
                 result = await response.json();
             } catch {
-                showNoData(monthlyDeptChart, 'Monthly Projects per Department - No data available');
+                showNoDataCjs(monthlyDeptChart, 'Monthly Projects per Department - No data available');
                 return;
             }
 
             if (!result || result.length === 0) {
-                showNoData(monthlyDeptChart);
+                showNoDataCjs(monthlyDeptChart);
                 return;
             }
 
@@ -1107,7 +1107,7 @@
             monthlyDeptChart.update();
 
         } catch (error) {
-            showNoData(monthlyDeptChart, 'Monthly Projects per Department - An Error Occured');
+            showNoDataCjs(monthlyDeptChart, 'Monthly Projects per Department - An Error Occured');
             console.error('Error loading department data:', error);
         }
     }
@@ -1162,7 +1162,7 @@
             const response = await fetch('/MonthlyProjectsByPhase');
 
             if (!response.ok) {
-                showNoData(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
+                showNoDataCjs(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
                 return;
             }
 
@@ -1171,13 +1171,13 @@
             try {
                 result = await response.json();
             } catch {
-                showNoData(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
+                showNoDataCjs(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
                 return;
             }
 
 
             if (!result || result.length === 0) {
-                showNoData(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
+                showNoDataCjs(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
                 return;
             }
 
@@ -1194,7 +1194,7 @@
             monthlyPhaseChart.update();
 
         } catch (error) {
-            showNoData(monthlyPhaseChart, 'Monthly Projects per Phase - An Error Occured');
+            showNoDataCjs(monthlyPhaseChart, 'Monthly Projects per Phase - An Error Occured');
             console.error('Error loading phase data:', error);
         }
     }

@@ -150,9 +150,8 @@
             checkbox.className = 'form-check-input';
             checkbox.name = 'toolbox';
             checkbox.id = `${phase}-${index}`;
-            checkbox.value = `${phase}-${tool.id}`;
-            
-            checkbox.checked = !!tool.ischecked;
+            checkbox.value = `${phase}-${tool.id}`;            
+            checkbox.checked = !!tool.isChecked;
 
             const label = document.createElement('label');
             label.className = 'form-check-label me-3';
