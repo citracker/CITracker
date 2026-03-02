@@ -818,8 +818,8 @@
         formData.append(`FinancialVerificationDate`, document.querySelector('input[name="cosdate"]')?.value);
         formData.append(`FinancialReportComment`, document.querySelector('textarea[name="finrpt"]')?.value);
         formData.append(`IsAudited`, !!document.querySelector('input[name="isaud"]:checked'));
-        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
-        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
+        formData.append(`Auditor`, document.querySelector('select[name="auditmember"]'));
+        formData.append(`Auditor`, document.querySelector('select[name="auditmember"]'));
 
         try
         {
