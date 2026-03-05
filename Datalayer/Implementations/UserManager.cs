@@ -24,14 +24,14 @@ namespace Datalayer.Implementations
     public class UserManager : BaseManager, IUserManager
     {
         private readonly ILogger<UserManager> _logger;
-        private readonly IConnectionStringsManager _connection;
+        private readonly IAppSettingsManager _connection;
         private readonly IGenericManager _genManager;
 
-        public UserManager(ILogger<UserManager> logger, IRepository repository, IConnectionStringsManager connectionStringsManager, IGenericManager genManager)
+        public UserManager(ILogger<UserManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IGenericManager genManager)
         {
             _logger = logger;
             _repository = repository;
-            _connection = connectionStringsManager;
+            _connection = AppSettingsManager;
             _genManager = genManager;
         }
 

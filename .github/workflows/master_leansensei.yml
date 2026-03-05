@@ -1,12 +1,12 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Staging-CITracker
+name: Build and deploy ASP.Net Core app to Azure Web App - leansensei
 
 on:
   push:
     branches:
-      - staging
+      - master
   workflow_dispatch:
 
 jobs:
@@ -36,33 +36,22 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
+    environment: Production
     runs-on: windows-latest
     needs: build
-    permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1F981EF3B252426D9770158FFC151169 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DD66CF4791F43F292C44342DC8CDA8C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'CITracker'
+          app-name: 'leansensei'
           slot-name: 'Production'
           package: .
 
-          
-
-
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_687AE3FF8C3A4936B9F00053240294A8 }}

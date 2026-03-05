@@ -623,7 +623,7 @@ namespace CITracker.Controllers
 
             // 3️⃣ Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -685,7 +685,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",

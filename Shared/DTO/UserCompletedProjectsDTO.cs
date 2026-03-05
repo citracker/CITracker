@@ -8,7 +8,7 @@ namespace Shared.DTO
 {
     public class UserCompletedProjectsDTO
     {
-        public string Name { get; set; } = default!;
-        public int Completed { get; set; }
+        public string name { get; set; } = default!;
+        public int completed { get; set; }
     }
 }
