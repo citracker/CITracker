@@ -304,11 +304,16 @@
 
         // Clear previous errors
         list.innerHTML = "";
+        
+        // Split errors by newline
+        const errors = error.split('\n');
 
-        const li = document.createElement("li");
-                li.textContent = error;
-                li.className = 'fs-18';
-                list.appendChild(li);
+        errors.forEach(err => {
+            const li = document.createElement("li");
+            li.textContent = err.trim();
+            li.className = 'fs-18';
+            list.appendChild(li);
+        });
 
         // Show alert
         alertDiv.classList.remove("d-none");
