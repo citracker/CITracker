@@ -406,7 +406,7 @@
                                                         <div class="card border bg-primary border-primary pricing-card advanced reveal revealrotate">
                                                             <div class="p-3 d-block text-justified bd-b-white-2">
                                                                 <p class="fs-18 fw-medium mb-1 pe-0">@Model.Result.ElementAt(i).Name<span class="badge bg-white text-primary float-end fw-normal">Most Popular</span></p>
-                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount/(Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-20">user</span>/month</span></p>
                                                                 <p class="fs-13 mb-2">@Model.Result.ElementAt(i).Description</p>
                                                                 <p class="fs-13 mb-1">Billed annually!!!</p>
                                                             </div>
@@ -435,11 +435,11 @@
                                                                 <p class="fs-18 fw-medium mb-1">@Model.Result.ElementAt(i).Name</p>
                                                                 @if (Model.Result.ElementAt(i).Name.Equals("Enterprise"))
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">Starting from </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">Starting from </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
                                                                 }
                                                                 <p class="fs-13 mb-1">@Model.Result.ElementAt(i).Description</p>
                                                                 <p class="fs-13 mb-3 text-secondary">Billed annually!!!</p>

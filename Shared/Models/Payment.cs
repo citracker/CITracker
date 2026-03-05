@@ -8,7 +8,7 @@ namespace Shared.Models
         [ExplicitKey]
         public long Id { get; set; }
         public long OrganizationId { get; set; }
-        public int SubscriptionPlanId { get; set; }
+        public long SubscriptionId { get; set; }
         public string Provider { get; set; }
         public string Reference { get; set; }
         public decimal Amount { get; set; }

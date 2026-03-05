@@ -5052,7 +5052,7 @@ namespace Datalayer.Implementations
                 IEnumerable<NameValueDTO> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "select b.Category as Name, Count(b.Id) as Value from CITracker.dbo.ContinuousImprovement a left join CITracker.dbo.CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by b.Category";
+                var query = "select b.Category as Name, Count(b.Id) as Value from ContinuousImprovement a left join CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by b.Category";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
@@ -5512,7 +5512,7 @@ namespace Datalayer.Implementations
                 IEnumerable<MonthlyDepartmentRaw> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, YEAR(ci.DateCreated) AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, od.Department, COUNT(ci.Id) AS TotalProjects FROM dbo.ContinuousImprovement ci INNER JOIN dbo.OrganizationDepartment od ON ci.DepartmentId = od.Id WHERE ci.OrganizationId = @oid and ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), od.Department @where ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), od.Department";
+                var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, YEAR(ci.DateCreated) AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, od.Department, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN OrganizationDepartment od ON ci.DepartmentId = od.Id WHERE ci.OrganizationId = @oid and ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), od.Department @where ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), od.Department";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
@@ -5654,7 +5654,7 @@ namespace Datalayer.Implementations
                 IEnumerable<MonthlyPhaseRaw> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "SELECT YEAR(ci.DateCreated)  AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, mp.Phase, COUNT(ci.Id) AS TotalProjects FROM dbo.ContinuousImprovement ci INNER JOIN dbo.MethodologyPhase mp ON ci.Phase = mp.Id\tWHERE ci.Status NOT IN ('CLOSED', 'CANCELLED')  AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), mp.Phase ORDER BY YearNumber, MonthNumber, mp.Phase";
+                var query = "SELECT YEAR(ci.DateCreated)  AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, mp.Phase, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN MethodologyPhase mp ON ci.Phase = mp.Id WHERE ci.Status NOT IN ('CLOSED', 'CANCELLED')  AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), mp.Phase ORDER BY YearNumber, MonthNumber, mp.Phase";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
@@ -5796,11 +5796,11 @@ namespace Datalayer.Implementations
                 List<DashboardAnalytics> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM CITracker.dbo.ContinuousImprovement ci LEFT JOIN CITracker.dbo.CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
+                var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
 
-                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM CITracker.dbo.OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM CITracker.dbo.OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
 
-                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM CITracker.dbo.StrategicInitiative si INNER JOIN CITracker.dbo.SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
 
                 //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 //{
