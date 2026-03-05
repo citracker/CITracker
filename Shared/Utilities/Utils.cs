@@ -82,6 +82,45 @@ namespace Shared.Utilities
             "No"
         };
 
+        public static readonly HashSet<string> MethodologyAllowedValues =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "DMAIC",
+            "Gemba Kaizen",
+            "JDI",
+            "Project",
+            "Others"
+        };
+
+        public static readonly HashSet<string> OtherMethodologyAllowedValues =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "DMAIC",
+            "Gemba Kaizen",
+            "JDI",
+            "Others"
+        };
+
+        public static readonly HashSet<string> ProjectPhaseAllowedValues =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Concept & Initiation",
+            "Definition & Planning",
+            "Execution",
+            "Performance & Control",
+            "Project Closure"
+        };
+
+        public static readonly HashSet<string> ProjectPhaseOtherAllowedValues =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Define",
+            "Measure",
+            "Analyze",
+            "Improve",
+            "Control"
+        };
+
 
         private static readonly Dictionary<string, string> CurrencySymbols =
         new(StringComparer.OrdinalIgnoreCase)

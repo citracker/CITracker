@@ -1314,7 +1314,7 @@ namespace CITracker.Controllers
                     Country = r.GetValueOrDefault("Country")?.Trim(),
                     Facility = r.GetValueOrDefault("Facility")?.Trim(),
                     Department = r.GetValueOrDefault("Department")?.Trim(),
-                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()
+                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()                    
                 }).ToList();
 
                 // 2. Validate
@@ -1380,7 +1380,7 @@ namespace CITracker.Controllers
                     Currency = r.GetValueOrDefault("Currency")?.Trim(),
                     IsCarryOverSavings = r.GetValueOrDefault("IsCarryOverSavings?")?.Trim().ToLower() == "yes" ? true : false,
                     IsOneTimeSavings = r.GetValueOrDefault("IsOneTimeSavings?")?.Trim().ToLower() == "yes" ? true : false,
-                    Phase = Convert.ToInt32(r.GetValueOrDefault("Phase")?.Trim()),
+                    Phase = r.GetValueOrDefault("Phase")?.Trim(),
                     SupportingValueStream = r.GetValueOrDefault("SupportingValueStream")?.Trim(),
                     TotalExpectedRevenue = Convert.ToDecimal(r.GetValueOrDefault("TotalExpectedRevenue")?.Trim())
                 }).ToList();

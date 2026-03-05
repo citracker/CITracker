@@ -33,7 +33,8 @@ namespace CITracker.Validator
 
             RuleFor(x => x.BusinessObjectiveAlignment).NotEmpty().WithMessage("A BusinessObjectiveAlignment is Required");
 
-            RuleFor(x => x.Methodology).NotEmpty().WithMessage("A Methodology is Required");
+            RuleFor(x => x.Methodology).NotEmpty().WithMessage("A Methodology is Required")
+                .Must(v => Utils.MethodologyAllowedValues.Contains(v)).WithMessage("Certification must be one of: 'DMAIC', 'Gemba Kaizen', 'JDI', 'Project', 'Others'");
 
             RuleFor(x => x.Certification).NotEmpty().WithMessage("A Certification is Required")
                 .Must(v => Utils.CertificationAllowedValues.Contains(v)).WithMessage("Certification must be one of: Green Belt', 'Black Belt', 'PMP', Not Applicable");
@@ -41,7 +42,25 @@ namespace CITracker.Validator
             RuleFor(x => x.Currency).NotEmpty().WithMessage("A Currency is Required")
                 .Length(3).WithMessage("Currency must be in the ISO 4217 format (e.g USD, GBP, NGN etc..)");
 
-            RuleFor(x => x.Phase).InclusiveBetween(1, 10).WithMessage("Phase must be between 1 and 10.");
+            RuleFor(x => x.Phase).NotEmpty().WithMessage("A Phase is Required")
+                .Must(v => Utils.ProjectPhaseAllowedValues.Contains(v)).WithMessage("Phase must be one of: High, Medium or Low");
+
+            RuleFor(x => x.Phase)
+            .Must((model, propertyB) =>
+            {
+                if (model.Methodology?.ToLower() == "project")
+                {
+                    return Utils.ProjectPhaseAllowedValues.Contains(propertyB);
+                }
+
+                if (Utils.OtherMethodologyAllowedValues.Contains(model.Methodology))
+                {
+                    return Utils.ProjectPhaseOtherAllowedValues.Contains(propertyB);
+                }
+
+                return true; // or false depending on your requirement
+            })
+            .WithMessage("Phase contains an invalid value for the selected Methodology.");
 
             RuleFor(x => x.SupportingValueStream).NotEmpty().WithMessage("A SupportingValueStream is Required");
 
