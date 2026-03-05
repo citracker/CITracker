@@ -1120,11 +1120,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1197,11 +1197,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1265,11 +1265,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1394,11 +1394,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }

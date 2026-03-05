@@ -42,9 +42,6 @@ namespace CITracker.Validator
             RuleFor(x => x.Currency).NotEmpty().WithMessage("A Currency is Required")
                 .Length(3).WithMessage("Currency must be in the ISO 4217 format (e.g USD, GBP, NGN etc..)");
 
-            RuleFor(x => x.Phase).NotEmpty().WithMessage("A Phase is Required")
-                .Must(v => Utils.ProjectPhaseAllowedValues.Contains(v)).WithMessage("Phase must be one of: High, Medium or Low");
-
             RuleFor(x => x.Phase)
             .Must((model, propertyB) =>
             {
@@ -62,7 +59,7 @@ namespace CITracker.Validator
             })
             .WithMessage("Phase contains an invalid value for the selected Methodology.");
 
-            RuleFor(x => x.SupportingValueStream).NotEmpty().WithMessage("A SupportingValueStream is Required");
+            //RuleFor(x => x.SupportingValueStream).NotEmpty().WithMessage("A SupportingValueStream is Required");
 
         }
     }

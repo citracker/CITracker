@@ -5836,8 +5836,8 @@ namespace Datalayer.Implementations
                 }
 
                 Merge(cire);
-                Merge(oere);
-                Merge(sire);
+                //Merge(oere);
+                //Merge(sire);
 
                 //}
                 //else
