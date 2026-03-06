@@ -242,7 +242,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus)
+        public async Task UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus)
         {
             try
             {
@@ -256,35 +256,23 @@ namespace Datalayer.Implementations
 
                 if (resi != null)
                 {
-                    resi.Status = subscriptionStatus;
+                    if(!resi.Status.ToLower().Equals("active"))
+                        resi.Status = subscriptionStatus;
                     resi.PaymentCustomerId = stripeCustomerId;
                     resi.PaymentSubscriptionId = subscriptionId;
                     resi.LastUpdatedDate = DateTime.UtcNow;
 
                     var updRes = await _repository.UpdateAsync(dbConnection, resi);
                     _logger.LogInformation($"Subscription update for orgId {clientReferenceId} is now {subscriptionStatus}. Result: {updRes}");
-
-                    return await GetOrganizationById(clientReferenceId);
                 }
                 else
                 {
                     _logger.LogInformation($"Couldn't fetch Subscription information for orgId {clientReferenceId}.");
-
-                    return await Task.FromResult(new ResponseHandler<Organization>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionFromEvent)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<Organization>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
             }
         }
 
@@ -294,14 +282,14 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    "SELECT * from Subscription where PaymentSubscriptionId = @psid and PaymentCustomerId = @pid", new
+                    "SELECT * from Subscription where PaymentCustomerId = @pid", new
                     {
-                        psid = subscriptionId,
                         pid = stripeCustomerId
                     }, CommandType.Text);
 
                 if (resi != null)
                 {
+                    resi.PaymentSubscriptionId = subscriptionId;
                     resi.StartDate = (DateTime) startDate;
                     resi.EndDate = (DateTime)startDate;
                     resi.Status = subscriptionStatus;
@@ -451,7 +439,7 @@ namespace Datalayer.Implementations
                 sub.CreatedBy = org.Id;
                 var subRes = await _repository.InsertAsync(dbConnection, sub, dbTransaction);
 
-                org.IsSubscribed = true;
+                org.IsSubscribed = false;
                 org.SubscriptionId = sub.Id;
                 var ordUpdRes = await _repository.UpdateAsync(dbConnection, org, dbTransaction);
 
@@ -496,7 +484,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
+        public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
         {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 dbConnection.Open();
@@ -514,11 +502,11 @@ namespace Datalayer.Implementations
                 if (resi != null)
                 {
                     resi.StartDate = (DateTime)startDate;
-                    resi.EndDate = (DateTime)startDate;
+                    resi.EndDate = (DateTime)endDate;
                     resi.Status = subscriptionStatus;
                     resi.LastUpdatedDate = DateTime.UtcNow;
                                         
-                    var updRes = await _repository.UpdateAsync(dbConnection, resi);
+                    var updRes = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
                     _logger.LogInformation($"Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {updRes}");
 
                     //create payment object for this subscription
@@ -538,23 +526,40 @@ namespace Datalayer.Implementations
 
                     var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
 
+                    //update subscription status as true                    
+                    org.SingleResult.IsSubscribed = true;
+
+                    _logger.LogInformation($"Organization's ({org.SingleResult.Name}) update Result is. Result: {await _repository.UpdateAsync(dbConnection, org.SingleResult, dbTransaction)}");
+
                     var audit2 = ModelBuilder.BuildAuditLog("Payment Made", $"{org.SingleResult.Name} made a subscription payment.", org.SingleResult.AdminEmailAddress);
                     audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
 
                     _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {payRes}");
+
+                    dbTransaction.Commit();
+
+                    return org;
                 }
                 else
                 {
                     _logger.LogInformation($"Couldn't fetch Subscription information for SubscriptionId {subscriptionId}.");
+                    return await Task.FromResult(new ResponseHandler<Organization>
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = "Couldn't fetch Subscription information for SubscriptionId {subscriptionId}."
+                    });
                 }
-
-                dbTransaction.Commit();
             }
             catch (Exception ex)
             {
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionFromPaymentSuceededEvent)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<Organization>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
             }
             finally
             {

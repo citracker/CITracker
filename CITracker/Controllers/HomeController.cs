@@ -13,6 +13,7 @@ using Shared;
 using Shared.DTO;
 using Shared.Enumerations;
 using Shared.Models;
+using Shared.Utilities;
 using Shared.ViewModels;
 using Stripe;
 using System.Net;
@@ -53,40 +54,48 @@ namespace CITracker.Controllers
         public IActionResult Index()
         {
             //check if user is Authenticated
-            if (IsAuthenticated())
+            if (!IsAuthenticated())
+                return View(_subManager.GetAllSubscriptionPlans().Result);
+
+
+            _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
+
+            _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user org details and setting session variables.");
+                
+            //check if tenant of logged in user has existing subscription
+            var orgdetails = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+
+            _logger.LogInformation($"Organization details for tenant {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} fetched with status code {orgdetails.StatusCode}");
+
+            //organization details not found, set session variables to default and return
+            if (orgdetails.StatusCode != (int)HttpStatusCode.OK)
             {
-                _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} is authenticated");
-
-                //check if organization's domain is not in session
-                if (String.IsNullOrEmpty(HttpContext.Session.GetString("Domain")))
-                {
-                    _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user details and setting session variables.");
-
-                    //check if tenant of logged in user has existing subscription
-                    var orgdetails = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
-
-                    _logger.LogInformation($"Organization details for tenant {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} fetched with status code {orgdetails.StatusCode}");
-
-                    if (orgdetails.StatusCode == (int)HttpStatusCode.OK)
-                    {
-                        if ((orgdetails.SingleResult.SubscriptionStatus?.ToLower() == "active" || orgdetails.SingleResult.SubscriptionStatus?.ToLower() == "trialing") && orgdetails.SingleResult.EndDate >= DateTime.UtcNow)
-                        {
-                            HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
-                        }
-
-                        //get user's detail
-                        var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
-                        if(user.StatusCode != 404)
-                        {
-                            SetSessionVariables(user.SingleResult);
-                        }
-                    }
-                }
+                SetSessionVariables();
+                return View(_subManager.GetAllSubscriptionPlans().Result);
             }
 
-            var re = _subManager.GetAllSubscriptionPlans().Result;
 
-            return View(re);
+            if ((orgdetails.SingleResult.SubscriptionStatus?.ToLower() == "active" || orgdetails.SingleResult.SubscriptionStatus?.ToLower() == "trialing") && orgdetails.SingleResult.EndDate >= DateTime.UtcNow)
+            {
+                HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
+            }
+            else
+            {
+                HttpContext.Session.SetString("OrganisationSubscriptionStatus", "false");
+            }
+
+            //get user's detail
+            var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
+            if (user.StatusCode != 404)
+            {
+                SetSessionVariables(user.SingleResult);
+            }
+            else
+            {
+                SetSessionVariables();
+            }
+
+            return View(_subManager.GetAllSubscriptionPlans().Result);
         }
 
 
@@ -118,6 +127,22 @@ namespace CITracker.Controllers
                 new AuthenticationProperties { RedirectUri = "/" },
                 OpenIdConnectDefaults.AuthenticationScheme
             );
+        }
+
+
+        [HttpGet("success")]
+        public IActionResult Success(string session_id)
+        {
+            _logger.LogInformation($"Payment request for Organization with tenantId {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} has been submitted successfully with Session Id {session_id}");
+            return View();
+        }
+
+
+        [HttpGet("failed")]
+        public IActionResult Failed()
+        {
+            _logger.LogInformation($"Payment request for Organization with tenantId {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} Failed.");
+            return View();
         }
 
 
@@ -181,9 +206,11 @@ namespace CITracker.Controllers
             ResponseHandler<SubscriptionPlan> subscription = null;
             try
             {
-                var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
+                //var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
 
-                string domain = _msOps.GetOrganizationDomain(accessToken).Result;
+                //string domain = _msOps.GetOrganizationDomain(accessToken).Result;
+
+                string domain = Request.Form["adminEmail"].ToString().Split('@')[1];
 
                 //check if organization has an existing active subscription
                 //this is to deter any other member of an organization from creating multiple subscriptions for the same organization
@@ -284,7 +311,7 @@ namespace CITracker.Controllers
                 _logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
                 var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration).Result;
                 _logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
-                if (string.IsNullOrEmpty(chkres))
+                if (!string.IsNullOrEmpty(chkres))
                 {
                     return Redirect(chkres);
                 }
@@ -314,6 +341,12 @@ namespace CITracker.Controllers
         {
             try
             {
+                if (!Utils.IsValidEmail(Request.Form["cusEmail"].ToString()))
+                {
+                    TempData["message"] = "Kindly provide a valid email address";
+                    return RedirectToAction("Index");
+                }
+
                 //build email object
                 var org = new EmailDTO
                 {
@@ -382,30 +415,16 @@ namespace CITracker.Controllers
                 HttpContext.Session.SetString("Domain", user.OrganizationDomain ?? "");
                 HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
-                //if ((bool)user?.IsOrganizationSubscribed)
-                //{
-                //    HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
-                //}
-                //else
-                //{
-                //    HttpContext.Session.SetString("OrganisationSubscriptionStatus", "false");
-                //}
             }
             else
             {
+                HttpContext.Session.SetString("UserRole", "");
+                HttpContext.Session.SetString("Domain", "");
+                HttpContext.Session.SetString("OrganizationId", "");
+                HttpContext.Session.SetString("UserId", "");
+
                 HttpContext.Session.SetString("OrganisationSubscriptionStatus", "false");
             }
-        } 
-
-
-        private decimal CalculateSubscriptionAmount(SubscriptionPlan plan, int selectedDuration)
-        {
-            decimal amount = 0;
-            if(plan != null)
-            {
-                amount = plan.Amount * selectedDuration;
-            }
-            return amount;
         }
     }
 }

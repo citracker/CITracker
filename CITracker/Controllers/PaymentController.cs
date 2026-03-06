@@ -74,17 +74,9 @@ namespace CITracker.Controllers
         {
             var session = stripeEvent.Data.Object as Session;
 
-            _logger.LogInformation($"HandleCheckoutCompleted Event hit ||| {JsonConvert.SerializeObject(session)}");
+            _logger.LogInformation($"HandleCheckoutCompleted Event hit |||  {JsonConvert.SerializeObject(session)}");
 
-            var res = await _subManager.UpdateOrganizationSubscriptionFromEvent(Convert.ToInt32(session.ClientReferenceId), session.CustomerId, session.SubscriptionId, SubscriptionStatus.PENDING_CONFIRMATION.ToString());
-
-            _logger.LogInformation($"HandleCheckoutCompleted UpdateOrganizationSubscriptionFromEvent result ||| {JsonConvert.SerializeObject(res)}");
-
-            if (res.StatusCode == (int)HttpStatusCode.OK)
-            {
-                //send Registration email
-                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Welcome to CITracker", "CITracker", _mail.PopulateRegistrationBody(res.SingleResult.Name));
-            }
+            await _subManager.UpdateOrganizationSubscriptionFromEvent(Convert.ToInt32(session.ClientReferenceId), session.CustomerId, session.SubscriptionId, SubscriptionStatus.PENDING_CONFIRMATION.ToString());
         }
 
         private async Task HandleSubscriptionUpdated(Event stripeEvent)
@@ -110,16 +102,23 @@ namespace CITracker.Controllers
             var invoice = stripeEvent.Data.Object as Invoice;
             var subscriptionService = new SubscriptionService();
 
-            var subscription = await subscriptionService.GetAsync(invoice?.Parent?.SubscriptionDetails?.Subscription?.Id);
+            var subscription = await subscriptionService.GetAsync(invoice?.Parent?.SubscriptionDetails?.SubscriptionId);
             _logger.LogInformation($"HandlePaymentSucceeded Event hit ||| {JsonConvert.SerializeObject(invoice)} ||| {JsonConvert.SerializeObject(subscription)}");
 
-            await _subManager.UpdateOrganizationSubscriptionFromPaymentSuceededEvent(subscription.Id, subscription.CustomerId, subscription.Items.Data[0].CurrentPeriodStart, subscription.Items.Data[0].CurrentPeriodEnd, SubscriptionStatus.ACTIVE.ToString(), Convert.ToDecimal((decimal)invoice.AmountPaid/(decimal)100), "Stripe", invoice.Id, invoice?.Payments?.Data?.FirstOrDefault()?.Payment?.PaymentIntent?.Id);
+            var res = await _subManager.UpdateOrganizationSubscriptionFromPaymentSuceededEvent(subscription.Id, subscription.CustomerId, subscription.Items.Data[0].CurrentPeriodStart, subscription.Items.Data[0].CurrentPeriodEnd, SubscriptionStatus.ACTIVE.ToString(), Convert.ToDecimal((decimal)invoice.AmountPaid/(decimal)100), "Stripe", invoice.Id, invoice?.Payments?.Data?.FirstOrDefault()?.Payment?.PaymentIntent?.Id);
+
+            if (res.StatusCode == (int)HttpStatusCode.OK)
+            {
+                //send Registration email
+                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Welcome to CITracker", "CITracker", _mail.PopulateRegistrationBody(res.SingleResult.Name));
+            }
         }
 
         private async Task HandlePaymentFailed(Event stripeEvent)
         {
             var invoice = stripeEvent.Data.Object as Invoice;
             _logger.LogInformation($"HandlePaymentFailed Event hit ||| {JsonConvert.SerializeObject(invoice)}");
+            ///TODO
             //await _repo.MarkPaymentFailed(invoice.SubscriptionId);
         }
     }
