@@ -197,7 +197,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input active lockable" placeholder="Audited Date" readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input active pj-date-input lockable" name="audDate" placeholder="Audited Date" readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -233,6 +233,7 @@
         $unitButton.text(unit);
         $savingUnit.val(unit);
     });
+
     document.addEventListener("DOMContentLoaded", function () {
         initMonthPicker($('.finCardBody'));
 
