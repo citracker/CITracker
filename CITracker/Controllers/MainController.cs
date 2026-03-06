@@ -2309,7 +2309,6 @@ namespace CITracker.Controllers
             return org.ToDictionary(x => x.Category, x => x.Unit);
         }
 
-
         private bool IsAuthenticated()
         {
             try

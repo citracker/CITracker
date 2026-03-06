@@ -373,7 +373,7 @@ namespace CITracker.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at MakePayment || - {JsonConvert.SerializeObject(ex)}");
+                _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
 
                 return Json(new ResponseHandler
                 {
