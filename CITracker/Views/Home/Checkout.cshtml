@@ -40,12 +40,12 @@
                 </div>
 
                 <div class="mt-4 text-sm">
-                    <div>Annual price: <span id="monthlyPrice" class="font-medium">$0</span></div>
+                    <div>Annual price: <span id="annualPrice" class="font-medium">$0</span></div>
                     <div class="mt-1">Years: <span id="selectedYears" class="font-medium">1</span></div>
                     <div class="mt-1">Subtotal: <span id="subtotal" class="font-medium">$0</span></div>
-                    <div id="discountRow" class="mt-1 text-green-600 hidden">Discount (<span id="discountPercent">0</span>%): <span id="discountAmount">-$0</span></div>
+                    <div id="discountRow" class="mt-1 text-green-600 hidden d-none">Discount (<span id="discountPercent">0</span>%): <span id="discountAmount">-$0</span></div>
                     <div class="mt-2 text-xl font-bold">Total: <span id="totalAmount">$0</span></div>
-                    <div id="savingsHint" class="mt-2 text-xs text-slate-500">Select more years to save more (2 years = 10% off; 3 years = 15% off).</div>
+                    @* <div id="savingsHint" class="mt-2 text-xs text-slate-500 d-none">Select more years to save more (2 years = 10% off; 3 years = 15% off).</div> *@
                 </div>
 
                 <div class="mt-6">
@@ -143,6 +143,7 @@
         const plan = @Html.Raw(JsonSerializer.Serialize(Model.SubscriptionPlan))
 
         
+        const annualPriceEl = document.getElementById('annualPrice');
         const selectedYearsEl = document.getElementById('selectedYears');
         const subtotalEl = document.getElementById('subtotal');
         const discountRow = document.getElementById('discountRow');
@@ -154,7 +155,7 @@
 
         // default selection
         let years = 1;
-        const discounts = { 1: 0, 2: 10, 3: 15 }; // percent
+        const discounts = { 1: 0, 2: 0, 3: 0 }; // percent
 
         function recalc() {
           const annual = parseFloat(plan.Amount || 0);
@@ -164,6 +165,7 @@
           const total = subtotal - discountAmount;
 
           selectedYearsEl.textContent = years;
+          annualPriceEl.textContent = `$${annual.toFixed(2)}`;
           subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
 
           if (discountPercent > 0) {

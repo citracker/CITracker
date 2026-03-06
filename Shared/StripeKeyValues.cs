@@ -14,5 +14,8 @@ namespace Shared
         public string BasicPriceId { get; set; }
         public string ProPriceId { get; set; }
         public string EnterprisePriceId { get; set; }
+        public string SuccessCallBack { get; set; }
+        public string FailedCallBack { get; set; }
+        public string Dashboard { get; set; }
     }
 }

@@ -262,14 +262,54 @@
         </div>
     </section>
     <!-- End:: Section-3 --><!-- Start:: Section-5 -->
-    <section class="section section-bg" id="slider">
+    <section id="slider" style="padding:40px 0">
+        <div class="container">
+
+            <div class="swiper mySwiper">
+
+                <div class="swiper-wrapper">
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-40.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-41.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-42.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-43.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-44.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-59.jpg">
+                    </div>
+
+                    <div class="swiper-slide">
+                        <img src="~/assets/images/media/media-46.jpg">
+                    </div>
+
+                </div>
+
+                <div class="swiper-pagination"></div>
+
+            </div>
+
+        </div>
+    </section>
+    @* <section class="section section-bg" id="slider">
         <div class="container text-center">
             <div class="row">
                 <div class="col-xl-12"> 
-                    <div class="card custom-card"> 
-                        @* <div class="card-header"> 
-                            <div class="card-title"> Effect Coverflow </div> 
-                        </div>  *@ 
+                    <div class="card custom-card">
                         <div class="card-body">
                             <div class="swiper swiper-overflow swiper-coverflow swiper-3d swiper-initialized swiper-horizontal swiper-pointer-events swiper-watch-progress"> 
                                 <div class="swiper-wrapper" id="swiper-wrapper-564e76b48b333c7c" aria-live="off" style="cursor: grab; transition-duration: 0ms; transform: translate3d(-1965px, 0px, 0px);">
@@ -371,7 +411,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> *@
     <!-- End:: Section-5 --><!-- Start:: Section-6 -->
     <section class="section section-bg" id="pricing">
         <div class="container text-center">
@@ -406,7 +446,7 @@
                                                         <div class="card border bg-primary border-primary pricing-card advanced reveal revealrotate">
                                                             <div class="p-3 d-block text-justified bd-b-white-2">
                                                                 <p class="fs-18 fw-medium mb-1 pe-0">@Model.Result.ElementAt(i).Name<span class="badge bg-white text-primary float-end fw-normal">Most Popular</span></p>
-                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount/(Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-20">user</span>/month</span></p>
                                                                 <p class="fs-13 mb-2">@Model.Result.ElementAt(i).Description</p>
                                                                 <p class="fs-13 mb-1">Billed annually!!!</p>
                                                             </div>
@@ -435,11 +475,11 @@
                                                                 <p class="fs-18 fw-medium mb-1">@Model.Result.ElementAt(i).Name</p>
                                                                 @if (Model.Result.ElementAt(i).Name.Equals("Enterprise"))
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">Starting from </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">Starting from </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round(Model.Result.ElementAt(i).Amount, 2).ToString("N2")</span><span class="fs-25"><span class="op-0-5 text-muted text-20">/</span> year</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
                                                                 }
                                                                 <p class="fs-13 mb-1">@Model.Result.ElementAt(i).Description</p>
                                                                 <p class="fs-13 mb-3 text-secondary">Billed annually!!!</p>
@@ -1142,6 +1182,15 @@
                                     @using (Html.BeginForm("Contact", "Home", FormMethod.Post))
                                     {
                                         @Html.AntiForgeryToken()
+
+                                        @if (!String.IsNullOrEmpty(TempData["message"]?.ToString()))
+                                        {
+                                            <div role="alert" class="p-1 rounded-lg" style="background-color:mistyrose; border-radius:10px">
+                                                <ul class="mb-1 mt-1">
+                                                    <li style="color: red"> @TempData["message"].ToString()</li>
+                                                </ul>
+                                            </div>
+                                        }
 
                                         <div class="reveal">
                                             <div class="row">

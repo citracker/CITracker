@@ -642,7 +642,6 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            //var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
             var fileName = $"/toolTemplates/{safeFileName}";
             var orgTool = new OrganizationTool
             {
