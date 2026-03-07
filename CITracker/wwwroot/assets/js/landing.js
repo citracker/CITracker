@@ -61,7 +61,7 @@
 //            let html = document.querySelector('html');
 //            html.style.setProperty('--primary-rgb', `${Math.floor(color[0])}, ${Math.floor(color[1])}, ${Math.floor(color[2])}`);
 //            /* theme color picker */
-//            localStorage.setItem('primaryRGB', `${Math.floor(color[0])}, ${Math.floor(color[1])}, ${Math.floor(color[2])}`);
+//            localStorage.setItem('landingprimaryRGB', `${Math.floor(color[0])}, ${Math.floor(color[1])}, ${Math.floor(color[2])}`);
 //            updateColors();
 //        });
 //    });
@@ -76,10 +76,10 @@
 document.getElementById("year").innerHTML = new Date().getFullYear();
 /* footer year */
 
-let mainContent;
+let landingMainContent;
 (function () {
     let html = document.querySelector('html');
-    mainContent = document.querySelector('.main-content');
+    landingMainContent = document.querySelector('.main-content');
 
     localStorageBackup();
     //switcherClick();
@@ -122,27 +122,27 @@ let mainContent;
 
 //    // primary theme
 //    let primaryColor1Var = primaryDefaultColor1Btn.addEventListener('click', () => {
-//        localStorage.setItem("primaryRGB", "58, 88, 146");
+//        localStorage.setItem("landingprimaryRGB", "58, 88, 146");
 //        html.style.setProperty('--primary-rgb', `58, 88, 146`);
 //        updateColors();
 //    })
 //    let primaryColor2Var = primaryDefaultColor2Btn.addEventListener('click', () => {
-//        localStorage.setItem("primaryRGB", "92, 144, 163");
+//        localStorage.setItem("landingprimaryRGB", "92, 144, 163");
 //        html.style.setProperty('--primary-rgb', `92, 144, 163`);
 //        updateColors();
 //    })
 //    let primaryColor3Var = primaryDefaultColor3Btn.addEventListener('click', () => {
-//        localStorage.setItem("primaryRGB", "161, 90, 223");
+//        localStorage.setItem("landingprimaryRGB", "161, 90, 223");
 //        html.style.setProperty('--primary-rgb', `161, 90, 223`);
 //        updateColors();
 //    })
 //    let primaryColor4Var = primaryDefaultColor4Btn.addEventListener('click', () => {
-//        localStorage.setItem("primaryRGB", "78, 172, 76");
+//        localStorage.setItem("landingprimaryRGB", "78, 172, 76");
 //        html.style.setProperty('--primary-rgb', `78, 172, 76`);
 //        updateColors();
 //    })
 //    let primaryColor5Var = primaryDefaultColor5Btn.addEventListener('click', () => {
-//        localStorage.setItem("primaryRGB", "223, 90, 90");
+//        localStorage.setItem("landingprimaryRGB", "223, 90, 90");
 //        html.style.setProperty('--primary-rgb', `223, 90, 90`);
 //        updateColors();
 //    })
@@ -250,20 +250,20 @@ function checkOptions() {
 }
 
 // chart colors
-let myVarVal, primaryRGB
+let landingMyVarVal, landingprimaryRGB
 function updateColors() {
     'use strict'
-    primaryRGB = getComputedStyle(document.documentElement).getPropertyValue('--primary-rgb').trim();
+    landingprimaryRGB = getComputedStyle(document.documentElement).getPropertyValue('--primary-rgb').trim();
 }
 updateColors()
 
 
 function localStorageBackup() {
-    if (localStorage.primaryRGB) {
+    if (localStorage.landingprimaryRGB) {
         if (document.querySelector('.theme-container-primary')) {
-            document.querySelector('.theme-container-primary').value = localStorage.primaryRGB;
+            document.querySelector('.theme-container-primary').value = localStorage.landingprimaryRGB;
         }
-        document.querySelector('html').style.setProperty('--primary-rgb', localStorage.primaryRGB);
+        document.querySelector('html').style.setProperty('--primary-rgb', localStorage.landingprimaryRGB);
     }
     if (localStorage.spruhalandingdarktheme) {
         let html = document.querySelector('html');

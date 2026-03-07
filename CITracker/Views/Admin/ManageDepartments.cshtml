@@ -40,7 +40,7 @@
                     </div>
                 }
             }
-            <div class="col-4">
+            <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
                         <div class="card-title"> Add a Department </div>
@@ -53,7 +53,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facilityA')" required>
-                                        <option disabled>Select a Country</option>
+                                        <option selected disabled value="0">Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -88,7 +88,7 @@
                     
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
                         <div class="card-title"> Rename a Department </div>
@@ -101,7 +101,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryR" id="countryR" onchange="onCountryChange(this, 'facilityR')" required>
-                                        <option disabled>Select a Country</option>
+                                        <option selected disabled value="0">Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -117,13 +117,13 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityR" id="facilityR" onchange="onFacilityChange(this, 'departmentR')" required>
-                                        <option disabled>Select a Facility</option>
+                                        <option selected disabled value="0">Select a Facility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Department<span style="color:red">*</span></label>
                                     <select class="form-control" name="departmentR" id="departmentR" onchange="setInputFromSelect(this, 'departmentN')" required>
-                                        <option disabled>Select a Department</option>
+                                        <option selected disabled value="0">Select a Department</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
@@ -141,7 +141,7 @@
                     }
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
                         <div class="card-title"> Delete a Department </div>
@@ -154,7 +154,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryD" id="countryD" onchange="onCountryChange(this, 'facilityD')" required>
-                                        <option disabled>Select a Country</option>
+                                        <option selected disabled value="0">Select a Country</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -170,13 +170,13 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityD" id="facilityD" onchange="onFacilityChange(this, 'departmentD')" required>
-                                        <option disabled>Select a Facility</option>
+                                        <option selected disabled value="0">Select a Facility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">Select a Department<span style="color:red">*</span></label>
                                     <select class="form-control" name="departmentD" id="departmentD" required>
-                                        <option disabled>Select a Department</option>
+                                        <option selected disabled value="0">Select a Department</option>
                                     </select>
                                 </div>
                             </div>
