@@ -36,7 +36,7 @@
                                     <option selected disabled>Select an Upload Type</option>
                                     <option value="1">Users</option>
                                     <option value="2">Operational Location</option>
-                                    <option value="3">Operationl Excellence Initiatives</option>
+                                    <option value="3">Operational Excellence Initiatives</option>
                                     <option value="4">Strategic Initiatives</option>
                                     <option value="5">Continuous Improvement Initiatives</option>
                                 </select>
@@ -306,7 +306,7 @@
         list.innerHTML = "";
         
         // Split errors by newline
-        const errors = error.split('\n');
+        const errors = error.replaceAll('\\n', '\n').split('\n');
 
         errors.forEach(err => {
             const li = document.createElement("li");

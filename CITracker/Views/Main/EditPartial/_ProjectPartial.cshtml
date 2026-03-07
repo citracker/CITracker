@@ -349,7 +349,6 @@
                 id: window.preselectedProjectId.id
             })
             .done(function (item) {
-                console.log(item)
                 const option = new Option(item.text, item.id, true, true);
                 $select.append(option).trigger('change');
                 initSelect2();
