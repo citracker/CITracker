@@ -4479,7 +4479,7 @@ namespace Datalayer.Implementations
                         IsCarryOverSavings = i.IsCarryOverSavings,
                         IsOneTimeSavings = i.IsOneTimeSavings,
                         Methodology = i.Methodology,
-                        Phase = i.Phase.ToString(),
+                        Phase = _repository.GetAsync<MethodologyPhase>(dbConnection, "select * from MethodologyPhase where Phase = @phs", new { phs = i.Phase}, CommandType.Text, dbTransaction).Result.Id.ToString(),
                         TotalExpectedRevenue = (decimal)i.TotalExpectedRevenue
                     };
                     var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
@@ -5836,8 +5836,8 @@ namespace Datalayer.Implementations
                 }
 
                 Merge(cire);
-                Merge(oere);
-                Merge(sire);
+                //Merge(oere);
+                //Merge(sire);
 
                 //}
                 //else

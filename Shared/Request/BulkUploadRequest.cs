@@ -79,7 +79,7 @@ namespace Shared.Request
         public decimal? TotalExpectedRevenue { get; set; } = 0;
         public string Currency { get; set; }
         public string Status { get; set; }
-        public int Phase { get; set; }
+        public string Phase { get; set; }
         public string Country { get; set; }
         public string Facility { get; set; }
         public string Department { get; set; }
