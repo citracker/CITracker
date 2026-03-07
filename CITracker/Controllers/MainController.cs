@@ -1,6 +1,7 @@
 ﻿using Datalayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using Shared.Request;
 using Shared.ViewModels;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace CITracker.Controllers
 {
@@ -1008,7 +1010,7 @@ namespace CITracker.Controllers
                     CarryOverProject = Request.Form["carryover"],
                     SavingsClassification = Request.Form["savingsclassification"],
                     TargetSavings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Status = Request.Form["status"],
                     OrganizationCountryId = Convert.ToInt64(Request.Form["country"]),
                     OrganizationFacilityId = Convert.ToInt64(Request.Form["facility"]),
@@ -1128,7 +1130,7 @@ namespace CITracker.Controllers
                     CarryOverProject = Request.Form["carryover"],
                     SavingsClassification = Request.Form["savingsclassification"],
                     TargetSavings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"].ToString()),
                     Status = Request.Form["status"],
                     OrganizationCountryId = Convert.ToInt64(Request.Form["country"]),
                     OrganizationFacilityId = Convert.ToInt64(Request.Form["facility"]),
@@ -1197,7 +1199,7 @@ namespace CITracker.Controllers
                     ProjectId = id,
                     OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
                     MonthYear = Request.Form["monthyear"],
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Savings = Convert.ToDecimal(Request.Form["savings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
                     DateCreated = DateTime.UtcNow
@@ -1701,7 +1703,7 @@ namespace CITracker.Controllers
                     ProjectId = pjid,
                     OrganizationId = Convert.ToInt32(Request.Form["orgid"]),
                     MonthYear = Request.Form["monthyear"],
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Savings = Convert.ToDecimal(Request.Form["savings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
                     DateCreated = DateTime.UtcNow
@@ -1911,7 +1913,7 @@ namespace CITracker.Controllers
                     EndDate = Convert.ToDateTime(Request.Form["enddate"]).Date,
                     Description = Request.Form["description"],
                     FacilitatorId = Convert.ToInt64(Request.Form["facilitator"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Percentage = Convert.ToDecimal(Request.Form["percent"]),
                     Savings = Convert.ToDecimal(Request.Form["targetsavings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
@@ -2084,7 +2086,7 @@ namespace CITracker.Controllers
                     FacilitatorId = Convert.ToInt64(Request.Form["facilitator"]),
                     Percentage = Convert.ToDecimal(Request.Form["percent"]),
                     Savings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"]
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"])
                 };
 
                 var res = _opsManager.UpdateExistingSISubProject(existingSISubProject, HttpContext.Session.GetString("UserEmail")).Result;

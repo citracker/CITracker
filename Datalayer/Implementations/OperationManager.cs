@@ -4475,7 +4475,7 @@ namespace Datalayer.Implementations
                         Title = i.Title,
                         BusinessObjectiveAlignment = i.BusinessObjectiveAlignment,
                         Certification = i.Certification,
-                        Currency = i.Currency,
+                        Currency = Utils.GetSymbol(i.Currency),
                         IsCarryOverSavings = i.IsCarryOverSavings,
                         IsOneTimeSavings = i.IsOneTimeSavings,
                         Methodology = i.Methodology,
