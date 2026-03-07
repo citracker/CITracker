@@ -895,36 +895,42 @@ namespace CITracker.Controllers
             {
                 var CIProjectSaving = new List<CIProjectSaving>();
 
-                foreach (var i in model.Hard)
+                if (model.Hard != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Hard)
                     {
-                        Id = (long)i.Id,
-                        ProjectId = model.ProjectId,
-                        Date = i.Date,
-                        SavingClassification = "Hard",
-                        SavingType = i.SavingType,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = true,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            Id = i.Id != null ? (long)i.Id : 0,
+                            ProjectId = model.ProjectId,
+                            Date = i.Date,
+                            SavingClassification = "Hard",
+                            SavingType = i.SavingType,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = true,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
-                foreach (var i in model.Soft)
+                if (model.Soft != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Soft)
                     {
-                        Id = (long)i.Id,
-                        ProjectId = model.ProjectId,
-                        Category = i.Category,
-                        SavingClassification = "Soft",
-                        SavingUnit = i.SavingUnit,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = false,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            Id = i.Id != null ? (long)i.Id : 0,
+                            ProjectId = model.ProjectId,
+                            Category = i.Category,
+                            SavingClassification = "Soft",
+                            SavingUnit = i.SavingUnit,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = false,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
                 var ci = new ContinuousImprovementDTO

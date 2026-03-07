@@ -431,14 +431,14 @@
             formData.append(`Comment[${index}].Date`, member.Date);
         });
 
-        // Validation
-        if (commentData.length === 0) {
-            displayErrorAP('Please add at least one comment.');
+        // // Validation
+        // if (commentData.length === 0) {
+        //     displayErrorAP('Please add at least one comment.');
 
-            ref.innerHTML = 'Save &amp; Next';
-            ref.disabled = false;
-            return;
-        }
+        //     ref.innerHTML = 'Save &amp; Next';
+        //     ref.disabled = false;
+        //     return;
+        // }
 
         const hasEmptyComment = commentData.some(member => !member.Comment || member.Comment.trim() === '');
         if (hasEmptyComment) {

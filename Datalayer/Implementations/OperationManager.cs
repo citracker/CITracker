@@ -3755,7 +3755,7 @@ namespace Datalayer.Implementations
             try
             {
                 //get all project savings
-                var count = await _repository.GetListAsync<CIProjectSaving>(dbConnection, "select * from CIProjectSaving WHERE ProjectId = @ProjectId", new { ci.Id }, CommandType.Text, dbTransaction);
+                var count = await _repository.GetListAsync<CIProjectSaving>(dbConnection, "select * from CIProjectSaving WHERE ProjectId = @ProjectId", new { ProjectId = ci.Id }, CommandType.Text, dbTransaction);
 
                 count = count.ToList();
 
@@ -4107,7 +4107,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Email '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Email '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                            res.Message += $"\\nEmail '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4120,7 +4120,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Email '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Email '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                            res.Message += $"\\nEmail '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4133,7 +4133,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4146,7 +4146,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4159,7 +4159,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4255,7 +4255,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Email '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Email '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
+                            res.Message += $"\\nEmail '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4268,7 +4268,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4281,7 +4281,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4294,7 +4294,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4428,7 +4428,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
+                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4441,7 +4441,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
+                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
                         continue;
                     }
 
@@ -4454,7 +4454,7 @@ namespace Datalayer.Implementations
                             res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         }
                         else
-                            res.Message += $", Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
+                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
                         continue;
                     }
 

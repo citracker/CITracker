@@ -306,7 +306,7 @@
         list.innerHTML = "";
         
         // Split errors by newline
-        const errors = error.split('\n');
+        const errors = error.replaceAll('\\n', '\n').split('\n');
 
         errors.forEach(err => {
             const li = document.createElement("li");
