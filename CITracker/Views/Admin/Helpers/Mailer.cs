@@ -100,7 +100,7 @@ namespace CITracker.Helpers
                 using (MailMessage message = new MailMessage())
                 {
                     string address = _config.Value.Username;
-                    message.From = new MailAddress(address, displayName);
+                    message.From = new MailAddress(_config.Value.From, displayName);
                     message.Subject = subject;
                     message.Body = body;
                     message.IsBodyHtml = true;
