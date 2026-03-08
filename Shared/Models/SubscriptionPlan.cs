@@ -13,6 +13,7 @@ namespace Shared.Models
         public int FreeTrialDuration { get; set; }
         public int NumberOfLicences { get; set; }
         public string Description { get; set; }
+        public string PriceId { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
     }

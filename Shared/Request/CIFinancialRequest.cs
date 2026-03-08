@@ -58,8 +58,8 @@ namespace Shared.Request
     public class CIFinancialDTO
     {
         public long ProjectId { get; set; }
-        public List<HardSavingsDTO> Hard { get; set; }
-        public List<SoftSavingsDTO> Soft { get; set; }
+        public List<HardSavingsDTO>? Hard { get; set; }
+        public List<SoftSavingsDTO>? Soft { get; set; }
         public bool OneTimeSaving { get; set; } = false;
         public bool CarryOverSaving { get; set; } = false;
         public bool IsAudited { get; set; } = false;

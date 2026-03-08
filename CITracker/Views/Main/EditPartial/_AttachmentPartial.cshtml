@@ -185,7 +185,7 @@
 
                 window.DownloadProjectFile = function (fileId) {
                     const encodedFileName = encodeURIComponent(fileId);
-                    const url1 = `/DownloadReportToolDoc?toolId=${encodedFileName}`;
+                    const url1 = `/DownloadProjectToolDoc?toolId=${encodedFileName}`;
                     window.location.href = url1;
                 };
 
@@ -293,7 +293,8 @@
                                 type="file"
                                 name="file_${tool.id}"
                                 data-tool-id="${tool.id}"
-                                onchange="uploadToolFile(this, ${tool.id}, '${tool.name}')">
+                                data-tool-name="${tool.name}"
+                                onchange="uploadToolFile(this)">
                             `;
                         }
 
@@ -315,12 +316,15 @@
             }
 
 
-            window.uploadToolFile = function (fileInput, toolId, toolName) {
+            window.uploadToolFile = function (fileInput) {
                 const file = fileInput.files[0];
                 if (!file) return;
 
                 const extension = file.name.split('.').pop().toLowerCase();
                 const previewConfig = FILE_PREVIEW_MAP[extension];
+                
+                const toolId = fileInput.dataset.toolId;
+                const toolName = fileInput.dataset.toolName;
 
                 const formData = new FormData();
                 formData.append("file", file);
@@ -377,9 +381,9 @@
         const commenting = [];
 
         document.querySelectorAll('.attBody').forEach(section => {
-            const comment = section.querySelector('textarea[name="comment"]')?.value;
-            const date = section.querySelector('input[name="date"]')?.value;
-            const id = section.querySelector('input[name="commentId"]')?.value;
+            const comment = section.querySelector('textarea[name="comment"]').value;
+            const date = section.querySelector('input[name="date"]').value;
+            const id = section.querySelector('input[name="commentId"]').value;
 
 
             if (comment && comment.trim() !== '') {

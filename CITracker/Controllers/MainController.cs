@@ -1,6 +1,7 @@
 ﻿using Datalayer.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using Shared.Request;
 using Shared.ViewModels;
 using System.Net;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace CITracker.Controllers
 {
@@ -19,6 +21,7 @@ namespace CITracker.Controllers
         private readonly ILogger<MainController> _logger;
         private readonly IOperationManager _opsManager;
         private readonly IOptions<KeyValues> _config;
+
 
         public MainController(ILogger<MainController> logger, IOptions<KeyValues> config, IOperationManager opsManager)
         {
@@ -448,34 +451,41 @@ namespace CITracker.Controllers
             {
                 var CIProjectSaving = new List<CIProjectSaving>();
 
-                foreach (var i in model.Hard)
+                if(model.Hard != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Hard)
                     {
-                        ProjectId = model.ProjectId,
-                        Date = i.Date,
-                        SavingClassification = "Hard",
-                        SavingType = i.SavingType,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = true,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            ProjectId = model.ProjectId,
+                            Date = i.Date,
+                            SavingClassification = "Hard",
+                            SavingType = i.SavingType,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = true,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
-                foreach (var i in model.Soft)
+
+                if(model.Soft != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Soft)
                     {
-                        ProjectId = model.ProjectId,
-                        Category = i.Category,
-                        SavingClassification = "Soft",
-                        SavingUnit = i.SavingUnit,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = false,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            ProjectId = model.ProjectId,
+                            Category = i.Category,
+                            SavingClassification = "Soft",
+                            SavingUnit = i.SavingUnit,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = false,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
                 var ci = new ContinuousImprovementDTO
@@ -885,36 +895,42 @@ namespace CITracker.Controllers
             {
                 var CIProjectSaving = new List<CIProjectSaving>();
 
-                foreach (var i in model.Hard)
+                if (model.Hard != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Hard)
                     {
-                        Id = (long)i.Id,
-                        ProjectId = model.ProjectId,
-                        Date = i.Date,
-                        SavingClassification = "Hard",
-                        SavingType = i.SavingType,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = true,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            Id = i.Id != null ? (long)i.Id : 0,
+                            ProjectId = model.ProjectId,
+                            Date = i.Date,
+                            SavingClassification = "Hard",
+                            SavingType = i.SavingType,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = true,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
-                foreach (var i in model.Soft)
+                if (model.Soft != null)
                 {
-                    CIProjectSaving.Add(new CIProjectSaving
+                    foreach (var i in model.Soft)
                     {
-                        Id = (long)i.Id,
-                        ProjectId = model.ProjectId,
-                        Category = i.Category,
-                        SavingClassification = "Soft",
-                        SavingUnit = i.SavingUnit,
-                        SavingValue = i.SavingValue,
-                        IsCurrency = false,
-                        CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
-                        DateCreated = DateTime.UtcNow
-                    });
+                        CIProjectSaving.Add(new CIProjectSaving
+                        {
+                            Id = i.Id != null ? (long)i.Id : 0,
+                            ProjectId = model.ProjectId,
+                            Category = i.Category,
+                            SavingClassification = "Soft",
+                            SavingUnit = i.SavingUnit,
+                            SavingValue = i.SavingValue,
+                            IsCurrency = false,
+                            CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                            DateCreated = DateTime.UtcNow
+                        });
+                    }
                 }
 
                 var ci = new ContinuousImprovementDTO
@@ -1000,7 +1016,7 @@ namespace CITracker.Controllers
                     CarryOverProject = Request.Form["carryover"],
                     SavingsClassification = Request.Form["savingsclassification"],
                     TargetSavings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Status = Request.Form["status"],
                     OrganizationCountryId = Convert.ToInt64(Request.Form["country"]),
                     OrganizationFacilityId = Convert.ToInt64(Request.Form["facility"]),
@@ -1120,7 +1136,7 @@ namespace CITracker.Controllers
                     CarryOverProject = Request.Form["carryover"],
                     SavingsClassification = Request.Form["savingsclassification"],
                     TargetSavings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"].ToString()),
                     Status = Request.Form["status"],
                     OrganizationCountryId = Convert.ToInt64(Request.Form["country"]),
                     OrganizationFacilityId = Convert.ToInt64(Request.Form["facility"]),
@@ -1189,11 +1205,16 @@ namespace CITracker.Controllers
                     ProjectId = id,
                     OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
                     MonthYear = Request.Form["monthyear"],
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Savings = Convert.ToDecimal(Request.Form["savings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
                     DateCreated = DateTime.UtcNow
                 };
+
+                if(String.IsNullOrEmpty(newOEProjectMS.MonthYear)){
+                    TempData["Message"] = "Kindly select a Month and Year.";
+                    return RedirectToAction("OEProjectDetail", "Main", new { id = id });
+                }
 
                 var res = _opsManager.CreateNewOEProjectMonthlySavings(newOEProjectMS, HttpContext.Session.GetString("UserEmail")).Result;
 
@@ -1347,7 +1368,7 @@ namespace CITracker.Controllers
 
             // Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -1400,7 +1421,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1438,7 +1459,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1476,7 +1497,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1514,7 +1535,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -1559,7 +1580,7 @@ namespace CITracker.Controllers
 
             // Target directory
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -1618,7 +1639,7 @@ namespace CITracker.Controllers
 
             // Target directory
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -1688,7 +1709,7 @@ namespace CITracker.Controllers
                     ProjectId = pjid,
                     OrganizationId = Convert.ToInt32(Request.Form["orgid"]),
                     MonthYear = Request.Form["monthyear"],
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Savings = Convert.ToDecimal(Request.Form["savings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
                     DateCreated = DateTime.UtcNow
@@ -1866,6 +1887,12 @@ namespace CITracker.Controllers
                 Initiative = _opsManager.GetAllInProgressOrganizationSI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result
             };
 
+            if (!coep.Initiative.Result.Any())
+            {
+                TempData["Message"] = "Kindly Create a Strategic Initiative Project first";
+                return RedirectToAction("CreateSIProject");
+            }
+
             return View(coep);
         }
 
@@ -1892,7 +1919,7 @@ namespace CITracker.Controllers
                     EndDate = Convert.ToDateTime(Request.Form["enddate"]).Date,
                     Description = Request.Form["description"],
                     FacilitatorId = Convert.ToInt64(Request.Form["facilitator"]),
-                    Currency = Request.Form["currency"],
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"]),
                     Percentage = Convert.ToDecimal(Request.Form["percent"]),
                     Savings = Convert.ToDecimal(Request.Form["targetsavings"]),
                     CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
@@ -2065,7 +2092,7 @@ namespace CITracker.Controllers
                     FacilitatorId = Convert.ToInt64(Request.Form["facilitator"]),
                     Percentage = Convert.ToDecimal(Request.Form["percent"]),
                     Savings = Convert.ToDecimal(Request.Form["targetsavings"]),
-                    Currency = Request.Form["currency"]
+                    Currency = HttpUtility.HtmlDecode(Request.Form["currency"])
                 };
 
                 var res = _opsManager.UpdateExistingSISubProject(existingSISubProject, HttpContext.Session.GetString("UserEmail")).Result;
@@ -2111,7 +2138,6 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<NameValueDTO>
             var data = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
             return Ok(data?.Result?.ToArray());
@@ -2197,17 +2223,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<UserCompletedProjectsDTO>
-            var res = _opsManager.GetCompletedProjectsByUser(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { name = "Alice", completed = 12 },
-                new { name = "John", completed = 18 },
-                new { name = "Michael", completed = 9 },
-                new { name = "Sarah", completed = 15 }
-            };
+            var data = _opsManager.GetCompletedProjectsByUserCI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByMethodologies")]
@@ -2222,19 +2240,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MonthlyProjectsByMethodologyDTO>
-            var res = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new[]
-            {
-                new { month = "January", dmaic = 12, gemba = 7, project = 3, jdi = 6, others = 2 },
-                new { month = "February", dmaic = 9, gemba = 10, project = 2, jdi = 6, others = 2 },
-                new { month = "March", dmaic = 15, gemba = 5, project = 4, jdi = 6, others = 2 },
-                new { month = "April", dmaic = 11, gemba = 8, project = 6, jdi = 6, others = 2 },
-                new { month = "May", dmaic = 18, gemba = 6, project = 1, jdi = 6, others = 2 },
-                new { month = "June", dmaic = 14, gemba = 9, project = 2, jdi = 6, others = 2 }
-            };
+            var data = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            return Ok(data);
+            return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByDepartment")]
@@ -2249,30 +2257,9 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var data = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
-            //List<MonthlyProjectsByDepartmentDTO>
-            var res = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new
-            {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-                datasets = new[]
-                {
-                    new {
-                        department = "IT",
-                        data = new[] { 5, 7, 3, 8, 6, 9 }
-                    },
-                    new {
-                        department = "HR",
-                        data = new[] { 2, 4, 6, 5, 3, 4 }
-                    },
-                    new {
-                        department = "Finance",
-                        data = new[] { 3, 5, 4, 7, 6, 8 }
-                    }
-                }
-            };
-
-            return Json(data);
+            return Json(data?.SingleResult);
         }
 
         [HttpGet("MonthlyProjectsByPhase")]
@@ -2287,37 +2274,26 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            //List<MonthlyProjectsByPhaseDTO>
-            var res = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
-            var data = new
-            {
-                labels = new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
-                datasets = new[]
-                {
-                    new {
-                        phase = "Define",
-                        data = new[] { 3, 5, 4, 6, 7, 8 }
-                    },
-                    new {
-                        phase = "Measure",
-                        data = new[] { 2, 3, 5, 4, 6, 7 }
-                    },
-                    new {
-                        phase = "Analyze",
-                        data = new[] { 1, 2, 3, 2, 4, 5 }
-                    },
-                    new {
-                        phase = "Improve",
-                        data = new[] { 4, 6, 5, 7, 8, 9 }
-                    },
-                    new {
-                        phase = "Control",
-                        data = new[] { 2, 1, 2, 3, 4, 3 }
-                    }
-                }
-            };
+            var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            
+            return Json(data?.SingleResult);
+        }
 
-            return Json(data);
+        [HttpGet("DashboardAnalytics")]
+        public IActionResult DashboardAnalytics()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var data = _opsManager.GetOrganizationData(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+
+            return Ok(data?.Result?.ToArray());
         }
 
 
@@ -2333,11 +2309,13 @@ namespace CITracker.Controllers
                     { "Defect Rate", "#" }
                 };
 
-            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList().ToDictionary(x => x.Category, x => x.Unit);
-
-            return org ?? defaultMap;
+            var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList();
+            
+            if (org == null || !org.Any())
+                return defaultMap;
+            
+            return org.ToDictionary(x => x.Category, x => x.Unit);
         }
-
 
         private bool IsAuthenticated()
         {

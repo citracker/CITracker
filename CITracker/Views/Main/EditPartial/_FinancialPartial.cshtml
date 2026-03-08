@@ -54,7 +54,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input pj-date-input active" name="cosdate" placeholder="Date" value="@(Model.Project.FinancialVerificationDate.ToString("yyyy-MM-dd"))" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input pj-date-input active" name="cosdate" placeholder="Date" value="@(Model.Project.FinancialVerificationDate?.ToString("yyyy-MM-dd"))" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input active lockable" name="auddate" placeholder="Audited Date" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input pj-date-input active lockable" name="auddate" placeholder="Audited Date" @(isAdminOrFacilitator == true ? "" : "readonly") readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -292,25 +292,27 @@
         const $checkbox = $('#ots');
 
         initMonthPicker($container);
-        //setDisabled('.lockable', true);
+        setDisabled('.lockable', true);
 
         /* -------------------- PROJECT DATE LOGIC -------------------- */
+        let pickers = [];
+        const dateInputs = document.querySelectorAll(".pj-date-input");
+        dateInputs.forEach(function(input) {
+            const instance = flatpickr(input, { dateFormat: "Y-m-d" });
+            pickers.push(instance);
+        });
 
-        const dateInput = document.querySelector(".pj-date-input");
-        if (dateInput) {
-            const picker = flatpickr(dateInput, { dateFormat: "Y-m-d" });
-
-            document.getElementById("cos")?.addEventListener("change", function () {
-                if (this.checked) {
-                    const date = new Date(window.AppState.CIProject.StartDate);
-                    date.setDate(date.getDate() + 1);
-                    picker.set("minDate", date);
-                } else {
-                    picker.set("minDate", null);
-                    picker.clear();
-                }
-            });
-        }
+        const picker = pickers[0];
+        document.getElementById("cos")?.addEventListener("change", function () {
+            if (this.checked) {
+                const date = new Date(window.AppState.CIProject.StartDate);
+                date.setDate(date.getDate() + 1);
+                picker.set("minDate", date);
+            } else {
+                picker.set("minDate", null);
+                picker.clear();
+            }
+        });
 
         /* -------------------- POPULATE EXISTING DATA -------------------- */
 
@@ -818,8 +820,8 @@
         formData.append(`FinancialVerificationDate`, document.querySelector('input[name="cosdate"]')?.value);
         formData.append(`FinancialReportComment`, document.querySelector('textarea[name="finrpt"]')?.value);
         formData.append(`IsAudited`, !!document.querySelector('input[name="isaud"]:checked'));
-        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
-        formData.append(`Auditor`, section.querySelector('select[name="auditmember"]'));
+        formData.append(`Auditor`, document.querySelector('select[name="auditmember"]')?.value);
+        formData.append(`AuditedDate`, document.querySelector('input[name="auddate"]')?.value);
 
         try
         {

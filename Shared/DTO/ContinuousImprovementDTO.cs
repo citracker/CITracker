@@ -33,7 +33,7 @@ namespace Shared.DTO
         public string Department { get; set; }
         public bool IsOneTimeSavings { get; set; }
         public bool IsCarryOverSavings { get; set; }
-        public DateTime FinancialVerificationDate { get; set; }
+        public DateTime? FinancialVerificationDate { get; set; }
         public string SupportingValueStream { get; set; }
         public string FinalReportUrl { get; set; }
         public string FinancialReportUrl { get; set; }

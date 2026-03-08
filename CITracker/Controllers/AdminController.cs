@@ -322,6 +322,7 @@ namespace CITracker.Controllers
 
             try
             {
+
                 var ordCty = new OrganizationCountry
                 {
                     Country = Request.Form["country"],
@@ -363,6 +364,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["country"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a country";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageOperationalLocation", "Admin");
+                }
+
                 var res = _opsManager.RenameOrganizationCountry(Convert.ToInt64(Request.Form["country"]), Request.Form["input"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -395,6 +404,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["country"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a country";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageOperationalLocation", "Admin");
+                }
+
                 var res = _opsManager.DeleteOrganizationCountry(Convert.ToInt64(Request.Form["country"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
@@ -427,6 +444,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["country"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a Country";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageFacilities", "Admin");
+                }
+
                 var ordFac = new OrganizationFacility
                 {
                     Facility = Request.Form["facility"],
@@ -469,6 +494,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["facilityR"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a facility";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageFacilities", "Admin");
+                }
+
                 var res = _opsManager.RenameOrganizationFacility(Convert.ToInt64(Request.Form["facilityR"]), Request.Form["facilityN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -501,6 +534,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if(Convert.ToInt64(Request.Form["facilityD"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a facility";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageFacilities", "Admin");
+                }
+
                 var res = _opsManager.DeleteOrganizationFacility(Convert.ToInt64(Request.Form["facilityD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
@@ -533,6 +574,22 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["country"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a country";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageDepartments", "Admin");
+                }
+
+                if (Convert.ToInt64(Request.Form["facilityA"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a facility";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageDepartments", "Admin");
+                }
+
                 var ordDep = new OrganizationDepartment
                 {
                     Department = Request.Form["department"],
@@ -576,6 +633,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["departmentR"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a department";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageDepartments", "Admin");
+                }
+
                 var res = _opsManager.RenameOrganizationDepartment(Convert.ToInt64(Request.Form["departmentR"]), Request.Form["departmentN"], HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
@@ -623,7 +688,7 @@ namespace CITracker.Controllers
 
             // 3️⃣ Target directory (wwwroot/uploads/tools)
             var uploadRoot = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{HttpContext.Session.GetString("OrganizationId")}",
@@ -642,7 +707,6 @@ namespace CITracker.Controllers
             }
 
             // 5️⃣ Return relative URL (never physical path)
-            //var fileUrl = $"/uploads/Org-{HttpContext.Session.GetString("OrganizationId")}/toolTemplates/{safeFileName}";
             var fileName = $"/toolTemplates/{safeFileName}";
             var orgTool = new OrganizationTool
             {
@@ -685,7 +749,7 @@ namespace CITracker.Controllers
             fileName = fileName.TrimStart('/', '\\');
 
             var filePath = Path.Combine(
-                Directory.GetCurrentDirectory(),
+                Environment.GetEnvironmentVariable("HOME"),
                 "SecureUploads",
                 "uploads",
                 $"Org-{orgId}",
@@ -716,6 +780,14 @@ namespace CITracker.Controllers
 
             try
             {
+                if (Convert.ToInt64(Request.Form["departmentD"]) == 0)
+                {
+                    TempData["Message"] = "Kindly Select a department";
+                    TempData["StatusCode"] = (int)HttpStatusCode.ExpectationFailed;
+
+                    return RedirectToAction("ManageDepartments", "Admin");
+                }
+
                 var res = _opsManager.DeleteOrganizationDepartment(Convert.ToInt64(Request.Form["departmentD"]), HttpContext.Session.GetString("UserEmail"), Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
 
                 TempData["Message"] = res.Message;
@@ -1120,11 +1192,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1197,11 +1269,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1265,11 +1337,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1314,7 +1386,7 @@ namespace CITracker.Controllers
                     Country = r.GetValueOrDefault("Country")?.Trim(),
                     Facility = r.GetValueOrDefault("Facility")?.Trim(),
                     Department = r.GetValueOrDefault("Department")?.Trim(),
-                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()
+                    Status = r.GetValueOrDefault("Status")?.Trim().ToUpper()                    
                 }).ToList();
 
                 // 2. Validate
@@ -1326,11 +1398,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }
@@ -1380,7 +1452,7 @@ namespace CITracker.Controllers
                     Currency = r.GetValueOrDefault("Currency")?.Trim(),
                     IsCarryOverSavings = r.GetValueOrDefault("IsCarryOverSavings?")?.Trim().ToLower() == "yes" ? true : false,
                     IsOneTimeSavings = r.GetValueOrDefault("IsOneTimeSavings?")?.Trim().ToLower() == "yes" ? true : false,
-                    Phase = Convert.ToInt32(r.GetValueOrDefault("Phase")?.Trim()),
+                    Phase = r.GetValueOrDefault("Phase")?.Trim(),
                     SupportingValueStream = r.GetValueOrDefault("SupportingValueStream")?.Trim(),
                     TotalExpectedRevenue = Convert.ToDecimal(r.GetValueOrDefault("TotalExpectedRevenue")?.Trim())
                 }).ToList();
@@ -1394,11 +1466,11 @@ namespace CITracker.Controllers
 
                 if (failures.Any())
                 {
-                    var errors = failures.SelectMany(x => x.Result.Errors).Select(x => x.ErrorMessage).ToList();
+                    var errors = failures.SelectMany(x => x.Result.Errors.Select(e => $"Row {x.Index + 1}: {e.ErrorMessage}")).ToList();
 
                     return new ResponseHandler
                     {
-                        Message = string.Join(", ", errors),
+                        Message = string.Join("\n", errors),
                         StatusCode = (int)HttpStatusCode.ExpectationFailed
                     };
                 }

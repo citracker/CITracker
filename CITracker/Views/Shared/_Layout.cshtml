@@ -26,42 +26,44 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <!-- Color Picker Css -->
     <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
-    <link rel="stylesheet" href="~/assets/libs/@@simonwep/pickr/themes/nano.min.css">
+    <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
     <!-- Choices Css -->
     <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
     <style>
-        .swiper,
-        .swiper-wrapper,
-        .swiper-slide {
-            pointer-events: auto;
-            touch-action: pan-x !important;
+        #slider {
+            padding: 80px 0;
         }
 
-        .swiper-slide {
-            width: 580px;
-        }
-
-        @@media (min-width: 768px) {
-            .swiper-slide
-            {
-                width: 360px;
-            }
-        }
-
-        @@media (min-width: 1200px) {
-            .swiper-slide
-            {
-                width: 420px;
-            }
-        }
-
-        .swiper-slide img {
+        .swiper {
             width: 100%;
-            height: 150%;
-            object-fit: cover; /* or 'contain' */
-            border-radius: 12px; /* optional */
+            height: 420px;
         }
 
+        /* MAKE SLIDES BIGGER */
+        .swiper-slide {
+            width: 520px !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            /* IMAGE SIZE */
+            .swiper-slide img {
+                width: 100%;
+                height: 350px;
+                object-fit: cover;
+                border-radius: 14px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            }
+
+        /* optional: make center slide slightly bigger */
+        .swiper-slide-active img {
+            transform: scale(1.05);
+        }
+
+        .swiper-pagination-bullet {
+            background: white;
+        }
     </style>
 </head>
 <body class="landing-body">    
@@ -76,7 +78,8 @@
                     <div class="header-element">
                         <div class="horizontal-logo">
                             <a href="@Url.Action("Index", "Home")" class="header-logo">
-                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo"> <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
+                                <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo"> 
+                                <img src="~/assets/images/brand-logos/toggle-dark.png" alt="logo" class="toggle-dark">
                             </a>
                         </div>
                     </div>
@@ -279,42 +282,42 @@
     </div>
     <div class="scrollToTop" style="display: flex;"> <span class="arrow"><i class="ri-arrow-up-s-fill fs-20"></i></span> </div>
     <div id="responsive-overlay"></div>
-    <script src="~/assets/libs/@@popperjs/core/umd/popper.min.js"></script>
+    <script src="~/assets/libs/popperjs/core/umd/popper.min.js"></script>
     <script src="~/assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="~/assets/libs/@@simonwep/pickr/pickr.es5.min.js"></script>
+    <script src="~/assets/js/custom-switcher.min.js"></script>
+    <script src="~/assets/js/defaultmenu.min.js"></script>
+    <script src="~/assets/libs/simonwep/pickr/pickr.es5.min.js"></script>
     <script src="~/assets/js/landing.js"></script>
 
     <script>
         window.addEventListener('load', () => {
-            new Swiper('.swiper', {
-                effect: 'coverflow',
+            const swiper = new Swiper(".mySwiper", {
+
+                effect: "coverflow",
                 grabCursor: true,
                 centeredSlides: true,
-                slidesPerView: 'auto',
+                slidesPerView: "auto",
                 loop: true,
 
-                autoplay: {
-                    delay: 2500,              // time between slides (ms)
-                    disableOnInteraction: false, // IMPORTANT
-                    pauseOnMouseEnter: true   // optional
-                },
-
                 coverflowEffect: {
-                    rotate: 50,
+                    rotate: 35,
                     stretch: 0,
-                    depth: 100,
+                    depth: 180,
                     modifier: 1,
                     slideShadows: true
                 },
 
                 pagination: {
-                    el: '.swiper-pagination',
+                    el: ".swiper-pagination",
                     clickable: true
                 },
 
-                observer: true,
-                observeParents: true
+                autoplay:{
+                    delay:3500,
+                    disableOnInteraction:false
+                }
+
             });
         });
 

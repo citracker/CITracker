@@ -171,8 +171,8 @@
                                                         <label for="targetsavings" class="form-label">Target Savings<span style="color:red">*</span></label>
                                                         <div class="input-group">
                                                             <input type="text" name="targetsavings" id="targetsavings" class="form-control" placeholder="Enter saving amount" value="@Model.Projects.SingleResult.TargetSavings.ToString("N2")" oninput="formatNumberRealTime(this)" onpaste="return false" inputmode="decimal" @(isAdminOrFacilitator == true ? "" : "readonly") required>
-                                                            <button id="currencyBtn" class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">@Model.Projects.SingleResult.Currency</button>
-                                                            <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto;" data-popper-placement="bottom-end">
+                                                            <button id="currencyBtn" class="btn btn-outline-primary" type="button">@Model.Projects.SingleResult.Currency</button>
+                                                            @* <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px); min-width:auto;" data-popper-placement="bottom-end">
                                                                 @if (isAdminOrFacilitator)
                                                                 {                                                                    
                                                                     <li><a class="dropdown-item" data-value="₦" href="#">&#8358;</a></li>
@@ -181,7 +181,7 @@
                                                                     <li><a class="dropdown-item" data-value="$" href="#">&#36;</a></li>
                                                                     <li><a class="dropdown-item" data-value="¥" href="#">&#165;</a></li>
                                                                 }
-                                                            </ul>
+                                                            </ul> *@
                                                         </div>
                                                         <input type="hidden" name="currency" id="selectedCurrency" value="@Model.Projects.SingleResult.Currency">
                                                     </div>
@@ -257,6 +257,15 @@
                             @Html.AntiForgeryToken()
                             <div class="card-body">
                                 <div class="row gy-4">
+                                    @if (Model.Message.Length > 5)
+                                    {
+                                        if (!Model.Message.ToLower().Contains("success"))
+                                        {
+                                            <div class="alert alert-danger" role="alert">
+                                                @Model.Message
+                                            </div>
+                                        }
+                                    }
 
                                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
                                         <label for="input-text" class="form-label">Choose Month of Year<span style="color:red">*</span></label>
@@ -273,16 +282,16 @@
                                         <label for="savings" class="form-label">Savings<span style="color:red">*</span></label>
                                         <div class="input-group">
                                             <input type="text" name="savings" id="savings" class="form-control" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false" required>
-                                            <button class="btn btn-outline-primary dropdown-toggle show" type="button" data-bs-toggle="dropdown" aria-expanded="true">&#36;</button>
-                                            <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
+                                            <button class="btn btn-outline-primary" type="button">@Model.Projects.SingleResult.Currency</button>
+                                            @* <ul class="dropdown-menu dropdown-menu-end" style="position: absolute; inset: 0px 0px auto auto; margin: 0px; transform: translate(0px, 41px);" data-popper-placement="bottom-end">
                                                 <li><a class="dropdown-item currency-item" data-value="₦" href="#">&#8358;</a></li>
                                                 <li><a class="dropdown-item currency-item" data-value="€" href="#">&#8364;</a></li>
                                                 <li><a class="dropdown-item currency-item" data-value="£" href="#">&#163;</a></li>
                                                 <li><a class="dropdown-item currency-item" data-value="$" href="#">&#36;</a></li>
                                                 <li><a class="dropdown-item currency-item" data-value="¥" href="#">&#165;</a></li>
-                                            </ul>
+                                            </ul> *@
                                         </div>
-                                        <input type="hidden" name="currency" id="selectedCurrency" value="&#36;">
+                                        <input type="hidden" name="currency" id="selectedCurrency" value="@Model.Projects.SingleResult.Currency">
                                     </div>
                                 </div>
                             </div>

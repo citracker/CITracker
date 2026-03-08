@@ -44,7 +44,7 @@ namespace Datalayer.Implementations
                 dbConnection.Open();
                 using var dbTransaction = dbConnection.BeginTransaction();
                 var resi = await _repository.GetAsync<CIUserDTO>(dbConnection,
-                    "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, b.TenantId as OrganizationTenantId, b.Domain as OrganizationDomain, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where EmailAddress = @em", new
+                    "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, b.TenantId as OrganizationTenantId, b.Domain as OrganizationDomain, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where a.EmailAddress = @em", new
                     {
                         em = email
                     }, CommandType.Text, dbTransaction);
@@ -88,6 +88,50 @@ namespace Datalayer.Implementations
             finally
             {
                 dbConnection.Close();
+            }
+        }
+
+        public async Task<ResponseHandler<Organization>> GetOrganizationByTenant(string tenantId)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+            try
+            {
+                var resi = await _repository.GetAsync<Organization>(dbConnection,
+                    "SELECT * from Organization where TenantId = @tid", new
+                    {
+                        tid = tenantId
+                    }, CommandType.Text);
+
+
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<Organization>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<Organization>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationByTenant)} - {JsonConvert.SerializeObject(ex)}");
+
+                return await Task.FromResult(new ResponseHandler<Organization>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
             }
         }
 

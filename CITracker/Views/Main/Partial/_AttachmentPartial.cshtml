@@ -244,7 +244,8 @@
                             type="file"
                             name="file_${tool.id}"
                             data-tool-id="${tool.id}"
-                            onchange="uploadToolFile(this, ${tool.id}, ${tool.name})">
+                            data-tool-name="${tool.name}"
+                            onchange="uploadToolFile(this)">
                         `;
                     }
 
@@ -265,12 +266,16 @@
             });
         }
 
-        window.uploadToolFile = function (fileInput, toolId, toolName) {
+        window.uploadToolFile = function (fileInput) {
             const file = fileInput.files[0];
             if (!file) return;
 
             const extension = file.name.split('.').pop().toLowerCase();
             const previewConfig = FILE_PREVIEW_MAP[extension];
+            
+            
+            const toolId = fileInput.dataset.toolId;
+            const toolName = fileInput.dataset.toolName;
 
             const formData = new FormData();
             formData.append("file", file);
@@ -353,8 +358,8 @@
         const commenting = [];
 
         document.querySelectorAll('.attBody').forEach(section => {
-            const comment = section.querySelector('textarea[name="comment"]')?.value;
-            const date = section.querySelector('input[name="date"]')?.value;
+            const comment = section.querySelector('textarea[name="comment"]').value;
+            const date = section.querySelector('input[name="date"]').value;
 
 
             if (comment && comment.trim() !== '') {
@@ -426,14 +431,14 @@
             formData.append(`Comment[${index}].Date`, member.Date);
         });
 
-        // Validation
-        if (commentData.length === 0) {
-            displayErrorAP('Please add at least one comment.');
+        // // Validation
+        // if (commentData.length === 0) {
+        //     displayErrorAP('Please add at least one comment.');
 
-            ref.innerHTML = 'Save &amp; Next';
-            ref.disabled = false;
-            return;
-        }
+        //     ref.innerHTML = 'Save &amp; Next';
+        //     ref.disabled = false;
+        //     return;
+        // }
 
         const hasEmptyComment = commentData.some(member => !member.Comment || member.Comment.trim() === '');
         if (hasEmptyComment) {
