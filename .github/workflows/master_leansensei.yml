@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    environment: Production
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -25,6 +26,17 @@ jobs:
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
+
+      - name: Replace variables in appsettings.Production.json
+        uses: im-open/variable-substitution@v2.1.0
+        with:
+          files: '**/appsettings.Production.json'
+        env:
+          # Map GitHub secrets to JSON paths using dot notation
+          AppSettings.SQLDBConnection: ${{ secrets.PRODUCTION_DB_CONNECTION }}
+          AppSettings.Password: ${{ secrets.EMAIL_PASSWORD }}
+          Stripe.SecretKey: ${{ secrets.SECRET_KEY }}
+          Stripe.WebhookSecret: ${{ secrets.WEBHOOK_SECRET }}
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
@@ -55,3 +67,4 @@ jobs:
           package: .
 
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_687AE3FF8C3A4936B9F00053240294A8 }}
+
