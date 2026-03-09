@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Staging-CITracker
 
 on:
@@ -13,7 +10,7 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -26,16 +23,57 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      # DEBUG: Find the file
+      - name: Find appsettings.Staging.json
+        run: |
+          Write-Host "Current directory: $(Get-Location)"
+          Write-Host "Files in current directory:"
+          Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | ForEach-Object { 
+            Write-Host "Found: $($_.FullName)" 
+          }
+        shell: pwsh
+
+      # DEBUG: Show original content
+      - name: Show original content
+        run: |
+          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          if ($file) {
+            Write-Host "Content of $($file.FullName):"
+            Get-Content $file.FullName
+          } else {
+            Write-Host "File not found!"
+          }
+        shell: pwsh
+
+      # Substitute variables
       - name: Replace variables in appsettings.Staging.json
-        uses: im-open/variable-substitution@v2.1.0  # Updated fork of microsoft/variable-substitution
+        uses: im-open/variable-substitution@v2.1.0
         with:
           files: '**/appsettings.Staging.json'
         env:
-          # Map GitHub secrets to JSON paths using dot notation
           AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
+
+      # DEBUG: Show modified content
+      - name: Show modified content
+        run: |
+          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          if ($file) {
+            Write-Host "Content after substitution in $($file.FullName):"
+            Get-Content $file.FullName
+          } else {
+            Write-Host "File not found!"
+          }
+        shell: pwsh
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+
+      # Verify file was copied to publish directory
+      - name: Verify file in publish directory
+        run: |
+          Write-Host "Checking publish directory:"
+          Get-ChildItem -Path "${{env.DOTNET_ROOT}}/myapp" -Recurse -Filter "*.json"
+        shell: pwsh
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -47,8 +85,8 @@ jobs:
     runs-on: windows-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
@@ -56,6 +94,23 @@ jobs:
         with:
           name: .net-app
       
+      - name: Verify appsettings in artifact
+        run: |
+          Write-Host "Files in downloaded artifact:"
+          Get-ChildItem -Recurse -Filter "*.json"
+          
+          if (Test-Path "appsettings.Staging.json") {
+            Write-Host "appsettings.Staging.json found in root:"
+            Get-Content "appsettings.Staging.json"
+          } else {
+            Write-Host "Looking for appsettings.Staging.json in subdirectories..."
+            Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | ForEach-Object {
+              Write-Host "Found: $($_.FullName)"
+              Get-Content $_.FullName
+            }
+          }
+        shell: pwsh
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -70,8 +125,3 @@ jobs:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
-
-          
-
-
-
