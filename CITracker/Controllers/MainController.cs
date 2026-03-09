@@ -1,9 +1,7 @@
-﻿using Datalayer.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+﻿using CITracker.Helpers;
+using Datalayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
@@ -11,7 +9,6 @@ using Shared.Models;
 using Shared.Request;
 using Shared.ViewModels;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Web;
 
 namespace CITracker.Controllers
@@ -21,13 +18,15 @@ namespace CITracker.Controllers
         private readonly ILogger<MainController> _logger;
         private readonly IOperationManager _opsManager;
         private readonly IOptions<KeyValues> _config;
+        private readonly Mailer _mail;
 
 
-        public MainController(ILogger<MainController> logger, IOptions<KeyValues> config, IOperationManager opsManager)
+        public MainController(ILogger<MainController> logger, IOptions<KeyValues> config, IOperationManager opsManager, Mailer mail)
         {
             _opsManager = opsManager;
             _logger = logger;
             _config = config;
+            _mail = mail;
         }
 
 
@@ -614,7 +613,7 @@ namespace CITracker.Controllers
 
         [HttpPost("UpdateCIProject")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCIProject(CIRequest model)
+        public async Task<IActionResult> UpdateCIProject(CIRequest model)
         {
             if (!IsAuthenticated())
             {
@@ -667,7 +666,14 @@ namespace CITracker.Controllers
 
                 TempData["Message"] = res.Message;
                 if (res.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    //get list of emails who should all be notified
+                    var emails = await _opsManager.GetNotifiedUsers(model.Id);
+                    var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
+                    ProjectUpdateNotification("CI", $"An update was made to the Continuous Initiative project titled {model.Title}", model.Title, usr.Name, emails);
+
                     return Ok(res.SingleResult);
+                }
                 else
                     return StatusCode(StatusCodes.Status417ExpectationFailed, res.SingleResult);
             }
@@ -681,7 +687,7 @@ namespace CITracker.Controllers
 
         [HttpPost("UpdateCIProjectTeam")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCIProjectTeam(CITeamRequest model)
+        public async Task<IActionResult> UpdateCIProjectTeam(CITeamRequest model)
         {
             if (!IsAuthenticated())
             {
@@ -727,7 +733,15 @@ namespace CITracker.Controllers
                 TempData["Message"] = res.Message;
 
                 if (res.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    //get list of emails who should all be notified
+                    var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
+                    var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
+                    var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
+                    ProjectUpdateNotification("CI", $"An update was made to the team members list of the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    
                     return Ok(res);
+                }
                 else
                     return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
@@ -741,7 +755,7 @@ namespace CITracker.Controllers
 
         [HttpPost("UpdateCIProjectTool")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCIProjectTool(CIToolRequest model)
+        public async Task<IActionResult> UpdateCIProjectTool(CIToolRequest model)
         {
             if (!IsAuthenticated())
             {
@@ -788,7 +802,15 @@ namespace CITracker.Controllers
 
                 TempData["Message"] = res.Message;
                 if (res.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    //get list of emails who should all be notified
+                    var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
+                    var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
+                    var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
+                    ProjectUpdateNotification("CI", $"An update was made to the project tool list for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+
                     return Ok(res);
+                }
                 else
                     return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
@@ -802,7 +824,7 @@ namespace CITracker.Controllers
 
         [HttpPost("UpdateCIProjectComment")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCIProjectComment(CICommentDTO model)
+        public async Task<IActionResult> UpdateCIProjectComment(CICommentDTO model)
         {
             if (!IsAuthenticated())
             {
@@ -853,7 +875,15 @@ namespace CITracker.Controllers
                 TempData["Message"] = res.Message;
 
                 if (res.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    //get list of emails who should all be notified
+                    var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
+                    var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
+                    var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
+                    ProjectUpdateNotification("CI", $"Comments were added to the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+
                     return Ok(res);
+                }
                 else
                     return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
@@ -867,7 +897,7 @@ namespace CITracker.Controllers
 
         [HttpPost("UpdateCIProjectFinancial")]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateCIProjectFinancial(CIFinancialDTO model)
+        public async Task<IActionResult> UpdateCIProjectFinancial(CIFinancialDTO model)
         {
             if (!IsAuthenticated())
             {
@@ -950,7 +980,15 @@ namespace CITracker.Controllers
                 TempData["Message"] = res.Message;
 
                 if (res.StatusCode == (int)HttpStatusCode.OK)
+                {
+                    //get list of emails who should all be notified
+                    var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
+                    var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
+                    var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
+                    ProjectUpdateNotification("CI", $"An update was made to the Financial Verification section for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+
                     return Ok(res);
+                }
                 else
                     return StatusCode(StatusCodes.Status417ExpectationFailed, res);
             }
@@ -2296,7 +2334,28 @@ namespace CITracker.Controllers
             return Ok(data?.Result?.ToArray());
         }
 
-
+        private async Task ProjectUpdateNotification(string type, string update, string projectName, string updaterName, List<string> emails)
+        {
+            try
+            {
+                switch (type)
+                {
+                    case "CI":
+                        var org = new ProjectUpdateNotificationDTO
+                        {
+                            ProjectName = projectName,
+                            Update = update,
+                            UpdateAgent = updaterName
+                        };
+                        _mail.sendEmail(emails, "CITracker Project Update", "CITracker", _mail.PopulateProjectUpdateBody(org), null, true);
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(ProjectUpdateNotification)} - {JsonConvert.SerializeObject(ex)}");
+            }
+        }
 
         private Dictionary<string, string> GetOrganizationSoftSavingCategory()
         {
