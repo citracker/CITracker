@@ -26,6 +26,14 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      - name: Replace variables in appsettings.Staging.json
+        uses: im-open/variable-substitution@v2.1.0  # Updated fork of microsoft/variable-substitution
+        with:
+          files: '**/appsettings.Staging.json'
+        env:
+          # Map GitHub secrets to JSON paths using dot notation
+          AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
+
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
@@ -64,5 +72,6 @@ jobs:
           package: .
 
           
+
 
 
