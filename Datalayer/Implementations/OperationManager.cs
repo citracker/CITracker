@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Datalayer.Interfaces;
 using DataRepository;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Caching.Memory;
@@ -1870,6 +1871,44 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<StrategicInitiative>> GetSIProject(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetAsync<StrategicInitiative>(dbConnection,
+                "SELECT * FROM StrategicInitiative where Id = @pid", new { pid = projectId }, CommandType.Text);
+
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<StrategicInitiative>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<StrategicInitiative>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetSIProject)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<StrategicInitiative>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler> UpdateExistingSIProject(StrategicInitiative si, string adminEmail)
         {
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
@@ -3308,6 +3347,31 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<List<string>> GetNotifiedUsers(long projectId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetListAsync<TeamMembersDTO>(dbConnection,
+                "select b.EmailAddress from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid and a.SendNotification = 1", new { pid = projectId }, CommandType.Text);
+
+                if (resi.Any())
+                {
+                    return resi.Select(t => t.EmailAddress).ToList();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetNotifiedUsers)} - {JsonConvert.SerializeObject(ex)}");
+                return null;
+            }
+        }
+
         public async Task<List<CIProjectToolDTO>> GetCIProjectTool(long projectId)
         {
             try
@@ -4066,6 +4130,20 @@ namespace Datalayer.Implementations
             try
             {
                 return await _repository.GetAsync<CIUser>(conn, "select * from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = email, orgId }, CommandType.Text, tran);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public async Task<CIUser> GetUser(long usrId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                return await _repository.GetAsync<CIUser>(dbConnection, "select * from CIUser where Id = @uid", new { uid = usrId }, CommandType.Text);
             }
             catch (Exception ex)
             {
