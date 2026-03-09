@@ -9,6 +9,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    environment: Staging
     permissions:
       contents: read
 
@@ -42,6 +43,20 @@ jobs:
             Get-Content $file.FullName
           } else {
             Write-Host "File not found!"
+          }
+        shell: pwsh
+
+        # DEBUG: Verify secret is accessible
+      - name: Verify secret accessibility
+        run: |
+          if ("${{ secrets.STAGING_DB_CONNECTION }}" -eq "") {
+            Write-Host "❌ SECRET IS EMPTY - Environment not linked correctly!"
+            Write-Host "Check that:"
+            Write-Host "  1. Job has 'environment: Staging' set"
+            Write-Host "  2. Environment name matches exactly (case-sensitive)"
+            Write-Host "  3. Secret exists in that environment"
+          } else {
+            Write-Host "✅ Secret is accessible (value masked)"
           }
         shell: pwsh
 
@@ -125,3 +140,4 @@ jobs:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
+
