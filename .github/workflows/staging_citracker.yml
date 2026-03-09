@@ -62,34 +62,31 @@ jobs:
           # Map GitHub secrets to JSON paths using dot notation
           AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
 
-      # DEBUG: Show appsettings file AFTER replacement (with secret masked)
-      - name: DEBUG - Show modified appsettings.Staging.json content (AFTER replacement)
+      # DEBUG: Show appsettings file AFTER replacement (UNMASKED - FULL SECRET VISIBLE)
+      - name: DEBUG - Show modified appsettings.Staging.json content (AFTER replacement - UNMASKED)
         run: |
           Write-Host "========================================="
           Write-Host "DEBUG: Modified appsettings.Staging.json content (AFTER replacement)"
           Write-Host "========================================="
+          Write-Host "⚠️  WARNING: FULL SECRET WILL BE VISIBLE BELOW ⚠️"
+          Write-Host "========================================="
           $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
           if ($file) {
             Write-Host "File: $($file.FullName)"
-            Write-Host "Content (with secret masked):"
+            Write-Host "Content (FULL UNMASKED SECRET):"
             $content = Get-Content $file.FullName -Raw
+            Write-Host $content
             
-            # Mask the actual secret value for security in logs
+            # Extract and display just the connection string separately
             if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
               $originalValue = $matches[1]
-              $maskedValue = $originalValue.Substring(0, [Math]::Min(10, $originalValue.Length)) + "...[MASKED]"
-              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', "`"SQLDBConnection`": `"$maskedValue`""
-              Write-Host $maskedContent
-              
-              # Also show just the length to confirm it's populated
               Write-Host ""
-              Write-Host "Connection String Info:"
-              Write-Host "  - Length: $($originalValue.Length) characters"
-              Write-Host "  - First 10 chars: $($originalValue.Substring(0, [Math]::Min(10, $originalValue.Length)))...[MASKED]"
-              Write-Host "  - Contains 'Password=': $($originalValue.Contains('Password='))"
-            } else {
-              Write-Host "WARNING: SQLDBConnection key not found or empty!"
-              Write-Host $content
+              Write-Host "========================================="
+              Write-Host "FULL CONNECTION STRING VALUE:"
+              Write-Host "========================================="
+              Write-Host $originalValue
+              Write-Host "========================================="
+              Write-Host "Length: $($originalValue.Length) characters"
             }
           } else {
             Write-Host "ERROR: appsettings.Staging.json not found after replacement!"
@@ -97,28 +94,32 @@ jobs:
           Write-Host "========================================="
         shell: pwsh
 
-      # DEBUG: Verify secret accessibility
-      - name: DEBUG - Verify secret is accessible
+      # DEBUG: Verify secret accessibility (UNMASKED)
+      - name: DEBUG - Verify secret is accessible (UNMASKED)
         run: |
           Write-Host "========================================="
           Write-Host "DEBUG: Checking secret accessibility"
           Write-Host "========================================="
-          if ("${{ secrets.STAGING_DB_CONNECTION }}" -eq "") {
+          Write-Host "⚠️  WARNING: FULL SECRET WILL BE VISIBLE BELOW ⚠️"
+          Write-Host "========================================="
+          $secretValue = "${{ secrets.STAGING_DB_CONNECTION }}"
+          if ([string]::IsNullOrEmpty($secretValue)) {
             Write-Host "❌ ERROR: STAGING_DB_CONNECTION secret is EMPTY or not accessible!"
             Write-Host "Check that:"
             Write-Host "  1. The secret exists in GitHub (Environment: Staging)"
             Write-Host "  2. The job has 'environment: Staging' set"
             Write-Host "  3. The secret name matches exactly: STAGING_DB_CONNECTION"
           } else {
-            $secretLength = "${{ secrets.STAGING_DB_CONNECTION }}".Length
             Write-Host "✅ SUCCESS: STAGING_DB_CONNECTION secret is accessible"
-            Write-Host "   Secret length: $secretLength characters"
-            Write-Host "   Secret starts with: $($env:STAGING_DB_CONNECTION_PREVIEW)...[MASKED]"
+            Write-Host "========================================="
+            Write-Host "FULL SECRET VALUE FROM GITHUB:"
+            Write-Host "========================================="
+            Write-Host $secretValue
+            Write-Host "========================================="
+            Write-Host "Secret length: $($secretValue.Length) characters"
           }
           Write-Host "========================================="
         shell: pwsh
-        env:
-          STAGING_DB_CONNECTION_PREVIEW: ${{ secrets.STAGING_DB_CONNECTION != '' && secrets.STAGING_DB_CONNECTION.Substring(0, [Math]::Min(10, secrets.STAGING_DB_CONNECTION.Length)) || 'EMPTY' }}
 
       # DEBUG: Check the file after dotnet publish
       - name: DEBUG - Check appsettings in publish directory
@@ -144,26 +145,30 @@ jobs:
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
-      # DEBUG: Verify the file was published correctly
-      - name: DEBUG - Verify published appsettings.Staging.json
+      # DEBUG: Verify the file was published correctly (UNMASKED)
+      - name: DEBUG - Verify published appsettings.Staging.json (UNMASKED)
         run: |
           Write-Host "========================================="
           Write-Host "DEBUG: Verifying published appsettings.Staging.json"
+          Write-Host "========================================="
+          Write-Host "⚠️  WARNING: FULL SECRET WILL BE VISIBLE BELOW ⚠️"
           Write-Host "========================================="
           $publishedFile = "${{env.DOTNET_ROOT}}/myapp/appsettings.Staging.json"
           
           if (Test-Path $publishedFile) {
             Write-Host "✅ Published file exists at: $publishedFile"
             $content = Get-Content $publishedFile -Raw
+            Write-Host "Published content (FULL UNMASKED):"
+            Write-Host $content
             
-            # Mask the secret
             if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
-              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED-IN-PUBLISH***"'
-              Write-Host "Published content (masked):"
-              Write-Host $maskedContent
-            } else {
-              Write-Host "WARNING: SQLDBConnection not found in published file!"
-              Write-Host $content
+              $originalValue = $matches[1]
+              Write-Host ""
+              Write-Host "========================================="
+              Write-Host "FULL CONNECTION STRING IN PUBLISHED FILE:"
+              Write-Host "========================================="
+              Write-Host $originalValue
+              Write-Host "========================================="
             }
           } else {
             Write-Host "❌ ERROR: Published file not found at: $publishedFile"
@@ -193,11 +198,13 @@ jobs:
         with:
           name: .net-app
       
-      # DEBUG: Verify appsettings in downloaded artifact
-      - name: DEBUG - Check appsettings in downloaded artifact
+      # DEBUG: Verify appsettings in downloaded artifact (UNMASKED)
+      - name: DEBUG - Check appsettings in downloaded artifact (UNMASKED)
         run: |
           Write-Host "========================================="
           Write-Host "DEBUG: Checking appsettings in downloaded artifact"
+          Write-Host "========================================="
+          Write-Host "⚠️  WARNING: FULL SECRET WILL BE VISIBLE BELOW ⚠️"
           Write-Host "========================================="
           Write-Host "Current directory: $(Get-Location)"
           Write-Host "Files in root:"
@@ -210,15 +217,18 @@ jobs:
           if ($file) {
             Write-Host "✅ Found at: $($file.FullName)"
             $content = Get-Content $file.FullName -Raw
+            Write-Host "Artifact content (FULL UNMASKED):"
+            Write-Host $content
             
-            # Mask the secret
             if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
-              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED-IN-ARTIFACT***"'
-              Write-Host "Artifact content (masked):"
-              Write-Host $maskedContent
-              
-              # Also check if it's empty
               $originalValue = $matches[1]
+              Write-Host ""
+              Write-Host "========================================="
+              Write-Host "FULL CONNECTION STRING IN ARTIFACT:"
+              Write-Host "========================================="
+              Write-Host $originalValue
+              Write-Host "========================================="
+              
               if ([string]::IsNullOrEmpty($originalValue)) {
                 Write-Host "❌ WARNING: SQLDBConnection value is EMPTY in artifact!"
               } else {
@@ -226,12 +236,11 @@ jobs:
               }
             } else {
               Write-Host "❌ WARNING: SQLDBConnection key not found!"
-              Write-Host $content
             }
           } else {
             Write-Host "❌ ERROR: appsettings.Staging.json not found in artifact!"
             Write-Host "Searching all JSON files:"
-            Get-ChildItem -Path . -Recurse -Filter "*.json" | ForEach-Object {
+            Get-ChildItem -Path . -Recurse -Filter "*.json" | ForEach-ObjecSt {
               Write-Host "  - $($_.FullName)"
             }
           }
@@ -245,21 +254,31 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DD66CF4791F43F292C44342DC8CDA8C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
 
-      # DEBUG: Final check before deployment
-      - name: DEBUG - Final appsettings check before deploy
+      # DEBUG: Final check before deployment (UNMASKED)
+      - name: DEBUG - Final appsettings check before deploy (UNMASKED)
         run: |
           Write-Host "========================================="
           Write-Host "DEBUG: FINAL CHECK - Appsettings before deployment"
+          Write-Host "========================================="
+          Write-Host "⚠️  WARNING: FULL SECRET WILL BE VISIBLE BELOW ⚠️"
           Write-Host "========================================="
           $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
           
           if ($file) {
             Write-Host "Will deploy file: $($file.FullName)"
             $content = Get-Content $file.FullName -Raw
+            Write-Host "Final content before deploy (FULL UNMASKED):"
+            Write-Host $content
             
-            # Quick validation without showing full content
             if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
               $value = $matches[1]
+              Write-Host ""
+              Write-Host "========================================="
+              Write-Host "FINAL CONNECTION STRING BEING DEPLOYED:"
+              Write-Host "========================================="
+              Write-Host $value
+              Write-Host "========================================="
+              
               if ([string]::IsNullOrEmpty($value)) {
                 Write-Host "❌ CRITICAL: SQLDBConnection is EMPTY before deployment!"
               } else {
