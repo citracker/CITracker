@@ -53,11 +53,11 @@ jobs:
           Write-Host "Decoding connection string..."
           
           # Get the Base64 encoded string from secrets
-          $encodedString = "${{ secrets.STAGING_DB_CONNECTION_BASE64 }}"
+          $encodedString = "${{ secrets.STAGING_DB_CONNECTION }}"
           
           if ([string]::IsNullOrEmpty($encodedString)) {
             Write-Host "::error::Base64 connection string secret is empty!"
-            Write-Host "Please add STAGING_DB_CONNECTION_BASE64 to your environment secrets"
+            Write-Host "Please add STAGING_DB_CONNECTION to your environment secrets"
             exit 1
           }
           
@@ -189,3 +189,4 @@ jobs:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
+
