@@ -27,16 +27,151 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
+      # DEBUG: Find and show original appsettings file BEFORE replacement
+      - name: DEBUG - Find appsettings.Staging.json location
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Searching for appsettings.Staging.json"
+          Write-Host "========================================="
+          Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | ForEach-Object {
+            Write-Host "Found at: $($_.FullName)"
+          }
+        shell: pwsh
+
+      - name: DEBUG - Show original appsettings.Staging.json content
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Original appsettings.Staging.json content (BEFORE replacement)"
+          Write-Host "========================================="
+          $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          if ($file) {
+            Write-Host "File: $($file.FullName)"
+            Write-Host "Content:"
+            Get-Content $file.FullName
+          } else {
+            Write-Host "ERROR: appsettings.Staging.json not found!"
+          }
+          Write-Host "========================================="
+        shell: pwsh
+
       - name: Replace variables in appsettings.Staging.json
-        uses: im-open/variable-substitution@v2.1.0  # Updated fork of microsoft/variable-substitution
+        uses: im-open/variable-substitution@v2.1.0
         with:
           files: '**/appsettings.Staging.json'
         env:
           # Map GitHub secrets to JSON paths using dot notation
           AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
 
+      # DEBUG: Show appsettings file AFTER replacement (with secret masked)
+      - name: DEBUG - Show modified appsettings.Staging.json content (AFTER replacement)
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Modified appsettings.Staging.json content (AFTER replacement)"
+          Write-Host "========================================="
+          $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          if ($file) {
+            Write-Host "File: $($file.FullName)"
+            Write-Host "Content (with secret masked):"
+            $content = Get-Content $file.FullName -Raw
+            
+            # Mask the actual secret value for security in logs
+            if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
+              $originalValue = $matches[1]
+              $maskedValue = $originalValue.Substring(0, [Math]::Min(10, $originalValue.Length)) + "...[MASKED]"
+              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', "`"SQLDBConnection`": `"$maskedValue`""
+              Write-Host $maskedContent
+              
+              # Also show just the length to confirm it's populated
+              Write-Host ""
+              Write-Host "Connection String Info:"
+              Write-Host "  - Length: $($originalValue.Length) characters"
+              Write-Host "  - First 10 chars: $($originalValue.Substring(0, [Math]::Min(10, $originalValue.Length)))...[MASKED]"
+              Write-Host "  - Contains 'Password=': $($originalValue.Contains('Password='))"
+            } else {
+              Write-Host "WARNING: SQLDBConnection key not found or empty!"
+              Write-Host $content
+            }
+          } else {
+            Write-Host "ERROR: appsettings.Staging.json not found after replacement!"
+          }
+          Write-Host "========================================="
+        shell: pwsh
+
+      # DEBUG: Verify secret accessibility
+      - name: DEBUG - Verify secret is accessible
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Checking secret accessibility"
+          Write-Host "========================================="
+          if ("${{ secrets.STAGING_DB_CONNECTION }}" -eq "") {
+            Write-Host "❌ ERROR: STAGING_DB_CONNECTION secret is EMPTY or not accessible!"
+            Write-Host "Check that:"
+            Write-Host "  1. The secret exists in GitHub (Environment: Staging)"
+            Write-Host "  2. The job has 'environment: Staging' set"
+            Write-Host "  3. The secret name matches exactly: STAGING_DB_CONNECTION"
+          } else {
+            $secretLength = "${{ secrets.STAGING_DB_CONNECTION }}".Length
+            Write-Host "✅ SUCCESS: STAGING_DB_CONNECTION secret is accessible"
+            Write-Host "   Secret length: $secretLength characters"
+            Write-Host "   Secret starts with: $($env:STAGING_DB_CONNECTION_PREVIEW)...[MASKED]"
+          }
+          Write-Host "========================================="
+        shell: pwsh
+        env:
+          STAGING_DB_CONNECTION_PREVIEW: ${{ secrets.STAGING_DB_CONNECTION != '' && secrets.STAGING_DB_CONNECTION.Substring(0, [Math]::Min(10, secrets.STAGING_DB_CONNECTION.Length)) || 'EMPTY' }}
+
+      # DEBUG: Check the file after dotnet publish
+      - name: DEBUG - Check appsettings in publish directory
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Checking appsettings in publish directory"
+          Write-Host "========================================="
+          $publishPath = "${{env.DOTNET_ROOT}}/myapp"
+          Write-Host "Publish path: $publishPath"
+          
+          if (Test-Path $publishPath) {
+            Get-ChildItem -Path $publishPath -Recurse -Filter "appsettings*.json" | ForEach-Object {
+              Write-Host "Found published appsettings file: $($_.FullName)"
+              Write-Host "File size: $($_.Length) bytes"
+              Write-Host "Last modified: $($_.LastWriteTime)"
+            }
+          } else {
+            Write-Host "Publish directory not found yet"
+          }
+          Write-Host "========================================="
+        shell: pwsh
+
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+
+      # DEBUG: Verify the file was published correctly
+      - name: DEBUG - Verify published appsettings.Staging.json
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Verifying published appsettings.Staging.json"
+          Write-Host "========================================="
+          $publishedFile = "${{env.DOTNET_ROOT}}/myapp/appsettings.Staging.json"
+          
+          if (Test-Path $publishedFile) {
+            Write-Host "✅ Published file exists at: $publishedFile"
+            $content = Get-Content $publishedFile -Raw
+            
+            # Mask the secret
+            if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
+              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED-IN-PUBLISH***"'
+              Write-Host "Published content (masked):"
+              Write-Host $maskedContent
+            } else {
+              Write-Host "WARNING: SQLDBConnection not found in published file!"
+              Write-Host $content
+            }
+          } else {
+            Write-Host "❌ ERROR: Published file not found at: $publishedFile"
+            Write-Host "Files in publish directory:"
+            Get-ChildItem "${{env.DOTNET_ROOT}}/myapp" -Filter "*.json"
+          }
+          Write-Host "========================================="
+        shell: pwsh
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -47,6 +182,7 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
+    environment: Staging
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
@@ -57,12 +193,86 @@ jobs:
         with:
           name: .net-app
       
+      # DEBUG: Verify appsettings in downloaded artifact
+      - name: DEBUG - Check appsettings in downloaded artifact
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: Checking appsettings in downloaded artifact"
+          Write-Host "========================================="
+          Write-Host "Current directory: $(Get-Location)"
+          Write-Host "Files in root:"
+          Get-ChildItem -Path .
+          
+          Write-Host ""
+          Write-Host "Searching for appsettings.Staging.json:"
+          $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          
+          if ($file) {
+            Write-Host "✅ Found at: $($file.FullName)"
+            $content = Get-Content $file.FullName -Raw
+            
+            # Mask the secret
+            if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
+              $maskedContent = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED-IN-ARTIFACT***"'
+              Write-Host "Artifact content (masked):"
+              Write-Host $maskedContent
+              
+              # Also check if it's empty
+              $originalValue = $matches[1]
+              if ([string]::IsNullOrEmpty($originalValue)) {
+                Write-Host "❌ WARNING: SQLDBConnection value is EMPTY in artifact!"
+              } else {
+                Write-Host "✅ SQLDBConnection has value (length: $($originalValue.Length) chars)"
+              }
+            } else {
+              Write-Host "❌ WARNING: SQLDBConnection key not found!"
+              Write-Host $content
+            }
+          } else {
+            Write-Host "❌ ERROR: appsettings.Staging.json not found in artifact!"
+            Write-Host "Searching all JSON files:"
+            Get-ChildItem -Path . -Recurse -Filter "*.json" | ForEach-Object {
+              Write-Host "  - $($_.FullName)"
+            }
+          }
+          Write-Host "========================================="
+        shell: pwsh
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1F981EF3B252426D9770158FFC151169 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DD66CF4791F43F292C44342DC8CDA8C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
+
+      # DEBUG: Final check before deployment
+      - name: DEBUG - Final appsettings check before deploy
+        run: |
+          Write-Host "========================================="
+          Write-Host "DEBUG: FINAL CHECK - Appsettings before deployment"
+          Write-Host "========================================="
+          $file = Get-ChildItem -Path . -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
+          
+          if ($file) {
+            Write-Host "Will deploy file: $($file.FullName)"
+            $content = Get-Content $file.FullName -Raw
+            
+            # Quick validation without showing full content
+            if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
+              $value = $matches[1]
+              if ([string]::IsNullOrEmpty($value)) {
+                Write-Host "❌ CRITICAL: SQLDBConnection is EMPTY before deployment!"
+              } else {
+                Write-Host "✅ SQLDBConnection is populated (length: $($value.Length) chars)"
+              }
+            } else {
+              Write-Host "❌ CRITICAL: SQLDBConnection key missing!"
+            }
+          } else {
+            Write-Host "❌ CRITICAL: Cannot find appsettings.Staging.json before deployment!"
+          }
+          Write-Host "========================================="
+        shell: pwsh
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -71,8 +281,3 @@ jobs:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
-
-          
-
-
-
