@@ -151,43 +151,28 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
-    environment: Staging
+    environment: Staging 
     permissions:
-      id-token: write
+      id-token: write 
       contents: read
-
+  
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
       
-      - name: Verify appsettings in artifact
-        run: |
-          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
-          if ($file) {
-            Write-Host "✅ Found appsettings.Staging.json at $($file.FullName)"
-            $content = Get-Content $file.FullName -Raw
-            if ($content -match '"SQLDBConnection":\s*"[^"]+"') {
-              $masked = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED***"'
-              Write-Host $masked
-            }
-          } else {
-            Write-Host "❌ appsettings.Staging.json not found!"
-            Get-ChildItem -Recurse -Filter "*.json"
-          }
-        shell: pwsh
-
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_1F981EF3B252426D9770158FFC151169 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5DD66CF4791F43F292C44342DC8CDA8C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
-
+          
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
+
