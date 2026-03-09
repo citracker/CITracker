@@ -61,6 +61,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Templates\projectupdate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\contact.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

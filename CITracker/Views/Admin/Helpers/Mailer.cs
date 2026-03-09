@@ -92,6 +92,23 @@ namespace CITracker.Helpers
             return str.Replace("{{imgbase}}", _config.Value.ImageBaseUrl).Replace("{{name}}", email.Name).Replace("{{email}}", email.Email).Replace("{{subject}}", email.Subject).Replace("{{message}}", email.Message).Replace("{{year}}", DateTime.UtcNow.Year.ToString());
         }
 
+        public string PopulateProjectUpdateBody(ProjectUpdateNotificationDTO pid)
+        {
+            string str = string.Empty;
+            try
+            {
+                using (StreamReader reader = new StreamReader(_path.MapPath("Templates/projectupdate.html")))
+                {
+                    str = reader.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                _log.LogError($"Error Occurred at {nameof(PopulateProjectUpdateBody)} - {JsonConvert.SerializeObject(e.StackTrace)}");
+            }
+            return str.Replace("{{imgbase}}", _config.Value.ImageBaseUrl).Replace("{{projectname}}", pid.ProjectName).Replace("{{update}}", pid.Update).Replace("{{updateagent}}", pid.UpdateAgent).Replace("{{year}}", DateTime.UtcNow.Year.ToString());
+        }
+
 
         public ResponseHandler<EmailDTO> sendEmail(string recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
         {
@@ -150,6 +167,75 @@ namespace CITracker.Helpers
                     SingleResult = new EmailDTO
                     {
                         Email = recepientEmail,
+                        Subject = subject,
+                        Name = displayName
+                    }
+                };
+
+                _log.LogError($"Error Occurred at {nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
+            }
+            return _resp;
+        }
+
+
+        public ResponseHandler<EmailDTO> sendEmail(List<string> recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
+        {
+            try
+            {
+                using (MailMessage message = new MailMessage())
+                {
+                    string address = _config.Value.Username;
+                    message.From = new MailAddress(_config.Value.From, displayName);
+                    message.Subject = subject;
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+                    foreach(var i in recepientEmail)
+                    {
+                        message.To.Add(i);
+                    }
+                    if (replyto)
+                    {
+                        message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
+                    }
+                    SmtpClient client1 = new SmtpClient
+                    {
+                        Host = _config.Value.Host,
+                        EnableSsl = Convert.ToBoolean(_config.Value.EnableSsl)
+                    };
+                    client1.UseDefaultCredentials = false;
+                    //client1.Timeout = 10000;
+                    NetworkCredential credential = new NetworkCredential
+                    {
+                        UserName = _config.Value.Username,
+                        Password = _config.Value.Password
+                    };
+                    client1.Credentials = credential;
+                    client1.Port = _config.Value.Port;
+                    client1.Send(message);
+                    client1.Dispose();
+
+                    _resp = new ResponseHandler<EmailDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Email sent successfully. Kindly verify your email",
+                        SingleResult = new EmailDTO
+                        {
+                            Subject = subject,
+                            Name = displayName
+                        }
+                    };
+                    _log.LogInformation($"Response{nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
+                }
+            }
+            catch (Exception e)
+            {
+                _resp = new ResponseHandler<EmailDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = e.Message,
+                    Error = e,
+                    SingleResult = new EmailDTO
+                    {
                         Subject = subject,
                         Name = displayName
                     }

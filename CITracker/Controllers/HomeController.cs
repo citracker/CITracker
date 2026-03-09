@@ -4,6 +4,7 @@ using Infastructure.Implementation;
 using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
@@ -154,6 +155,11 @@ namespace CITracker.Controllers
             {
                 if (IsAuthenticated())
                 {
+                    //check if organization has existing subscription
+                    var isSubscribed = HttpContext.Session.GetString("OrganisationSubscriptionStatus");
+                    if (isSubscribed == "true")
+                        return RedirectToAction("Index");
+
                     if (!String.IsNullOrEmpty(Subscribe) && !String.IsNullOrWhiteSpace(Subscribe))
                     {
                         //get single subscription details

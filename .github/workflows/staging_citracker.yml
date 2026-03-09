@@ -1,3 +1,6 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Staging-CITracker
 
 on:
@@ -9,9 +12,9 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    environment: Staging
+    environment: Staging 
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
@@ -24,120 +27,16 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      # Step 1: Find and show original file
-      - name: Find appsettings.Staging.json
-        run: |
-          Write-Host "Current directory: $(Get-Location)"
-          Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | ForEach-Object { 
-            Write-Host "Found: $($_.FullName)" 
-          }
-        shell: pwsh
-
-      # Step 2: Show original content
-      - name: Show original content
-        run: |
-          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
-          if ($file) {
-            Write-Host "Original content:"
-            Get-Content $file.FullName
-          }
-        shell: pwsh
-
-      # Step 3: Decode Base64 connection string with proper escaping
-      - name: Decode connection string from Base64
-        id: decode_connection
-        run: |
-          Write-Host "Decoding connection string..."
-          
-          # Get the Base64 encoded string from secrets
-          $encodedString = "${{ secrets.STAGING_DB_CONNECTION }}"
-          
-          if ([string]::IsNullOrEmpty($encodedString)) {
-            Write-Host "::error::Base64 connection string secret is empty!"
-            exit 1
-          }
-          
-          try {
-            # Decode the Base64 string
-            $decodedBytes = [Convert]::FromBase64String($encodedString)
-            $decodedString = [Text.Encoding]::UTF8.GetString($decodedBytes)
-            
-            Write-Host "✅ Successfully decoded connection string"
-            Write-Host "Raw length: $($decodedString.Length) characters"
-            
-            # CRITICAL FIX: Escape the string for environment variable
-            # Replace double quotes with escaped double quotes
-            $escapedString = $decodedString -replace '"', '`"'
-            
-            # Set as environment variable with proper escaping
-            Write-Host "Setting environment variable..."
-            Add-Content -Path $env:GITHUB_ENV -Value "SQLDB_CONNECTION=$escapedString"
-            
-            Write-Host "✅ Environment variable set"
-          }
-          catch {
-            Write-Host "::error::Failed to decode Base64 string: $_"
-            exit 1
-          }
-        shell: pwsh
-
-      # Step 4: Verify decoded connection string (without exposing it)
-      - name: Verify decoded connection string
-        run: |
-          $connString = $env:SQLDB_CONNECTION
-          if ([string]::IsNullOrEmpty($connString)) {
-            Write-Host "❌ Decoded connection string is empty!"
-            
-            # Debug: Check if GITHUB_ENV worked
-            Write-Host "Checking GITHUB_ENV content:"
-            Get-Content $env:GITHUB_ENV
-            exit 1
-          } else {
-            Write-Host "✅ Decoded connection string is ready"
-            Write-Host "Length: $($connString.Length) characters"
-            
-            # Safe validation without exposing the actual string
-            if ($connString -match "Server=") { Write-Host "  ✓ Contains Server" }
-            if ($connString -match "Database=") { Write-Host "  ✓ Contains Database" }
-            if ($connString -match "User ID=") { Write-Host "  ✓ Contains User ID" }
-            if ($connString -match "Password=") { Write-Host "  ✓ Contains Password" }
-            
-            # Check if the string contains any unescaped quotes
-            if ($connString -match '"') {
-              Write-Host "⚠️  Connection string contains unescaped quotes"
-            }
-          }
-        shell: pwsh
-        env:
-          SQLDB_CONNECTION: ${{ env.SQLDB_CONNECTION }}
-
-      # Step 5: Substitute variables
       - name: Replace variables in appsettings.Staging.json
         uses: im-open/variable-substitution@v2.1.0
         with:
           files: '**/appsettings.Staging.json'
         env:
-          AppSettings.SQLDBConnection: ${{ env.SQLDB_CONNECTION }}
-
-      # Step 6: Verify substitution worked
-      - name: Verify substitution
-        run: |
-          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
-          if ($file) {
-            $content = Get-Content $file.FullName -Raw
-            if ($content -match '"SQLDBConnection":\s*"([^"]+)"') {
-              $value = $matches[1]
-              if ([string]::IsNullOrEmpty($value)) {
-                Write-Host "❌ SQLDBConnection is empty after substitution!"
-              } else {
-                Write-Host "✅ SQLDBConnection was substituted (length: $($value.Length) characters)"
-                # Show masked version
-                $masked = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED***"'
-                Write-Host $masked
-              }
-            }
-          }
-        shell: pwsh
+          # Map GitHub secrets to JSON paths using dot notation
+          AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
+          AppSettings.Password: ${{ secrets.EMAIL_PASSWORD }}
+          Stripe.SecretKey: ${{ secrets.SECRET_KEY }}
+          Stripe.WebhookSecret: ${{ secrets.WEBHOOK_SECRET }}
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
@@ -151,10 +50,9 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
-    environment: Staging
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -162,22 +60,6 @@ jobs:
         with:
           name: .net-app
       
-      - name: Verify appsettings in artifact
-        run: |
-          $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
-          if ($file) {
-            Write-Host "✅ Found appsettings.Staging.json at $($file.FullName)"
-            $content = Get-Content $file.FullName -Raw
-            if ($content -match '"SQLDBConnection":\s*"[^"]+"') {
-              $masked = $content -replace '"SQLDBConnection":\s*"[^"]+"', '"SQLDBConnection": "***MASKED***"'
-              Write-Host $masked
-            }
-          } else {
-            Write-Host "❌ appsettings.Staging.json not found!"
-            Get-ChildItem -Recurse -Filter "*.json"
-          }
-        shell: pwsh
-
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -186,6 +68,7 @@ jobs:
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1DA76A3608AA4B35A46A723FFA51754F }}
 
       - name: Deploy to Azure Web App
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'CITracker'

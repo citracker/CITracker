@@ -16,6 +16,9 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<OrganizationBOA>> GetAllOrganizationBOA(int orgId);
         Task<ResponseHandler<CIUser>> GetAllOperationalExcellenceUsers(int orgId);
         Task<ResponseHandler<CIUser>> GetAllStrategicInitiativeUsers(int orgId);
+        Task<CIUser> GetUser(long usrId);
+        Task<List<string>> GetNotifiedUsers(long projectId);
+        Task<ResponseHandler<StrategicInitiative>> GetSIProject(long projectId);
         Task<ResponseHandler> AddOrganizationCountry(OrganizationCountry orgCountry, string adminEmail);
         Task<ResponseHandler> RenameOrganizationCountry(long countryId, string countryName, string adminEmail);
         Task<ResponseHandler> DeleteOrganizationCountry(long countryId, string adminEmail, int orgId);
