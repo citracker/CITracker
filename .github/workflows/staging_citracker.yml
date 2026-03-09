@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    environment: Staging
+    environment: Staging  
     permissions:
       contents: read
 
@@ -24,7 +24,7 @@ jobs:
       - name: Build with dotnet
         run: dotnet build --configuration Release
 
-      # DEBUG: Find the file
+      # Step 1: Find and show original file
       - name: Find appsettings.Staging.json
         run: |
           Write-Host "Current directory: $(Get-Location)"
@@ -34,7 +34,7 @@ jobs:
           }
         shell: pwsh
 
-      # DEBUG: Show original content
+      # Step 2: Show original content
       - name: Show original content
         run: |
           $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
@@ -46,49 +46,88 @@ jobs:
           }
         shell: pwsh
 
-        # DEBUG: Verify secret is accessible
-      - name: Verify secret accessibility
+      # Step 3: Decode Base64 connection string
+      - name: Decode connection string from Base64
+        id: decode_connection
         run: |
-          if ("${{ secrets.STAGING_DB_CONNECTION }}" -eq "") {
-            Write-Host "❌ SECRET IS EMPTY - Environment not linked correctly!"
-            Write-Host "Check that:"
-            Write-Host "  1. Job has 'environment: Staging' set"
-            Write-Host "  2. Environment name matches exactly (case-sensitive)"
-            Write-Host "  3. Secret exists in that environment"
-          } else {
-            Write-Host "✅ Secret is accessible (value masked)"
+          Write-Host "Decoding connection string..."
+          
+          # Get the Base64 encoded string from secrets
+          $encodedString = "${{ secrets.STAGING_DB_CONNECTION_BASE64 }}"
+          
+          if ([string]::IsNullOrEmpty($encodedString)) {
+            Write-Host "::error::Base64 connection string secret is empty!"
+            Write-Host "Please add STAGING_DB_CONNECTION_BASE64 to your environment secrets"
+            exit 1
+          }
+          
+          try {
+            # Decode the Base64 string
+            $decodedBytes = [Convert]::FromBase64String($encodedString)
+            $decodedString = [Text.Encoding]::UTF8.GetString($decodedBytes)
+            
+            # Set as environment variable for the next steps
+            Write-Host "SQLDB_CONNECTION=$decodedString" >> $env:GITHUB_ENV
+            
+            Write-Host "✅ Successfully decoded connection string"
+            Write-Host "Connection string length: $($decodedString.Length) characters"
+          }
+          catch {
+            Write-Host "::error::Failed to decode Base64 string: $_"
+            Write-Host "Please ensure your Base64 string is valid"
+            exit 1
           }
         shell: pwsh
 
-      # Substitute variables
+      # Step 4: Verify decoding worked (without exposing the full string)
+      - name: Verify decoded connection string
+        run: |
+          if ([string]::IsNullOrEmpty($env:SQLDB_CONNECTION)) {
+            Write-Host "❌ Decoded connection string is empty!"
+            exit 1
+          } else {
+            Write-Host "✅ Decoded connection string is ready"
+            Write-Host "Length: $($env:SQLDB_CONNECTION.Length) characters"
+            
+            # Check if it contains typical connection string parts (without revealing values)
+            if ($env:SQLDB_CONNECTION -match "Server=") { Write-Host "  ✓ Contains Server" }
+            if ($env:SQLDB_CONNECTION -match "Database=") { Write-Host "  ✓ Contains Database" }
+            if ($env:SQLDB_CONNECTION -match "User ID=") { Write-Host "  ✓ Contains User ID" }
+            if ($env:SQLDB_CONNECTION -match "Password=") { Write-Host "  ✓ Contains Password" }
+          }
+        shell: pwsh
+
+      # Step 5: Substitute variables with the decoded connection string
       - name: Replace variables in appsettings.Staging.json
         uses: im-open/variable-substitution@v2.1.0
         with:
           files: '**/appsettings.Staging.json'
         env:
-          AppSettings.SQLDBConnection: ${{ secrets.STAGING_DB_CONNECTION }}
+          AppSettings.SQLDBConnection: ${{ env.SQLDB_CONNECTION }}
 
-      # DEBUG: Show modified content
+      # Step 6: Show modified content (verify substitution worked)
       - name: Show modified content
         run: |
           $file = Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | Select-Object -First 1
           if ($file) {
             Write-Host "Content after substitution in $($file.FullName):"
-            Get-Content $file.FullName
+            $content = Get-Content $file.FullName -Raw
+            
+            # Show the JSON but mask the actual connection string value for security
+            if ($content -match '"SQLDBConnection": "([^"]+)"') {
+              $masked = $content -replace '"SQLDBConnection": "[^"]+"', '"SQLDBConnection": "***MASKED***"'
+              Write-Host $masked
+              Write-Host "`n✅ SQLDBConnection was successfully substituted (value masked in logs)"
+            } else {
+              Write-Host $content
+            }
           } else {
-            Write-Host "File not found!"
+            Write-Host "File not found after substitution!"
           }
         shell: pwsh
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
-
-      # Verify file was copied to publish directory
-      - name: Verify file in publish directory
-        run: |
-          Write-Host "Checking publish directory:"
-          Get-ChildItem -Path "${{env.DOTNET_ROOT}}/myapp" -Recurse -Filter "*.json"
-        shell: pwsh
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -99,6 +138,7 @@ jobs:
   deploy:
     runs-on: windows-latest
     needs: build
+    environment: Staging
     permissions:
       id-token: write
       contents: read
@@ -115,13 +155,22 @@ jobs:
           Get-ChildItem -Recurse -Filter "*.json"
           
           if (Test-Path "appsettings.Staging.json") {
-            Write-Host "appsettings.Staging.json found in root:"
-            Get-Content "appsettings.Staging.json"
+            Write-Host "✅ appsettings.Staging.json found in root"
+            # Show masked version for verification
+            $content = Get-Content "appsettings.Staging.json" -Raw
+            if ($content -match '"SQLDBConnection": "([^"]+)"') {
+              $masked = $content -replace '"SQLDBConnection": "[^"]+"', '"SQLDBConnection": "***MASKED***"'
+              Write-Host $masked
+            }
           } else {
             Write-Host "Looking for appsettings.Staging.json in subdirectories..."
             Get-ChildItem -Recurse -Filter "appsettings.Staging.json" | ForEach-Object {
               Write-Host "Found: $($_.FullName)"
-              Get-Content $_.FullName
+              $content = Get-Content $_.FullName -Raw
+              if ($content -match '"SQLDBConnection": "([^"]+)"') {
+                $masked = $content -replace '"SQLDBConnection": "[^"]+"', '"SQLDBConnection": "***MASKED***"'
+                Write-Host $masked
+              }
             }
           }
         shell: pwsh
@@ -140,4 +189,3 @@ jobs:
           app-name: 'CITracker'
           slot-name: 'Production'
           package: .
-
