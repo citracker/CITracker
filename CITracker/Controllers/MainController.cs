@@ -43,7 +43,15 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View();
+            var dvm = new DashboardVM
+            {
+                OrganizationCountry = _opsManager.GetAllOrganizationCountries(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationFacility = _opsManager.GetAllOrganizationFacilities(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationDepartment = _opsManager.GetAllOrganizationDepartments(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList(),
+                OrganizationUser = _opsManager.GetAllOperationalExcellenceUsers(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList()
+            };
+
+            return View(dvm);
         }
 
         [HttpGet("Initiatives")]
