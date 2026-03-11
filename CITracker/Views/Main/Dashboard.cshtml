@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Shared.Enumerations 
+@model Shared.ViewModels.DashboardVM
+
+@{
     ViewData["Title"] = "CI Tracker";
     ViewData["Active"] = "Dashboard";
     Layout = "~/Views/Shared/_MainDashboardLayout.cshtml";
@@ -7,6 +10,107 @@
 <div class="main-content app-content">
     <div class="container-fluid">
         <div class="row row-sm">
+            <div class="accordion accordion-primary mb-5" id="filterAccord">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="filterHeader">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-controls="collapseFilter">Filter Results</button>
+                    </h2>
+                    <div id="collapseFilter" class="accordion-collapse collapse" aria-labelledby="filterHeader" data-bs-parent="#filterAccord">
+                        <div class="accordion-body">
+                            <div id="filterForm">
+                                <div class="row gy-4">
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
+                                                <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly="readonly">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <select class="form-control" id="priority" name="priority">
+                                            <option selected disabled value="">Select Priority</option>
+                                            <option value="All">All</option>
+                                            <option value="High">High</option>
+                                            <option value="Medium">Medium</option>
+                                            <option value="Low">Low</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <select class="form-control" name="users" id="users">
+                                            <option selected disabled value="">Select Facilitator/Sponsor</option>
+                                            <option value="All">All</option>
+                                            @if (Model.OrganizationUser != null)
+                                            {
+                                                if (Model.OrganizationUser.Any())
+                                                {
+                                                    foreach (var i in Model.OrganizationUser)
+                                                    {
+                                                        <option value="@i.Id">@i.Name</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <select class="form-control" id="country" name="country">
+                                            <option selected disabled value="">Select Country</option>
+                                            @if (Model.OrganizationCountry != null)
+                                            {
+                                                if (Model.OrganizationCountry.Any())
+                                                {
+                                                    foreach (var country in Model.OrganizationCountry)
+                                                    {
+                                                        <option value="@country.Id">@country.Country</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <select class="form-control" id="department" name="department">
+                                            <option selected disabled value="">Select Group/Function</option>
+                                            @if (Model.OrganizationDepartment != null)
+                                            {
+                                                if (Model.OrganizationDepartment.Any())
+                                                {
+                                                    foreach (var i in Model.OrganizationDepartment)
+                                                    {
+                                                        <option value="@i.Id">@i.Department</option>
+                                                    }
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <select class="form-control" name="status" id="status" required>
+                                            <option selected disabled value="">Select a Status</option>
+                                            @foreach (Status item in Enum.GetValues(typeof(Status)))
+                                            {
+                                                <option value="@item">@item</option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
+                                        <button type="button" id="applyFilterBtn" class="btn btn-success me-5">Submit</button>
+                                        <button type="button" id="clearFilterBtn" class="btn btn-outline-dark btn-wave">Clear</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="col-sm-12 col-lg-12 col-xl-12">
                 <div class="row row-sm mt-4">
                     <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
@@ -204,10 +308,146 @@
     </div>
 </div>
 <script>
+    let currentFilters = {};
+
+    $(document).ready(function () {
+        const endPicker = flatpickr("#enddate", {
+            dateFormat: "Y-m-d"
+        });
+
+        const startPicker = flatpickr("#startdate", {
+            dateFormat: "Y-m-d"
+        });
+
+        // Apply filter button click handler
+        $('#applyFilterBtn').click(function() {
+            applyFilters();
+        });
+
+        // Clear filter button click handler
+        $('#clearFilterBtn').click(function() {
+            clearFilters();
+        });
+
+        // Load default data on page load
+        loadAllCharts();
+    });
+
+    function formatDateToMMDDYYYY(dateString) {
+        const date = new Date(dateString);
+
+        // Handle invalid dates
+        if (isNaN(date.getTime())) {
+            console.log('Invalid date:', dateString);
+            return '';
+        }
+
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const year = date.getFullYear();
+
+        return `${month}/${day}/${year}`;
+    }
+
+    // Function to collect filter values
+    function getFilterValues() {
+        const filters = {};
+
+        const startDate = $('#startdate').val();
+        const endDate = $('#enddate').val();
+        const priority = $('#priority').val();
+        const users = $('#users').val();
+        const country = $('#country').val();
+        const department = $('#department').val();
+        const status = $('#status').val();
+
+        if (startDate) filters.startdate = startDate;
+        if (endDate) filters.enddate = endDate;
+        if (priority) filters.priority = priority;
+        if (users) filters.users = users;
+        if (country) filters.country = country;
+        if (department) filters.department = department;
+        if (status) filters.status = status;
+
+        console.log("Filters:", filters);
+
+        return filters;
+    }
+
+    // Function to build query string from filters
+    function buildQueryString(filters) {
+        const params = new URLSearchParams();
+        Object.keys(filters).forEach(key => {
+            if (filters[key] && filters[key] !== 'All') {
+                params.append(key, filters[key]);
+            }
+        });
+        const queryString = params.toString();
+        return queryString ? `?${queryString}` : '';
+    }
+
+    // Function to apply filters and reload all charts
+    function applyFilters() {
+        currentFilters = getFilterValues();
+        loadAllCharts();
+    }
+
+    // Function to clear all filters
+    function clearFilters() {
+        // Reset all form fields
+        $('#startdate').val('');
+        $('#enddate').val('');
+        $('#priority').val('');
+        $('#users').val('');
+        $('#country').val('');
+        $('#department').val('');
+        $('#status').val('');
+
+        // Clear current filters and load default data
+        currentFilters = {};
+        loadAllCharts();
+    }
+
+    // Function to load all charts with current filters
+    async function loadAllCharts() {
+        // Show loading states
+        showLoadingStates();
+
+        // Load all charts in parallel
+        await Promise.all([
+            loadData(),
+            loadChartData(),
+            loadChartData1(),
+            loadPolarData(),
+            loadChartData2(),
+            loadBarChartData(),
+            loadBarChartData2(),
+            loadCompletedProjectsData(),
+            loadBarChartData3(),
+            loadDepartmentData(),
+            loadPhaseData()
+        ]);
+
+        // Hide loading states
+        hideLoadingStates();
+    }
+
+    // Helper functions for loading states
+    function showLoadingStates() {
+        // Add loading indicators if needed
+        $('.chart-container').addClass('loading');
+    }
+
+    function hideLoadingStates() {
+        $('.chart-container').removeClass('loading');
+    }
+
+
 
     async function loadData() {
         try {
-            const response = await fetch('/DashboardAnalytics');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/DashboardAnalytics' + queryString);
 
             if (!response.ok) {
                 prepUI();
@@ -235,9 +475,6 @@
         }
     }
     loadData();
-
-
-
 
 
 
@@ -287,7 +524,8 @@
 
     async function loadChartData() {
         try {
-            const response = await fetch('/ProjectCountByMethodology');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/ProjectCountByMethodology' + queryString);
 
             if (!response.ok) {
                 showNoData(myChart, 'Methodology # - No data available');
@@ -323,7 +561,6 @@
     loadChartData();
     myChart.showLoading();
     myChart.hideLoading();
-    setInterval(loadChartData, 60000);
     window.addEventListener('resize', function () {
         myChart.resize();
     });
@@ -370,7 +607,8 @@
 
     async function loadChartData1() {
         try {
-            const response = await fetch('/ProjectStatusCount');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/ProjectStatusCount' + queryString);
 
             if (!response.ok) {
                 showNoData(myChart1, 'Project Status - No data available');
@@ -406,7 +644,6 @@
     loadChartData1();
     myChart1.showLoading();
     myChart1.hideLoading();
-    setInterval(loadChartData1, 60000);
     window.addEventListener('resize', function () {
         myChart1.resize();
     });
@@ -470,7 +707,8 @@
 
     async function loadPolarData() {
         try {
-            const response = await fetch('/ProjectCertificationCount');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/ProjectCertificationCount' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(polarChart, 'Certification - No data available');
@@ -506,7 +744,6 @@
     }
 
     loadPolarData();
-    setInterval(loadPolarData, 60000);
 
 
 
@@ -550,7 +787,8 @@
 
     async function loadChartData2() {
         try {
-            const response = await fetch('/SavingsByCategory');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/SavingsByCategory' + queryString);
 
             if (!response.ok) {
                 showNoData(myChart2, 'Savings Category - No data available');
@@ -586,10 +824,6 @@
     loadChartData2();
     myChart2.showLoading();
     myChart2.hideLoading();
-    setInterval(loadChartData2, 60000);
-    window.addEventListener('resize', function () {
-        myChart2.resize();
-    });
 
 
 
@@ -660,7 +894,8 @@
 
     async function loadBarChartData() {
         try {
-            const response = await fetch('/MonthlyProjectsByStatus');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/MonthlyProjectsByStatus' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(barChart, 'Monthly Projects Status - No data available');
@@ -697,7 +932,6 @@
     }
 
     loadBarChartData();
-    setInterval(loadBarChartData, 60000);
 
 
 
@@ -771,7 +1005,8 @@
 
     async function loadBarChartData2() {
         try {
-            const response = await fetch('/MonthlySavings');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/MonthlySavings' + queryString);
             if (!response.ok) {
                 showNoDataCjs(barChart2, 'Monthly Savings - No data available');
                 return;
@@ -808,7 +1043,6 @@
     }
 
     loadBarChartData2();
-    setInterval(loadBarChartData2, 60000);
 
 
 
@@ -870,7 +1104,8 @@
 
     async function loadCompletedProjectsData() {
         try {
-            const response = await fetch('/CompletedProjectsByUser');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/CompletedProjectsByUser' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(completedChart, 'Facilitators Projects - No data available');
@@ -906,7 +1141,6 @@
     }
 
     loadCompletedProjectsData();
-    setInterval(loadCompletedProjectsData, 60000);
 
 
 
@@ -987,7 +1221,8 @@
 
     async function loadBarChartData3() {
         try {
-            const response = await fetch('/MonthlyProjectsByMethodologies');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/MonthlyProjectsByMethodologies' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(barChart3, 'Monthly Projects # - No data available');
@@ -1026,7 +1261,6 @@
     }
 
     loadBarChartData3();
-    setInterval(loadBarChartData3, 60000);
 
 
 
@@ -1071,7 +1305,8 @@
 
     async function loadDepartmentData() {
         try {
-            const response = await fetch('/MonthlyProjectsByDepartment');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/MonthlyProjectsByDepartment' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(monthlyDeptChart, 'Monthly Projects per Department - No data available');
@@ -1110,9 +1345,7 @@
         }
     }
 
-
     loadDepartmentData();
-    setInterval(loadDepartmentData, 60000);
 
 
 
@@ -1157,7 +1390,8 @@
 
     async function loadPhaseData() {
         try {
-            const response = await fetch('/MonthlyProjectsByPhase');
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/MonthlyProjectsByPhase' + queryString);
 
             if (!response.ok) {
                 showNoDataCjs(monthlyPhaseChart, 'Monthly Projects per Phase - No data available');
@@ -1198,7 +1432,15 @@
     }
 
     loadPhaseData();
-    setInterval(loadPhaseData, 60000);
+    
+
+    setInterval(() => {
+        if (Object.keys(currentFilters).length === 0) {
+            // Only auto-refresh if no filters are applied
+            loadAllCharts();
+        }
+    }, 60000);
+
 
     function prepUI(list){
         const container = document.getElementById('totalsavings');
