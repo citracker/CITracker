@@ -2155,7 +2155,7 @@ namespace CITracker.Controllers
         }
 
         [HttpGet("ProjectCountByMethodology")]
-        public IActionResult MethodologyCount()
+        public IActionResult MethodologyCount(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2166,14 +2166,25 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status  = status
+            };
+
             //List<NameValueDTO>
-            var data = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var data = _opsManager.GetProjectCountByMethodology(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("ProjectStatusCount")]
-        public IActionResult ProjectStatusCount()
+        public IActionResult ProjectStatusCount(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2184,13 +2195,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetProjectCountByStatus(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByStatus")]
-        public IActionResult MonthlyProjectsByStatus()
+        public IActionResult MonthlyProjectsByStatus(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2201,13 +2223,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetStatusCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetStatusCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
             
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("ProjectCertificationCount")]
-        public IActionResult ProjectCertificationCount()
+        public IActionResult ProjectCertificationCount(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2218,13 +2251,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetProjectCountByCertification(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("SavingsByCategory")]
-        public IActionResult SavingsByCategory()
+        public IActionResult SavingsByCategory(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2235,13 +2279,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetSavingsByCategory(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlySavings")]
-        public IActionResult MonthlySavings()
+        public IActionResult MonthlySavings(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2252,13 +2307,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetMonthlySavings(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("CompletedProjectsByUser")]
-        public IActionResult CompletedProjectsByUser()
+        public IActionResult CompletedProjectsByUser(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2269,13 +2335,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetCompletedProjectsByUserCI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetCompletedProjectsByUserCI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByMethodologies")]
-        public IActionResult MonthlyProjectsByMethodologies()
+        public IActionResult MonthlyProjectsByMethodologies(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2286,13 +2363,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetMonthlyProjectsByMethodologies(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
 
         [HttpGet("MonthlyProjectsByDepartment")]
-        public IActionResult MonthlyProjectsByDepartment()
+        public IActionResult MonthlyProjectsByDepartment(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2303,13 +2391,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetMonthlyProjectsByDepartment(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Json(data?.SingleResult);
         }
 
         [HttpGet("MonthlyProjectsByPhase")]
-        public IActionResult MonthlyProjectsByPhase()
+        public IActionResult MonthlyProjectsByPhase(DateTime? startdate, DateTime? enddate, string priority, long user, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2320,13 +2419,24 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = user,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+
+            var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
             
             return Json(data?.SingleResult);
         }
 
         [HttpGet("DashboardAnalytics")]
-        public IActionResult DashboardAnalytics()
+        public IActionResult DashboardAnalytics(DateTime? startdate, DateTime? enddate, string priority, long users, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2337,7 +2447,17 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var data = _opsManager.GetOrganizationData(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result;
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = users,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+            var data = _opsManager.GetOrganizationData(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }

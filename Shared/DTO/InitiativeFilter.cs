@@ -17,4 +17,15 @@ namespace Shared.DTO
         public int CountryId { get; set; }
         public long DepartmentId { get; set; }
     }
+
+    public class DashFilter
+    {
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+        public string Priority { get; set; }
+        public string Status { get; set; }
+        public long UserId { get; set; }
+        public int CountryId { get; set; }
+        public long DepartmentId { get; set; }
+    }
 }
