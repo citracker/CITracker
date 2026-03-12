@@ -6,11 +6,13 @@ using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
+using Shared.DTO;
 using Stripe;
 using Stripe.Checkout;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,16 +32,29 @@ namespace Infastructure.Implementation
         }
 
 
-        public async Task CancelSubscription(string subscriptionId)
+        public async Task<ResponseHandler> CancelSubscription(string subscriptionId)
         {
             try
             {
                 var service = new SubscriptionService();
-                await service.CancelAsync(subscriptionId, null);
+                var res = await service.CancelAsync(subscriptionId, null);
+
+                _logger.LogInformation($"Subscription cancellation Response ||| SubscriptionId : {subscriptionId} ||| {JsonConvert.SerializeObject(res)}");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Subscription cancelled successfully."
+                };
             }
             catch(Exception ex) 
             { 
                 _logger.LogError($"Exception at {nameof(CancelSubscription)} ||| {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occurred while cancelling the subscription."
+                };
             }
         }
 

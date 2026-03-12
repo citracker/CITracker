@@ -576,7 +576,12 @@ url("./fonts/bootstrap-icons.woff?08efbba7c53d8c5413793eecb19b20bb") format("wof
 .bi-emoji-sunglasses::before { content: "\f329"; }
 .bi-emoji-wink-fill::before { content: "\f32a"; }
 .bi-emoji-wink::before { content: "\f32b"; }
-.bi-envelope-fill::before { content: "\f32c"; }
+.bi-envelope-at-fill::before {
+    content: "\F84B";
+}
+.bi-envelope-fill::before {
+    content: "\f32c";
+}
 .bi-envelope-open-fill::before { content: "\f32d"; }
 .bi-envelope-open::before { content: "\f32e"; }
 .bi-envelope::before { content: "\f32f"; }

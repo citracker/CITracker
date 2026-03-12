@@ -174,14 +174,13 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, s.SubscriptionPlanId, s.Status as SubscriptionStatus, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, sp.NumberOfLicences", new
+                    "SELECT o.Id AS OrganizationId, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
 
                 if (resi != null)
                 {
-
                     return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
