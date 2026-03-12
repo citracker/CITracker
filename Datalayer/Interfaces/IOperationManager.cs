@@ -98,5 +98,6 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId, DashFilter filt);
         Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId, DashFilter filt);
         Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId, DashFilter filt);
+        Task<ResponseHandler<AccountDetails>> GetOrgAccountDetails(int orgId);
     }
 }

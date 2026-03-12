@@ -5766,5 +5766,38 @@ namespace Datalayer.Implementations
                 return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
             }
         }
+
+        public async Task<ResponseHandler<AccountDetails>> GetOrgAccountDetails(int orgId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetAsync<AccountDetails>(dbConnection, "SELECT org.Name, org.AdminName, org.AdminEmailAddress AS AdminEmail, org.AdminPhoneNumber AS AdminPhoneNumber, org.Address, SUM(CASE WHEN p.Status NOT IN ('CANCELLED', 'PROPOSED', 'CLOSED' ) THEN 1 ELSE 0 END) AS ActiveProjectCount, SUM(CASE WHEN p.Status = 'CLOSED' THEN 1 ELSE 0 END) AS ClosedProjectCount FROM Organization org LEFT JOIN (SELECT OrganizationId, Status FROM ContinuousImprovement UNION ALL SELECT OrganizationId, Status FROM OperationalExcellence UNION ALL SELECT OrganizationId, Status FROM StrategicInitiative) p ON p.OrganizationId = org.Id where org.Id = @oid GROUP BY org.Name, org.AdminName, org.AdminEmailAddress, org.AdminPhoneNumber, org.Address", new { oid = orgId }, CommandType.Text);
+                
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<AccountDetails>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<AccountDetails>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrgAccountDetails)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<AccountDetails>());
+            }
+        }
     }
 }

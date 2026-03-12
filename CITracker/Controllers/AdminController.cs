@@ -1,21 +1,17 @@
 ﻿using CITracker.Validator;
 using Datalayer.Interfaces;
-using DocumentFormat.OpenXml.Bibliography;
 using FluentValidation;
 using Infastructure.Interface;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
-using Shared.ExternalModels;
 using Shared.Models;
 using Shared.Request;
 using Shared.Utilities;
 using Shared.ViewModels;
 using System.Net;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace CITracker.Controllers
@@ -27,14 +23,16 @@ namespace CITracker.Controllers
         private readonly IOperationManager _opsManager;
         private readonly IMicrosoftOperations _micOps;
         private readonly ISubscriptionManager _subManager;
+        private readonly IStripePayment _strPay;
 
-        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription)
+        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription, IStripePayment strPay)
         {
             _logger = logger;
             _config = config;
             _opsManager = opsManager;
             _micOps = micOps;
             _subManager = subscription;
+            _strPay = strPay;
         }
 
 
@@ -219,6 +217,28 @@ namespace CITracker.Controllers
             }
 
             return View();
+        }
+
+        [HttpGet("Account")]
+        public IActionResult Account()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Dashboard", "Main");
+            }
+
+            var org = new OrganizationAccountDTO
+            {
+                Account = _opsManager.GetOrgAccountDetails(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result.SingleResult,
+                Subscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result.SingleResult
+            };
+
+            return View(org);
         }
 
         [HttpPost("BulkUpload")]
@@ -1164,6 +1184,38 @@ namespace CITracker.Controllers
                 TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteBOA)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageBOA", "Admin");
+            }
+        }
+
+        [HttpPost("Cancel")]
+        public async Task<IActionResult> CancelPaymentSubscription([FromBody] CancelSubscriptionRequest request)
+        {
+
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var res = await _strPay.CancelSubscription(request.StrId);
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("Account", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(CancelPaymentSubscription)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("Account", "Admin");
             }
         }
 

@@ -1,0 +1,1059 @@
+﻿@model Shared.DTO.OrganizationAccountDTO
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "UserManagement";
+    ViewData["Active"] = "Account";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="main-content app-content"> 
+    <div class="container-fluid"> 
+        <!-- Page Header --> 
+        <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb"> 
+            <div> 
+                <h2 class="main-content-title fs-24 mb-1">My Account</h2> 
+                @* <ol class="breadcrumb mb-0"> 
+                    <li class="breadcrumb-item"><a href="javascript:void(0)"></a></li> 
+                    <li class="breadcrumb-item active" aria-current="page"></li> 
+                </ol> *@
+            </div> 
+            <div class="d-flex">
+                <div class="justify-content-center"> 
+                    @* <button type="button" class="btn btn-white btn-icon-text my-2 me-2 d-inline-flex align-items-center"> <i class="fe fe-download me-2 fs-14"></i> Import </button> 
+                    <button type="button" class="btn btn-white btn-icon-text my-2 me-2 d-inline-flex align-items-center"> <i class="fe fe-filter me-2 fs-14"></i> Filter </button> 
+                    <button type="button" class="btn btn-primary my-2 btn-icon-text d-inline-flex align-items-center"> <i class="fe fe-download-cloud me-2 fs-14"></i> Download Report </button>  *@
+                </div> 
+            </div> 
+        </div> 
+        <!-- Page Header Close --> 
+        <!-- Start::row-1 --> 
+        <div class="row square row-sm"> 
+            <div class="col-lg-12 col-md-12"> 
+                <div class="card custom-card"> 
+                    <div class="card-body"> 
+                        <div class="panel profile-cover"> 
+                            <div class="profile-cover__img"> 
+                                <img src="~/assets/images/faces/1.jpg" alt="img"> 
+                                <h3 class="h3">@Model.Account.Name</h3> 
+                            </div> 
+                            @* <div class="btn-profile"> 
+                                <button class="btn rounded-10 btn-danger"> <i class="fa fa-plus"></i> <span>Follow</span> </button> 
+                                <button class="btn rounded-10 btn-success"> <i class="fa fa-comment"></i> <span>Message</span> </button> 
+                            </div>  *@
+                            <div class="profile-cover__action bg-img"></div> 
+                            <div class="profile-cover__info"> 
+                                <ul class="nav"> 
+                                    <li><strong>@Model.Account.ActiveProjectCount</strong>Active Projects</li>
+                                    <li><strong>@Model.Account.ClosedProjectCount</strong>Closed Projects</li>
+                                    <li><strong>@Model.Subscription.NumberOfUsedLicences</strong>Users</li> 
+                                </ul> 
+                            </div> 
+                        </div> 
+                        <div class="profile-tab tab-menu-heading"> 
+                            <nav class="nav main-nav-line p-3 tabs-menu profile-nav-line" role="tablist"> 
+                                <a class="nav-link active" data-bs-toggle="tab" href="#about" aria-selected="true" role="tab">About</a> 
+                                @* <a class="nav-link" data-bs-toggle="tab" href="#edit" aria-selected="false" role="tab" tabindex="-1">Edit Profile</a> 
+                                <a class="nav-link" data-bs-toggle="tab" href="#timeline" aria-selected="false" role="tab" tabindex="-1">Timeline</a> 
+                                <a class="nav-link" data-bs-toggle="tab" href="#gallery" aria-selected="false" role="tab" tabindex="-1">Gallery</a> 
+                                <a class="nav-link" data-bs-toggle="tab" href="#friends" aria-selected="false" role="tab" tabindex="-1">Friends</a>
+                                <a class="nav-link" data-bs-toggle="tab" href="#settings" aria-selected="false" role="tab" tabindex="-1">Account Settings</a> *@
+                            </nav> 
+                        </div> 
+                    </div> 
+                </div> 
+            </div> 
+        </div> 
+        <!-- Row --> 
+        <div class="row row-sm"> 
+            <div class="col-lg-12 col-md-12"> 
+                <div class="card custom-card main-content-body-profile"> 
+                    <div class="tab-content"> 
+                        <div class="main-content-body tab-pane p-4 border-top-0 active show" id="about" role="tabpanel">
+                            <div class="border rounded-10"> 
+                                <div class="p-4"> 
+                                    <h4 class="fs-15 text-uppercase mb-3">Subscription</h4> 
+                                    <div class="m-t-30"> 
+                                        <div class=" p-t-10"> 
+                                            <h5 class="text-primary m-b-5 fs-14">@Model.Subscription.SubscriptionName Plan</h5> 
+                                            <p>@Model.Subscription.NumberOfLicences Licences (<b>@Model.Subscription.NumberOfUsedLicences Used</b>)</p>
+                                            <p>Start Date: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.StartDate))</b></p>
+                                            <p>End Date: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.EndDate))</b></p>
+                                        </div> 
+                                        <div class=""> 
+                                            <div class="btn-profile"> 
+                                                <button class="btn rounded-10 btn-danger" onclick="cancelSubscription('@Model.Subscription.PaymentSubscriptionId')"> <i class="fa fa-ban"></i> <span>Cancel Subscription</span> </button>
+                                                @* <button class="btn rounded-10 btn-success" onclick="upgradeSubscription()"> <i class="fa fa-arrow-up"></i> <span>Upgrade Subscription</span> </button> *@
+                                            </div>
+                                        </div> 
+                                    </div> 
+                                </div> 
+                                <div class="border-top"></div>
+                                <div class="p-4"> 
+                                    <label class="main-content-label fs-13 mg-b-20">@Model.Account.AdminName</label> 
+                                    <div class="d-sm-flex"> 
+                                        <div class="mb-3 mb-sm-0"> 
+                                            <div class="main-profile-contact-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-primary-transparent text-primary"> <i class="bi bi-telephone-forward"></i> </div> 
+                                                    <div class="media-body"> 
+                                                        <span>Mobile</span> 
+                                                        <div> @Model.Account.AdminPhoneNumber</div> 
+                                                    </div> 
+                                                </div> 
+                                            </div> 
+                                        </div>
+                                        <div class="mb-3 mb-sm-0">
+                                            <div class="main-profile-contact-list">
+                                                <div class="media">
+                                                    <div class="media-icon bg-primary-transparent text-primary"> <i class="bi bi-envelope-fill"></i> </div>
+                                                    <div class="media-body">
+                                                        <span>Email Address</span>
+                                                        <div> @Model.Account.AdminEmail</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ms-0 ms-sm-3 mb-3 mb-sm-0"> 
+                                            <div class="main-profile-contact-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-info-transparent text-info"> <i class="bi bi-geo-alt"></i> </div> 
+                                                    <div class="media-body"> <span>Current Address</span> 
+                                                        <div> @Model.Account.Address </div> 
+                                                    </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                                @* <div class="border-top"></div> 
+                                <div class="p-3 p-sm-4"> 
+                                    <label class="main-content-label fs-13 mg-b-20">Social</label> 
+                                    <div class="d-xl-flex"> 
+                                        <div class="mb-3 mb-xl-0"> 
+                                            <div class="main-profile-social-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-primary-transparent text-primary"> <i class="bi bi-github"></i> </div> 
+                                                    <div class="media-body"> <span>Github</span> <a href="javascript:void(0);">github.com/spruko</a> </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                        <div class="ms-0 ms-xl-3 mb-3 mb-xl-0">
+                                            <div class="main-profile-social-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-success-transparent text-success flex-none"> <i class="bi bi-twitter"></i> </div> 
+                                                    <div class="media-body"> <span>Twitter</span> <a href="javascript:void(0);">twitter.com/spruko.me</a> </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                        <div class="ms-0 ms-xl-3 mb-3 mb-xl-0"> 
+                                            <div class="main-profile-social-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-info-transparent text-info flex-none"> <i class="bi bi-linkedin"></i> </div> 
+                                                    <div class="media-body"> <span>Linkedin</span> <a href="javascript:void(0);">linkedin.com/in/spruko</a> </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                        <div class="ms-0 ms-xl-3 mb-3 mb-xl-0"> 
+                                            <div class="main-profile-social-list"> 
+                                                <div class="media"> 
+                                                    <div class="media-icon bg-danger-transparent text-danger"> <i class="bi bi-link-45deg"></i> </div> 
+                                                    <div class="media-body"> <span>My Portfolio</span> <a href="javascript:void(0);">spruko.com/</a> </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div>  *@
+                            </div> 
+                        </div> 
+                        @* <div class="main-content-body tab-pane p-4 border-top-0" id="edit" role="tabpanel"> 
+                            <div class="card-body border"> 
+                                <div class="mb-4 main-content-label">Personal Information</div> 
+                                <form class="form-horizontal"> 
+                                    <div class="mb-4 main-content-label">Name</div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">User Name</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="User Name" value="Mack Adamia"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">First Name</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="First Name" value="Mack Adamia"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">last Name</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Last Name" value="Mack Adamia"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Nick Name</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Nick Name" value="Spruha"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Designation</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Designation" value="Web Designer"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="mb-4 main-content-label">Contact Info</div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Email<i>(required)</i></label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Email" value="info@Spruha.in"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Website</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Website" value="@@spruko.w"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Phone</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="phone number" value="+245 354 654"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Address</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <textarea class="form-control" name="example-textarea-input" rows="2" placeholder="Address">San Francisco, CA</textarea> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="mb-4 main-content-label">Social Info</div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Twitter</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="twitter" value="twitter.com/spruko.me"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Facebook</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="facebook" value="https://www.facebook.com/Spruha"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Google+</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="google" value="spruko.com"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Linked in</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="linkedin" value="linkedin.com/in/spruko"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Github</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="github" value="github.com/spruko"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="mb-4 main-content-label">About Yourself</div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Biographical Info</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <textarea class="form-control" name="example-textarea-input" rows="4" placeholder="">pleasure rationally encounter but because pursue consequences that are extremely painful.occur in which toil and pain can procure him some great pleasure..</textarea> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="mb-4 main-content-label">Email Preferences</div> 
+                                    <div class="form-group mb-0"> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Verified User</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1" checked=""> 
+                                                    <label class="form-check-label" for="flexCheckDefault1"> Accept to receive post or page notification emails </label> 
+                                                </div> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2" checked=""> 
+                                                    <label class="form-check-label" for="flexCheckDefault2"> Accept to receive email sent to multiple recipients </label> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </form> 
+                            </div> 
+                        </div>  
+                        <div class="main-content-body tab-pane border-top-0 p-0" id="timeline" role="tabpanel"> 
+                            <div class="p-4"> 
+                                <div class="main-content-body main-content-body-profile"> 
+                                    <div class="main-profile-body p-0"> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-12"> 
+                                                <div class="card mg-b-20 border"> 
+                                                    <div class="card-header p-4 d-block"> 
+                                                        <div class="media"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="main-img-user avatar-md">
+                                                                    <img alt="" class="rounded-circle" src="~/assets/images/faces/6.jpg">
+                                                                </div> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 mg-t-2 ms-2">Mintrona Pechon Pechon</h6>
+                                                                <span class="text-primary ms-2">just now</span> 
+                                                            </div> 
+                                                            <div class="ms-auto"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new option-dots2" data-bs-toggle="dropdown" href="JavaScript:void(0);">
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </a> 
+                                                                    <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Edit Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Delete Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Personal Settings</a> 
+                                                                    </div> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                    <div class="card-body"> 
+                                                        <p class="mg-t-0">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                                        <div class="row row-sm"> 
+                                                            <div class="col"> 
+                                                                <img alt="img" class="wd-200 me-4 br-4" src="~/assets/images/media/media-4.jpg"> 
+                                                                <img alt="img" class="wd-200 br-4 mt-2 mt-sm-0" src="~/assets/images/media/media-5.jpg"> 
+                                                            </div>
+                                                        </div> 
+                                                        <div class="media mg-t-15 profile-footer"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="avatar-list-stacked"> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"><img src="~/assets/images/faces/1.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/3.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/2.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/10.jpg" alt="img"> </span> 
+                                                                    <a class="avatar avatar-sm bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);"> +8 </a> 
+                                                                </div> 
+                                                                <!-- demo-avatar-group --> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 mg-t-10">28 people like your photo</h6> 
+                                                            </div> 
+                                                            <div class="ms-auto mt-1 mt-sm-0"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-heart me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-comment me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-share-square"></i></a> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                </div> 
+                                                <div class="card mg-b-20 border"> 
+                                                    <div class="card-header p-4 d-block"> 
+                                                        <div class="media"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="main-img-user avatar-md">
+                                                                    <img alt="" class="rounded-circle" src="~/assets/images/faces/6.jpg">
+                                                                </div> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 ms-2 mg-t-3">Mintrona Pechon Pechon</h6>
+                                                                <span class="text-muted ms-2">Sep 26 2019, 10:14am</span> 
+                                                            </div> 
+                                                            <div class="ms-auto"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new option-dots2" data-bs-toggle="dropdown" href="JavaScript:void(0);">
+                                                                        <i class="fas fa-ellipsis-v"></i>
+                                                                    </a> 
+                                                                    <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Edit Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Delete Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Personal Settings</a> 
+                                                                    </div> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                    <div class="card-body h-100"> 
+                                                        <p class="mg-t-0">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                                        <div class="row row-sm"> 
+                                                            <div class="col"> 
+                                                                <img alt="img" class="wd-200 mt-2 mt-sm-0 me-4 br-4" src="~/assets/images/media/media-9.jpg"> 
+                                                                <img alt="img" class="wd-200 mt-2 mt-sm-0 br-4" src="~/assets/images/media/media-12.jpg"> 
+                                                            </div> 
+                                                        </div> 
+                                                        <div class="media mg-t-15 profile-footer"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="avatar-list-stacked"> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/1.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/3.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/2.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/10.jpg" alt="img"> </span> 
+                                                                    <a class="avatar avatar-sm bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);"> +8 </a> 
+                                                                </div> 
+                                                                <!-- demo-avatar-group --> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 mg-t-10">28 people like your photo</h6> 
+                                                            </div> 
+                                                            <div class="ms-auto mt-1 mt-sm-0"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-heart me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-comment me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-share-square"></i></a> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                </div> 
+                                                <div class="card mg-b-20 border"> 
+                                                    <div class="card-header p-4 d-block"> 
+                                                        <div class="media"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="main-img-user avatar-md"><img alt="" class="rounded-circle" src="~/assets/images/faces/6.jpg"></div> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 ms-2 mg-t-3">Mintrona Pechon Pechon</h6>
+                                                                <span class="text-muted ms-2">Sep 26 2019, 10:14am</span> 
+                                                            </div> 
+                                                            <div class="ms-auto"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new option-dots2" data-bs-toggle="dropdown" href="JavaScript:void(0);"><i class="fas fa-ellipsis-v"></i></a> 
+                                                                    <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Edit Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Delete Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Personal Settings</a> 
+                                                                    </div> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                    <div class="card-body h-100"> 
+                                                        <p class="mg-t-0">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                                        <div class="media mg-t-15 profile-footer"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="avatar-list-stacked"> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/1.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/3.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/2.jpg" alt="img"> </span>
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/10.jpg" alt="img"> </span> 
+                                                                    <a class="avatar avatar-sm bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);"> +8 </a> 
+                                                                </div> 
+                                                                <!-- demo-avatar-group --> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 mg-t-10">28 people like your photo</h6> 
+                                                            </div> 
+                                                            <div class="ms-auto mt-1 mt-sm-0"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-heart me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-comment me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-share-square"></i></a> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                </div> 
+                                                <div class="card border"> 
+                                                    <div class="card-header p-4 d-block"> 
+                                                        <div class="media"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="main-img-user avatar-md"><img alt="" class="rounded-circle" src="~/assets/images/faces/2.jpg"></div> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 ms-2 mg-t-3">Mintrona Pechon Pechon</h6>
+                                                                <span class="text-muted ms-2">Sep 26 2019, 10:14am</span> 
+                                                            </div> 
+                                                            <div class="ms-auto"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new option-dots2" data-bs-toggle="dropdown" href="JavaScript:void(0);"><i class="fas fa-ellipsis-v"></i></a> 
+                                                                    <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Edit Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Delete Post</a> 
+                                                                        <a class="dropdown-item" href="javascript:void(0);">Personal Settings</a> 
+                                                                    </div> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                    <div class="card-body h-100"> 
+                                                        <p class="mg-t-0">There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable.</p>
+                                                        <div class="row row-sm"> 
+                                                            <div class="col"> 
+                                                                <img alt="img" class="wd-200 me-3 br-4 mt-2 mt-sm-0" src="~/assets/images/media/media-9.jpg"> 
+                                                                <img alt="img" class="wd-200 br-4 mt-2 mt-sm-0" src="~/assets/images/media/media-17.jpg"> 
+                                                            </div> 
+                                                        </div> 
+                                                        <div class="media mg-t-15 profile-footer"> 
+                                                            <div class="media-user me-2"> 
+                                                                <div class="avatar-list-stacked"> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/1.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/3.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/2.jpg" alt="img"> </span> 
+                                                                    <span class="avatar avatar-sm avatar-rounded"> <img src="~/assets/images/faces/10.jpg" alt="img"> </span> 
+                                                                    <a class="avatar avatar-sm bg-primary avatar-rounded text-fixed-white" href="javascript:void(0);"> +8 </a> 
+                                                                </div> 
+                                                                <!-- demo-avatar-group --> 
+                                                            </div> 
+                                                            <div class="media-body"> 
+                                                                <h6 class="mb-0 mg-t-10">28 people like your photo</h6> 
+                                                            </div> 
+                                                            <div class="ms-auto mt-1 mt-sm-0"> 
+                                                                <div class="dropdown show"> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-heart me-3"></i></a> 
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-comment me-3"></i></a>
+                                                                    <a class="new" href="JavaScript:void(0);"><i class="far fa-share-square"></i></a> 
+                                                                </div> 
+                                                            </div> 
+                                                        </div> 
+                                                    </div> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <!-- main-profile-body --> 
+                                </div> 
+                            </div> 
+                        </div> 
+                        <div class="main-content-body p-4 border tab-pane border-top-0" id="gallery" role="tabpanel"> 
+                            <div class="card-body border"> 
+                                <div class="row"> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-4.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-4.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-5.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-5.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-8.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-8.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-9.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-9.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-12.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-12.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-15.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-15.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-17.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-17.jpg" alt="image"> </a> 
+                                    </div> 
+                                    <div class="col-lg-3 col-md-3 col-sm-6 col-12"> 
+                                        <a href="~/assets/images/media/media-5.jpg" class="glightbox card" data-gallery="gallery1"> <img src="~/assets/images/media/media-5.jpg" alt="image"> </a> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div> 
+                        <div class="main-content-body tab-pane border-top-0 p-0" id="friends" role="tabpanel"> 
+                            <div class="card-body border pd-b-10"> 
+                                <!-- row --> 
+                                <div class="row row-sm"> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> <i class="fe fe-more-vertical"></i> </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/2.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class=" mb-1 mt-3 main-content-label">Socrates Itumay</h5></a> 
+                                                <p class="mb-2 mt-1 ">Project Manager</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><i class="fe fe-more-vertical"></i> 
+                                                        </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/3.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3  main-content-label">Reynante Labares</h5></a> 
+                                                <p class="mb-2 mt-1 ">Web Designer</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> 
+                                                            <i class="fe fe-more-vertical"></i> 
+                                                        </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/4.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3 main-content-label">Owen Bongcaras</h5></a> 
+                                                <p class="mb-2 mt-1 ">App Developer</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> 
+                                                            <i class="fe fe-more-vertical"></i> 
+                                                        </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/8.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3 main-content-label">Stephen Metcalfe</h5></a> 
+                                                <p class="mb-2 mt-1 ">Administrator</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                                            <i class="fe fe-more-vertical"></i> 
+                                                        </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"> <img alt="avatar" class="rounded-circle" src="~/assets/images/faces/2.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class=" mb-1 mt-3 main-content-label">Socrates Itumay</h5></a> 
+                                                <p class="mb-2 mt-1 ">Project Manager</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> <i class="fe fe-more-vertical"></i> </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"> <img alt="avatar" class="rounded-circle" src="~/assets/images/faces/3.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3  main-content-label">Reynante Labares</h5></a> 
+                                                <p class="mb-2 mt-1 ">Web Designer</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> <i class="fe fe-more-vertical"></i> </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/4.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3 main-content-label">Owen Bongcaras</h5></a> 
+                                                <p class="mb-2 mt-1 ">App Developer</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-3"> 
+                                        <div class="card custom-card border"> 
+                                            <div class="card-body text-center"> 
+                                                <div class="user-lock text-center"> 
+                                                    <div class="dropdown text-end"> 
+                                                        <a href="javascript:void(0);" class="option-dots" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true"> <i class="fe fe-more-vertical"></i> </a> 
+                                                        <div class="dropdown-menu dropdown-menu-end shadow"> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-message-square me-2"></i> Message</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-edit-2 me-2"></i> Edit</a> 
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-eye me-2"></i> View</a>
+                                                            <a class="dropdown-item" href="javascript:void(0);"><i class="fe fe-trash-2 me-2"></i> Delete</a> 
+                                                        </div> 
+                                                    </div> 
+                                                    <a href="profile.html"><img alt="avatar" class="rounded-circle" src="~/assets/images/faces/8.jpg"></a> 
+                                                </div> 
+                                                <a href="profile.html"><h5 class="mb-1 mt-3 main-content-label">Stephen Metcalfe</h5></a> 
+                                                <p class="mb-2 mt-1 ">Administrator</p>
+                                                <p class="text-muted text-center mt-1">Lorem Ipsum is not simply popular belief Contrary.</p>
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </div> 
+                            </div> 
+                        </div>
+                        <div class="main-content-body tab-pane p-4 border-top-0" id="settings" role="tabpanel"> 
+                            <div class="card-body border" data-select2-id="12"> 
+                                <form class="form-horizontal" data-select2-id="11"> 
+                                    <div class="mb-4 main-content-label">Account</div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">User Name</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="User Name" value="Sonia Taylor"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Email</label> 
+                                            </div> 
+                                            <div class="col-md-9"> 
+                                                <input type="text" class="form-control" placeholder="Email" value="info@SoniaTaylor.in"> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group " data-select2-id="108"> 
+                                        <div class="row" data-select2-id="107"> 
+                                            <div class="col-md-3"> 
+                                                <label class="form-label">Language</label> 
+                                            </div> 
+                                            <div class="col-md-9" data-select2-id="106"> 
+                                                <div class="choices" data-type="select-one" tabindex="0" role="listbox" aria-haspopup="true" aria-expanded="false">
+                                                    <div class="choices__inner">
+                                                        <select class="form-control select2 choices__input" data-select2-id="5" tabindex="-1" aria-hidden="true" data-trigger="" hidden="" data-choice="active">
+                                                            <option value="Us English" data-custom-properties="[object Object]">Us English</option>
+                                                        </select>
+                                                        <div class="choices__list choices__list--single">
+                                                            <div class="choices__item choices__item--selectable" data-item="" data-id="1" data-value="Us English" data-custom-properties="[object Object]" aria-selected="true">Us English</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                                        <div class="choices__list" role="listbox">
+                                                            <div id="choices--dbwr-item-choice-1" class="choices__item choices__item--choice choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="Arabic" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Arabic</div>
+                                                            <div id="choices--dbwr-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Korean" data-select-text="Press to select" data-choice-selectable="">Korean</div>
+                                                            <div id="choices--dbwr-item-choice-3" class="choices__item choices__item--choice is-selected choices__item--selectable" role="option" data-choice="" data-id="3" data-value="Us English" data-select-text="Press to select" data-choice-selectable="">Us English</div>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group " data-select2-id="10"> 
+                                        <div class="row" data-select2-id="9"> 
+                                            <div class="col-md-3"> <label class="form-label">Timezone</label> </div> 
+                                            <div class="col-md-9" data-select2-id="8"> 
+                                                <div class="choices" data-type="select-one" tabindex="0" role="listbox" aria-haspopup="true" aria-expanded="false">
+                                                    <div class="choices__inner">
+                                                        <select class="form-control select2 choices__input" data-select2-id="4" tabindex="-1" aria-hidden="true" data-trigger="" hidden="" data-choice="active">
+                                                            <option value="Pacific/Midway" data-custom-properties="[object Object]">(GMT-11:00) Midway Island, Samoa</option>
+                                                        </select>
+                                                        <div class="choices__list choices__list--single">
+                                                            <div class="choices__item choices__item--selectable" data-item="" data-id="1" data-value="Pacific/Midway" data-custom-properties="[object Object]" aria-selected="true">(GMT-11:00) Midway Island, Samoa</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                                        <div class="choices__list" role="listbox">
+                                                            <div id="choices--iird-item-choice-1" class="choices__item choices__item--choice choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="Europe/Amsterdam" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna</div>
+                                                            <div id="choices--iird-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Europe/Belgrade" data-select-text="Press to select" data-choice-selectable="">(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague</div>
+                                                            <div id="choices--iird-item-choice-3" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="3" data-value="Europe/Brussels" data-select-text="Press to select" data-choice-selectable="">(GMT+01:00) Brussels, Copenhagen, Madrid, Paris</div>
+                                                            <div id="choices--iird-item-choice-4" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="4" data-value="Africa/Algiers" data-select-text="Press to select" data-choice-selectable="">(GMT+01:00) West Central Africa</div>
+                                                            <div id="choices--iird-item-choice-5" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="5" data-value="Africa/Windhoek" data-select-text="Press to select" data-choice-selectable="">(GMT+01:00) Windhoek</div>
+                                                            <div id="choices--iird-item-choice-6" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="6" data-value="Asia/Beirut" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Beirut</div>
+                                                            <div id="choices--iird-item-choice-7" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="7" data-value="Africa/Cairo" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Cairo</div>
+                                                            <div id="choices--iird-item-choice-8" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="8" data-value="Asia/Gaza" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Gaza</div>
+                                                            <div id="choices--iird-item-choice-9" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="9" data-value="Africa/Blantyre" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Harare, Pretoria</div>
+                                                            <div id="choices--iird-item-choice-10" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="10" data-value="Asia/Jerusalem" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Jerusalem</div>
+                                                            <div id="choices--iird-item-choice-11" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="11" data-value="Europe/Minsk" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Minsk</div>
+                                                            <div id="choices--iird-item-choice-12" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="12" data-value="Asia/Damascus" data-select-text="Press to select" data-choice-selectable="">(GMT+02:00) Syria</div>
+                                                            <div id="choices--iird-item-choice-13" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="13" data-value="Europe/Moscow" data-select-text="Press to select" data-choice-selectable="">(GMT+03:00) Moscow, St. Petersburg, Volgograd</div>
+                                                            <div id="choices--iird-item-choice-14" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="14" data-value="Africa/Addis_Ababa" data-select-text="Press to select" data-choice-selectable="">(GMT+03:00) Nairobi</div>
+                                                            <div id="choices--iird-item-choice-15" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="15" data-value="Asia/Tehran" data-select-text="Press to select" data-choice-selectable="">(GMT+03:30) Tehran</div>
+                                                            <div id="choices--iird-item-choice-16" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="16" data-value="Asia/Dubai" data-select-text="Press to select" data-choice-selectable="">(GMT+04:00) Abu Dhabi, Muscat</div>
+                                                            <div id="choices--iird-item-choice-17" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="17" data-value="Asia/Yerevan" data-select-text="Press to select" data-choice-selectable="">(GMT+04:00) Yerevan</div>
+                                                            <div id="choices--iird-item-choice-18" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="18" data-value="Asia/Kabul" data-select-text="Press to select" data-choice-selectable="">(GMT+04:30) Kabul</div>
+                                                            <div id="choices--iird-item-choice-19" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="19" data-value="Asia/Yekaterinburg" data-select-text="Press to select" data-choice-selectable="">(GMT+05:00) Ekaterinburg</div>
+                                                            <div id="choices--iird-item-choice-20" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="20" data-value="Asia/Tashkent" data-select-text="Press to select" data-choice-selectable="">(GMT+05:00) Tashkent</div>
+                                                            <div id="choices--iird-item-choice-21" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="21" data-value="Asia/Kolkata" data-select-text="Press to select" data-choice-selectable="">(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi</div>
+                                                            <div id="choices--iird-item-choice-22" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="22" data-value="Asia/Katmandu" data-select-text="Press to select" data-choice-selectable="">(GMT+05:45) Kathmandu</div>
+                                                            <div id="choices--iird-item-choice-23" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="23" data-value="Asia/Dhaka" data-select-text="Press to select" data-choice-selectable="">(GMT+06:00) Astana, Dhaka</div>
+                                                            <div id="choices--iird-item-choice-24" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="24" data-value="Asia/Novosibirsk" data-select-text="Press to select" data-choice-selectable="">(GMT+06:00) Novosibirsk</div>
+                                                            <div id="choices--iird-item-choice-25" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="25" data-value="Asia/Rangoon" data-select-text="Press to select" data-choice-selectable="">(GMT+06:30) Yangon (Rangoon)</div>
+                                                            <div id="choices--iird-item-choice-26" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="26" data-value="Asia/Bangkok" data-select-text="Press to select" data-choice-selectable="">(GMT+07:00) Bangkok, Hanoi, Jakarta</div>
+                                                            <div id="choices--iird-item-choice-27" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="27" data-value="Asia/Krasnoyarsk" data-select-text="Press to select" data-choice-selectable="">(GMT+07:00) Krasnoyarsk</div>
+                                                            <div id="choices--iird-item-choice-28" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="28" data-value="Asia/Hong_Kong" data-select-text="Press to select" data-choice-selectable="">(GMT+08:00) Beijing, Chongqing, Hong Kong, Urumqi</div>
+                                                            <div id="choices--iird-item-choice-29" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="29" data-value="Asia/Irkutsk" data-select-text="Press to select" data-choice-selectable="">(GMT+08:00) Irkutsk, Ulaan Bataar</div>
+                                                            <div id="choices--iird-item-choice-30" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="30" data-value="Australia/Perth" data-select-text="Press to select" data-choice-selectable="">(GMT+08:00) Perth</div>
+                                                            <div id="choices--iird-item-choice-31" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="31" data-value="Australia/Eucla" data-select-text="Press to select" data-choice-selectable="">(GMT+08:45) Eucla</div>
+                                                            <div id="choices--iird-item-choice-32" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="32" data-value="Asia/Tokyo" data-select-text="Press to select" data-choice-selectable="">(GMT+09:00) Osaka, Sapporo, Tokyo</div>
+                                                            <div id="choices--iird-item-choice-33" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="33" data-value="Asia/Seoul" data-select-text="Press to select" data-choice-selectable="">(GMT+09:00) Seoul</div>
+                                                            <div id="choices--iird-item-choice-34" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="34" data-value="Asia/Yakutsk" data-select-text="Press to select" data-choice-selectable="">(GMT+09:00) Yakutsk</div>
+                                                            <div id="choices--iird-item-choice-35" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="35" data-value="Australia/Adelaide" data-select-text="Press to select" data-choice-selectable="">(GMT+09:30) Adelaide</div>
+                                                            <div id="choices--iird-item-choice-36" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="36" data-value="Australia/Darwin" data-select-text="Press to select" data-choice-selectable="">(GMT+09:30) Darwin</div>
+                                                            <div id="choices--iird-item-choice-37" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="37" data-value="Australia/Brisbane" data-select-text="Press to select" data-choice-selectable="">(GMT+10:00) Brisbane</div>
+                                                            <div id="choices--iird-item-choice-38" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="38" data-value="Australia/Hobart" data-select-text="Press to select" data-choice-selectable="">(GMT+10:00) Hobart</div>
+                                                            <div id="choices--iird-item-choice-39" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="39" data-value="Asia/Vladivostok" data-select-text="Press to select" data-choice-selectable="">(GMT+10:00) Vladivostok</div>
+                                                            <div id="choices--iird-item-choice-40" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="40" data-value="Australia/Lord_Howe" data-select-text="Press to select" data-choice-selectable="">(GMT+10:30) Lord Howe Island</div>
+                                                            <div id="choices--iird-item-choice-41" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="41" data-value="Asia/Magadan" data-select-text="Press to select" data-choice-selectable="">(GMT+11:00) Magadan</div>
+                                                            <div id="choices--iird-item-choice-42" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="42" data-value="Etc/GMT-11" data-select-text="Press to select" data-choice-selectable="">(GMT+11:00) Solomon Is., New Caledonia</div>
+                                                            <div id="choices--iird-item-choice-43" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="43" data-value="Pacific/Norfolk" data-select-text="Press to select" data-choice-selectable="">(GMT+11:30) Norfolk Island</div>
+                                                            <div id="choices--iird-item-choice-44" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="44" data-value="Asia/Anadyr" data-select-text="Press to select" data-choice-selectable="">(GMT+12:00) Anadyr, Kamchatka</div>
+                                                            <div id="choices--iird-item-choice-45" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="45" data-value="Pacific/Auckland" data-select-text="Press to select" data-choice-selectable="">(GMT+12:00) Auckland, Wellington</div>
+                                                            <div id="choices--iird-item-choice-46" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="46" data-value="Etc/GMT-12" data-select-text="Press to select" data-choice-selectable="">(GMT+12:00) Fiji, Kamchatka, Marshall Is.</div>
+                                                            <div id="choices--iird-item-choice-47" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="47" data-value="Pacific/Chatham" data-select-text="Press to select" data-choice-selectable="">(GMT+12:45) Chatham Islands</div>
+                                                            <div id="choices--iird-item-choice-48" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="48" data-value="Pacific/Tongatapu" data-select-text="Press to select" data-choice-selectable="">(GMT+13:00) Nuku'alofa</div>
+                                                            <div id="choices--iird-item-choice-49" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="49" data-value="Pacific/Kiritimati" data-select-text="Press to select" data-choice-selectable="">(GMT+14:00) Kiritimati</div>
+                                                            <div id="choices--iird-item-choice-50" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="50" data-value="Atlantic/Azores" data-select-text="Press to select" data-choice-selectable="">(GMT-01:00) Azores</div>
+                                                            <div id="choices--iird-item-choice-51" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="51" data-value="Atlantic/Cape_Verde" data-select-text="Press to select" data-choice-selectable="">(GMT-01:00) Cape Verde Is.</div>
+                                                            <div id="choices--iird-item-choice-52" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="52" data-value="America/Noronha" data-select-text="Press to select" data-choice-selectable="">(GMT-02:00) Mid-Atlantic</div>
+                                                            <div id="choices--iird-item-choice-53" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="53" data-value="America/Sao_Paulo" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) Brasilia</div>
+                                                            <div id="choices--iird-item-choice-54" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="54" data-value="America/Argentina/Buenos_Aires" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) Buenos Aires</div>
+                                                            <div id="choices--iird-item-choice-55" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="55" data-value="America/Godthab" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) Greenland</div>
+                                                            <div id="choices--iird-item-choice-56" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="56" data-value="America/Miquelon" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) Miquelon, St. Pierre</div>
+                                                            <div id="choices--iird-item-choice-57" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="57" data-value="America/Montevideo" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) Montevideo</div>
+                                                            <div id="choices--iird-item-choice-58" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="58" data-value="America/Araguaina" data-select-text="Press to select" data-choice-selectable="">(GMT-03:00) UTC-3</div>
+                                                            <div id="choices--iird-item-choice-59" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="59" data-value="America/St_Johns" data-select-text="Press to select" data-choice-selectable="">(GMT-03:30) Newfoundland</div>
+                                                            <div id="choices--iird-item-choice-60" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="60" data-value="America/Glace_Bay" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) Atlantic Time (Canada)</div>
+                                                            <div id="choices--iird-item-choice-61" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="61" data-value="America/Goose_Bay" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) Atlantic Time (Goose Bay)</div>
+                                                            <div id="choices--iird-item-choice-62" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="62" data-value="America/Campo_Grande" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) Brazil</div>
+                                                            <div id="choices--iird-item-choice-63" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="63" data-value="Atlantic/Stanley" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) Faukland Islands</div>
+                                                            <div id="choices--iird-item-choice-64" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="64" data-value="America/La_Paz" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) La Paz</div>
+                                                            <div id="choices--iird-item-choice-65" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="65" data-value="America/Santiago" data-select-text="Press to select" data-choice-selectable="">(GMT-04:00) Santiago</div>
+                                                            <div id="choices--iird-item-choice-66" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="66" data-value="America/Caracas" data-select-text="Press to select" data-choice-selectable="">(GMT-04:30) Caracas</div>
+                                                            <div id="choices--iird-item-choice-67" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="67" data-value="America/Bogota" data-select-text="Press to select" data-choice-selectable="">(GMT-05:00) Bogota, Lima, Quito, Rio Branco</div>
+                                                            <div id="choices--iird-item-choice-68" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="68" data-value="America/Havana" data-select-text="Press to select" data-choice-selectable="">(GMT-05:00) Cuba</div>
+                                                            <div id="choices--iird-item-choice-69" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="69" data-value="America/New_York" data-select-text="Press to select" data-choice-selectable="">(GMT-05:00) Eastern Time (US &amp; Canada)</div>
+                                                            <div id="choices--iird-item-choice-70" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="70" data-value="America/Chicago" data-select-text="Press to select" data-choice-selectable="">(GMT-06:00) Central Time (US &amp; Canada)</div>
+                                                            <div id="choices--iird-item-choice-71" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="71" data-value="Chile/EasterIsland" data-select-text="Press to select" data-choice-selectable="">(GMT-06:00) Easter Island</div>
+                                                            <div id="choices--iird-item-choice-72" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="72" data-value="America/Cancun" data-select-text="Press to select" data-choice-selectable="">(GMT-06:00) Guadalajara, Mexico City, Monterrey</div>
+                                                            <div id="choices--iird-item-choice-73" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="73" data-value="America/Belize" data-select-text="Press to select" data-choice-selectable="">(GMT-06:00) Saskatchewan, Central America</div>
+                                                            <div id="choices--iird-item-choice-74" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="74" data-value="America/Dawson_Creek" data-select-text="Press to select" data-choice-selectable="">(GMT-07:00) Arizona</div>
+                                                            <div id="choices--iird-item-choice-75" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="75" data-value="America/Chihuahua" data-select-text="Press to select" data-choice-selectable="">(GMT-07:00) Chihuahua, La Paz, Mazatlan</div>
+                                                            <div id="choices--iird-item-choice-76" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="76" data-value="America/Denver" data-select-text="Press to select" data-choice-selectable="">(GMT-07:00) Mountain Time (US &amp; Canada)</div>
+                                                            <div id="choices--iird-item-choice-77" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="77" data-value="America/Los_Angeles" data-select-text="Press to select" data-choice-selectable="">(GMT-08:00) Pacific Time (US &amp; Canada)</div>
+                                                            <div id="choices--iird-item-choice-78" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="78" data-value="Etc/GMT+8" data-select-text="Press to select" data-choice-selectable="">(GMT-08:00) Pitcairn Islands</div>
+                                                            <div id="choices--iird-item-choice-79" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="79" data-value="America/Ensenada" data-select-text="Press to select" data-choice-selectable="">(GMT-08:00) Tijuana, Baja California</div>
+                                                            <div id="choices--iird-item-choice-80" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="80" data-value="America/Anchorage" data-select-text="Press to select" data-choice-selectable="">(GMT-09:00) Alaska</div>
+                                                            <div id="choices--iird-item-choice-81" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="81" data-value="Pacific/Gambier" data-select-text="Press to select" data-choice-selectable="">(GMT-09:00) Gambier Islands</div>
+                                                            <div id="choices--iird-item-choice-82" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="82" data-value="Pacific/Marquesas" data-select-text="Press to select" data-choice-selectable="">(GMT-09:30) Marquesas Islands</div>
+                                                            <div id="choices--iird-item-choice-83" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="83" data-value="Etc/GMT+10" data-select-text="Press to select" data-choice-selectable="">(GMT-10:00) Hawaii</div>
+                                                            <div id="choices--iird-item-choice-84" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="84" data-value="America/Adak" data-select-text="Press to select" data-choice-selectable="">(GMT-10:00) Hawaii-Aleutian</div>
+                                                            <div id="choices--iird-item-choice-85" class="choices__item choices__item--choice is-selected choices__item--selectable" role="option" data-choice="" data-id="85" data-value="Pacific/Midway" data-select-text="Press to select" data-choice-selectable="">(GMT-11:00) Midway Island, Samoa</div>
+                                                            <div id="choices--iird-item-choice-86" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="86" data-value="Europe/Belfast" data-select-text="Press to select" data-choice-selectable="">(GMT) Greenwich Mean Time : Belfast</div>
+                                                            <div id="choices--iird-item-choice-87" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="87" data-value="Europe/Dublin" data-select-text="Press to select" data-choice-selectable="">(GMT) Greenwich Mean Time : Dublin</div>
+                                                            <div id="choices--iird-item-choice-88" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="88" data-value="Europe/Lisbon" data-select-text="Press to select" data-choice-selectable="">(GMT) Greenwich Mean Time : Lisbon</div>
+                                                            <div id="choices--iird-item-choice-89" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="89" data-value="Europe/London" data-select-text="Press to select" data-choice-selectable="">(GMT) Greenwich Mean Time : London</div>
+                                                            <div id="choices--iird-item-choice-90" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="90" data-value="Africa/Abidjan" data-select-text="Press to select" data-choice-selectable="">(GMT) Monrovia, Reykjavik</div>
+                                                        </div>
+                                                    </div>
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group "> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-3 col"> 
+                                                <label class="form-label">Verification</label> 
+                                            </div> 
+                                            <div class="col-md-9 col"> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefaul1"> 
+                                                    <label class="form-check-label" for="flexCheckDefaul1"> Email </label> 
+                                                </div> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefaul2" checked=""> 
+                                                    <label class="form-check-label" for="flexCheckDefaul2"> SMS </label> 
+                                                </div> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefaul3"> 
+                                                    <label class="form-check-label" for="flexCheckDefaul3"> Phone </label> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="mb-4 main-content-label">Secuirity Settings</div> 
+                                    <div class="form-group mb-0"> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-2"> 
+                                                <label class="form-label">Login Verification</label> 
+                                            </div> 
+                                            <div class="col-md-10"> 
+                                                <a class="" href="javascript:void(0);">Set up Verification</a> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group mb-0"> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-2"> 
+                                                <label class="form-label">Password Verification</label>
+                                            </div> 
+                                            <div class="col-md-10"> 
+                                                <div class="form-check"> 
+                                                    <input class="form-check-input" type="checkbox" value="" id="flexCheckDefaul4"> 
+                                                    <label class="form-check-label" for="flexCheckDefaul4"> Require Personal Details </label> 
+                                                </div> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                    <div class="form-group mb-0"> 
+                                        <div class="row row-sm"> 
+                                            <div class="col-md-2"> </div> 
+                                            <div class="col-md-10 d-inline-flex"> 
+                                                <a class="me-4" href="javascript:void(0);">Deactivate Account</a> <a class="" href="javascript:void(0);">Change Password</a> 
+                                            </div> 
+                                        </div> 
+                                    </div> 
+                                </form>
+                            </div> 
+                        </div>  *@
+                    </div> 
+                </div> 
+            </div> 
+        </div> 
+        <!-- End Row --> 
+        <!--End::row-1 --> 
+    </div>
+</div>
+<script>
+    function cancelSubscription(sid) {
+
+        if (!confirm("Are you sure you want to cancel your subscription?")) {
+            return;
+        }
+
+        console.log(JSON.stringify({ strId: sid }))
+
+        fetch('/Cancel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ StrId: sid })
+            })
+        .then(res => res.json())
+        .then(data => {
+            alert("Subscription cancellation request submitted successfully");
+            location.reload();
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Something went wrong");
+        });
+
+    }
+
+
+    function upgradeSubscription() {
+
+        fetch('/api/subscription/upgrade', {
+            method: 'POST'
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            // Redirect to Stripe checkout
+            window.location.href = data.checkoutUrl;
+
+        });
+
+    }
+</script>
