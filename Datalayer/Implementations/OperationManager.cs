@@ -4663,7 +4663,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId)
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId, DashFilter filt)
         {
             try
             {
@@ -4672,86 +4672,63 @@ namespace Datalayer.Implementations
 
                 var query = "select Methodology as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Methodology";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -4778,7 +4755,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId)
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByStatus(int orgId, DashFilter filt)
         {
             try
             {
@@ -4787,86 +4764,63 @@ namespace Datalayer.Implementations
 
                 var query = "select Status as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Status";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -4893,7 +4847,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetStatusCountByMonth(int orgId)
+        public async Task<ResponseHandler<MethodologyMonthlyStatusDTO>> GetStatusCountByMonth(int orgId, DashFilter filt)
         {
             try
             {
@@ -4902,86 +4856,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT DATENAME(MONTH, DateCreated) AS [Month], SUM(CASE WHEN Status = 'COMPLETED' THEN 1 ELSE 0 END) AS Completed, SUM(CASE WHEN Status = 'INITIATED' THEN 1 ELSE 0 END) AS Initiated, SUM(CASE WHEN Status = 'PROPOSED' THEN 1 ELSE 0 END) AS Proposed FROM ContinuousImprovement WHERE Status NOT IN ('CLOSED', 'CANCELLED') AND DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND DateCreated <= GETDATE() and OrganizationId = @oid @where GROUP BY YEAR(DateCreated), MONTH(DateCreated), DATENAME(MONTH, DateCreated) ORDER BY YEAR(DateCreated), MONTH(DateCreated)";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<MethodologyMonthlyStatusDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<MethodologyMonthlyStatusDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<MethodologyMonthlyStatusDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5008,7 +4939,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId)
+        public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByCertification(int orgId, DashFilter filt)
         {
             try
             {
@@ -5017,86 +4948,63 @@ namespace Datalayer.Implementations
 
                 var query = "select Certification as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Certification";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5123,7 +5031,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId)
+        public async Task<ResponseHandler<NameValueDTO>> GetSavingsByCategory(int orgId, DashFilter filt)
         {
             try
             {
@@ -5132,86 +5040,63 @@ namespace Datalayer.Implementations
 
                 var query = "select b.Category as Name, Count(b.Id) as Value from ContinuousImprovement a left join CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by b.Category";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND a.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND a.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND a.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND a.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND a.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND a.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5238,7 +5123,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId)
+        public async Task<ResponseHandler<MonthlySavingsDTO>> GetMonthlySavings(int orgId, DashFilter filt)
         {
             try
             {
@@ -5247,86 +5132,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT DATENAME(MONTH, s.DateCreated) AS [Month], YEAR(s.DateCreated) AS [Year], SUM(CASE WHEN s.SavingType = 'Cost Avoidance' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostAvoidance, SUM(CASE WHEN s.SavingType = 'Revenue' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS Revenue, SUM(CASE WHEN s.SavingType = 'Cost Reduction' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostReduction, SUM(CASE WHEN s.SavingType = 'Cost Containment' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostContainment FROM CIProjectSaving s INNER JOIN ContinuousImprovement p ON s.ProjectId = p.Id WHERE s.SavingClassification = 'Hard' AND p.Status NOT IN ('CLOSED', 'CANCELLED') AND p.DateCreated >= DATEADD(DAY, -365, GETDATE()) AND s.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND s.DateCreated <= GETDATE() and p.OrganizationId = @oid @where GROUP BY YEAR(s.DateCreated), MONTH(s.DateCreated), DATENAME(MONTH, s.DateCreated) ORDER BY YEAR(s.DateCreated), MONTH(s.DateCreated)";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<MonthlySavingsDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<MonthlySavingsDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND p.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND p.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND p.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND p.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND p.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND p.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<MonthlySavingsDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5353,7 +5215,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUserCI(int orgId)
+        public async Task<ResponseHandler<UserCompletedProjectsDTO>> GetCompletedProjectsByUserCI(int orgId, DashFilter filt)
         {
             try
             {
@@ -5362,86 +5224,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT u.Name AS name, COUNT(ci.Id) AS completed FROM CIProjectTeamMember tm INNER JOIN ContinuousImprovement ci ON tm.ProjectId = ci.Id INNER JOIN CIUser u ON tm.UserId = u.Id WHERE tm.Role = 'Facilitator' AND ci.Status = 'COMPLETED' AND ci.DateCreated >= DATEADD(DAY, -365, GETDATE()) and ci.OrganizationId = @oid @where GROUP BY u.Name ORDER BY COUNT(ci.Id) DESC";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<UserCompletedProjectsDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<UserCompletedProjectsDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<UserCompletedProjectsDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5468,7 +5307,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId)
+        public async Task<ResponseHandler<MonthlyProjectsByMethodologyDTO>> GetMonthlyProjectsByMethodologies(int orgId, DashFilter filt)
         {
             try
             {
@@ -5477,86 +5316,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT DATENAME(MONTH, DateCreated) AS [month], YEAR(DateCreated) AS [year], SUM(CASE WHEN Methodology = 'DMAIC' THEN 1 ELSE 0 END) AS dmaic, SUM(CASE WHEN Methodology = 'Gemba Kaizen' THEN 1 ELSE 0 END) AS gemba, SUM(CASE WHEN Methodology = 'Project' THEN 1 ELSE 0 END) AS project, SUM(CASE WHEN Methodology = 'JDI' THEN 1 ELSE 0 END) AS jdi, SUM(CASE WHEN Methodology = 'Others' THEN 1 ELSE 0 END) AS others FROM ContinuousImprovement WHERE Status NOT IN ('CLOSED', 'CANCELLED') AND DateCreated >= DATEADD(DAY, -365, GETDATE()) AND OrganizationId = @oid @where GROUP BY YEAR(DateCreated), MONTH(DateCreated), DATENAME(MONTH, DateCreated) ORDER BY YEAR(DateCreated), MONTH(DateCreated)";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<MonthlyProjectsByMethodologyDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<MonthlyProjectsByMethodologyDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<MonthlyProjectsByMethodologyDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5583,7 +5399,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId)
+        public async Task<ResponseHandler<MonthlyProjectsByDepartmentDTO>> GetMonthlyProjectsByDepartment(int orgId, DashFilter filt)
         {
             try
             {
@@ -5592,86 +5408,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, YEAR(ci.DateCreated) AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, od.Department, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN OrganizationDepartment od ON ci.DepartmentId = od.Id WHERE ci.OrganizationId = @oid and ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), od.Department @where ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), od.Department";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5725,7 +5518,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId)
+        public async Task<ResponseHandler<MonthlyProjectsByPhaseDTO>> GetMonthlyProjectsByPhase(int orgId, DashFilter filt)
         {
             try
             {
@@ -5734,86 +5527,63 @@ namespace Datalayer.Implementations
 
                 var query = "SELECT YEAR(ci.DateCreated)  AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, mp.Phase, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN MethodologyPhase mp ON ci.Phase = mp.Id WHERE ci.Status NOT IN ('CLOSED', 'CANCELLED')  AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), mp.Phase ORDER BY YearNumber, MonthNumber, mp.Phase";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
 
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
 
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.OrganizationCountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
 
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.OrganizationDepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
 
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
 
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
 
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
+                    var finalQuery = query.Replace("@where", where.ToString());
 
-                //    var finalQuery = query.Replace("@where", where.ToString());
+                    parameters.Add("@oid", orgId);
 
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
+                    resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 if (resi.Any())
                 {
@@ -5867,28 +5637,82 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId)
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId, DashFilter filt)
         {
             try
             {
+                IEnumerable<DashboardAnalytics> cire = null;
                 List<DashboardAnalytics> resi = null;
+                var dict = new Dictionary<string, DashboardAnalytics>();
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
                 var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
 
-                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+                //var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
 
-                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+                //var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
 
-                //if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
-                //{
-                var cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
 
-                var oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                    //var oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
 
-                var sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                    //var sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
 
-                var dict = new Dictionary<string, DashboardAnalytics>();
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                    }
+
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
+
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
+
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
+
+                    if (filt.StartDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
+
+                    if (filt.EndDate != DateTime.MinValue)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
+
+                    var finalQuery = ciquery.Replace("@where", where.ToString());
+
+                    parameters.Add("@oid", orgId);
+
+                    cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
 
                 void Merge(IEnumerable<DashboardAnalytics> items)
                 {
@@ -5917,84 +5741,6 @@ namespace Datalayer.Implementations
                 //Merge(oere);
                 //Merge(sire);
 
-                //}
-                //else
-                //{
-                //    var where = new StringBuilder();
-                //    var where1 = new StringBuilder();
-                //    var parameters = new DynamicParameters();
-
-                //    if (!string.IsNullOrWhiteSpace(filt.Title))
-                //    {
-                //        where.Append(" AND a.Title LIKE @Title");
-                //        where1.Append(" AND Title LIKE @Title");
-                //        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                //    }
-
-                //    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                //    {
-                //        where.Append(" AND a.Priority = @Priority");
-                //        where1.Append(" AND Priority = @Priority");
-                //        parameters.Add("@Priority", filt.Priority.Trim());
-                //    }
-
-                //    if (!string.IsNullOrWhiteSpace(filt.Status))
-                //    {
-                //        where.Append(" AND a.Status = @Stat");
-                //        where1.Append(" AND Status LIKE @Stat");
-                //        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
-                //    }
-
-                //    if (filt.UserId > 0)
-                //    {
-                //        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                //        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                //        parameters.Add("@UserId", filt.UserId);
-                //    }
-
-                //    if (filt.CountryId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                //        where1.Append(" AND OrganizationCountryId = @CountryId");
-                //        parameters.Add("@CountryId", filt.CountryId);
-                //    }
-
-                //    if (filt.DepartmentId > 0)
-                //    {
-                //        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                //        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                //        parameters.Add("@DepartmentId", filt.DepartmentId);
-                //    }
-
-                //    if (filt.StartDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.StartDate >= @StartDate");
-                //        where1.Append(" AND StartDate >= @StartDate");
-                //        parameters.Add("@StartDate", filt.StartDate.Date);
-                //    }
-
-                //    if (filt.EndDate != DateTime.MinValue)
-                //    {
-                //        where.Append(" AND a.EndDate <= @EndDate");
-                //        where1.Append(" AND EndDate <= @EndDate");
-                //        parameters.Add("@EndDate", filt.EndDate.Date);
-                //    }
-
-                //    var finalQuery = query.Replace("@where", where.ToString());
-
-
-                //    parameters.Add("@oid", orgId);
-
-                //    var finalcountquery = countquery.Replace("@where", where1.ToString());
-
-                //    count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
-
-                //    parameters.Add("@pageNumber", pageNumber);
-                //    parameters.Add("@pageSize", pageSize);
-
-                //    resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
-                //}
-
                 if (dict.Any())
                 {
                     resi = dict.Values.ToList();
@@ -6018,6 +5764,39 @@ namespace Datalayer.Implementations
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationData)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+            }
+        }
+
+        public async Task<ResponseHandler<AccountDetails>> GetOrgAccountDetails(int orgId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetAsync<AccountDetails>(dbConnection, "SELECT org.Name, org.AdminName, org.AdminEmailAddress AS AdminEmail, org.AdminPhoneNumber AS AdminPhoneNumber, org.Address, SUM(CASE WHEN p.Status NOT IN ('CANCELLED', 'PROPOSED', 'CLOSED' ) THEN 1 ELSE 0 END) AS ActiveProjectCount, SUM(CASE WHEN p.Status = 'CLOSED' THEN 1 ELSE 0 END) AS ClosedProjectCount FROM Organization org LEFT JOIN (SELECT OrganizationId, Status FROM ContinuousImprovement UNION ALL SELECT OrganizationId, Status FROM OperationalExcellence UNION ALL SELECT OrganizationId, Status FROM StrategicInitiative) p ON p.OrganizationId = org.Id where org.Id = @oid GROUP BY org.Name, org.AdminName, org.AdminEmailAddress, org.AdminPhoneNumber, org.Address", new { oid = orgId }, CommandType.Text);
+                
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<AccountDetails>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<AccountDetails>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrgAccountDetails)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<AccountDetails>());
             }
         }
     }
