@@ -5038,7 +5038,7 @@ namespace Datalayer.Implementations
                 IEnumerable<NameValueDTO> resi = null;
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var query = "select b.Category as Name, Count(b.Id) as Value from ContinuousImprovement a left join CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by b.Category";
+                var query = "select b.Category as Name, Count(b.Id) as Value from ContinuousImprovement a inner join CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid and b.Category is not null @where group by b.Category";
 
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
