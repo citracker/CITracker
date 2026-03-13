@@ -678,7 +678,10 @@ namespace CITracker.Controllers
                     //get list of emails who should all be notified
                     var emails = await _opsManager.GetNotifiedUsers(model.Id);
                     var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
-                    ProjectUpdateNotification("CI", $"An update was made to the Continuous Initiative project titled {model.Title}", model.Title, usr.Name, emails);
+                    if (emails != null)
+                    {
+                        ProjectUpdateNotification("CI", $"An update was made to the Continuous Initiative project titled {model.Title}", model.Title, usr.Name, emails);
+                    }
 
                     return Ok(res.SingleResult);
                 }
@@ -746,7 +749,10 @@ namespace CITracker.Controllers
                     var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
                     var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
                     var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
-                    ProjectUpdateNotification("CI", $"An update was made to the team members list of the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    if (emails != null)
+                    {
+                        ProjectUpdateNotification("CI", $"An update was made to the team members list of the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    }
                     
                     return Ok(res);
                 }
@@ -815,7 +821,10 @@ namespace CITracker.Controllers
                     var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
                     var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
                     var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
-                    ProjectUpdateNotification("CI", $"An update was made to the project tool list for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    if (emails != null)
+                    {
+                        ProjectUpdateNotification("CI", $"An update was made to the project tool list for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    }
 
                     return Ok(res);
                 }
@@ -888,7 +897,10 @@ namespace CITracker.Controllers
                     var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
                     var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
                     var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
-                    ProjectUpdateNotification("CI", $"Comments were added to the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    if (emails != null)
+                    {
+                        ProjectUpdateNotification("CI", $"Comments were added to the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    }
 
                     return Ok(res);
                 }
@@ -976,10 +988,10 @@ namespace CITracker.Controllers
                     Id = model.ProjectId,
                     IsOneTimeSavings = model.OneTimeSaving,
                     IsCarryOverSavings = model.CarryOverSaving,
-                    FinancialVerificationDate = (DateTime) model.FinancialVerificationDate,
+                    FinancialVerificationDate = model.FinancialVerificationDate,
                     FinancialReportComment = model.FinancialReportComment,
                     IsAudited = model.IsAudited,
-                    AuditedBy = (long) model.Auditor,
+                    AuditedBy = model.Auditor == null ? 0 : (long)model.Auditor,
                     AuditedDate = model.AuditedDate
                 };
 
@@ -993,7 +1005,10 @@ namespace CITracker.Controllers
                     var emails = await _opsManager.GetNotifiedUsers(model.ProjectId);
                     var usr = await _opsManager.GetUser(Convert.ToInt64(HttpContext.Session.GetString("UserId")));
                     var proj = await _opsManager.GetCIProject(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), model.ProjectId);
-                    ProjectUpdateNotification("CI", $"An update was made to the Financial Verification section for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    if (emails != null)
+                    {
+                        ProjectUpdateNotification("CI", $"An update was made to the Financial Verification section for the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
+                    }
 
                     return Ok(res);
                 }
