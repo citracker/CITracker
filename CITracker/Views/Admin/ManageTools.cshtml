@@ -1,4 +1,5 @@
-﻿@model Shared.ViewModels.ManageToolsVM
+﻿@using CITracker.Resources
+@model Shared.ViewModels.ManageToolsVM
 
 @{
     ViewData["Title"] = "CI Tracker";
@@ -13,10 +14,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ToolManagement</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ToolManagement</li>
                 </ol>
             </div>
         </div>
@@ -26,14 +27,14 @@
             <div class="col-xl-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Initiative Details </div>
+                        <div class="card-title"> @SharedResource.InitiativeDetails </div>
                     </div>
                     <div class="card-body">
                         <div class="row gy-4 mb-5">
                             <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
-                                <label for="input-text" class="form-label"> Select Methodology </label>
+                                <label for="input-text" class="form-label"> @SharedResource.SelectMethodology </label>
                                 <select class="form-control" id="methodology" onchange="onMethodologyChanged(this)" required>
-                                    <option selected disabled>Select a Methodology</option>
+                                    <option selected disabled>@SharedResource.SelectAMethodology</option>
                                     <option value="General">DMAIC</option>
                                     <option value="General">Gemba Kaizen</option>
                                     <option value="General">JDI</option>
@@ -45,7 +46,7 @@
                         <div class="row gy-4">
                             @Html.AntiForgeryToken()
                             <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
-                            <div class="alert alert-info" role="alert">  <strong>NOTE:</strong> Each file must be less than 20MB!!! </div>
+                            <div class="alert alert-info" role="alert">  <strong>@SharedResource.Note:</strong> @SharedResource.EachFileMustBeLessThan20MB </div>
                             <div id="toolDiv" class="card-body d-sm-flex justify-content-between" style="overflow-x: auto;">
                                 
                             </div>
@@ -59,13 +60,20 @@
 <!--APP-CONTENT CLOSE-->
 
 <script>
+    const resources = {
+        uploadSuccess: '@SharedResource.UploadSuccessful',
+        uploadFailed: '@SharedResource.UploadFailed',
+        fetchToolsFailed: '@SharedResource.FailedToFetchTools',
+        uploadThisFile: '@SharedResource.UploadThisFile'
+    }
+
     function onMethodologyChanged(ref) {
         const methodology = ref.value;
 
         fetch(`/GetMethodologyToolsAdm?val=${encodeURIComponent(methodology)}`)
             .then(response => {
                 if (!response.ok) {
-                    throw new Error("Failed to fetch tools");
+                    throw new Error(resources.fetchToolsFailed);
                 }
                 return response.json();
             })
@@ -191,7 +199,7 @@
             const file = input.files[0];
 
             const confirmUpload = confirm(
-                `Upload this file???\n\n${file.name}`
+                resources.uploadThisFile +`\n\n${file.name}`
             );
 
             if (confirmUpload) {
@@ -225,11 +233,11 @@
             body: formData
         })
         .then(r => {
-            if (!r.ok) throw new Error('Upload failed');
+            if (!r.ok) throw new Error(resources.uploadFailed);
             return r.json();
         })
         .then(result => {
-            alert('Upload successful');
+            alert(resources.uploadSuccess);
             // TODO: replace upload icon with download link
         })
         .catch(err => alert(err.message));

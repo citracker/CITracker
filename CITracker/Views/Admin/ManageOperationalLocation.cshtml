@@ -1,10 +1,17 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationCountry>
+﻿@using CITracker.Resources
+@using System.Reflection
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizerFactory LocalizerFactory
+@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationCountry>
 
 @{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "LocationManagement";
     ViewData["Active"] = "ManageOperationalLocation";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!--APP-CONTENT START-->
@@ -13,10 +20,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Manage Country of Operation</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ManageCountryOfOperation</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Countries</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ManageCountries</li>
                 </ol>
             </div>
         </div>
@@ -28,14 +35,14 @@
                 if(Model.StatusCode == 200)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert"> 
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button> 
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>                
                 }
@@ -43,7 +50,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add a Country of Operation </div>
+                        <div class="card-title"> @SharedResource.AddACountryOfOperation </div>
                     </div>
                     @using (Html.BeginForm("AddCountry", "Admin", FormMethod.Post))
                     {                        
@@ -51,16 +58,16 @@
                             <div class="row gy-4">
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Country <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Country <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.CountryOfOperation"> <i class="fe fe-info"></i></a>
                                     </p>
                                     <input type="text" class="form-control country-input" name="country" pattern="^[A-Za-z]+$"
-                                           title="Only letters are allowed" placeholder="Name of Country" required>
+                                           title="Only letters are allowed" placeholder="@SharedResource.NameOfCountry" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -68,16 +75,16 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a Country of Operation </div>
+                        <div class="card-title"> @SharedResource.RenameACountryOfOperation </div>
                     </div>
                     @using(Html.BeginForm("RenameCountry", "Admin", FormMethod.Post))
                     {                        
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectACountry<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" onchange="setInputFromSelect(this, 'input')" required>
-                                        <option selected disabled value="0">Select a Country</option>
+                                        <option selected disabled value="0">@SharedResource.SelectACountry</option>
                                         @if(Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -92,15 +99,15 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Country <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Country <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.CountryOfOperation"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control country-input" name="input" id="input" placeholder="Name of Country" required>
+                                    <input type="text" class="form-control country-input" name="input" id="input" placeholder="@SharedResource.NameOfCountry" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -108,16 +115,16 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a Country of Operation </div>
+                        <div class="card-title"> @SharedResource.DeleteACountryOfOperation </div>
                     </div>
                     @using (Html.BeginForm("DeleteCountry", "Admin", FormMethod.Post))
                     {                        
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectACountry<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" required>
-                                        <option selected disabled value="0">Select a Country</option>
+                                        <option selected disabled value="0">@SharedResource.SelectACountry</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -133,7 +140,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -143,6 +150,9 @@
 </div>
 
 <script>
+    const resources = {
+        invalidCountry: '@SharedResource.InvalidCountryName'
+    }
     document.addEventListener("DOMContentLoaded", function () {
 
         const countryRegex = /^[\p{L}\s\-.'()]+$/u;
@@ -159,7 +169,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid country name.");
+                    this.setCustomValidity(resources.invalidCountry);
                 } else {
                     this.setCustomValidity("");
                 }

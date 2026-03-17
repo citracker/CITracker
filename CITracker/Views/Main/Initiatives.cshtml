@@ -1,4 +1,5 @@
-﻿@{
+﻿@using CITracker.Resources
+@{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "InitiativeManagement";
     ViewData["Active"] = "Initiatives";
@@ -10,10 +11,10 @@
         <!-- Start::page-header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Initiatives</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.Initiatives</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">All Initiatives</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.AllInitiatives</li>
                 </ol>
             </div>            
         </div>
@@ -153,7 +154,7 @@
                                                         <div class="form-group">
                                                             <div class="input-group">
                                                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="End Date" readonly="readonly">
+                                                                <input type="text" class="form-control flatpickr-input active" id="date" placeholder="@SharedResource.EndDate" readonly="readonly">
                                                             </div>
                                                         </div>
                                                     </div>

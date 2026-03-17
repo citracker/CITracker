@@ -1,10 +1,17 @@
-﻿@model Shared.ViewModels.OperationLocationVM
+﻿@using CITracker.Resources
+@using System.Reflection
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizerFactory LocalizerFactory
+@model Shared.ViewModels.OperationLocationVM
 
 @{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "LocationManagement";
     ViewData["Active"] = "ManageDepartments";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!--APP-CONTENT START-->
@@ -13,10 +20,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Manage Facility Departments</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ManageFacilityDepartments</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Facility Departments</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ManageFacilityDepartments</li>
                 </ol>
             </div>
         </div>
@@ -28,14 +35,14 @@
                 if (Model.StatusCode == 200)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
@@ -43,7 +50,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add a Department </div>
+                        <div class="card-title"> @SharedResource.AddADepartment </div>
                     </div>
                     @using (Html.BeginForm("AddDepartment", "Admin", FormMethod.Post))
                     {
@@ -51,9 +58,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectACountry<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facilityA')" required>
-                                        <option selected disabled value="0">Select a Country</option>
+                                        <option selected disabled value="0">@SharedResource.SelectACountry</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -67,22 +74,22 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAFacility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityA" id="facilityA" required>
-                                        <option disabled>Select a Facility</option>
+                                        <option disabled>@SharedResource.SelectAFacility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Department <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Department <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.Department"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control country-input" name="department" id="department" placeholder="Name of Department" required>
+                                    <input type="text" class="form-control country-input" name="department" id="department" placeholder="@SharedResource.NameOfDepartment" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                     
@@ -91,7 +98,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a Department </div>
+                        <div class="card-title"> @SharedResource.RenameADepartment </div>
                     </div>
                     @using (Html.BeginForm("RenameDepartment", "Admin", FormMethod.Post))
                     {
@@ -99,9 +106,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectACountry<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryR" id="countryR" onchange="onCountryChange(this, 'facilityR')" required>
-                                        <option selected disabled value="0">Select a Country</option>
+                                        <option selected disabled value="0">@SharedResource.SelectACountry</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -115,28 +122,28 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAFacility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityR" id="facilityR" onchange="onFacilityChange(this, 'departmentR')" required>
-                                        <option selected disabled value="0">Select a Facility</option>
+                                        <option selected disabled value="0">@SharedResource.SelectAFacility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Department<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectADepartment<span style="color:red">*</span></label>
                                     <select class="form-control" name="departmentR" id="departmentR" onchange="setInputFromSelect(this, 'departmentN')" required>
-                                        <option selected disabled value="0">Select a Department</option>
+                                        <option selected disabled value="0">@SharedResource.SelectADepartment</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Department <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Department <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.Department"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control country-input" name="departmentN" id="departmentN" placeholder="Name of Department" required>
+                                    <input type="text" class="form-control country-input" name="departmentN" id="departmentN" placeholder="@SharedResource.NameOfDepartment" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -144,7 +151,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a Department </div>
+                        <div class="card-title"> @SharedResource.DeleteADepartment </div>
                     </div>
                     @using (Html.BeginForm("DeleteDepartment", "Admin", FormMethod.Post))
                     {
@@ -152,9 +159,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Country<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectACountry<span style="color:red">*</span></label>
                                     <select class="form-control" name="countryD" id="countryD" onchange="onCountryChange(this, 'facilityD')" required>
-                                        <option selected disabled value="0">Select a Country</option>
+                                        <option selected disabled value="0">@SharedResource.SelectACountry</option>
                                         @if (Model.Country != null)
                                         {
                                             if (Model.Country.Any())
@@ -168,21 +175,21 @@
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Facility<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAFacility<span style="color:red">*</span></label>
                                     <select class="form-control" name="facilityD" id="facilityD" onchange="onFacilityChange(this, 'departmentD')" required>
-                                        <option selected disabled value="0">Select a Facility</option>
+                                        <option selected disabled value="0">@SharedResource.SelectAFacility</option>
                                     </select>
                                 </div>
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Department<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectADepartment<span style="color:red">*</span></label>
                                     <select class="form-control" name="departmentD" id="departmentD" required>
-                                        <option selected disabled value="0">Select a Department</option>
+                                        <option selected disabled value="0">@SharedResource.SelectADepartment</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button class="btn btn-success shadow-success">Submit</button>
+                            <button class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -194,13 +201,18 @@
 <script>
     const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Facility))
     const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Department))
+    const resources = {
+        facilityDefault: '@SharedResource.SelectAFacility',
+        departmentDefault: '@SharedResource.SelectADepartment',
+        invalidDepart: '@SharedResource.InvalidDepartment'
+    }
 
     function onCountryChange(selectEl, targetInputId) {
         const countryId = parseInt(selectEl.value);
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = '<option disabled>Select a Facility</option>';
+        locationSelect.innerHTML = '<option disabled>'+resources.facilityDefault+'</option>';
 
         if (isNaN(countryId)) return;
 
@@ -219,7 +231,7 @@
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = '<option disabled>Select a Department</option>';
+        locationSelect.innerHTML = '<option disabled>'+resources.departmentDefault+'</option>';
 
         if (isNaN(facilityId)) return;
 
@@ -249,7 +261,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid department.");
+                    this.setCustomValidity(resources.invalidDepart);
                 } else {
                     this.setCustomValidity("");
                 }

@@ -1,10 +1,17 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationBOA>
+﻿@using CITracker.Resources
+@using System.Reflection
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizerFactory LocalizerFactory
+@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationBOA>
 
 @{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "ToolManagement";
     ViewData["Active"] = "ManageBOA";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!--APP-CONTENT START-->
@@ -13,10 +20,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ToolManagement</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ToolManagement</li>
                 </ol>
             </div>
         </div>
@@ -27,14 +34,14 @@
                 if (Model.StatusCode == 200)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
@@ -42,7 +49,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add Business Objective Alignment </div>
+                        <div class="card-title"> @SharedResource.AddBusinessObjectiveAlignment </div>
                     </div>
                     @using (Html.BeginForm("AddBOA", "Admin", FormMethod.Post))
                     {
@@ -51,14 +58,14 @@
                             <div class="row gy-4">
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Business Objective Alignment <span style="color:red">*</span>
+                                        @SharedResource.BusinessObjectiveAlignment <span style="color:red">*</span>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3" id="boa" name="boa" placeholder="Business objective alignment" required>
+                                    <input type="text" class="form-control mt-3 mb-3" id="boa" name="boa" placeholder="@SharedResource.BusinessObjectiveAlignment" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -66,7 +73,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a Business Objective Alignment </div>
+                        <div class="card-title"> @SharedResource.RenameABusinessObjectiveAlignment </div>
                     </div>
                     @using (Html.BeginForm("ModifyBOA", "Admin", FormMethod.Post))
                     {
@@ -75,9 +82,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectABusinessObjectiveAlignment<span style="color:red">*</span></label>
                                     <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'boaM')" required>
-                                        <option selected disabled>Select a Business Objective Alignment</option>
+                                        <option selected disabled>@SharedResource.SelectABusinessObjectiveAlignment</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -92,14 +99,14 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Business Objective Alignment Details
+                                        @SharedResource.BusinessObjectiveAlignmentDetails
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="boaM" name="boaM" placeholder="Business Objective Alignment" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="boaM" name="boaM" placeholder="@SharedResource.BusinessObjectiveAlignment" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -107,7 +114,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a Business Objective Alignment </div>
+                        <div class="card-title"> @SharedResource.DeleteABusinessObjectiveAlignment </div>
                     </div>
                     @using (Html.BeginForm("DeleteBOA", "Admin", FormMethod.Post))
                     {
@@ -116,9 +123,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Business Objective Alignment<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectABusinessObjectiveAlignment<span style="color:red">*</span></label>
                                     <select class="form-control" name="boaD" id="boaD">
-                                        <option selected disabled>Select a Business Objective Alignment</option>
+                                        <option selected disabled>@SharedResource.SelectABusinessObjectiveAlignment</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -134,7 +141,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -144,6 +151,9 @@
 </div>
 <!--APP-CONTENT CLOSE-->
 <script>
+    const resources = {
+        invalidBOA: '@SharedResource.InvalidBusinessObjectiveAlignment'
+    }
     const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -162,7 +172,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid Business Objective Alignment.");
+                    this.setCustomValidity(resources.invalidBOA);
                 } else {
                     this.setCustomValidity("");
                 }

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using NLog.Web;
 using Shared;
@@ -27,7 +28,11 @@ namespace CITracker
             var supportedCultures = new[]
             {
                 new CultureInfo("en-US"),
-                new CultureInfo("es")     // Spanish
+                new CultureInfo("es"), // Spanish
+                new CultureInfo("pt"), // Portugese
+                new CultureInfo("nl"), // dutch
+                new CultureInfo("fr"), // french
+                new CultureInfo("zh") // chinese
             };
 
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
@@ -84,14 +89,14 @@ namespace CITracker
                     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
                 });
 
+                builder.Services.AddControllersWithViews()
+                    .AddViewLocalization()
+                    .AddDataAnnotationsLocalization();
+
                 builder.Services.AddLocalization(options =>
                 {
                     options.ResourcesPath = "Resources";
                 });
-
-                builder.Services.AddControllersWithViews()
-                    .AddViewLocalization()
-                    .AddDataAnnotationsLocalization();
 
                 builder.Services.Configure<RequestLocalizationOptions>(options =>
                 {
@@ -99,11 +104,15 @@ namespace CITracker
                     options.SupportedCultures = supportedCultures;
                     options.SupportedUICultures = supportedCultures;
 
-                    options.RequestCultureProviders = new IRequestCultureProvider[]
-                    {
-                        new CookieRequestCultureProvider(),
-                        new AcceptLanguageHeaderRequestCultureProvider()
-                    };
+                    // Add our custom route provider at the beginning (highest priority)
+                    options.RequestCultureProviders.Insert(0, new RouteCultureProvider(Options.Create(options)));
+
+                    //options.RequestCultureProviders = new IRequestCultureProvider[]
+                    //{
+                    //    new CookieRequestCultureProvider(),
+                    //    new AcceptLanguageHeaderRequestCultureProvider(),
+                    //    new QueryStringRequestCultureProvider()
+                    //};
                 });
 
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
@@ -146,13 +155,14 @@ namespace CITracker
 
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();
-                app.UseRequestLocalization();
+
                 app.UseRouting();
+
+                app.UseRequestLocalization();
                 app.UseAuthentication();
                 app.UseAuthorization();
                 app.UseSession();
                 app.UseStaticFiles();
-                app.MapRazorPages();
 
                 app.Use(async (context, next) =>
                 {
@@ -187,7 +197,23 @@ namespace CITracker
 
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}");
+                    // IMPORTANT: MapRazorPages first
+                    endpoints.MapRazorPages();
+
+                    // Culture route - handles /es, /pt, /fr, etc.
+                    // This must come BEFORE the default route
+                    endpoints.MapControllerRoute(
+                        name: "culture",
+                        pattern: "{culture}/{controller=Home}/{action=Index}/{id?}",
+                        defaults: new { controller = "Home", action = "Index" });
+
+                    // Default route - handles /, /home, /about, etc.
+                    endpoints.MapControllerRoute(
+                        name: "default",
+                        pattern: "{controller=Home}/{action=Index}/{id?}");
+
+                    // Optional: API routes if you have them
+                    endpoints.MapControllers();
                 });
 
                 app.Run();
