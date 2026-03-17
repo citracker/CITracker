@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Checkout — Survey</title>
+    <title>Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/stripe.svg" rel="preload" as="image">
 </head>
@@ -34,7 +34,7 @@
                 <div class="mt-1">Subtotal: <span id="subtotal" class="font-medium">$0</span></div>
                 <div id="discountRow" class="mt-1 text-green-600 hidden">Discount (<span id="discountPercent">0</span>%): <span id="discountAmount">-$0</span></div>
                 <div class="mt-2 text-xl font-bold">Total: <span id="totalAmount">$0</span></div>
-                <div id="savingsHint" class="mt-2 text-xs text-slate-500">Select more years to save more (2 years = 10% off; 3 years = 15% off).</div>
+                <div id="savingsHint" class="mt-2 text-xs text-slate-500 d-none">Select more years to save more (2 years = 10% off; 3 years = 15% off).</div>
             </div>
 
             <div class="mt-6">
@@ -45,7 +45,7 @@
         <!-- Right: form and payment -->
         <section class="md:col-span-2 bg-white p-6 rounded-lg shadow">
             <form id="orgForm" class="space-y-4" onsubmit="return false;">
-                <h3 class="text-lg font-semibold">Organisation details</h3>
+                <h3 class="text-lg font-semibold">Organization details</h3>
 
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>

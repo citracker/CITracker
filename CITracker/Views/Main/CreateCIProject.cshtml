@@ -1,4 +1,5 @@
-﻿@{
+﻿@using CITracker.Resources
+@{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "InitiativeManagement";
     ViewData["Active"] = "CICreateProject";
@@ -11,10 +12,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">New Initiative</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.NewInitiative</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Initiative Management</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Initiative</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.InitiativeManagement</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.NewInitiative</li>
                 </ol>
             </div>            
         </div>

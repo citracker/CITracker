@@ -1,4 +1,8 @@
-﻿@using Shared.Enumerations 
+﻿@using CITracker.Resources
+@using Shared.Enumerations
+@using Microsoft.Extensions.Localization
+@using System.Reflection
+@inject IStringLocalizerFactory LocalizerFactory
 @model Shared.ViewModels.StrategicInitiativeVM
 @inject IHttpContextAccessor hca
 
@@ -8,6 +12,9 @@
     ViewData["Active"] = "CreateSIProject";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
 }
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
+}
 
 <!--APP-CONTENT START-->
 <div class="main-content app-content">
@@ -15,10 +22,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">New Project</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.NewProject</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Strategic Initiative</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">New Project</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.StrategicInitiative</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.NewProject</li>
                 </ol>
             </div>
         </div>
@@ -28,7 +35,7 @@
             <div class="col-xl-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Project Details </div>
+                        <div class="card-title"> @SharedResource.ProjectDetails </div>
                     </div>
                     @using (Html.BeginForm("NewSIProject", "Main", FormMethod.Post))
                     {
@@ -39,49 +46,49 @@
                                 if (Model.Message.ToLower().Contains("success"))
                                 {
                                     <div class="alert alert-success" role="alert">
-                                        @Model.Message
+                                        @localizer[Model.Message]
                                     </div>
                                 }
                                 else
                                 {
                                     <div class="alert alert-danger" role="alert">
-                                        @Model.Message
+                                        @localizer[Model.Message]
                                     </div>
                                 }
                             }
                             <div class="row gy-4">
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                     <p class="mb-2 fw-medium">
-                                        Title <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="A good title should be short and contain searchable words"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Title <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.AGoodTitleShouldBeShortAndContainSearchableWords"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control" name="title" placeholder="Project Title" required>
+                                    <input type="text" class="form-control" name="title" placeholder="@SharedResource.ProjectTitle" required>
                                 </div>
 
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
-                                    <label for="startdate" class="form-label">Start Date</label>
+                                    <label for="startdate" class="form-label">@SharedResource.StartDate</label>
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                            <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly="readonly" required>
+                                            <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="@SharedResource.StartDate" readonly="readonly" required>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
-                                    <label for="enddate" class="form-label">End Date</label>
+                                    <label for="enddate" class="form-label">@SharedResource.EndDate</label>
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                            <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly="readonly" required>
+                                            <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="@SharedResource.EndDate" readonly="readonly" required>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
-                                    <label for="input-text" class="form-label">Priority<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.Priority<span style="color:red">*</span></label>
                                     <select class="form-control" name="priority">
-                                        <option selected disabled>Select Priority</option>
+                                        <option selected disabled>@SharedResource.SelectPriority</option>
                                         <option value="High">High</option>
                                         <option value="Medium">Medium</option>
                                         <option value="Low">Low</option>
@@ -90,20 +97,20 @@
 
                                 <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                                     <label for="text-area" class="form-label">
-                                        Description <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="A good problem statement should contain - what, where, when and impact to the business."> <i class="fe fe-info"></i></a>
+                                        @SharedResource.Description <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.AGoodProblemStatementShouldContainWhatWhereWhenAndImpactToTheBusiness"> <i class="fe fe-info"></i></a>
                                     </label>
                                     <textarea class="form-control" name="description" rows="3" required></textarea>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="input-text" class="form-label">Owner<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.Owner<span style="color:red">*</span></label>
                                     <select class="js-choice" name="owner" id="owner" required>
                                     </select>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="input-text" class="form-label">Executive Sponsor<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.ExecutiveSponsor<span style="color:red">*</span></label>
                                     <select class="js-choice" name="execsponsor" id="execsponsor" required>
                                     </select>
                                 </div>
@@ -111,7 +118,7 @@
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
                                     <label for="status" class="form-label">Status<span style="color:red">*</span></label>
                                     <select class="form-control" name="status" id="status" required>
-                                        <option selected disabled> Select a Status </option>
+                                        <option selected disabled> @SharedResource.SelectAStatus </option>
                                         @foreach (Status item in Enum.GetValues(typeof(Status)))
                                         {
                                             if(item == Status.CLOSED)
@@ -147,9 +154,9 @@
                                 </div> *@
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="country" class="form-label">Country<span style="color:red">*</span></label>
+                                    <label for="country" class="form-label">@SharedResource.Country<span style="color:red">*</span></label>
                                     <select class="form-control" name="country" id="country" onchange="onCountryChange(this, 'facility')" required>
-                                        <option selected disabled>Select a Country</option>
+                                        <option selected disabled>@SharedResource.SelectACountry</option>
                                         @if (Model.OrganizationCountry != null)
                                         {
                                             if (Model.OrganizationCountry.Any())
@@ -164,14 +171,15 @@
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="facility" class="form-label">Location/Facility</label>
+                                    <label for="facility" class="form-label">@SharedResource.LocationFacility</label>
                                     <select class="form-control" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" required>
                                     </select>
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="department" class="form-label">Department<span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Select functional groups that owns the project being improved"> <i class="fe fe-info"></i></a>
+                                    <label for="department" class="form-label">
+                                        @SharedResource.Department<span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.SelectFunctionalGroupsThatOwnsTheProjectBeingImproved"> <i class="fe fe-info"></i></a>
                                     </label>
                                     <select class="form-control" name="department" id="department" required>
                                     </select>
@@ -179,7 +187,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
   
@@ -193,6 +201,11 @@
     const facilities = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationFacility));
     const departments = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationDepartment));
     const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
+    const resources = {
+        facilityDefault: '@SharedResource.SelectAFacility',
+        departmentDefault: '@SharedResource.SelectADepartment',
+        typeUser: '@SharedResource.TypeUser'
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
         let endPicker;
@@ -224,7 +237,7 @@
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = '<option selected disabled>Select a Facility</option>';
+        locationSelect.innerHTML = '<option selected disabled>'+resources.facilityDefault+'</option>';
 
         if (isNaN(countryId)) return;
 
@@ -243,7 +256,7 @@
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = '<option selected disabled>Select a Department</option>';
+        locationSelect.innerHTML = '<option selected disabled>'+resources.departmentDefault+'</option>';
 
         if (isNaN(facilityId)) return;
 
@@ -261,14 +274,14 @@
             removeItemButton: true,
             searchEnabled: true,
             shouldSort: false,
-            placeholderValue: 'Type user...'
+            placeholderValue: resources.typeUser
         });
 
     var execspnChoice = new Choices('#execsponsor', {
             removeItemButton: true,
             searchEnabled: true,
             shouldSort: false,
-            placeholderValue: 'Type user...'
+            placeholderValue: resources.typeUser
         });
 
     const facilitatorEl = document.getElementById('owner');

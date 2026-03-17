@@ -1,6 +1,5 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using CITracker.Resources
 @inject IHttpContextAccessor hca
-@inject IViewLocalizer Localizer
 <!DOCTYPE html>
 
 <html lang="en" dir="ltr" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
@@ -92,6 +91,59 @@
                 </div>
                 <!-- End::header-content-left --> <!-- Start::header-content-right -->
                 <div class="header-content-right">
+                    <div class="header-element country-selector">
+                        <!-- Start::header-link|dropdown-toggle -->
+                        <a href="javascript:void(0);" class="header-link dropdown-toggle country-Flag" data-bs-auto-close="outside" data-bs-toggle="dropdown" id="selectedLanguage">
+                            <span id="currentLanguageFlag" class="avatar avatar-xs lh-1 me-2">
+                                <img src="~/assets/images/flags/us.svg" alt="img">
+                            </span>
+                        </a>
+                        <!-- End::header-link|dropdown-toggle -->
+                        <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="en-US" data-flag="us.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/us.svg" alt="img">
+                                    </span> English
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="es" data-flag="es.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/es.svg" alt="img">
+                                    </span> Spanish
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="fr" data-flag="mf.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/mf.svg" alt="img">
+                                    </span> French
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="nl" data-flag="nl.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/nl.svg" alt="img">
+                                    </span> Dutch
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="pt" data-flag="pt.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/pt.svg" alt="img">
+                                    </span> Portuguese
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="zh" data-flag="cn.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/cn.svg" alt="img">
+                                    </span> Chinese
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <!-- Start::header-element -->
                     <div class="header-element align-items-center">
                         <!-- Start::header-link|switcher-icon -->
@@ -104,7 +156,7 @@
                                         <rect x="13" y="1" width="10" height="10" fill="#81BC06"></rect>
                                         <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                         <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
-                                    </svg> @Localizer["Sign in with SSO"]
+                                    </svg> @SharedResource.SignInWithSSO
                                 </a>
                             }
                             else
@@ -112,13 +164,13 @@
                                 if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                 {
                                     <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                        @Localizer["Select a Subscription Plan"]
+                                        @SharedResource.SelectASubscriptionPlan
                                     </a>
                                 }
                                 else
                                 {
                                     <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                        @Localizer["Proceed to CITracker"]
+                                        @SharedResource.ProceedToCITracker
                                     </a>
                                 }
                             }
@@ -154,25 +206,78 @@
                         </div>
                         <ul class="main-menu" style="margin-left: 0px; margin-right: 0px;">
                             <!-- Start::slide -->
-                            <li class="slide"> <a class="side-menu__item active" href="#home"> <span class="side-menu__label">@Localizer["Home"]</span> </a> </li>
+                            <li class="slide"> <a class="side-menu__item active" href="#home"> <span class="side-menu__label">@SharedResource.Home</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#about" class="side-menu__item"> <span class="side-menu__label">@Localizer["About"]</span> </a> </li>
+                            <li class="slide"> <a href="#about" class="side-menu__item"> <span class="side-menu__label">@SharedResource.About</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#features" class="side-menu__item"> <span class="side-menu__label">@Localizer["Features"]</span> </a> </li>
+                            <li class="slide"> <a href="#features" class="side-menu__item"> <span class="side-menu__label">@SharedResource.Features</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">@Localizer["Pricing"]</span> </a> </li>
+                            <li class="slide"> <a href="#pricing" class="side-menu__item"> <span class="side-menu__label">@SharedResource.Pricing</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide d-none"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">@Localizer["FAQs"]</span> </a> </li>
+                            <li class="slide d-none"> <a href="#faq" class="side-menu__item"> <span class="side-menu__label">@SharedResource.FAQs</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide d-none"> <a href="#clients" class="side-menu__item"> <span class="side-menu__label">@Localizer["Clients"]</span> </a> </li>
+                            <li class="slide d-none"> <a href="#clients" class="side-menu__item"> <span class="side-menu__label">@SharedResource.Clients</span> </a> </li>
                             <!-- End::slide --> <!-- Start::slide -->
-                            <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">@Localizer["Contact"]</span> </a> </li>
+                            <li class="slide"> <a href="#contact" class="side-menu__item"> <span class="side-menu__label">@SharedResource.Contact</span> </a> </li>
                             <!-- End::slide -->
                         </ul>
                         <div class="slide-right d-none" id="slide-right">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="#7b8191" width="24" height="24" viewBox="0 0 24 24">
                                 <path d="M10.707 17.707 16.414 12l-5.707-5.707-1.414 1.414L13.586 12l-4.293 4.293z"></path>
                             </svg>
+                        </div>
+                        <div class="header-element country-selector">
+                            <!-- Start::header-link|dropdown-toggle -->
+                            <a href="javascript:void(0);" class="header-link dropdown-toggle country-Flag" data-bs-auto-close="outside" data-bs-toggle="dropdown" id="selectedLanguage">
+                                <span id="currentLanguageFlag1" class="avatar avatar-xs lh-1 me-2">
+                                    <img src="~/assets/images/flags/us.svg" alt="img">
+                                </span>
+                            </a>
+                            <!-- End::header-link|dropdown-toggle -->
+                            <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="en-US" data-flag="us.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/us.svg" alt="img">
+                                        </span> English
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="es" data-flag="es.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/es.svg" alt="img">
+                                        </span> Spanish
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="fr" data-flag="mf.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/mf.svg" alt="img">
+                                        </span> French
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="nl" data-flag="nl.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/nl.svg" alt="img">
+                                        </span> Dutch
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="pt" data-flag="pt.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/pt.svg" alt="img">
+                                        </span> Portuguese
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="zh" data-flag="cn.svg">
+                                        <span class="avatar avatar-xs lh-1 me-2">
+                                            <img src="~/assets/images/flags/cn.svg" alt="img">
+                                        </span> Chinese
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                         <div class="d-lg-flex d-none">
                             <div class="btn-list d-lg-flex d-none mt-lg-2 mt-xl-0 mt-0">
@@ -185,7 +290,7 @@
                                             <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                             <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
                                         </svg>
-                                        @Localizer["Sign in with SSO"]
+                                        @SharedResource.SignInWithSSO
                                     </a>
                                 }
                                 else
@@ -193,13 +298,13 @@
                                     if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                     {
                                         <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                            @Localizer["Select a Subscription Plan"]
+                                            @SharedResource.SelectASubscriptionPlan
                                         </a>
                                     }
                                     else
                                     {
                                         <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                            @Localizer["Proceed to CITracker"]
+                                            @SharedResource.ProceedToCITracker
                                         </a>
                                     }
                                 }
@@ -270,7 +375,7 @@
                             <hr class="mb-0">
                             <footer class="main-footer px-0 text-center">
                                 <div class="row ">
-                                    <div class="col-md-12 col-sm-12"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="fa fa-heart text-danger"></span> by <a href="javascript:void(0)"> CI Tracker </a> All rights reserved. </div>
+                                    <div class="col-md-12 col-sm-12"> @SharedResource.Copyright &copy; <span id="year">@DateTime.Now.Year</span>. @SharedResource.DesignedWith <span class="fa fa-heart text-danger"></span> @SharedResource.By <a href="javascript:void(0)"> @SharedResource.CITracker </a> @SharedResource.AllRightsReserved </div>
                                 </div>
                             </footer>
                         </div>
@@ -321,6 +426,111 @@
             });
         });
 
+    </script>
+    <script>
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const culture = this.dataset.culture;
+                const flagFile = this.dataset.flag;
+
+                // Get current path WITHOUT any culture prefix
+                const currentPath = window.location.pathname;
+                const segments = currentPath.split('/').filter(s => s.length > 0);
+
+                // Check if first segment is a culture code and remove it
+                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh'];
+                let pathWithoutCulture = currentPath;
+
+                if (segments.length > 0 && cultures.includes(segments[0])) {
+                    // Remove culture from path
+                    pathWithoutCulture = '/' + segments.slice(1).join('/');
+                    // Ensure we don't end up with empty path
+                    if (pathWithoutCulture === '/') {
+                        pathWithoutCulture = '';
+                    }
+                }
+
+                // Get existing query parameters and REMOVE the old 'culture' parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.delete('culture'); // Remove old culture parameter
+                urlParams.set('culture', culture); // Add new culture parameter
+
+                // Build the query string
+                const queryString = urlParams.toString();
+                const urlQuery = queryString ? `?${queryString}` : '';
+
+                // Build the new URL
+                const basePath = pathWithoutCulture === '/' ? '' : pathWithoutCulture;
+                const newUrl = `${basePath}${urlQuery}`;
+
+                // Store preference
+                localStorage.setItem('selectedLanguage', culture);
+                localStorage.setItem('selectedFlag', flagFile);
+
+                // Set the cookie and navigate
+                document.cookie = `.AspNetCore.Culture=c=${culture}|uic=${culture}; path=/; expires=${new Date(new Date().getTime() + 365*24*60*60*1000).toUTCString()}`;
+
+                console.log(`Navigating to: ${newUrl}`); // For debugging
+                window.location.href = newUrl;
+            });
+        });
+
+        // Helper function to get cookie (keep this)
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // On page load, update the flag based on current culture
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get culture from query string
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentCulture = urlParams.get('culture');
+
+            // If not in query string, try cookie
+            if (!currentCulture) {
+                const cultureCookie = getCookie('.AspNetCore.Culture');
+                if (cultureCookie) {
+                    const match = cultureCookie.match(/uic=([^|]+)/);
+                    currentCulture = match ? match[1] : 'en-US';
+                }
+            }
+
+            // Default to English
+            if (!currentCulture) {
+                currentCulture = 'en-US';
+            }
+
+            // Update the flag display
+            updateFlagForCulture(currentCulture);
+        });
+
+        // Helper function to update flag
+        function updateFlagForCulture(culture) {
+            const flagMap = {
+                'en-US': 'us.svg',
+                'es': 'es.svg',
+                'pt': 'pt.svg',
+                'nl': 'nl.svg',
+                'fr': 'mf.svg',
+                'zh': 'cn.svg'
+            };
+
+            const flagFile = flagMap[culture] || 'us.svg';
+
+            // Update the flag image/svg
+            const flagContainer = document.getElementById('currentLanguageFlag');
+            const flagContainer1 = document.getElementById('currentLanguageFlag1');
+            if (flagContainer) {
+                flagContainer.innerHTML = `<img src="../assets/images/flags/${flagFile}" alt="img">`;
+            }
+            if (flagContainer1) {
+                flagContainer1.innerHTML = `<img src="../assets/images/flags/${flagFile}" alt="img">`;
+            }
+        }
     </script>
 </body>
 </html>

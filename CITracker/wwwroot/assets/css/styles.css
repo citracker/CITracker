@@ -4968,7 +4968,7 @@ Width
   display: inline-block;
   margin-inline-start: 0.25rem;
   vertical-align: 0;
-  content: "\f282";
+  /*content: "\f282";*/
   font-family: bootstrap-icons !important;
   border: 0;
   font-size: 0.6rem;

@@ -1,11 +1,17 @@
-﻿@using Microsoft.AspNetCore.Mvc.Localization
+﻿@using CITracker.Resources
+@using Shared.DTO
+@using Microsoft.Extensions.Localization
+@using System.Reflection
+@inject IStringLocalizerFactory LocalizerFactory
 @inject IHttpContextAccessor hca
-@inject IViewLocalizer Localizer
 @model Shared.DTO.ResponseHandler<Shared.Models.SubscriptionPlan>
 
 @{
     ViewData["Title"] = "CI Tracker";
     Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!-- Start::app-content -->
@@ -17,8 +23,8 @@
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 animation-zidex position-relative">
                         @* <h4 class="fw-medium mt-7">Manage initiatives — track audits — realise benefits</h4> *@
-                        <p class="text-start fw-bold">@Localizer["Bring your continuous improvement into one place"]</p>
-                        <h6 class="pb-3">@Localizer["CI Tracker helps teams capture ideas, audit processes, and measure financial benefits — with documents stored in your tenant via SharePoint integration."]</h6>
+                        <p class="text-start fw-bold">@SharedResource.BringYourContinuousImprovementIntoOnePlace</p>
+                        <h6 class="pb-3">@SharedResource.CITrackerHelpsTeamsCaptureIdeasAuditProcessesAndMeasureFinancialBenefitsWithDocumentsStoredInYourTenantViaSharePointIntegration</h6>
 
                         <div class="btn-list">
                             @if (String.IsNullOrEmpty(hca?.HttpContext?.Session?.GetString("UserEmail")?.ToString()))
@@ -30,7 +36,7 @@
                                     <rect x="1" y="13" width="10" height="10" fill="#05A6F0"></rect>
                                     <rect x="13" y="13" width="10" height="10" fill="#FFD700"></rect>
                                     </svg>
-                                    @Localizer["Sign in with SSO"]
+                                    @SharedResource.SignInWithSSO
                                 </a>
                             }
                             else
@@ -38,18 +44,18 @@
                                 if (hca?.HttpContext?.Session.GetString("OrganisationSubscriptionStatus")?.ToString() == "false")
                                 {
                                     <a href="#pricing" class="btn btn-lg btn-w-lg btn-dark">
-                                        @Localizer["Select a Subscription Plan"]
+                                        @SharedResource.SelectASubscriptionPlan
                                     </a>
                                 }
                                 else
                                 {                                    
                                     <a href="@Url.Action("Dashboard", "Main")" class="btn btn-lg btn-w-lg btn-dark">
-                                        @Localizer["Proceed to CITracker"]
+                                        @SharedResource.ProceedToCITracker
                                     </a>
                                 }
                             }
                         </div>
-                        <p class="mt-1" style="font-size:0.8rem !important">@Localizer["Listing: Microsoft AppSource"] — <a href="https://marketplace.microsoft.com/en-gb/product/office/WA200007156?tab=Overview" style="color:white; text-decoration: underline">@Localizer["View on Marketplace"]</a></p>
+                        <p class="mt-1" style="font-size:0.8rem !important">@SharedResource.ListingMicrosoftAppSource <a href="https://marketplace.microsoft.com/en-gb/product/office/WA200007156?tab=Overview" style="color:white; text-decoration: underline">@SharedResource.ViewOnMarketplace</a></p>
                     </div>
                     <div class="col-xl-6 col-lg-6 my-auto"> <img src="~/assets/landing/images/4.png" alt=""> </div>
                 </div>
@@ -59,10 +65,10 @@
     <!-- End:: Section-1 -->  <!-- Start:: Section-2 -->
     <section class="section hor-content main_features" id="features">
         <div class="container">
-            <h4 class="text-center fw-medium landing-card-header">Key Features</h4>
+            <h4 class="text-center fw-medium landing-card-header">@SharedResource.KeyFeatures</h4>
             <span class="landing-title"></span>
             <h2 class="fw-medium text-center"></h2>
-            <p class="text-default mb-5 text-center">The CITracker web app comes with ready-to-use features that are completely easy-to-use for any user, even for a beginner.</p>
+            <p class="text-default mb-5 text-center">@SharedResource.TheCITrackerWebAppComesWithReadyToUseFeatures</p>
             <div class="row">
                 <div class="col-lg-3 col-md-6">
                     <div class="card features border text-center main-features main-features-1 wow fadeInUp reveal revealleft active" data-wow-delay="0.1s">
@@ -73,8 +79,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Improvement Ideas Capture</h4>
-                                <p class="mb-0">Collect, review, and prioritize improvement ideas through a structured intake workflow.</p>
+                                <h4 class="fw-bold">@SharedResource.ImprovementIdeasCapture</h4>
+                                <p class="mb-0">@SharedResource.CollectReviewAndPrioritizeImprovementIdeasThroughAStructuredIntakeWorkflow</p>
                             </div>
                         </div>
                     </div>
@@ -88,8 +94,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Align Initiatives to Strategy</h4>
-                                <p class="mb-0">Associate every initiative with corporate strategy to drive value creation and P & L Impact.</p>
+                                <h4 class="fw-bold">@SharedResource.AlignInitiativesToStrategy</h4>
+                                <p class="mb-0">@SharedResource.AssociateEveryInitiativeWithCorporateStrategyToDriveValueCreationAndPLImpact</p>
                             </div>
                         </div>
                     </div>
@@ -103,8 +109,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Green &amp; Black Belt Certification Tracking</h4>
-                                <p class="mb-0">Track practitioner progress and project milestones for Lean Six Sigma certifications.</p>
+                                <h4 class="fw-bold">@SharedResource.GreenBlackBeltCertificationTracking</h4>
+                                <p class="mb-0">@SharedResource.TrackPractitionerProgressAndProjectMilestones</p>
                             </div>
                         </div>
                     </div>
@@ -118,8 +124,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Track Traditional Projects</h4>
-                                <p class="mb-0">Manage classic small and medium-sized projects using the 5-stage lifecycle framework.</p>
+                                <h4 class="fw-bold">@SharedResource.TrackTraditionalProjects</h4>
+                                <p class="mb-0">@SharedResource.ManageClassicSmallAndMediumSizedProjects</p>
                             </div>
                         </div>
                     </div>
@@ -133,8 +139,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Customizable Templates & Tools</h4>
-                                <p class="mb-0">A wide selection of templates and powerful tools at your fingertips.</p>
+                                <h4 class="fw-bold">@SharedResource.CustomizableTemplatesAndTools</h4>
+                                <p class="mb-0">@SharedResource.AWideSelectionOfTemplatesAndPowerfulToolsAtYourFingertips</p>
                             </div>
                         </div>
                     </div>
@@ -148,8 +154,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Initiative Library</h4>
-                                <p class="mb-0">Search, track, and find projects, insights, and lessons instantly.</p>
+                                <h4 class="fw-bold">@SharedResource.InitiativeLibrary</h4>
+                                <p class="mb-0">@SharedResource.SearchTrackAndFindProjectsInsightsAndLessonsInstantly</p>
                             </div>
                         </div>
                     </div>
@@ -163,8 +169,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Project Auditing & Benefits Capture</h4>
-                                <p class="mb-0">Audit project results, validate benefits, and maintain financial governance.</p>
+                                <h4 class="fw-bold">@SharedResource.ProjectAuditingAndBenefitsCapture</h4>
+                                <p class="mb-0">@SharedResource.AuditProjectResultsValidateBenefitsAndMaintainFinancialGovernance</p>
                             </div>
                         </div>
                     </div>
@@ -178,8 +184,8 @@
                                 </div>
                             </div>
                             <div class="text-left counter-body">
-                                <h4 class="fw-bold">Reporting</h4>
-                                <p class="mb-0">Real-time insights across all facilities and departments globally.</p>
+                                <h4 class="fw-bold">@SharedResource.Reporting</h4>
+                                <p class="mb-0">@SharedResource.RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally</p>
                             </div>
                         </div>
                     </div>
@@ -191,10 +197,10 @@
     <section class="section bg-landing working-section" id="about">
         <div class="container">
             <div class="row">
-                <h4 class="text-center fw-medium landing-card-header">Our Mission</h4> 
+                <h4 class="text-center fw-medium landing-card-header">@SharedResource.OurMission</h4>
                 <span class="landing-title"></span> 
                 <div class="text-center"> 
-                    <h2 class="text-center fw-medium">Building Operational Brilliance that last. </h2> 
+                    <h2 class="text-center fw-medium">@SharedResource.BuildingOperationalBrillianceThatLast </h2>
                 </div> 
                 <div class="reveal active">
                     <div class="working-container"> 
@@ -206,9 +212,9 @@
                             </div> 
                             <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12"> 
                                 <div class="working-content content-1"> 
-                                    <h4 class="mb-3">Continuous Improvement </h4> 
-                                    <p class="title-desc text-muted">Making continuous improvement visible, measurable, and scalable allows organizations to align teams, track real impact, replicate successes across operations, and drive sustainable business results.</p>
-                                    <p class="title-desc text-muted mb-0">CI Tracker strives to bridge the gap between data and action, empowering teams to implement change effectively and executives to see results immediately.</p>
+                                    <h4 class="mb-3">@SharedResource.ContinuousImprovement </h4>
+                                    <p class="title-desc text-muted">@SharedResource.MakingContinuousImprovementVisibleMeasurableAndScalable</p>
+                                    <p class="title-desc text-muted mb-0">@SharedResource.CITrackerStrivesToBridgeTheGapBetweenDataAndActionEmpoweringTeamsToImplementChangeEffectivelyAndExecutivesToSeeResultsImmediately</p>
                                 </div> 
                             </div> 
                         </div> 
@@ -217,9 +223,9 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-xl-8 col-lg-6 6col-md-6 col-sm-12 myorder-2"> 
                                 <div class="working-content content-2"> 
-                                    <h4 class="mb-3">Strategy-Focused</h4>
-                                    <p class="title-desc text-muted">Align strategy with execution, measure progress in real time, and ensure every initiative drives organizational goals forward.</p>
-                                    <p class="title-desc text-muted mb-0">Make strategy clear, trackable, and actionable, so every initiative drives measurable results. Align organizational goals with execution to maximize impact, prioritize high-value projects, and accelerate business growth.</p>
+                                    <h4 class="mb-3">@SharedResource.StrategyFocused</h4>
+                                    <p class="title-desc text-muted">@SharedResource.AlignStrategyWithExecutionMeasureProgressInRealTimeAndEnsureEveryInitiativeDrivesOrganizationalGoalsForward</p>
+                                    <p class="title-desc text-muted mb-0">@SharedResource.MakeStrategyClearTrackableAndActionable</p>
                                 </div> 
                             </div> 
                             <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 myorder-1">
@@ -237,8 +243,8 @@
                             </div> 
                             <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12"> 
                                 <div class="working-content content-3"> 
-                                    <h4 class="mb-3">Operational Excellence</h4>
-                                    <p class="title-desc text-muted">Drive operational excellence by standardizing processes, reducing waste, and improving efficiency across your organization. Monitor performance, identify bottlenecks, and implement improvements that deliver measurable results every day.</p>
+                                    <h4 class="mb-3">@SharedResource.OperationalExcellence</h4>
+                                    <p class="title-desc text-muted">@SharedResource.DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEfficiency</p>
                                 </div> 
                             </div>
                         </div>
@@ -246,8 +252,8 @@
                         <div class="row align-items-center justify-content-center">
                             <div class="col-xl-8 col-lg-6 col-md-6 col-sm-12 myorder-2"> 
                                 <div class="working-content content-4"> 
-                                    <h4 class="mb-3">Culture</h4>
-                                    <p class="title-desc text-muted">Build a culture of continuous improvement where every team member is empowered to contribute ideas and take ownership. Foster engagement, accountability, and collaboration to ensure improvements are sustained and scaled organization-wide.</p>
+                                    <h4 class="mb-3">@SharedResource.Culture</h4>
+                                    <p class="title-desc text-muted">@SharedResource.BuildACultureOfContinuousImprovementWhereEveryTeamMemberIsEmpoweredToContributeIdeasAndTakeOwnership</p>
                                 </div> 
                             </div> 
                             <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12 myorder-1">
@@ -416,9 +422,9 @@
     <section class="section section-bg" id="pricing">
         <div class="container text-center">
             <div class="row">
-                <h4 class="text-center fw-medium landing-card-header">Choose a plan </h4>
+                <h4 class="text-center fw-medium landing-card-header">@SharedResource.ChooseAPlan </h4>
                 <span class="landing-title"></span>
-                <h2 class="text-center fw-medium">Find the <span class="text-primary">Perfect Plan</span> for your Business.</h2>
+                <h2 class="text-center fw-medium">@SharedResource.FindThe <span class="text-primary">@SharedResource.PerfectPlan</span> @SharedResource.ForYourBusiness</h2>
                 <div class="pricing-tabs text-center">
                     @* <div class="pri-tabs-heading text-center mt-3">
                         <ul class="nav nav-price" role="tablist">
@@ -445,21 +451,21 @@
                                                         @Html.AntiForgeryToken()
                                                         <div class="card border bg-primary border-primary pricing-card advanced reveal revealrotate">
                                                             <div class="p-3 d-block text-justified bd-b-white-2">
-                                                                <p class="fs-18 fw-medium mb-1 pe-0">@Model.Result.ElementAt(i).Name<span class="badge bg-white text-primary float-end fw-normal">Most Popular</span></p>
-                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount/(Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-20">user</span>/month</span></p>
-                                                                <p class="fs-13 mb-2">@Model.Result.ElementAt(i).Description</p>
-                                                                <p class="fs-13 mb-1">Billed annually!!!</p>
+                                                                <p class="fs-18 fw-medium mb-1 pe-0">@Model.Result.ElementAt(i).Name<span class="badge bg-white text-primary float-end fw-normal">@SharedResource.MostPopular</span></p>
+                                                                <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-20">@SharedResource.User</span>/@SharedResource.Month</span></p>
+                                                                <p class="fs-13 mb-2">@localizer[Model.Result.ElementAt(i).Description]</p>
+                                                                <p class="fs-13 mb-1">@SharedResource.BilledAnnually</p>
                                                             </div>
                                                             <div class="card-body py-2">
                                                                 <ul class="text-justify pricing-body ps-0 my-5">
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i> <strong> @Model.Result.ElementAt(i).FreeTrialDuration Days </strong> Free Trial </li>
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> User Licenses</li>
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> Unlimited </strong> Projects</li>
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> Money </strong> Back Guarantee</li>
-                                                                    <li class=""><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> 24/7</strong> support</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i> <strong> @Model.Result.ElementAt(i).FreeTrialDuration @SharedResource.Days </strong> @SharedResource.FreeTrial </li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> @SharedResource.UserLicenses</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> @SharedResource.Unlimited </strong> @SharedResource.Projects</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> @SharedResource.Money </strong> @SharedResource.BackGuarantee</li>
+                                                                    <li class=""><i class="mdi mdi-checkbox-marked-circle-outline text-primary p-2 fs-16"></i><strong> 24/7</strong> @SharedResource.Support</li>
                                                                 </ul>
                                                             </div>
-                                                            <div class="text-center border-top-0 p-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-white text-primary"> <span class="ms-4 me-4">Subscribe</span> </button> </div>
+                                                            <div class="text-center border-top-0 p-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-white text-primary"> <span class="ms-4 me-4">@SharedResource.Subscribe</span> </button> </div>
                                                         </div>
                                                     }
                                                 </div>
@@ -475,32 +481,32 @@
                                                                 <p class="fs-18 fw-medium mb-1">@Model.Result.ElementAt(i).Name</p>
                                                                 @if (Model.Result.ElementAt(i).Name.Equals("Enterprise"))
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">Starting from </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"><span class="fs-13 mb-3 text-secondary">@SharedResource.StartingFrom </span> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">@SharedResource.User</span>/@SharedResource.Month</span></p>
                                                                 }
                                                                 else
                                                                 {
-                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">user</span>/month</span></p>
+                                                                    <p class="text-justify fw-medium mb-1"> <span class="fs-30 me-2">$</span><span class="fs-30 me-1">@Math.Round((Model.Result.ElementAt(i).Amount / (Model.Result.ElementAt(i).NumberOfLicences * 12)), 2).ToString("N2")</span><span class="fs-13"><span class="op-0-5 text-muted text-20">@SharedResource.User</span>/@SharedResource.Month</span></p>
                                                                 }
-                                                                <p class="fs-13 mb-1">@Model.Result.ElementAt(i).Description</p>
-                                                                <p class="fs-13 mb-3 text-secondary">Billed annually!!!</p>
+                                                                <p class="fs-13 mb-1">@localizer[Model.Result.ElementAt(i).Description]</p>
+                                                                <p class="fs-13 mb-3 text-secondary">@SharedResource.BilledAnnually</p>
                                                             </div>
                                                             <div class="card-body py-2">
                                                                 <ul class="text-justify pricing-body ps-0 mb-0">
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> @Model.Result.ElementAt(i).FreeTrialDuration Days </strong> Free Trial</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> @Model.Result.ElementAt(i).FreeTrialDuration @SharedResource.Days </strong> @SharedResource.FreeTrial</li>
                                                                     @if (Model.Result.ElementAt(i).Name.Equals("Enterprise"))
                                                                     {
-                                                                        <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><span class="fs-13 mb-3 text-secondary">Starting from </span> <strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> User Licenses </li>
+                                                                        <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><span class="fs-13 mb-3 text-secondary">@SharedResource.StartingFrom </span> <strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> @SharedResource.UserLicenses </li>
                                                                     }
                                                                     else
                                                                     {
-                                                                        <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i> <strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> User Licenses </li>
+                                                                        <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i> <strong> @Model.Result.ElementAt(i).NumberOfLicences </strong> @SharedResource.UserLicenses </li>
                                                                     }
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> Unlimited </strong> Projects</li>
-                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> Money </strong> Back Guarantee</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> @SharedResource.Unlimited </strong> @SharedResource.Projects</li>
+                                                                    <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> @SharedResource.Money </strong> @SharedResource.BackGuarantee</li>
                                                                     <li><i class="mdi mdi-checkbox-marked-circle-outline p-2 fs-16 text-secondary"></i><strong> 24/7</strong> support</li>
                                                                 </ul>
                                                             </div>
-                                                            <div class="card-footer text-center border-top-0 py-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-outline-secondary"> <span class="ms-4 me-4">Subscribe</span> </button> </div>
+                                                            <div class="card-footer text-center border-top-0 py-3 d-grid"> <button type="submit" name="Subscribe" value="@Model.Result.ElementAt(i).Id" class="btn btn-lg btn-outline-secondary"> <span class="ms-4 me-4">@SharedResource.Subscribe</span> </button> </div>
                                                         </div>
                                                     }
                                                 </div>
@@ -519,7 +525,7 @@
     <section class="section highlights d-none" id="faq">
         <div class="container">
             <div class="row">
-                <h4 class="text-center fw-medium landing-card-header">@Localizer["Manage initiatives"] — @Localizer["track audits"] — @Localizer["realise benefits"]</h4>
+                <h4 class="text-center fw-medium landing-card-header">@SharedResource.ManageInitiativesTrackAuditsRealiseBenefits</h4>
                 <span class="landing-title"></span>
                 @* <h2 class="text-center fw-medium">We are here to help you</h2>
                 <div class="row justify-content-center">
@@ -529,26 +535,26 @@
                     <div class="col-md-12 col-lg-6 px-4">
                         <div class="accordion accordion-customicon1 accordion-primary accordions-items-seperate" id="accordionFAQ2">
                             <div class="accordion-item acc-primary">
-                                <h2 class="accordion-header" id="headingcustomicon20Five"> <button class="accordion-button collapsed text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon20Five" aria-expanded="false" aria-controls="collapsecustomicon20Five"> <span class="me-3 fs-18 fw-bold">01.</span> Initiative Tracker </button> </h2>
+                                <h2 class="accordion-header" id="headingcustomicon20Five"> <button class="accordion-button collapsed text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon20Five" aria-expanded="false" aria-controls="collapsecustomicon20Five"> <span class="me-3 fs-18 fw-bold">01.</span>@SharedResource.InitiativeTracker </button> </h2>
                                 <div id="collapsecustomicon20Five" class="accordion-collapse collapse" aria-labelledby="headingcustomicon20Five" data-bs-parent="#accordionFAQ2">
                                     <div class="accordion-body">
-                                        <p> Plan, prioritise and monitor improvement ideas from submission to completion. Set milestones, assign owners, manage risks and track progress using structured workflows. </p>
+                                        <p>@SharedResource.PlanPrioritiseAndMonitorImprovementIdeas</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item acc-danger">
-                                <h2 class="accordion-header" id="headingcustomicon21Six"> <button class="accordion-button collapsed text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon21Six" aria-expanded="false" aria-controls="collapsecustomicon21Six"> <span class="me-3 fs-18 fw-bold">02.</span> Audit & Evidence </button> </h2>
+                                <h2 class="accordion-header" id="headingcustomicon21Six"> <button class="accordion-button collapsed text-danger" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon21Six" aria-expanded="false" aria-controls="collapsecustomicon21Six"> <span class="me-3 fs-18 fw-bold">02.</span>@SharedResource.AuditAndEvidence </button> </h2>
                                 <div id="collapsecustomicon21Six" class="accordion-collapse collapse" aria-labelledby="headingcustomicon21Six" data-bs-parent="#accordionFAQ2">
                                     <div class="accordion-body">
-                                        <p> Conduct process audits with configurable checklists and attach supporting evidence. All documents are securely stored in the customer’s SharePoint tenant to maintain full data ownership. </p>
+                                        <p>@SharedResource.ConductProcessAuditsWithConfigurableChecklistsAndAttachSupportingEvidence</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="accordion-item acc-success">
-                                <h2 class="accordion-header" id="headingcustomicon22Six"> <button class="accordion-button collapsed text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon22Six" aria-expanded="false" aria-controls="collapsecustomicon22Six"> <span class="me-3 fs-18 fw-bold">03.</span> Finance & reporting </button> </h2>
+                                <h2 class="accordion-header" id="headingcustomicon22Six"> <button class="accordion-button collapsed text-success" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecustomicon22Six" aria-expanded="false" aria-controls="collapsecustomicon22Six"> <span class="me-3 fs-18 fw-bold">03.</span>@SharedResource.FinanceAndReporting </button> </h2>
                                 <div id="collapsecustomicon22Six" class="accordion-collapse collapse" aria-labelledby="headingcustomicon22Six" data-bs-parent="#accordionFAQ2">
                                     <div class="accordion-body">
-                                        <p> Analyse financial performance with detailed reporting on hard and soft savings, ROI and project outcomes. Export data, connect Power BI and generate management-ready dashboards. </p>
+                                        <p>@SharedResource.AnalyseFinancialPerformanceWithDetailedReportingOnHardAndSoftSavingsROIAndProjectOutcomesExportDataConnectPowerBIAndGenerateManagementReadyDashboards</p>
                                     </div>
                                 </div>
                             </div>
@@ -1113,9 +1119,9 @@
     <section class="section" id="contact">
         <div class="container">
             <div class="row">
-                <h4 class="text-center fw-semibold mt-7 landing-card-header ">Contact</h4>
+                <h4 class="text-center fw-semibold mt-7 landing-card-header ">@SharedResource.Contact</h4>
                 <span class="landing-title"></span>
-                <h2 class="text-center fw-semibold mb-0 px-2">Get in Touch with <span class="text-primary">US.</span></h2>
+                <h2 class="text-center fw-semibold mb-0 px-2">@SharedResource.GetInTouchWith</h2>
                 <div class="card-body text-dark p-4">
                     <div class="statistics-info">
                         <div class="row justify-content-center">
@@ -1196,27 +1202,27 @@
                                             <div class="row">
                                                 <div class="col-xl-6">
                                                     <div class="form-group "> 
-                                                        <label for="cusName" class="form-label">Name <span class="text-danger">*</span></label> 
-                                                        <input type="text" class="form-control" name="cusName" placeholder="Enter your name" required> 
+                                                        <label for="cusName" class="form-label">Name <span class="text-danger">*</span></label>
+                                                        <input type="text" class="form-control" name="cusName" placeholder="@SharedResource.EnterYourName" required>
                                                     </div>
                                                 </div>
                                                 <div class="col-xl-6">
                                                     <div class="form-group"> 
-                                                        <label for="cusEmail" class="form-label">Email <span class="text-danger">*</span></label> 
-                                                        <input type="email" class="form-control" name="cusEmail" placeholder="Enter your email" required> 
+                                                        <label for="cusEmail" class="form-label">Email <span class="text-danger">*</span></label>
+                                                        <input type="email" class="form-control" name="cusEmail" placeholder="@SharedResource.EnterYourEmail" required>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label for="cusSubject" class="form-label">Subject <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="cusSubject" placeholder="Enter your subject" required> 
+                                                <input type="text" class="form-control" name="cusSubject" placeholder="@SharedResource.EnterYourSubject" required>
                                             </div>
                                             <div class="form-group"> 
-                                                <label for="cusMessage" class="form-label">Message <span class="text-danger">*</span></label> 
-                                                <textarea rows="5" class="form-control" name="cusMessage" placeholder="Type your message here..." required></textarea> 
+                                                <label for="cusMessage" class="form-label">Message <span class="text-danger">*</span></label>
+                                                <textarea rows="5" class="form-control" name="cusMessage" placeholder="@SharedResource.TypeYourMessageHere" required></textarea>
                                             </div>
-                                            <div class="form-group"> 
-                                                <button type="submit" class="btn btn-primary">Send Message</button> 
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">@SharedResource.SendMessage</button>
                                             </div>
                                         </div>
                                     }
