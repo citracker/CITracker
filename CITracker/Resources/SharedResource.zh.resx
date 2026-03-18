@@ -1144,7 +1144,7 @@
     <value>月度价格：</value>
   </data>
   <data name="MonthlySavings" xml:space="preserve">
-    <value>月度节约</value>
+    <value>月度储蓄</value>
   </data>
   <data name="Months" xml:space="preserve">
     <value>月份</value>
@@ -1938,103 +1938,184 @@
   <data name="UploadSuccessful" xml:space="preserve">
     <value>上传成功</value>
   </data>
-	<data name="Users" xml:space="preserve">
-		<value>用户</value>
-	</data>
-	<data name="Licences" xml:space="preserve">
-		<value>许可证</value>
-	</data>
-	<data name="Successful" xml:space="preserve">
-		<value>成功</value>
-	</data>
-	<data name="Failed" xml:space="preserve">
-		<value>失败</value>
-	</data>
-	<data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
-		<value>无效的业务目标对齐</value>
-	</data>
-	<data name="Department" xml:space="preserve">
-		<value>部门</value>
-	</data>
-	<data name="InvalidDepartment" xml:space="preserve">
-		<value>无效的部门</value>
-	</data>
-	<data name="InvalidFacilityName" xml:space="preserve">
-		<value>无效的设施名称</value>
-	</data>
-	<data name="InvalidCountryName" xml:space="preserve">
-		<value>无效的国家名称</value>
-	</data>
-	<data name="InvalidSavingCategoryName" xml:space="preserve">
-		<value>无效的储蓄类别名称</value>
-	</data>
-	<data name="UploadFailed" xml:space="preserve">
-		<value>上传失败</value>
-	</data>
-	<data name="FailedToFetchTools" xml:space="preserve">
-		<value>获取工具失败</value>
-	</data>
-	<data name="UploadThisFile" xml:space="preserve">
-		<value>上传此文件???</value>
-	</data>
-	<data name="InvalidUserName" xml:space="preserve">
-		<value>无效的用户名</value>
-	</data>
-	<data name="Status" xml:space="preserve">
-		<value>状态</value>
-	</data>
-	<data name="Priority" xml:space="preserve">
-		<value>优先级</value>
-	</data>
-	<data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
-		<value>开始日期：激活以升序排序列</value>
-	</data>
-	<data name="NoRecordFound" xml:space="preserve">
-		<value>未找到记录</value>
-	</data>
-	<data name="Description" xml:space="preserve">
-		<value>描述</value>
-	</data>
-	<data name="Owner" xml:space="preserve">
-		<value>所有者</value>
-	</data>
-	<data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
-		<value>所有者：激活以升序排序列</value>
-	</data>
-	<data name="TypeUser" xml:space="preserve">
-		<value>输入用户...</value>
-	</data>
-	<data name="Methodology" xml:space="preserve">
-		<value>方法论</value>
-	</data>
-	<data name="NoDataAvailable" xml:space="preserve">
-		<value>无可用数据</value>
-	</data>
-	<data name="ProjectStatus" xml:space="preserve">
-		<value>项目状态</value>
-	</data>
-	<data name="Certification" xml:space="preserve">
-		<value>认证</value>
-	</data>
-	<data name="SavingsCategory" xml:space="preserve">
-		<value>储蓄类别</value>
-	</data>
-	<data name="MonthlyProjectsStatus" xml:space="preserve">
-		<value>月度项目状态</value>
-	</data>
-	<data name="MonthlyProjects" xml:space="preserve">
-		<value>月度项目</value>
-	</data>
-	<data name="MonthlyProjectsPerDepartment" xml:space="preserve">
-		<value>各部门月度项目</value>
-	</data>
-	<data name="MonthlyProjectsPerPhase" xml:space="preserve">
-		<value>各阶段月度项目</value>
-	</data>
-	<data name="MonthlySavings" xml:space="preserve">
-		<value>月度储蓄</value>
-	</data>
-	<data name="FacilitatorsProjects" xml:space="preserve">
-		<value>促进者项目</value>
-	</data>
+  <data name="Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>许可证</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>无效的业务目标对齐</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>部门</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>无效的部门</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>无效的设施名称</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>无效的国家名称</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>无效的储蓄类别名称</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>上传失败</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>获取工具失败</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>上传此文件???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>无效的用户名</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>优先级</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>开始日期：激活以升序排序列</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>未找到记录</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>所有者</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>所有者：激活以升序排序列</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>输入用户...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>无可用数据</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>项目状态</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>储蓄类别</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>月度项目状态</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>月度项目</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>各部门月度项目</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>各阶段月度项目</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>促进者项目</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>节省</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>保存并下一步</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>所有评论都是必需的。</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>所有评论日期都是必需的。</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>评论</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>已审核</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>请至少添加一种节省类型（硬节省或软节省）</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>检测到重复月份</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>请搜索项目</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>选择工具</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>项目已保存。要输入团队成员，请在项目详细信息页面中将状态更新为"已启动"。</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>请至少添加一名团队成员。</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>所有团队成员姓名都是必需的。</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>所有团队成员角色都是必需的。</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>项目定义和对齐。</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>当前状态绩效基线。</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>识别变异原因。</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>开发、测试和实施解决方案。</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>维持成果并扩大规模。</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>识别业务需求、问题或机会，并集思广益，找到满足此需求、解决此问题或抓住此机会的方法。</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>将较大的项目分解为较小的任务，组建您的团队，并为完成分配的任务制定时间表。</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>跟踪、组织团队成员，管理时间表，确保按照原计划完成工作。</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>项目绩效和监控确保结果与管理计划保持一致。</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>提供可交付的财务成果，释放项目资源，确定项目的成功，评估项目中哪些有效哪些无效。</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>请至少添加一个工具</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>请选择团队成员</value>
+  </data>
 </root>
