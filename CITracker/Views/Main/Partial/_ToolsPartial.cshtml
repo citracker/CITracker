@@ -1,17 +1,18 @@
-﻿@model Shared.ViewModels.ContinuousImprovementVM
+﻿@using CITracker.Resources
+@model Shared.ViewModels.ContinuousImprovementVM
 
 <!-- Page Header Close -->
 <div id="tools_info" class="row row-sm d-none">
     <div class="col-xl-12">
         <div class="card custom-card">
             <div class="card-header justify-content-between">
-                <div class="card-title"> Tools </div>
+                <div class="card-title"> @SharedResource.Tools </div>
             </div>
             <div class="card-body custom-scroll">
                 <div class="d-sm-flex d-block align-items-center flex-wrap justify-content-center">
                     <div class="mb-lg-0 mb-2"><h4 class="text-lg-center m-3"></h4></div>
                 </div>
-                <p>Note: You can download the sample templates for each from the Download Icon <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
+                <p>@SharedResource.NoteYouCanDownloadTheSampleTemplates <i class="fe fe-download" style="--feather-size: 48px; --feather-color: green;"></i></p>
                 <input type="file" id="toolUploadInput" accept=".doc,.docx" style="display:none" />
                 <div id="validationSummaryToP" class="alert alert-danger d-none" role="alert">
                     <ul class="mb-0"></ul>
@@ -22,13 +23,29 @@
                 </div>
             </div>
             <div class="card-footer border-top-card">
-                <button class="btn btn-primary" onclick="loadPartial('tools_info', 'team_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectTools(this, 'tools_info', 'attachments_info')">Save &amp; Next</button>
+                <button class="btn btn-primary" onclick="loadPartial('tools_info', 'team_info')">@SharedResource.Previous</button>
+                <button class="btn btn-success shadow-success" onclick="CIProjectTools(this, 'tools_info', 'attachments_info')">@SharedResource.SaveAndNext</button>
             </div>
         </div>
     </div>
 </div>
 <script>
+    const resources = {
+        projDef: '@SharedResource.ProjectDefinitionAndAlignment',
+        measure: '@SharedResource.CurrentStatePerformanceBaseline',
+        analyse: '@SharedResource.IdentifyCausesOfVariation',
+        improve: '@SharedResource.DevelopTestAndImplementSolutions',
+        control: '@SharedResource.SustainGainsAndScale',
+        concept: '@SharedResource.IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity',
+        definition: '@SharedResource.BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments',
+        execution: '@SharedResource.TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan',
+        performance: '@SharedResource.ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan',
+        closure: '@SharedResource.ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject',
+        saveNext: '@SharedResource.SaveAndNext',
+        errorOccured: '@SharedResource.AnErrorOccurred',
+        toolRequired: '@SharedResource.PleaseAddAtLeastOneTool'
+    }
+
     document.addEventListener('partialShown', function (e) {
         if (e.detail.id === 'tools_info') {
             if(window.AppState.selectedMethodology !== undefined){
@@ -58,16 +75,16 @@
 
 
         const phaseTooltips = {
-            Define: 'Project definition and alignment.',
-            Measure: 'Current state performance baseline.',
-            Analyze: 'Identify causes of variation.',
-            Improve: 'Develop, test and implement solutions.',
-            Control: 'Sustain gains and scale.',
-            'Concept & Initiation': 'Identify a business need, problem, or opportunity and brainstorm ways to meet this need, solve this problem or seize this opportunity.',
-            'Definition & Planning': 'Break down the larger project into smaller tasks, build your team and prepare a schedule for the completion of assignments.',
-            Execution: 'Track, organize team members, manage timelines and make sure the work is done according to the original plan.',
-            'Performance & Control': 'Project performance and monitoring ensures that results align with the management plan.',
-            'Project Closure': 'Provide financial deliverables, release project resources and determine the success of the project, evaluating what did and did not work with the project.'
+            Define: resources.projDef,
+            Measure: resources.measure,
+            Analyze: resources.analyse,
+            Improve: resources.improve,
+            Control: resources.control,
+            'Concept & Initiation': resources.concept,
+            'Definition & Planning': resources.definition,
+            Execution: resources.execution,
+            'Performance & Control': resources.performance,
+            'Project Closure': resources.closure
         };
 
         const phaseColors = {
@@ -227,9 +244,9 @@
 
         // Validation
         if (toolvalue.length === 0) {
-            displayErrorToP('Please add at least one tool');
+            displayErrorToP(resources.toolRequired);
 
-            ref.innerHTML = 'Save &amp; Next';
+            ref.innerHTML = resources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -245,7 +262,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsToP(result.errors);
-                ref.innerHTML = 'Save &amp; Next';
+                ref.innerHTML = resources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -259,9 +276,9 @@
 
         } catch (err) {
             console.error(err);
-            alert('An error occurred');
+            alert(resources.errorOccured);
         }
-        ref.innerHTML = 'Save &amp; Next';
+        ref.innerHTML = resources.saveNext;
         ref.disabled = false;
     }
 

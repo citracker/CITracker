@@ -1,11 +1,12 @@
-﻿@model Shared.ViewModels.ContinuousImprovementVM
+﻿@using CITracker.Resources
+@model Shared.ViewModels.ContinuousImprovementVM
 
 <!-- Page Header Close -->
 <div id="attachments_info" class="row row-sm d-none">
     <div class="col-xl-12">
         <div class="card custom-card">
             <div class="card-header justify-content-between">
-                <div class="card-title"> Attachments </div>
+                <div class="card-title"> @SharedResource.Attachments </div>
             </div>
             <div class="card-body custom-scroll">
                 <div id="validationSummaryAP" class="alert alert-danger d-none" role="alert">
@@ -14,14 +15,14 @@
                 @Html.AntiForgeryToken()
 
                 <label for="text-area" class="form-label">
-                    Project Update(s)
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Relevant information to provide recent activity and updates to the initiative"> <i class="fe fe-info"></i></a>
+                    @SharedResource.ProjectUpdates
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative"> <i class="fe fe-info"></i></a>
                 </label>
                 <nav class="navbar navbar-expand-lg bg-light"> 
                     <div class="container-fluid"> 
-                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">Comments</a>
-                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Date</a>
-                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Add/Remove</a>
+                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">@SharedResource.Comments</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">@SharedResource.Date</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">@SharedResource.AddRemove</a>
                         <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href=""></a>
                     </div>
                 </nav>
@@ -59,7 +60,7 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control flatpickr-input date-input active" name="date" placeholder="Date" readonly="readonly">
+                                    <input type="text" class="form-control flatpickr-input date-input active" name="date" placeholder="@SharedResource.Date" readonly="readonly">
                                 </div>
                             </div>
                         </div>
@@ -75,9 +76,9 @@
 
                 <nav class="navbar navbar-expand-lg bg-light mb-4">
                     <div class="container-fluid">
-                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Category</a>
-                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">Item</a>
-                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">Attachment</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">@SharedResource.Category</a>
+                        <a class="navbar-brand col-xl-6 col-lg-6 col-md-6 col-sm-6" href="">@SharedResource.Item</a>
+                        <a class="navbar-brand col-xl-2 col-lg-2 col-md-2 col-sm-2" href="">@SharedResource.Attachment</a>
                     </div>
                 </nav>
 
@@ -86,7 +87,7 @@
                 <div class="col-xl-12">
                     <div class="card custom-card">
                         <div class="card-body">
-                            <label for="formFileLg" class="form-label">Final Report (Supported Format: PPT, Excel, PDF, Word)</label>
+                            <label for="formFileLg" class="form-label">@SharedResource.FinalReportSupportedFormat</label>
                             <input class="form-control form-control-lg" id="finalReport" type="file" onchange="uploadFinalReportFile(this)">
                         </div>
                     </div>
@@ -94,14 +95,22 @@
 
             </div>
             <div class="card-footer border-top-card">
-                <button class="btn btn-primary" onclick="loadPartial('attachments_info', 'tools_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectComment(this, 'attachments_info', 'financial_info')">Save &amp; Next</button>
+                <button class="btn btn-primary" onclick="loadPartial('attachments_info', 'tools_info')">@SharedResource.Previous</button>
+                <button class="btn btn-success shadow-success" onclick="CIProjectComment(this, 'attachments_info', 'financial_info')">@SharedResource.SaveAndNext</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    const resources = {
+        requiredComments: '@SharedResource.AllCommentsAreRequired',
+        requiredCommentDates: '@SharedResource.AllCommentDatesAreRequired',
+        typeUser: '@SharedResource.TypeUser',
+        errorOccured: '@SharedResource.AnErrorOccurred',
+        saveNext : '@SharedResource.SaveAndNext'
+    }
+
     document.addEventListener('partialShown', function (e) {
 
         applyFileLock(window.AppState.CIProject.Status);
@@ -442,18 +451,18 @@
 
         const hasEmptyComment = commentData.some(member => !member.Comment || member.Comment.trim() === '');
         if (hasEmptyComment) {
-            displayErrorAP('All comments are required.');
+            displayErrorAP(resources.requiredComments);
 
-            ref.innerHTML = 'Save &amp; Next';
+            ref.innerHTML = resources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasEmptyDate = commentData.some(member => !member.Date || member.Date.trim() === '');
         if (hasEmptyDate) {
-            displayErrorAP('All comment dates are required.');
+            displayErrorAP(resources.requiredCommentDates);
 
-            ref.innerHTML = 'Save &amp; Next';
+            ref.innerHTML = resources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -470,7 +479,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsAP(result.errors);
-                ref.innerHTML = 'Save &amp; Next';
+                ref.innerHTML = resources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -484,9 +493,9 @@
 
         } catch (err) {
             console.error(err);
-            displayErrorAP('An error occurred - '+ err);
+            displayErrorAP(resources.errorOccured +' - '+ err);
         }
-        ref.innerHTML = 'Save &amp; Next';
+        ref.innerHTML = resources.saveNext;
         ref.disabled = false;
     }
 

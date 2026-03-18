@@ -1144,7 +1144,7 @@
     <value>Maandelijkse prijs:</value>
   </data>
   <data name="MonthlySavings" xml:space="preserve">
-    <value>Maandelijkse besparingen</value>
+    <value>Maandelijkse Besparingen</value>
   </data>
   <data name="Months" xml:space="preserve">
     <value>Maanden</value>
@@ -1366,7 +1366,7 @@
     <value>Projectmanager</value>
   </data>
   <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
-    <value>Project moet ten minste één facilitator hebben.</value>
+    <value>Project moet ten minste één Facilitator hebben.</value>
   </data>
   <data name="ProjectPhaseIsRequired" xml:space="preserve">
     <value>Projectfase is vereist.</value>
@@ -1938,103 +1938,184 @@
   <data name="UploadSuccessful" xml:space="preserve">
     <value>Upload succesvol</value>
   </data>
-	<data name="Users" xml:space="preserve">
-		<value>Gebruikers</value>
-	</data>
-	<data name="Licences" xml:space="preserve">
-		<value>Licenties</value>
-	</data>
-	<data name="Successful" xml:space="preserve">
-		<value>Geslaagd</value>
-	</data>
-	<data name="Failed" xml:space="preserve">
-		<value>Mislukt</value>
-	</data>
-	<data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
-		<value>Ongeldige Bedrijfsdoelstelling Afstemming</value>
-	</data>
-	<data name="Department" xml:space="preserve">
-		<value>Afdeling</value>
-	</data>
-	<data name="InvalidDepartment" xml:space="preserve">
-		<value>Ongeldige Afdeling</value>
-	</data>
-	<data name="InvalidFacilityName" xml:space="preserve">
-		<value>Ongeldige faciliteitsnaam</value>
-	</data>
-	<data name="InvalidCountryName" xml:space="preserve">
-		<value>Ongeldige landnaam</value>
-	</data>
-	<data name="InvalidSavingCategoryName" xml:space="preserve">
-		<value>Ongeldige spaarcategorie naam</value>
-	</data>
-	<data name="UploadFailed" xml:space="preserve">
-		<value>Upload mislukt</value>
-	</data>
-	<data name="FailedToFetchTools" xml:space="preserve">
-		<value>Fout bij ophalen van tools</value>
-	</data>
-	<data name="UploadThisFile" xml:space="preserve">
-		<value>Dit bestand uploaden???</value>
-	</data>
-	<data name="InvalidUserName" xml:space="preserve">
-		<value>Ongeldige gebruikersnaam</value>
-	</data>
-	<data name="Status" xml:space="preserve">
-		<value>Status</value>
-	</data>
-	<data name="Priority" xml:space="preserve">
-		<value>Prioriteit</value>
-	</data>
-	<data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
-		<value>Startdatum: activeer om kolom oplopend te sorteren</value>
-	</data>
-	<data name="NoRecordFound" xml:space="preserve">
-		<value>Geen record gevonden</value>
-	</data>
-	<data name="Description" xml:space="preserve">
-		<value>Beschrijving</value>
-	</data>
-	<data name="Owner" xml:space="preserve">
-		<value>Eigenaar</value>
-	</data>
-	<data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
-		<value>Eigenaar: activeer om kolom oplopend te sorteren</value>
-	</data>
-	<data name="TypeUser" xml:space="preserve">
-		<value>Typ gebruiker...</value>
-	</data>
-	<data name="Methodology" xml:space="preserve">
-		<value>Methodologie</value>
-	</data>
-	<data name="NoDataAvailable" xml:space="preserve">
-		<value>Geen gegevens beschikbaar</value>
-	</data>
-	<data name="ProjectStatus" xml:space="preserve">
-		<value>Projectstatus</value>
-	</data>
-	<data name="Certification" xml:space="preserve">
-		<value>Certificering</value>
-	</data>
-	<data name="SavingsCategory" xml:space="preserve">
-		<value>Besparingscategorie</value>
-	</data>
-	<data name="MonthlyProjectsStatus" xml:space="preserve">
-		<value>Maandelijkse Projectstatus</value>
-	</data>
-	<data name="MonthlyProjects" xml:space="preserve">
-		<value>Maandelijkse Projecten</value>
-	</data>
-	<data name="MonthlyProjectsPerDepartment" xml:space="preserve">
-		<value>Maandelijkse Projecten per Afdeling</value>
-	</data>
-	<data name="MonthlyProjectsPerPhase" xml:space="preserve">
-		<value>Maandelijkse Projecten per Fase</value>
-	</data>
-	<data name="MonthlySavings" xml:space="preserve">
-		<value>Maandelijkse Besparingen</value>
-	</data>
-	<data name="FacilitatorsProjects" xml:space="preserve">
-		<value>Facilitators Projecten</value>
-	</data>
+  <data name="Users" xml:space="preserve">
+    <value>Gebruikers</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>Licenties</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Geslaagd</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Mislukt</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Ongeldige Bedrijfsdoelstelling Afstemming</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Afdeling</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>Ongeldige Afdeling</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>Ongeldige faciliteitsnaam</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>Ongeldige landnaam</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>Ongeldige spaarcategorie naam</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Upload mislukt</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>Fout bij ophalen van tools</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>Dit bestand uploaden???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Ongeldige gebruikersnaam</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Prioriteit</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Startdatum: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>Geen record gevonden</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>Eigenaar: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>Typ gebruiker...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Geen gegevens beschikbaar</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>Projectstatus</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>Besparingscategorie</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>Maandelijkse Projectstatus</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>Maandelijkse Projecten</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>Maandelijkse Projecten per Afdeling</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>Maandelijkse Projecten per Fase</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>Facilitators Projecten</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>Besparingen</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>Bijlagen</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Bijlage</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>Opslaan &amp; Volgende</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>Alle opmerkingen zijn vereist.</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>Alle opmerkingdatums zijn vereist.</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Opmerking</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>Gecontroleerd</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>Voeg ten minste één besparingstype toe (harde of zachte besparing)</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>Dubbele maand gedetecteerd</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value>U kunt maximaal 12 vermeldingen toevoegen.</value>
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>Zoek alstublieft naar een project</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>Selecteer een Tool</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>Project Opgeslagen. Om teamleden in te voeren, update de status op de projectdetails pagina naar "Gestart".</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>Voeg ten minste één teamlid toe.</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>Alle teamlidnamen zijn vereist.</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>Alle teamlidrollen zijn vereist.</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>Projectdefinitie en afstemming.</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>Huidige staat prestatielijn.</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>Oorzaken van variatie identificeren.</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>Oplossingen ontwikkelen, testen en implementeren.</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>Winsten behouden en opschalen.</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>Identificeer een zakelijke behoefte, probleem of kans en brainstorm over manieren om aan deze behoefte te voldoen, dit probleem op te lossen of deze kans te benutten.</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>Verdeel het grotere project in kleinere taken, bouw uw team en bereid een schema voor voor de voltooiing van opdrachten.</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>Volg, organiseer teamleden, beheer tijdlijnen en zorg ervoor dat het werk volgens het oorspronkelijke plan wordt gedaan.</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>Projectprestaties en monitoring zorgen ervoor dat resultaten aansluiten bij het managementplan.</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>Zorg voor financiële deliverables, vrijgave van projectmiddelen en bepaal het succes van het project, evalueer wat wel en niet werkte met het project.</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>Voeg ten minste één tool toe</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>Teamlid kiezen</value>
+  </data>
 </root>

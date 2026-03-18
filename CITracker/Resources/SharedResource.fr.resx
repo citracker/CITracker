@@ -1144,7 +1144,7 @@
     <value>Prix mensuel :</value>
   </data>
   <data name="MonthlySavings" xml:space="preserve">
-    <value>Économies mensuelles</value>
+    <value>Économies Mensuelles</value>
   </data>
   <data name="Months" xml:space="preserve">
     <value>Mois</value>
@@ -1366,7 +1366,7 @@
     <value>Chef de projet</value>
   </data>
   <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
-    <value>Le projet doit avoir au moins un facilitateur.</value>
+    <value>Le projet doit avoir au moins un Facilitateur.</value>
   </data>
   <data name="ProjectPhaseIsRequired" xml:space="preserve">
     <value>La phase du projet est requise.</value>
@@ -1938,103 +1938,184 @@
   <data name="UploadSuccessful" xml:space="preserve">
     <value>Téléchargement réussi</value>
   </data>
-	<data name="Users" xml:space="preserve">
-		<value>Utilisateurs</value>
-	</data>
-	<data name="Licences" xml:space="preserve">
-		<value>Licences</value>
-	</data>
-	<data name="Successful" xml:space="preserve">
-		<value>Réussi</value>
-	</data>
-	<data name="Failed" xml:space="preserve">
-		<value>Échoué</value>
-	</data>
-	<data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
-		<value>Alignement d'Objectif Commercial Invalide</value>
-	</data>
-	<data name="Department" xml:space="preserve">
-		<value>Département</value>
-	</data>
-	<data name="InvalidDepartment" xml:space="preserve">
-		<value>Département Invalide</value>
-	</data>
-	<data name="InvalidFacilityName" xml:space="preserve">
-		<value>Nom d'installation invalide</value>
-	</data>
-	<data name="InvalidCountryName" xml:space="preserve">
-		<value>Nom de pays invalide</value>
-	</data>
-	<data name="InvalidSavingCategoryName" xml:space="preserve">
-		<value>Catégorie d'économie invalide</value>
-	</data>
-	<data name="UploadFailed" xml:space="preserve">
-		<value>Téléchargement échoué</value>
-	</data>
-	<data name="FailedToFetchTools" xml:space="preserve">
-		<value>Échec de récupération des outils</value>
-	</data>
-	<data name="UploadThisFile" xml:space="preserve">
-		<value>Télécharger ce fichier???</value>
-	</data>
-	<data name="InvalidUserName" xml:space="preserve">
-		<value>Nom d'utilisateur invalide</value>
-	</data>
-	<data name="Status" xml:space="preserve">
-		<value>Statut</value>
-	</data>
-	<data name="Priority" xml:space="preserve">
-		<value>Priorité</value>
-	</data>
-	<data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
-		<value>Date de début : activer pour trier la colonne par ordre croissant</value>
-	</data>
-	<data name="NoRecordFound" xml:space="preserve">
-		<value>Aucun enregistrement trouvé</value>
-	</data>
-	<data name="Description" xml:space="preserve">
-		<value>Description</value>
-	</data>
-	<data name="Owner" xml:space="preserve">
-		<value>Propriétaire</value>
-	</data>
-	<data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
-		<value>Propriétaire : activer pour trier la colonne par ordre croissant</value>
-	</data>
-	<data name="TypeUser" xml:space="preserve">
-		<value>Tapez l'utilisateur...</value>
-	</data>
-	<data name="Methodology" xml:space="preserve">
-		<value>Méthodologie</value>
-	</data>
-	<data name="NoDataAvailable" xml:space="preserve">
-		<value>Aucune donnée disponible</value>
-	</data>
-	<data name="ProjectStatus" xml:space="preserve">
-		<value>Statut du Projet</value>
-	</data>
-	<data name="Certification" xml:space="preserve">
-		<value>Certification</value>
-	</data>
-	<data name="SavingsCategory" xml:space="preserve">
-		<value>Catégorie d'Économie</value>
-	</data>
-	<data name="MonthlyProjectsStatus" xml:space="preserve">
-		<value>Statut des Projets Mensuels</value>
-	</data>
-	<data name="MonthlyProjects" xml:space="preserve">
-		<value>Projets Mensuels</value>
-	</data>
-	<data name="MonthlyProjectsPerDepartment" xml:space="preserve">
-		<value>Projets Mensuels par Département</value>
-	</data>
-	<data name="MonthlyProjectsPerPhase" xml:space="preserve">
-		<value>Projets Mensuels par Phase</value>
-	</data>
-	<data name="MonthlySavings" xml:space="preserve">
-		<value>Économies Mensuelles</value>
-	</data>
-	<data name="FacilitatorsProjects" xml:space="preserve">
-		<value>Projets des Facilitateurs</value>
-	</data>
+  <data name="Users" xml:space="preserve">
+    <value>Utilisateurs</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>Licences</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Réussi</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Échoué</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Alignement d'Objectif Commercial Invalide</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Département</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>Département Invalide</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>Nom d'installation invalide</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>Nom de pays invalide</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>Catégorie d'économie invalide</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Téléchargement échoué</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>Échec de récupération des outils</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>Télécharger ce fichier???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Nom d'utilisateur invalide</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Statut</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Priorité</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Date de début : activer pour trier la colonne par ordre croissant</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>Aucun enregistrement trouvé</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Propriétaire</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>Propriétaire : activer pour trier la colonne par ordre croissant</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>Tapez l'utilisateur...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Aucune donnée disponible</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>Statut du Projet</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>Catégorie d'Économie</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>Statut des Projets Mensuels</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>Projets Mensuels</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>Projets Mensuels par Département</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>Projets Mensuels par Phase</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>Projets des Facilitateurs</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>Économies</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>Pièces jointes</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Pièce jointe</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>Enregistrer et Suivant</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>Tous les commentaires sont requis.</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>Toutes les dates de commentaires sont requises.</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Commentaire</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>Audité</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Enregistrer</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>Veuillez ajouter au moins un type d'économie (économie dure ou molle)</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>Mois en double détecté</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value>Vous ne pouvez ajouter que jusqu'à 12 entrées.</value>
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>Veuillez rechercher un projet</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>Sélectionnez un Outil</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>Projet enregistré. Pour saisir les membres de l'équipe, mettez à jour le statut dans la page des détails du projet à "Initié".</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>Veuillez ajouter au moins un membre de l'équipe.</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>Tous les noms des membres de l'équipe sont requis.</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>Tous les rôles des membres de l'équipe sont requis.</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>Définition et alignement du projet.</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>Référence de performance de l'état actuel.</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>Identifier les causes de variation.</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>Développer, tester et mettre en œuvre des solutions.</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>Maintenir les gains et passer à l'échelle.</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>Identifiez un besoin commercial, un problème ou une opportunité et réfléchissez à des moyens de répondre à ce besoin, de résoudre ce problème ou de saisir cette opportunité.</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>Décomposez le projet plus vaste en tâches plus petites, constituez votre équipe et préparez un calendrier pour l'achèvement des missions.</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>Suivez, organisez les membres de l'équipe, gérez les délais et assurez-vous que le travail est effectué conformément au plan d'origine.</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>La performance et le suivi du projet garantissent que les résultats sont alignés sur le plan de gestion.</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>Fournissez les livrables financiers, libérez les ressources du projet et déterminez le succès du projet, en évaluant ce qui a fonctionné et ce qui n'a pas fonctionné dans le projet.</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>Veuillez ajouter au moins un outil</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>Sélectionnez un Membre de l'Équipe</value>
+  </data>
 </root>

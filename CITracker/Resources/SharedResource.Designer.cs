@@ -458,6 +458,24 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All comment dates are required..
+        /// </summary>
+        public static string AllCommentDatesAreRequired {
+            get {
+                return ResourceManager.GetString("AllCommentDatesAreRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All comments are required..
+        /// </summary>
+        public static string AllCommentsAreRequired {
+            get {
+                return ResourceManager.GetString("AllCommentsAreRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to All completed projects.
         /// </summary>
         public static string AllCompletedProjects {
@@ -589,6 +607,24 @@ namespace CITracker.Resources {
         public static string AllSubProjects {
             get {
                 return ResourceManager.GetString("AllSubProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All team member names are required..
+        /// </summary>
+        public static string AllTeamMemberNamesAreRequired {
+            get {
+                return ResourceManager.GetString("AllTeamMemberNamesAreRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All team member roles are required..
+        /// </summary>
+        public static string AllTeamMemberRolesAreRequired {
+            get {
+                return ResourceManager.GetString("AllTeamMemberRolesAreRequired", resourceCulture);
             }
         }
         
@@ -837,11 +873,38 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attachment.
+        /// </summary>
+        public static string Attachment {
+            get {
+                return ResourceManager.GetString("Attachment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attachments.
+        /// </summary>
+        public static string Attachments {
+            get {
+                return ResourceManager.GetString("Attachments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Audit &amp; Evidence.
         /// </summary>
         public static string AuditAndEvidence {
             get {
                 return ResourceManager.GetString("AuditAndEvidence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audited.
+        /// </summary>
+        public static string Audited {
+            get {
+                return ResourceManager.GetString("Audited", resourceCulture);
             }
         }
         
@@ -932,6 +995,16 @@ namespace CITracker.Resources {
         public static string BilledAnnually {
             get {
                 return ResourceManager.GetString("BilledAnnually", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Break down the larger project into smaller tasks, build your team and prepare a schedule for the completion of assignments..
+        /// </summary>
+        public static string BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments {
+            get {
+                return ResourceManager.GetString("BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCo" +
+                        "mpletionOfAssignments", resourceCulture);
             }
         }
         
@@ -1336,6 +1409,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Comment.
+        /// </summary>
+        public static string Comment {
+            get {
+                return ResourceManager.GetString("Comment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Comment list cannot be empty.
         /// </summary>
         public static string CommentListCannotBeEmpty {
@@ -1678,6 +1760,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Current state performance baseline..
+        /// </summary>
+        public static string CurrentStatePerformanceBaseline {
+            get {
+                return ResourceManager.GetString("CurrentStatePerformanceBaseline", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Customer Experience.
         /// </summary>
         public static string CustomerExperience {
@@ -1930,6 +2021,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Develop, test and implement solutions..
+        /// </summary>
+        public static string DevelopTestAndImplementSolutions {
+            get {
+                return ResourceManager.GetString("DevelopTestAndImplementSolutions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Discount (.
         /// </summary>
         public static string Discount {
@@ -1963,6 +2063,15 @@ namespace CITracker.Resources {
             get {
                 return ResourceManager.GetString("DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEffici" +
                         "ency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicate month detected.
+        /// </summary>
+        public static string DuplicateMonthDetected {
+            get {
+                return ResourceManager.GetString("DuplicateMonthDetected", resourceCulture);
             }
         }
         
@@ -2553,6 +2662,25 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Identify a business need, problem, or opportunity and brainstorm ways to meet this need, solve this problem or seize this opportunity..
+        /// </summary>
+        public static string IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity {
+            get {
+                return ResourceManager.GetString("IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThis" +
+                        "ProblemOrSeizeThisOpportunity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Identify causes of variation..
+        /// </summary>
+        public static string IdentifyCausesOfVariation {
+            get {
+                return ResourceManager.GetString("IdentifyCausesOfVariation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Import.
         /// </summary>
         public static string Import {
@@ -2864,6 +2992,15 @@ namespace CITracker.Resources {
         public static string KindlyProvideAValidEmailAddress {
             get {
                 return ResourceManager.GetString("KindlyProvideAValidEmailAddress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kindly search for a project.
+        /// </summary>
+        public static string KindlySearchForAProject {
+            get {
+                return ResourceManager.GetString("KindlySearchForAProject", resourceCulture);
             }
         }
         
@@ -3939,6 +4076,33 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Please add at least one saving type (either hard or soft saving).
+        /// </summary>
+        public static string PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving {
+            get {
+                return ResourceManager.GetString("PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please add at least one team member..
+        /// </summary>
+        public static string PleaseAddAtLeastOneTeamMember {
+            get {
+                return ResourceManager.GetString("PleaseAddAtLeastOneTeamMember", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please add at least one tool.
+        /// </summary>
+        public static string PleaseAddAtLeastOneTool {
+            get {
+                return ResourceManager.GetString("PleaseAddAtLeastOneTool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please select an upload type.
         /// </summary>
         public static string PleaseSelectAnUploadType {
@@ -4092,6 +4256,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project definition and alignment..
+        /// </summary>
+        public static string ProjectDefinitionAndAlignment {
+            get {
+                return ResourceManager.GetString("ProjectDefinitionAndAlignment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project Details.
         /// </summary>
         public static string ProjectDetails {
@@ -4128,6 +4301,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project performance and monitoring ensures that results align with the management plan..
+        /// </summary>
+        public static string ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan {
+            get {
+                return ResourceManager.GetString("ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project Phase is required..
         /// </summary>
         public static string ProjectPhaseIsRequired {
@@ -4142,6 +4324,15 @@ namespace CITracker.Resources {
         public static string Projects {
             get {
                 return ResourceManager.GetString("Projects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Project Saved, To enter team members, update status in the project details page to &quot;Initiated&quot;..
+        /// </summary>
+        public static string ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated {
+            get {
+                return ResourceManager.GetString("ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated", resourceCulture);
             }
         }
         
@@ -4178,6 +4369,16 @@ namespace CITracker.Resources {
         public static string ProjectUpdates {
             get {
                 return ResourceManager.GetString("ProjectUpdates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provide financial deliverables, release project resources and determine the success of the project, evaluating what did and did not work with the project..
+        /// </summary>
+        public static string ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject {
+            get {
+                return ResourceManager.GetString("ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfThePro" +
+                        "jectEvaluatingWhatDidAndDidNotWorkWithTheProject", resourceCulture);
             }
         }
         
@@ -4362,6 +4563,24 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Save.
+        /// </summary>
+        public static string Save {
+            get {
+                return ResourceManager.GetString("Save", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save &amp; Next.
+        /// </summary>
+        public static string SaveAndNext {
+            get {
+                return ResourceManager.GetString("SaveAndNext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Saving Amount.
         /// </summary>
         public static string SavingAmount {
@@ -4376,6 +4595,15 @@ namespace CITracker.Resources {
         public static string SavingAmountInSecSqftEtc {
             get {
                 return ResourceManager.GetString("SavingAmountInSecSqftEtc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Savings.
+        /// </summary>
+        public static string Savings {
+            get {
+                return ResourceManager.GetString("Savings", resourceCulture);
             }
         }
         
@@ -4578,6 +4806,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Select a Tool.
+        /// </summary>
+        public static string SelectATool {
+            get {
+                return ResourceManager.GetString("SelectATool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select a User.
         /// </summary>
         public static string SelectAUser {
@@ -4709,6 +4946,15 @@ namespace CITracker.Resources {
         public static string SelectStrategicProject {
             get {
                 return ResourceManager.GetString("SelectStrategicProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Team Member.
+        /// </summary>
+        public static string SelectTeamMember {
+            get {
+                return ResourceManager.GetString("SelectTeamMember", resourceCulture);
             }
         }
         
@@ -5181,6 +5427,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sustain gains and scale..
+        /// </summary>
+        public static string SustainGainsAndScale {
+            get {
+                return ResourceManager.GetString("SustainGainsAndScale", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Tables.
         /// </summary>
         public static string Tables {
@@ -5429,6 +5684,16 @@ namespace CITracker.Resources {
         public static string TotalSavings {
             get {
                 return ResourceManager.GetString("TotalSavings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Track, organize team members, manage timelines and make sure the work is done according to the original plan..
+        /// </summary>
+        public static string TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan {
+            get {
+                return ResourceManager.GetString("TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOrig" +
+                        "inalPlan", resourceCulture);
             }
         }
         
@@ -5735,6 +6000,15 @@ namespace CITracker.Resources {
         public static string Years {
             get {
                 return ResourceManager.GetString("Years", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can only add up to 12 entries..
+        /// </summary>
+        public static string YouCanOnlyAddUpTo12Entries {
+            get {
+                return ResourceManager.GetString("YouCanOnlyAddUpTo12Entries", resourceCulture);
             }
         }
         

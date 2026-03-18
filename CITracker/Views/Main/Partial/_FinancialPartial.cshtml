@@ -1,9 +1,10 @@
-﻿<!-- Page Header Close -->
+﻿@using CITracker.Resources
+<!-- Page Header Close -->
 <div id="financial_info" class="row row-sm d-none">
     <div class="col-xl-12">
         <div class="card custom-card">
             <div class="card-header justify-content-between">
-                <div class="card-title"> Financial Verification </div>
+                <div class="card-title"> @SharedResource.FinancialVerification </div>
             </div>
             <div class="card-body custom-scroll">
                 <div id="validationSummaryFP" class="alert alert-danger d-none" role="alert">
@@ -13,8 +14,8 @@
                 <div class="row">
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
                         <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
-                            One time savings
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Savings that will not be recurring overtime"> <i class="fe fe-info"></i></a>
+                            @SharedResource.OneTimeSavings
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.SavingsThatWillNotBeRecurringOvertime"> <i class="fe fe-info"></i></a>
                         </label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
@@ -28,8 +29,8 @@
 
                     <div class="col-xl-2 col-lg-2 col-md-2 col-sm-2">
                         <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
-                            Carry over savings
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Savings spanning over more than a year"> <i class="fe fe-info"></i></a>
+                            @SharedResource.CarryOverSavings
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.SavingsSpanningOverMoreThanAYear"> <i class="fe fe-info"></i></a>
                         </label>
                         <div class="d-flex align-items-center justify-content-center">
                             <div class="mb-lg-0"><h4 class="text-lg-center">N</h4></div>
@@ -43,7 +44,7 @@
 
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                         <label for="text-area" class="form-label align-items-center justify-content-center" style="display:flex">
-                            Select a date after the project start date
+                            @SharedResource.SelectADateAfterTheProjectStartDate
                         </label>
                         <div class="form-group">
                             <div class="input-group">
@@ -55,16 +56,16 @@
                 </div>
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
-                    Hard Savings                    
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Financial Benefits"> <i class="fe fe-info"></i></a>
+                    @SharedResource.HardSavings
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.FinancialBenefits"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
                     <div class="container-fluid">
-                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Months</a>
-                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Saving Type</a>
-                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Saving Amount</a>
-                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">Add/Remove</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">@SharedResource.Months</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">@SharedResource.SavingType</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">@SharedResource.SavingAmount</a>
+                        <a class="navbar-brand col-xl-3 col-lg-3 col-md-3 col-sm-3" href="">@SharedResource.AddRemove</a>
                     </div>
                 </nav>
                 <div class="finCardBody">
@@ -73,14 +74,14 @@
                             <div class="form-group">
                                 <div class="input-group">
                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                    <input type="text" class="form-control flatpickr-input month-picker active" name="date" placeholder="Month" readonly="readonly">
+                                    <input type="text" class="form-control flatpickr-input month-picker active" name="date" placeholder="@SharedResource.Month" readonly="readonly">
                                 </div>
                             </div>
                         </div>
 
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
                             <select class="form-control savings-type" name="savingstype">
-                                <option selected disabled>Select a savings type</option>
+                                <option selected disabled>@SharedResource.SelectASavingsType</option>
                                 <option value="Cost Reduction">Cost Reduction</option>
                                 <option value="Revenue">Revenue</option>
                                 <option value="Cost Avoidance">Cost Avoidance</option>
@@ -90,7 +91,7 @@
 
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="savingsvalue" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                <input type="text" class="form-control" name="savingsvalue" placeholder="@SharedResource.EnterSavingAmount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
                                 <button class="btn btn-outline-primary currency" type="button" aria-expanded="true"></button>
                             </div>
                         </div>
@@ -106,14 +107,14 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     Soft Savings
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="This includes non-financial savings (e.g. time, space, quality, safety)"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.ThisIncludesNonFinancialSavings"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
                     <div class="container-fluid">
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Category: Time, Space etc.</a>
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Saving Amount (in sec, sqft, etc.)</a>
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Add/Remove</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.CategoryEgTimeSpaceQuality</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.SavingAmountInSecSqftEtc</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.AddRemove</a>
                     </div>
                 </nav>
                 <div class="finSftCardBody">
@@ -131,7 +132,7 @@
 
                         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                             <div class="input-group mb-3">
-                                <input type="text" class="form-control" name="savingvalue" placeholder="Enter saving Amount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
+                                <input type="text" class="form-control" name="savingvalue" placeholder="@SharedResource.EnterSavingAmount" oninput="formatNumberRealTime(this)" onkeyup="formatNumberRealTime(this)" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false">
                                 <button class="btn btn-outline-primary" type="button"></button>
                             </div>
                             <input type="hidden" class="savingUnit" name="savingUnit" id="savingUnit" value="">
@@ -151,9 +152,9 @@
                     <div class="col-6">
                         <div class="card custom-card">
                             <div class="card-body">
-                                <label for="formFileLg" class="form-label">Financial Report (Supported Format: PPT, Excel, PDF, Word)</label>
+                                <label for="formFileLg" class="form-label">@SharedResource.FinancialReportSupportedFormat</label>
                                 <input class="form-control form-control-lg lockable" type="file" onchange="uploadFinancialReportFile(this)">
-                                <p class="text-danger text-sm-start"> Note: To attach the financial report, ensure to enter in hard savings, upload final report under the attachment status and move project to completed status under the project detail tab.</p>
+                                <p class="text-danger text-sm-start"> @SharedResource.NoteToAttachTheFinancialReport</p>
                             </div>
                         </div>
                     </div>
@@ -162,7 +163,7 @@
                     <div class="col-6">
                         <div class="card custom-card">
                             <div class="card-body">
-                                <label for="formFileLg" class="form-label">Comment</label>
+                                <label for="formFileLg" class="form-label">@SharedResource.Comment</label>
                                 <textarea class="form-control lockable" rows="3"></textarea>
                             </div>
                         </div>
@@ -171,17 +172,17 @@
 
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
-                    Audited Details (Auditor Only)
+                    @SharedResource.AuditedDetailsAuditorOnly
                     <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Closed projects can be randomly selected for auditing"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
                     <div class="container-fluid">
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Audited</a>
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Auditor</a>
-                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">Audited Date</a>
-                    </div>
-                </nav>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.Audited</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.Auditor</a>
+                        <a class="navbar-brand col-xl-4 col-lg-4 col-md-4 col-sm-4" href="">@SharedResource.AuditedDate</a>
+                    </div
+                </nav
                 <div class="row gy-4 mt-2 mb-2">
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
                         <div class="form-check form-check-lg d-flex align-items-center"> 
@@ -197,7 +198,7 @@
                         <div class="form-group">
                             <div class="input-group">
                                 <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                <input type="text" class="form-control flatpickr-input active pj-date-input lockable" name="audDate" placeholder="Audited Date" readonly="readonly">
+                                <input type="text" class="form-control flatpickr-input active pj-date-input lockable" name="audDate" placeholder="@SharedResource.AuditedDate" readonly="readonly">
                             </div>
                         </div>
                     </div>
@@ -205,8 +206,8 @@
 
             </div>
             <div class="card-footer border-top-card">
-                <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">Previous</button>
-                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">Save</button>
+                <button class="btn btn-primary" onclick="loadPartial('financial_info', 'attachments_info')">@SharedResource.Previous</button>
+                <button class="btn btn-success shadow-success" onclick="CIProjectFinancial(this)">@SharedResource.Save</button>
             </div>
         </div>
     </div>
@@ -215,6 +216,16 @@
     window.CATEGORY_UNIT_MAP = @Html.Raw(Json.Serialize(Model.OrganizationSoftSaving == null ? new List<Shared.Models.OrganizationSoftSaving>() : Model.OrganizationSoftSaving));
 
     const CATEGORY_UNIT_MAP = window.CATEGORY_UNIT_MAP || {};
+
+     const resources = {
+         addSavingType: '@SharedResource.PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving',
+         selectCategory: '@SharedResource.SelectACategory',
+         duplicateMonth: '@SharedResource.DuplicateMonthDetected',
+         saveNext: '@SharedResource.SaveAndNext',
+	     entriesLimit:'@SharedResource.YouCanOnlyAddUpTo12Entries',
+	     typeUser: '@SharedResource.TypeUser'
+     }
+
 
         // Handle category change (works for dynamically added rows)
     $(document).on('change', 'select[name="category"]', function () {
@@ -296,7 +307,7 @@
         }
         const count = $('.finBody').length;
         if (count >= MAX_FORMS) {
-            alert('You can only add up to 12 entries.');
+            alert(resources.entriesLimit);
             return;
         }
 
@@ -348,7 +359,7 @@
                 removeItemButton: true,
                 searchEnabled: true,
                 shouldSort: false,
-                placeholderValue: 'Type user...'
+                placeholderValue: resources.typeUser
             });
 
             auditMemberChoices.set(selectEl, choice);
@@ -435,7 +446,7 @@
 
         $select.empty();
 
-        $select.append('<option value="">-- Select Category --</option>');
+        $select.append('<option value="">-- '+resources.selectCategory+' --</option>');
 
         Object.keys(map).forEach(category => {
 
@@ -642,17 +653,17 @@
 
         // Validation
         if (hardData.length === 0 && softData.length === 0) {
-            displayErrorFP('Please add at least one saving type (either hard or soft saving).');
+            displayErrorFP(resources.addSavingType);
 
-            ref.innerHTML = 'Save &amp; Next';
+            ref.innerHTML = resources.saveNext;
             ref.disabled = false;
             return;
         }
 
         if (duplicateMonth) {
-            displayErrorFP(`Duplicate month detected: ${duplicateMonth}`);
+            displayErrorFP(`${resources.duplicateMonth}: ${duplicateMonth}`);
             
-            ref.innerHTML = 'Save &amp; Next';
+            ref.innerHTML = resources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -673,7 +684,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsFP(result.errors);
-                ref.innerHTML = 'Save &amp; Next';
+                ref.innerHTML = resources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -682,9 +693,9 @@
 
         } catch (err) {
             console.error(err);
-            displayErrorFP('An error occurred - '+ err);
+            displayErrorFP(resources.errorOccured +' - '+ err);
         }
-        ref.innerHTML = 'Save &amp; Next';
+        ref.innerHTML = resources.saveNext;
         ref.disabled = false;
     }
 
