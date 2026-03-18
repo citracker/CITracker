@@ -1,10 +1,17 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.CIUser>
+﻿@using CITracker.Resources
+@using System.Reflection
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizerFactory LocalizerFactory
+@model Shared.DTO.ResponseHandler<Shared.Models.CIUser>
 
 @{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "UserManagement";
     ViewData["Active"] = "ManageUsers";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!--APP-CONTENT START-->
@@ -13,10 +20,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Manage Users</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ManageUsers</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ManageUsers</li>
                 </ol>
             </div>
         </div>
@@ -27,14 +34,14 @@
                 if (Model.StatusCode == 200)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
@@ -42,7 +49,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add a User </div>
+                        <div class="card-title"> @SharedResource.AddAUser </div>
                     </div>
                     @using (Html.BeginForm("AddUser", "Admin", FormMethod.Post))
                     {
@@ -51,18 +58,18 @@
                             <div class="row gy-4">
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.User <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
                                     </p>
-                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="First Name" required>
-                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="Last Name" required>
-                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="Email Address" required>
+                                <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="@SharedResource.FirstName" required>
+                                <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="@SharedResource.LastName" required>
+                                <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="@SharedResource.EmailAddress" required>
                                 @* <input type="text" class="form-control mt-3 mb-3" id="ph" name="ph" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -70,7 +77,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a User </div>
+                        <div class="card-title"> @SharedResource.RenameAUser </div>
                     </div>
                     @using (Html.BeginForm("RenameUser", "Admin", FormMethod.Post))
                     {
@@ -79,9 +86,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
                                     <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
-                                        <option disabled>Select a User</option>
+                                        <option disabled>@SharedResource.SelectAUser</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -96,18 +103,18 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        User Details <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.UserDetails <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.OrganizationUser"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="fnN" name="fnN" placeholder="First Name" required>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="lnN" name="lnN" placeholder="Last Name" required>
-                                    <input type="email" class="form-control mt-3 mb-3 country-input" id="emN" name="emN" placeholder="Email Address" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="fnN" name="fnN" placeholder="@SharedResource.FirstName" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="lnN" name="lnN" placeholder="@SharedResource.LastName" required>
+                                    <input type="email" class="form-control mt-3 mb-3 country-input" id="emN" name="emN" placeholder="@SharedResource.EmailAddress" required>
                                     @* <input type="text" class="form-control mt-3 mb-3" id="phN" name="phN" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -115,7 +122,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a User </div>
+                        <div class="card-title"> @SharedResource.DeleteAUser </div>
                     </div>
                     @using (Html.BeginForm("DeleteUser", "Admin", FormMethod.Post))
                     {
@@ -124,9 +131,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a User<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
                                     <select class="form-control" name="userD" id="userD">
-                                        <option disabled>Select a User</option>
+                                        <option disabled>@SharedResource.SelectAUser</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -142,7 +149,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -152,7 +159,9 @@
 </div>
 <script>
     const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
-    
+    const resources = {
+        invalidUN: '@SharedResource.InvalidUserName'
+    }
     document.addEventListener("DOMContentLoaded", function () {
 
         const countryRegex = /^[\p{L}\s\-.'()]+$/u;
@@ -169,7 +178,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid user name.");
+                    this.setCustomValidity(resources.invalidUN);
                 } else {
                     this.setCustomValidity("");
                 }

@@ -1,4 +1,5 @@
-﻿@model Shared.DTO.OrganizationAccountDTO
+﻿@using CITracker.Resources
+@model Shared.DTO.OrganizationAccountDTO
 
 @{
     ViewData["Title"] = "CI Tracker";
@@ -12,7 +13,7 @@
         <!-- Page Header --> 
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb"> 
             <div> 
-                <h2 class="main-content-title fs-24 mb-1">My Account</h2> 
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.MyAccount</h2> 
                 @* <ol class="breadcrumb mb-0"> 
                     <li class="breadcrumb-item"><a href="javascript:void(0)"></a></li> 
                     <li class="breadcrumb-item active" aria-current="page"></li> 
@@ -44,9 +45,9 @@
                             <div class="profile-cover__action bg-img"></div> 
                             <div class="profile-cover__info"> 
                                 <ul class="nav"> 
-                                    <li><strong>@Model.Account.ActiveProjectCount</strong>Active Projects</li>
-                                    <li><strong>@Model.Account.ClosedProjectCount</strong>Closed Projects</li>
-                                    <li><strong>@Model.Subscription.NumberOfUsedLicences</strong>Users</li> 
+                                    <li><strong>@Model.Account.ActiveProjectCount</strong>@SharedResource.ActiveProjects</li>
+                                    <li><strong>@Model.Account.ClosedProjectCount</strong>@SharedResource.ClosedProjects</li>
+                                    <li><strong>@Model.Subscription.NumberOfUsedLicences</strong>@SharedResource.User</li>
                                 </ul> 
                             </div> 
                         </div> 
@@ -75,14 +76,14 @@
                                     <h4 class="fs-15 text-uppercase mb-3">Subscription</h4> 
                                     <div class="m-t-30"> 
                                         <div class=" p-t-10"> 
-                                            <h5 class="text-primary m-b-5 fs-14">@Model.Subscription.SubscriptionName Plan</h5> 
-                                            <p>@Model.Subscription.NumberOfLicences Licences (<b>@Model.Subscription.NumberOfUsedLicences Used</b>)</p>
-                                            <p>Start Date: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.StartDate))</b></p>
-                                            <p>End Date: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.EndDate))</b></p>
+                                            <h5 class="text-primary m-b-5 fs-14">@Model.Subscription.SubscriptionName @SharedResource.Plan</h5>
+                                            <p>@Model.Subscription.NumberOfLicences @SharedResource.Licences (<b>@Model.Subscription.NumberOfUsedLicences @SharedResource.Users</b>)</p>
+                                            <p>@SharedResource.StartDate: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.StartDate))</b></p>
+                                            <p>@SharedResource.EndDate: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.EndDate))</b></p>
                                         </div> 
                                         <div class=""> 
                                             <div class="btn-profile"> 
-                                                <button class="btn rounded-10 btn-danger" onclick="cancelSubscription('@Model.Subscription.PaymentSubscriptionId')"> <i class="fa fa-ban"></i> <span>Cancel Subscription</span> </button>
+                                                <button class="btn rounded-10 btn-danger" onclick="cancelSubscription('@Model.Subscription.PaymentSubscriptionId')"> <i class="fa fa-ban"></i> <span>@SharedResource.CancelSubscription</span> </button>
                                                 @* <button class="btn rounded-10 btn-success" onclick="upgradeSubscription()"> <i class="fa fa-arrow-up"></i> <span>Upgrade Subscription</span> </button> *@
                                             </div>
                                         </div> 
@@ -97,7 +98,7 @@
                                                 <div class="media"> 
                                                     <div class="media-icon bg-primary-transparent text-primary"> <i class="bi bi-telephone-forward"></i> </div> 
                                                     <div class="media-body"> 
-                                                        <span>Mobile</span> 
+                                                        <span>@SharedResource.PhoneNumber</span>
                                                         <div> @Model.Account.AdminPhoneNumber</div> 
                                                     </div> 
                                                 </div> 
@@ -108,7 +109,7 @@
                                                 <div class="media">
                                                     <div class="media-icon bg-primary-transparent text-primary"> <i class="bi bi-envelope-fill"></i> </div>
                                                     <div class="media-body">
-                                                        <span>Email Address</span>
+                                                        <span>@SharedResource.EmailAddress</span>
                                                         <div> @Model.Account.AdminEmail</div>
                                                     </div>
                                                 </div>
@@ -118,7 +119,8 @@
                                             <div class="main-profile-contact-list"> 
                                                 <div class="media"> 
                                                     <div class="media-icon bg-info-transparent text-info"> <i class="bi bi-geo-alt"></i> </div> 
-                                                    <div class="media-body"> <span>Current Address</span> 
+                                                    <div class="media-body">
+                                                        <span>@SharedResource.CurrentAddress</span>
                                                         <div> @Model.Account.Address </div> 
                                                     </div> 
                                                 </div> 
@@ -1014,9 +1016,14 @@
     </div>
 </div>
 <script>
+    const resources = {
+        cancelSub: '@SharedResource.AreYouSureYouWantToCancelYourSubscription',
+        cancelSubResp: '@SharedResource.SubscriptionCancellationRequestSubmittedSuccessfully',
+        someWentWrong: '@SharedResource.SomethingWentWrong'
+    }
     function cancelSubscription(sid) {
 
-        if (!confirm("Are you sure you want to cancel your subscription?")) {
+        if (!confirm(resources.cancelSub)) {
             return;
         }
 
@@ -1031,12 +1038,12 @@
             })
         .then(res => res.json())
         .then(data => {
-            alert("Subscription cancellation request submitted successfully");
+            alert(resources.cancelSubResp);
             location.reload();
         })
         .catch(err => {
             console.error(err);
-            alert("Something went wrong");
+            alert(resources.someWentWrong;
         });
 
     }

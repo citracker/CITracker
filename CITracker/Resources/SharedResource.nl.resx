@@ -1,0 +1,2121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>Over</value>
+  </data>
+  <data name="ABusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>Een bedrijfsdoelafstemming is vereist</value>
+  </data>
+  <data name="ACertificationIsRequired" xml:space="preserve">
+    <value>Een certificering is vereist</value>
+  </data>
+  <data name="ACommentCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>Een opmerking kan alleen aan een geldig project worden toegevoegd.</value>
+  </data>
+  <data name="ACommentIsRequired" xml:space="preserve">
+    <value>Een opmerking is vereist</value>
+  </data>
+  <data name="ACountryIsRequired" xml:space="preserve">
+    <value>Een land is vereist</value>
+  </data>
+  <data name="ACurrencyIsRequired" xml:space="preserve">
+    <value>Een valuta is vereist</value>
+  </data>
+  <data name="ADepartmentIsRequired" xml:space="preserve">
+    <value>Een afdeling is vereist</value>
+  </data>
+  <data name="ADescriptionIsRequired" xml:space="preserve">
+    <value>Een beschrijving is vereist</value>
+  </data>
+  <data name="AFacilitatorEmailAddressIsRequired" xml:space="preserve">
+    <value>Een e-mailadres van de facilitator is vereist</value>
+  </data>
+  <data name="AFacilityIsRequired" xml:space="preserve">
+    <value>Een faciliteit is vereist</value>
+  </data>
+  <data name="AGoodProblemStatementShouldContainWhatWhereWhenAndImpactToTheBusiness" xml:space="preserve">
+    <value>Een goede probleemstelling moet bevatten - wat, waar, wanneer en impact op het bedrijf.</value>
+  </data>
+  <data name="AGoodTitleShouldBeShortAndContainSearchableWords" xml:space="preserve">
+    <value>Een goede titel moet kort zijn en doorzoekbare woorden bevatten</value>
+  </data>
+  <data name="AMethodologyIsRequired" xml:space="preserve">
+    <value>Een methodologie is vereist</value>
+  </data>
+  <data name="AnEmailAddressIsRequired" xml:space="preserve">
+    <value>Een e-mailadres is vereist</value>
+  </data>
+  <data name="AnEndDateIsRequired" xml:space="preserve">
+    <value>Een einddatum is vereist</value>
+  </data>
+  <data name="AnErrorOccurred" xml:space="preserve">
+    <value>Er is een fout opgetreden</value>
+  </data>
+  <data name="AnErrorOccurredWhileCreatingTheCIProject" xml:space="preserve">
+    <value>Er is een fout opgetreden bij het aanmaken van het CI-project</value>
+  </data>
+  <data name="AnErrorOccurredWhileUpdatingTheCIProject" xml:space="preserve">
+    <value>Er is een fout opgetreden bij het bijwerken van het CI-project</value>
+  </data>
+  <data name="AnExecutiveSponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>Een e-mailadres van de executive sponsor is vereist</value>
+  </data>
+  <data name="AnOwnerEmailAddressIsRequired" xml:space="preserve">
+    <value>Een e-mailadres van de eigenaar is vereist</value>
+  </data>
+  <data name="APriorityIsRequired" xml:space="preserve">
+    <value>Een prioriteit is vereist</value>
+  </data>
+  <data name="AProblemStatementIsRequired" xml:space="preserve">
+    <value>Een probleemstelling is vereist</value>
+  </data>
+  <data name="ASavingsClassificationIsRequired" xml:space="preserve">
+    <value>Een besparingsclassificatie is vereist</value>
+  </data>
+  <data name="ASponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>Een e-mailadres van de sponsor is vereist</value>
+  </data>
+  <data name="AStartDateIsRequired" xml:space="preserve">
+    <value>Een startdatum is vereist</value>
+  </data>
+  <data name="AStatusIsRequired" xml:space="preserve">
+    <value>Een status is vereist</value>
+  </data>
+  <data name="ASupportingValueStreamIsRequired" xml:space="preserve">
+    <value>Een ondersteunende waardestroom is vereist</value>
+  </data>
+  <data name="ATeamMemberCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>Een teamlid kan alleen aan een geldig project worden toegevoegd.</value>
+  </data>
+  <data name="ATitleIsRequired" xml:space="preserve">
+    <value>Een titel is vereist</value>
+  </data>
+  <data name="AValidEmailAddressIsRequired" xml:space="preserve">
+    <value>Een geldig e-mailadres is vereist</value>
+  </data>
+  <data name="AWideSelectionOfTemplatesAndPowerfulToolsAtYourFingertips" xml:space="preserve">
+    <value>Een ruime selectie van sjablonen en krachtige tools binnen handbereik.</value>
+  </data>
+  <data name="AboutToCheckoutOrganization" xml:space="preserve">
+    <value>Op het punt om organisatie af te rekenen</value>
+  </data>
+  <data name="AboutYourself" xml:space="preserve">
+    <value>Over uzelf</value>
+  </data>
+  <data name="AcceptToReceiveEmailSentToMultipleRecipients" xml:space="preserve">
+    <value>Accepteer om e-mail te ontvangen die naar meerdere ontvangers is verzonden</value>
+  </data>
+  <data name="AcceptToReceivePostOrPageNotificationEmails" xml:space="preserve">
+    <value>Accepteer om notificatie-e-mails over berichten of pagina's te ontvangen</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>Accountinstellingen</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Actie</value>
+  </data>
+  <data name="ActionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Actie: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="ActiveProjects" xml:space="preserve">
+    <value>Actieve projecten</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Activiteit</value>
+  </data>
+  <data name="ActualSavings" xml:space="preserve">
+    <value>Werkelijke besparingen</value>
+  </data>
+  <data name="AddACountryOfOperation" xml:space="preserve">
+    <value>Voeg een land van vestiging toe</value>
+  </data>
+  <data name="AddADepartment" xml:space="preserve">
+    <value>Voeg een afdeling toe</value>
+  </data>
+  <data name="AddAFacility" xml:space="preserve">
+    <value>Voeg een faciliteit toe</value>
+  </data>
+  <data name="AddAUser" xml:space="preserve">
+    <value>Voeg een gebruiker toe</value>
+  </data>
+  <data name="AddBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Voeg bedrijfsdoelafstemming toe</value>
+  </data>
+  <data name="AddSoftSavingCategory" xml:space="preserve">
+    <value>Voeg categorie voor zachte besparingen toe</value>
+  </data>
+  <data name="AddRemove" xml:space="preserve">
+    <value>Toevoegen/Verwijderen</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Beheerder</value>
+  </data>
+  <data name="AdminEmail" xml:space="preserve">
+    <value>E-mail beheerder</value>
+  </data>
+  <data name="AdminEmailAddress" xml:space="preserve">
+    <value>E-mailadres beheerder</value>
+  </data>
+  <data name="AdminFirstName" xml:space="preserve">
+    <value>Voornaam beheerder</value>
+  </data>
+  <data name="AdminLastName" xml:space="preserve">
+    <value>Achternaam beheerder</value>
+  </data>
+  <data name="AdminName" xml:space="preserve">
+    <value>Naam beheerder</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>Beheer</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>Beheerder</value>
+  </data>
+  <data name="AlignInitiativesToStrategy" xml:space="preserve">
+    <value>Initiatieven afstemmen op strategie</value>
+  </data>
+  <data name="AlignStrategyWithExecutionMeasureProgressInRealTimeAndEnsureEveryInitiativeDrivesOrganizationalGoalsForward" xml:space="preserve">
+    <value>Stem strategie af op uitvoering, meet voortgang in realtime en zorg dat elk initiatief organisatiedoelen vooruit helpt.</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Alle</value>
+  </data>
+  <data name="AllColumnsMustHaveValues" xml:space="preserve">
+    <value>Alle kolommen moeten waarden hebben</value>
+  </data>
+  <data name="AllCompletedProjects" xml:space="preserve">
+    <value>Alle voltooide projecten</value>
+  </data>
+  <data name="AllContinuousImprovementInitiatives" xml:space="preserve">
+    <value>Alle initiatieven voor continue verbetering</value>
+  </data>
+  <data name="AllContinuousImprovementInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Alle initiatieven voor continue verbetering met hun doelstellingen en statussen.</value>
+  </data>
+  <data name="AllInitiatives" xml:space="preserve">
+    <value>Alle initiatieven</value>
+  </data>
+  <data name="AllInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Alle initiatieven met hun doelstellingen en statussen.</value>
+  </data>
+  <data name="AllMonthlySavings" xml:space="preserve">
+    <value>Alle maandelijkse besparingen.</value>
+  </data>
+  <data name="AllMyInitiatives" xml:space="preserve">
+    <value>Al mijn initiatieven</value>
+  </data>
+  <data name="AllMyInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Al mijn initiatieven met hun doelstellingen en statussen.</value>
+  </data>
+  <data name="AllMyOperationalExcellenceInitiatives" xml:space="preserve">
+    <value>Al mijn initiatieven voor operationele excellentie</value>
+  </data>
+  <data name="AllMyStrategicInitiatives" xml:space="preserve">
+    <value>Al mijn strategische initiatieven</value>
+  </data>
+  <data name="AllMyStrategicInitiativesAlongsideTheirStatuses" xml:space="preserve">
+    <value>Al mijn strategische initiatieven met hun statussen.</value>
+  </data>
+  <data name="AllOperationalExcellenceInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Alle initiatieven voor operationele excellentie met hun doelstellingen en statussen.</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>Alle projecten</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>Alle rechten voorbehouden.</value>
+  </data>
+  <data name="AllSubProjects" xml:space="preserve">
+    <value>Alle subprojecten.</value>
+  </data>
+  <data name="AnalyseFinancialPerformanceWithDetailedReportingOnHardAndSoftSavingsROIAndProjectOutcomesExportDataConnectPowerBIAndGenerateManagementReadyDashboards" xml:space="preserve">
+    <value>Analyseer financiële prestaties met gedetailleerde rapportage over harde en zachte besparingen, ROI en projectresultaten. Exporteer gegevens, verbind PowerBI en genereer managementklare dashboards.</value>
+  </data>
+  <data name="Annual" xml:space="preserve">
+    <value>Jaarlijks</value>
+  </data>
+  <data name="AnnualPrice" xml:space="preserve">
+    <value>Jaarlijkse prijs:</value>
+  </data>
+  <data name="AssociateEveryInitiativeWithCorporateStrategyToDriveValueCreationAndPLImpact" xml:space="preserve">
+    <value>Koppel elk initiatief aan bedrijfsstrategie om waard creatie en impact op winst &amp; verlies te stimuleren.</value>
+  </data>
+  <data name="AtLeastOneBusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>Minstens één bedrijfsdoelafstemming is vereist.</value>
+  </data>
+  <data name="AtLeastOneCommentIsRequired" xml:space="preserve">
+    <value>Minstens één opmerking is vereist</value>
+  </data>
+  <data name="AtLeastOneOfHardOrSoftSavingMustContainAValue" xml:space="preserve">
+    <value>Minstens één van harde of zachte besparing moet een waarde bevatten.</value>
+  </data>
+  <data name="AtLeastOneTeamMemberIsRequired" xml:space="preserve">
+    <value>Minstens één teamlid is vereist</value>
+  </data>
+  <data name="AtLeastOneToolIsRequired" xml:space="preserve">
+    <value>Minstens één tool is vereist</value>
+  </data>
+  <data name="AuditAndEvidence" xml:space="preserve">
+    <value>Audit &amp; Bewijs</value>
+  </data>
+  <data name="AuditProjectResultsValidateBenefitsAndMaintainFinancialGovernance" xml:space="preserve">
+    <value>Audit projectresultaten, valideer voordelen en behoud financieel toezicht.</value>
+  </data>
+  <data name="AuditedDate" xml:space="preserve">
+    <value>Gecontroleerde datum</value>
+  </data>
+  <data name="AuditedDetailsAuditorOnly" xml:space="preserve">
+    <value>Gecontroleerde details (alleen auditor)</value>
+  </data>
+  <data name="Auditor" xml:space="preserve">
+    <value>Auditor</value>
+  </data>
+  <data name="Audits" xml:space="preserve">
+    <value>Audits</value>
+  </data>
+  <data name="BackGuarantee" xml:space="preserve">
+    <value>Geld-terug-garantie</value>
+  </data>
+  <data name="BackToHome" xml:space="preserve">
+    <value>Terug naar home</value>
+  </data>
+  <data name="BilledAnnually" xml:space="preserve">
+    <value>Jaarlijks gefactureerd!!!</value>
+  </data>
+  <data name="BringYourContinuousImprovementIntoOnePlace" xml:space="preserve">
+    <value>Breng uw continue verbetering samen op één plek</value>
+  </data>
+  <data name="BuildACultureOfContinuousImprovementWhereEveryTeamMemberIsEmpoweredToContributeIdeasAndTakeOwnership" xml:space="preserve">
+    <value>Bouw een cultuur van continue verbetering waar elk teamlid wordt aangemoedigd om ideeën bij te dragen en eigenaarschap te nemen. Bevorder betrokkenheid, verantwoordelijkheid en samenwerking om verbeteringen te laten voortduren en organisatiebreed op te schalen.</value>
+  </data>
+  <data name="BuildingOperationalBrillianceThatLast" xml:space="preserve">
+    <value>Bouwen aan blijvende operationele schitterheid.</value>
+  </data>
+  <data name="BulkLocationUpload" xml:space="preserve">
+    <value>Bulklocatie uploaden</value>
+  </data>
+  <data name="BulkManagement" xml:space="preserve">
+    <value>Bulkmelding</value>
+  </data>
+  <data name="BulkUpload" xml:space="preserve">
+    <value>Bulk uploaden</value>
+  </data>
+  <data name="BusinessObjectiveAlignment" xml:space="preserve">
+    <value>Bedrijfsdoelafstemming</value>
+  </data>
+  <data name="BusinessObjectiveAlignmentDetails" xml:space="preserve">
+    <value>Details bedrijfsdoelafstemming</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Annuleren</value>
+  </data>
+  <data name="CancelSubscription" xml:space="preserve">
+    <value>Abonnement annuleren</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Geannuleerd</value>
+  </data>
+  <data name="CarryOverProject" xml:space="preserve">
+    <value>Project overdragen?</value>
+  </data>
+  <data name="CarryOverProjectActivateToSortColumnAscending" xml:space="preserve">
+    <value>Project overdragen?: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="CarryOverSavings" xml:space="preserve">
+    <value>Besparingen overdragen</value>
+  </data>
+  <data name="Carryover" xml:space="preserve">
+    <value>overdragen</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="CategoryEgTimeSpaceQuality" xml:space="preserve">
+    <value>Categorie (bijv. Tijd, Ruimte, kwaliteit)</value>
+  </data>
+  <data name="Certification" xml:space="preserve">
+    <value>Certificering</value>
+  </data>
+  <data name="CertificationIsRequired" xml:space="preserve">
+    <value>Certificering is vereist.</value>
+  </data>
+  <data name="CertificationMustBeOneOfDMAICGembaKaizenJDIProjectOthers" xml:space="preserve">
+    <value>Certificering moet een van de volgende zijn: 'DMAIC', 'Gemba Kaizen', 'JDI', 'Project', 'Andere'</value>
+  </data>
+  <data name="CertificationMustBeOneOfGreenBeltBlackBeltPMPNotApplicable" xml:space="preserve">
+    <value>Certificering moet een van de volgende zijn: 'Green Belt', 'Black Belt', 'PMP', 'Niet van toepassing'</value>
+  </data>
+  <data name="CertificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Certificering: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="Champion" xml:space="preserve">
+    <value>Kampioen</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Wachtwoord wijzigen</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>Grafieken</value>
+  </data>
+  <data name="CheckTheBoxForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotificationWheneverAnyUpdateIsMade" xml:space="preserve">
+    <value>Vink het vakje aan voor elk teamlid dat een e-mailmelding wil ontvangen wanneer er een update wordt gemaakt</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Afrekenen</value>
+  </data>
+  <data name="CheckoutOptions" xml:space="preserve">
+    <value>Afrekenopties</value>
+  </data>
+  <data name="ChooseAPlan" xml:space="preserve">
+    <value>Kies een plan</value>
+  </data>
+  <data name="ChooseMonthOfYear" xml:space="preserve">
+    <value>Kies maand van het jaar</value>
+  </data>
+  <data name="CITracker" xml:space="preserve">
+    <value>CI Tracker</value>
+  </data>
+  <data name="CITrackerCheckout" xml:space="preserve">
+    <value>CI Tracker - Afrekenen</value>
+  </data>
+  <data name="CITrackerHelpsTeamsCaptureIdeasAuditProcessesAndMeasureFinancialBenefitsWithDocumentsStoredInYourTenantViaSharePointIntegration" xml:space="preserve">
+    <value>CI Tracker helpt teams ideeën vast te leggen, processen te auditen en financiële voordelen te meten — met documenten opgeslagen in uw tenant via SharePoint-integratie.</value>
+  </data>
+  <data name="CITrackerStrivesToBridgeTheGapBetweenDataAndActionEmpoweringTeamsToImplementChangeEffectivelyAndExecutivesToSeeResultsImmediately" xml:space="preserve">
+    <value>CI Tracker streeft ernaar de kloof tussen gegevens en actie te overbruggen, teams in staat te stellen effectief veranderingen door te voeren en leidinggevenden direct resultaten te zien.</value>
+  </data>
+  <data name="CITrackerContactForm" xml:space="preserve">
+    <value>CITracker Contactformulier</value>
+  </data>
+  <data name="CITrackerProjectUpdate" xml:space="preserve">
+    <value>CITracker Projectupdate</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Wissen</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>Klanten</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Sluiten</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Gesloten</value>
+  </data>
+  <data name="ClosedProjects" xml:space="preserve">
+    <value>Gesloten projecten</value>
+  </data>
+  <data name="ClosedProjectsCanBeRandomlySelectedForAuditing" xml:space="preserve">
+    <value>Gesloten projecten kunnen willekeurig worden geselecteerd voor auditing</value>
+  </data>
+  <data name="CollectReviewAndPrioritizeImprovementIdeasThroughAStructuredIntakeWorkflow" xml:space="preserve">
+    <value>Verzamel, beoordeel en prioriteer verbeterideeën via een gestructureerde intakeworkflow.</value>
+  </data>
+  <data name="CommentListCannotBeEmpty" xml:space="preserve">
+    <value>Opmerkingenlijst mag niet leeg zijn</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Opmerkingen</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Bedrijfsnaam</value>
+  </data>
+  <data name="CompleteCheckout" xml:space="preserve">
+    <value>Afrekenen voltooien</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Voltooid</value>
+  </data>
+  <data name="CompletedProjects" xml:space="preserve">
+    <value>Voltooide projecten</value>
+  </data>
+  <data name="CompletedProjectsByUser" xml:space="preserve">
+    <value>voltooideprojectenDoorGebruiker</value>
+  </data>
+  <data name="ConductProcessAuditsWithConfigurableChecklistsAndAttachSupportingEvidence" xml:space="preserve">
+    <value>Voer procesaudits uit met configureerbare checklists en voeg ondersteunend bewijs toe. Alle documenten worden veilig opgeslagen in de SharePoint-tenant van de klant om volledig gegevenseigendom te behouden.</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contact</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>Contactgegevens</value>
+  </data>
+  <data name="ContinuousImprovement" xml:space="preserve">
+    <value>Continue verbetering</value>
+  </data>
+  <data name="ContinuousImprovementInitiatives" xml:space="preserve">
+    <value>Initiatieven voor continue verbetering</value>
+  </data>
+  <data name="ContinuousImprovementTemplate" xml:space="preserve">
+    <value>Sjabloon voor continue verbetering</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>Auteursrecht</value>
+  </data>
+  <data name="CostAvoidance" xml:space="preserve">
+    <value>Kostenvermijding</value>
+  </data>
+  <data name="CostContainment" xml:space="preserve">
+    <value>Kostenbeheersing</value>
+  </data>
+  <data name="CostOut" xml:space="preserve">
+    <value>Kostenbesparing</value>
+  </data>
+  <data name="CostReduction" xml:space="preserve">
+    <value>Kostenverlaging</value>
+  </data>
+  <data name="CostSavings" xml:space="preserve">
+    <value>Kostenbesparingen</value>
+  </data>
+  <data name="CostRevenue" xml:space="preserve">
+    <value>Kosten/Opbrengsten</value>
+  </data>
+  <data name="CouldNotSuccessfullyFetchData" xml:space="preserve">
+    <value>Gegevens konden niet succesvol worden opgehaald.</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>Land is vereist.</value>
+  </data>
+  <data name="CountryOfOperation" xml:space="preserve">
+    <value>Land van vestiging</value>
+  </data>
+  <data name="CreateCIProject" xml:space="preserve">
+    <value>CI-project aanmaken</value>
+  </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>Aangemaakt door</value>
+  </data>
+  <data name="CreatedByActivateToSortColumnAscending" xml:space="preserve">
+    <value>Aangemaakt door: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="CummulatedROI" xml:space="preserve">
+    <value>Gecumuleerde ROI</value>
+  </data>
+  <data name="CummulativeMonthlySavings" xml:space="preserve">
+    <value>Cumulatieve maandelijkse besparingen</value>
+  </data>
+  <data name="CummulativeMonthlySavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Cumulatieve maandelijkse besparingen: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="CummulativeROI" xml:space="preserve">
+    <value>Cumulatieve ROI</value>
+  </data>
+  <data name="CummulativeROIActivateToSortColumnAscending" xml:space="preserve">
+    <value>Cumulatieve ROI: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="CummulativeSavings" xml:space="preserve">
+    <value>Cumulatieve besparingen</value>
+  </data>
+  <data name="CummulativeStatus" xml:space="preserve">
+    <value>Cumulatieve status</value>
+  </data>
+  <data name="CummulativeStatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>Cumulatieve status: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="CurrencyIsRequired" xml:space="preserve">
+    <value>Valuta is vereist.</value>
+  </data>
+  <data name="CurrencyMustBeInTheISO4217Format" xml:space="preserve">
+    <value>Valuta moet in ISO 4217-formaat zijn (bijv USD, GBP, NGN enz.)</value>
+  </data>
+  <data name="CurrentAddress" xml:space="preserve">
+    <value>Huidig adres</value>
+  </data>
+  <data name="CustomerExperience" xml:space="preserve">
+    <value>Klantbeleving</value>
+  </data>
+  <data name="CustomizableTemplatesAndTools" xml:space="preserve">
+    <value>Aanpasbare sjablonen en tools</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Dashboard</value>
+  </data>
+  <data name="DashboardAnalytics" xml:space="preserve">
+    <value>Dashboardanalyse</value>
+  </data>
+  <data name="DataRetrievalError" xml:space="preserve">
+    <value>Fout bij ophalen gegevens</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Datum</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Datum aangemaakt</value>
+  </data>
+  <data name="DateCreatedActivateToSortColumnAscending" xml:space="preserve">
+    <value>Datum aangemaakt: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="DateMustBeInYYYYMMDDFormat" xml:space="preserve">
+    <value>Datum moet in jjjj-MM-dd formaat zijn</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>dagen geleden</value>
+  </data>
+  <data name="DeactivateAccount" xml:space="preserve">
+    <value>Account deactiveren</value>
+  </data>
+  <data name="DefectRate" xml:space="preserve">
+    <value>Defectpercentage</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Verwijderen</value>
+  </data>
+  <data name="DeleteABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Verwijder een bedrijfsdoelafstemming</value>
+  </data>
+  <data name="DeleteACountryOfOperation" xml:space="preserve">
+    <value>Verwijder een land van vestiging</value>
+  </data>
+  <data name="DeleteADepartment" xml:space="preserve">
+    <value>Verwijder een afdeling</value>
+  </data>
+  <data name="DeleteAFacility" xml:space="preserve">
+    <value>Verwijder een faciliteit</value>
+  </data>
+  <data name="DeleteASoftSavingCategory" xml:space="preserve">
+    <value>Verwijder een categorie voor zachte besparingen</value>
+  </data>
+  <data name="DeleteAUser" xml:space="preserve">
+    <value>Verwijder een gebruiker</value>
+  </data>
+  <data name="DeletePost" xml:space="preserve">
+    <value>Bericht verwijderen</value>
+  </data>
+  <data name="DepartmentIsRequired" xml:space="preserve">
+    <value>Afdeling is vereist.</value>
+  </data>
+  <data name="DepartmentActivateToSortColumnAscending" xml:space="preserve">
+    <value>Afdeling: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="DescriptionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Beschrijving: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="Designation" xml:space="preserve">
+    <value>Functie</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Korting (</value>
+  </data>
+  <data name="DMAIC" xml:space="preserve">
+    <value>DMAIC</value>
+  </data>
+  <data name="DownloadReport" xml:space="preserve">
+    <value>Rapport downloaden</value>
+  </data>
+  <data name="DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEfficiency" xml:space="preserve">
+    <value>Stimuleer operationele excellentie door processen te standaardiseren, verspilling te verminderen en efficiëntie te verbeteren in uw hele organisatie. Monitor prestaties, identificeer knelpunten en voer verbeteringen door die elke dag meetbare resultaten opleveren.</value>
+  </data>
+  <data name="DuplicateRowsDetectedInUpload" xml:space="preserve">
+    <value>Dubbele rijen gedetecteerd in upload</value>
+  </data>
+  <data name="EachFileMustBeLessThan20MB" xml:space="preserve">
+    <value>Elk bestand moet kleiner zijn dan 20MB!!!</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Bewerken</value>
+  </data>
+  <data name="EditPost" xml:space="preserve">
+    <value>Bericht bewerken</value>
+  </data>
+  <data name="EditProfile" xml:space="preserve">
+    <value>Profiel bewerken</value>
+  </data>
+  <data name="Efficiency" xml:space="preserve">
+    <value>Efficiëntie</value>
+  </data>
+  <data name="Elements" xml:space="preserve">
+    <value>Elementen</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>E-mailadres</value>
+  </data>
+  <data name="EmailPreferences" xml:space="preserve">
+    <value>E-mailvoorkeuren</value>
+  </data>
+  <data name="EmailSentSuccessfullyKindlyVerifyYourEmail" xml:space="preserve">
+    <value>E-mail succesvol verzonden. Controleer uw e-mail</value>
+  </data>
+  <data name="EmployeesJoinedThisMonth" xml:space="preserve">
+    <value>Werknemers deze maand toegetreden</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Einddatum</value>
+  </data>
+  <data name="EndDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Einddatum: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="EndDateIsRequired" xml:space="preserve">
+    <value>Einddatum is vereist.</value>
+  </data>
+  <data name="EndDateMustBeLaterThanStartDate" xml:space="preserve">
+    <value>Einddatum moet later zijn dan startdatum.</value>
+  </data>
+  <data name="EnterOTPCode" xml:space="preserve">
+    <value>Voer OTP-code in</value>
+  </data>
+  <data name="EnterSavingAmount" xml:space="preserve">
+    <value>Voer besparingsbedrag in</value>
+  </data>
+  <data name="EnterYourEmail" xml:space="preserve">
+    <value>Voer uw e-mail in</value>
+  </data>
+  <data name="EnterYourName" xml:space="preserve">
+    <value>Voer uw naam in</value>
+  </data>
+  <data name="EnterYourSubject" xml:space="preserve">
+    <value>Voer uw onderwerp in</value>
+  </data>
+  <data name="Enterprise" xml:space="preserve">
+    <value>Onderneming</value>
+  </data>
+  <data name="ExecutiveSponsor" xml:space="preserve">
+    <value>Executive sponsor</value>
+  </data>
+  <data name="ExecutiveSponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>E-mailadres van executive sponsor moet een geldig e-mailadres zijn</value>
+  </data>
+  <data name="ExistingInitiative" xml:space="preserve">
+    <value>Bestaand initiatief</value>
+  </data>
+  <data name="ExistingSubProject" xml:space="preserve">
+    <value>Bestaand subproject</value>
+  </data>
+  <data name="Facilitator" xml:space="preserve">
+    <value>Facilitator</value>
+  </data>
+  <data name="FacilitatorOwner" xml:space="preserve">
+    <value>Facilitator/Eigenaar</value>
+  </data>
+  <data name="FacilitatorActivateToSortColumnAscending" xml:space="preserve">
+    <value>Facilitator: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="FacilitatorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>E-mailadres van facilitator moet een geldig e-mailadres zijn</value>
+  </data>
+  <data name="Facility" xml:space="preserve">
+    <value>Faciliteit</value>
+  </data>
+  <data name="FacilityIsRequired" xml:space="preserve">
+    <value>Faciliteit is vereist.</value>
+  </data>
+  <data name="FacilityActivateToSortColumnAscending" xml:space="preserve">
+    <value>Faciliteit: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>Veelgestelde vragen</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>Functies</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>Bestand is leeg.</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filteren</value>
+  </data>
+  <data name="FilterResults" xml:space="preserve">
+    <value>Resultaten filteren</value>
+  </data>
+  <data name="FilterSearch" xml:space="preserve">
+    <value>Zoekopdracht filteren</value>
+  </data>
+  <data name="FinalReportSupportedFormat" xml:space="preserve">
+    <value>Eindrapport (ondersteunde formaten: PPT, Excel, PDF, Word)</value>
+  </data>
+  <data name="FinanceAndReporting" xml:space="preserve">
+    <value>Financiën &amp; rapportage</value>
+  </data>
+  <data name="FinancialBenefits" xml:space="preserve">
+    <value>Financiële voordelen</value>
+  </data>
+  <data name="FinancialReportSupportedFormat" xml:space="preserve">
+    <value>Financieel rapport (ondersteunde formaten: PPT, Excel, PDF, Word)</value>
+  </data>
+  <data name="FinancialVerification" xml:space="preserve">
+    <value>Financiële verificatie</value>
+  </data>
+  <data name="FindThe" xml:space="preserve">
+    <value>Vind de</value>
+  </data>
+  <data name="Finland" xml:space="preserve">
+    <value>Finland</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Voornaam</value>
+  </data>
+  <data name="FreeTrial" xml:space="preserve">
+    <value>Gratis proefperiode</value>
+  </data>
+  <data name="GembaKaizen" xml:space="preserve">
+    <value>Gemba Kaizen</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Algemeen</value>
+  </data>
+  <data name="GetInTouchWith" xml:space="preserve">
+    <value>Neem contact met ons op</value>
+  </data>
+  <data name="GreenBlackBeltCertificationTracking" xml:space="preserve">
+    <value>Groene &amp; Zwarte Band certificering tracking</value>
+  </data>
+  <data name="Hard" xml:space="preserve">
+    <value>Harde</value>
+  </data>
+  <data name="HardSavings" xml:space="preserve">
+    <value>Harde besparingen</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="HrsAgo" xml:space="preserve">
+    <value>uur geleden</value>
+  </data>
+  <data name="IdActivateToSortColumnDescending" xml:space="preserve">
+    <value>ID: activeer om kolom aflopend te sorteren</value>
+  </data>
+  <data name="IdeaProposed" xml:space="preserve">
+    <value>Idee/Voorgesteld</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importeren</value>
+  </data>
+  <data name="ImprovementIdeasCapture" xml:space="preserve">
+    <value>Verbeterideeën vastleggen</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>Bezig</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>Postvak IN</value>
+  </data>
+  <data name="IncorrectParameter" xml:space="preserve">
+    <value>Onjuiste parameter</value>
+  </data>
+  <data name="Increased" xml:space="preserve">
+    <value>Toegenomen</value>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="Initiated" xml:space="preserve">
+    <value>Gestart</value>
+  </data>
+  <data name="Initiative" xml:space="preserve">
+    <value>Initiatief</value>
+  </data>
+  <data name="InitiativeDetail" xml:space="preserve">
+    <value>Initiatiefdetail</value>
+  </data>
+  <data name="InitiativeDetails" xml:space="preserve">
+    <value>Initiatiefdetails</value>
+  </data>
+  <data name="InitiativeLibrary" xml:space="preserve">
+    <value>Initiatiefbibliotheek</value>
+  </data>
+  <data name="InitiativeManagement" xml:space="preserve">
+    <value>Initiatiefbeheer</value>
+  </data>
+  <data name="InitiativeTracker" xml:space="preserve">
+    <value>Initiatieftracker</value>
+  </data>
+  <data name="InitiativeActivateToSortColumnDescending" xml:space="preserve">
+    <value>Initiatief: activeer om kolom aflopend te sorteren</value>
+  </data>
+  <data name="Initiatives" xml:space="preserve">
+    <value>Initiatieven</value>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>Ongeldig e-mailadres</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>Ongeldig bestandstype.</value>
+  </data>
+  <data name="InvalidStatusValue" xml:space="preserve">
+    <value>Ongeldige statuswaarde. Toegestane waarden zijn: VOORGESTELD, GESTART, VOLTOOID, GESLOTEN, GEANNULEERD</value>
+  </data>
+  <data name="InvalidUploadType" xml:space="preserve">
+    <value>Ongeldig uploadtype</value>
+  </data>
+  <data name="IsCarryOverProjectMustBeOneOfYesOrNo" xml:space="preserve">
+    <value>IsOverdrachtsproject moet een van de volgende zijn: Ja of Nee</value>
+  </data>
+  <data name="IsCarryOverProject" xml:space="preserve">
+    <value>Is overdrachtsproject?</value>
+  </data>
+  <data name="IsCarryOverSavings" xml:space="preserve">
+    <value>Zijn overdrachtsbesparingen?</value>
+  </data>
+  <data name="IsOneTimeSavings" xml:space="preserve">
+    <value>Zijn eenmalige besparingen?</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="JDI" xml:space="preserve">
+    <value>JDI</value>
+  </data>
+  <data name="KeyFeatures" xml:space="preserve">
+    <value>Belangrijkste functies</value>
+  </data>
+  <data name="KindlyCreateAStrategicInitiativeProjectFirst" xml:space="preserve">
+    <value>Maak eerst een strategisch initiatiefproject aan</value>
+  </data>
+  <data name="KindlyProvideAValidEmailAddress" xml:space="preserve">
+    <value>Geef een geldig e-mailadres op</value>
+  </data>
+  <data name="KindlySelectACountry" xml:space="preserve">
+    <value>Selecteer een land</value>
+  </data>
+  <data name="KindlySelectADepartment" xml:space="preserve">
+    <value>Selecteer een afdeling</value>
+  </data>
+  <data name="KindlySelectAFacilitator" xml:space="preserve">
+    <value>Selecteer een facilitator</value>
+  </data>
+  <data name="KindlySelectAFacility" xml:space="preserve">
+    <value>Selecteer een faciliteit</value>
+  </data>
+  <data name="KindlySelectAMonthAndYear" xml:space="preserve">
+    <value>Selecteer een maand en jaar.</value>
+  </data>
+  <data name="KindlySelectAStrategicInitiativeProject" xml:space="preserve">
+    <value>Selecteer een strategisch initiatiefproject</value>
+  </data>
+  <data name="KindlySelectAValidDate" xml:space="preserve">
+    <value>Selecteer een geldige datum</value>
+  </data>
+  <data name="KindlySelectAValidTeamMember" xml:space="preserve">
+    <value>Selecteer een geldig teamlid</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Achternaam</value>
+  </data>
+  <data name="LicencesAvailableKindlyUpgradeYourSubscriptionPlanForMoreUserLicenses" xml:space="preserve">
+    <value>licenties beschikbaar. Upgrade uw abonnement voor meer gebruikerslicenties</value>
+  </data>
+  <data name="ListingMicrosoftAppSource" xml:space="preserve">
+    <value>Vermelding: Microsoft AppSource —</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Locatie</value>
+  </data>
+  <data name="LocationManagement" xml:space="preserve">
+    <value>Locatiebeheer</value>
+  </data>
+  <data name="LocationTemplate" xml:space="preserve">
+    <value>Locatiesjabloon</value>
+  </data>
+  <data name="LocationFacility" xml:space="preserve">
+    <value>Locatie/Faciliteit</value>
+  </data>
+  <data name="LocationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Locatie: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>Uitloggen</value>
+  </data>
+  <data name="LoginVerification" xml:space="preserve">
+    <value>Loginverificatie</value>
+  </data>
+  <data name="Mail" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Hoofd</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>Hoofdtak</value>
+  </data>
+  <data name="MakeStrategyClearTrackableAndActionable" xml:space="preserve">
+    <value>Maak strategie duidelijk, traceerbaar en uitvoerbaar, zodat elk initiatief meetbare resultaten oplevert. Stem organisatiedoelen af op uitvoering om impact te maximaliseren, prioriteer hoogwaardige projecten en versnel bedrijfsgroei.</value>
+  </data>
+  <data name="MakePayment" xml:space="preserve">
+    <value>Betaling uitvoeren</value>
+  </data>
+  <data name="MakingContinuousImprovementVisibleMeasurableAndScalable" xml:space="preserve">
+    <value>Door continue verbetering zichtbaar, meetbaar en schaalbaar te maken, kunnen organisaties teams afstemmen, echte impact volgen, successen repliceren in de hele operatie en duurzame bedrijfsresultaten behalen.</value>
+  </data>
+  <data name="ManageBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Beheer bedrijfsdoelafstemming</value>
+  </data>
+  <data name="ManageClassicSmallAndMediumSizedProjects" xml:space="preserve">
+    <value>Beheer klassieke kleine en middelgrote projecten met het 5-fasen levenscyclusraamwerk.</value>
+  </data>
+  <data name="ManageCountries" xml:space="preserve">
+    <value>Landen beheren</value>
+  </data>
+  <data name="ManageCountryOfOperation" xml:space="preserve">
+    <value>Land van vestiging beheren</value>
+  </data>
+  <data name="ManageDepartments" xml:space="preserve">
+    <value>Afdelingen beheren</value>
+  </data>
+  <data name="ManageFacilities" xml:space="preserve">
+    <value>Faciliteiten beheren</value>
+  </data>
+  <data name="ManageFacilityDepartments" xml:space="preserve">
+    <value>Faciliteitsafdelingen beheren</value>
+  </data>
+  <data name="ManageInitiatives" xml:space="preserve">
+    <value>Initiatieven beheren</value>
+  </data>
+  <data name="ManageInitiativesTrackAuditsRealiseBenefits" xml:space="preserve">
+    <value>Initiatieven beheren — audits bijhouden — voordelen realiseren</value>
+  </data>
+  <data name="ManageOperationalCountries" xml:space="preserve">
+    <value>Operationele landen beheren</value>
+  </data>
+  <data name="ManageOperationalFacilities" xml:space="preserve">
+    <value>Operationele faciliteiten beheren</value>
+  </data>
+  <data name="ManageSavingCategory" xml:space="preserve">
+    <value>Besparingscategorie beheren</value>
+  </data>
+  <data name="ManageTools" xml:space="preserve">
+    <value>Tools beheren</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>Gebruikers beheren</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Gemiddeld</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Bericht</value>
+  </data>
+  <data name="Methodology" xml:space="preserve">
+    <value>Methodologie</value>
+  </data>
+  <data name="MethodologyIsRequired" xml:space="preserve">
+    <value>Methodologie is vereist.</value>
+  </data>
+  <data name="MethodologyActivateToSortColumnAscending" xml:space="preserve">
+    <value>Methodologie: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="MiningOperations" xml:space="preserve">
+    <value>Mijnbouwactiviteiten</value>
+  </data>
+  <data name="ModifyBOA" xml:space="preserve">
+    <value>BOA wijzigen</value>
+  </data>
+  <data name="ModifySoftSavingCategory" xml:space="preserve">
+    <value>Categorie voor zachte besparingen wijzigen</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Geld</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>maand</value>
+  </data>
+  <data name="MonthYear" xml:space="preserve">
+    <value>Maand &amp; Jaar</value>
+  </data>
+  <data name="MonthYearActivateToSortColumnDescending" xml:space="preserve">
+    <value>Maand &amp; Jaar: activeer om kolom aflopend te sorteren</value>
+  </data>
+  <data name="MonthAgo" xml:space="preserve">
+    <value>maand geleden</value>
+  </data>
+  <data name="MonthlyPrice" xml:space="preserve">
+    <value>Maandelijkse prijs:</value>
+  </data>
+  <data name="MonthlySavings" xml:space="preserve">
+    <value>Maandelijkse Besparingen</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>Maanden</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>Meest populair</value>
+  </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>Mijn account</value>
+  </data>
+  <data name="MyPortfolio" xml:space="preserve">
+    <value>Mijn portfolio</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="NameOfCountry" xml:space="preserve">
+    <value>Naam van land</value>
+  </data>
+  <data name="NameOfDepartment" xml:space="preserve">
+    <value>Naam van afdeling</value>
+  </data>
+  <data name="NameOfFacility" xml:space="preserve">
+    <value>Naam van faciliteit</value>
+  </data>
+  <data name="NameActivateToSortColumnDescending" xml:space="preserve">
+    <value>Naam: activeer om kolom aflopend te sorteren</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navigatie</value>
+  </data>
+  <data name="NewEmployees" xml:space="preserve">
+    <value>Nieuwe werknemers</value>
+  </data>
+  <data name="NewInitiative" xml:space="preserve">
+    <value>Nieuw initiatief</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>Nieuw project</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Volgende</value>
+  </data>
+  <data name="NoDataSubmitted" xml:space="preserve">
+    <value>Geen gegevens ingediend</value>
+  </data>
+  <data name="NoRowsSubmitted" xml:space="preserve">
+    <value>Geen rijen ingediend</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>OPMERKING:</value>
+  </data>
+  <data name="NotePaymentIntegrationRequiresServerSideEndpoints" xml:space="preserve">
+    <value>Opmerking: Betalingsintegratie vereist server-side endpoints om betalingssessies te maken (Stripe). Deze demo zal placeholder endpoints aanroepen.</value>
+  </data>
+  <data name="NoteToAttachTheFinancialReport" xml:space="preserve">
+    <value>Opmerking: Om het financieel rapport bij te voegen, voer harde besparingen in, upload eindrapport onder de bijlagestatus en verplaats project naar voltooide status onder het projectdetailtabblad.</value>
+  </data>
+  <data name="NoteYouCanDownloadTheSampleTemplates" xml:space="preserve">
+    <value>Opmerking: U kunt de voorbeeldsjablonen voor elk downloaden via het downloadpictogram</value>
+  </data>
+  <data name="NoteYouWillBeDirectedToMakePayment" xml:space="preserve">
+    <value>Opmerking: U wordt doorgestuurd om te betalen.</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Melding</value>
+  </data>
+  <data name="OneTimeSavings" xml:space="preserve">
+    <value>Eenmalige besparingen</value>
+  </data>
+  <data name="OnlyLettersAreAllowed" xml:space="preserve">
+    <value>Alleen letters zijn toegestaan</value>
+  </data>
+  <data name="OopsThePageYouAreLookingForDoesntExist" xml:space="preserve">
+    <value>Oeps. De pagina die u zoekt bestaat niet..</value>
+  </data>
+  <data name="OperationalExcellence" xml:space="preserve">
+    <value>Operationele excellentie</value>
+  </data>
+  <data name="OperationalExcellenceInitiatives" xml:space="preserve">
+    <value>Initiatieven voor operationele excellentie</value>
+  </data>
+  <data name="OperationalExcellenceTemplate" xml:space="preserve">
+    <value>Sjabloon voor operationele excellentie</value>
+  </data>
+  <data name="OperationalLocation" xml:space="preserve">
+    <value>Operationele locatie</value>
+  </data>
+  <data name="OpsFocusInc" xml:space="preserve">
+    <value>Ops Focus Inc</value>
+  </data>
+  <data name="OptionalNote" xml:space="preserve">
+    <value>Optionele notitie</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>OPTIES</value>
+  </data>
+  <data name="OrganizationDetails" xml:space="preserve">
+    <value>Organisatiegegevens</value>
+  </data>
+  <data name="OrganizationUser" xml:space="preserve">
+    <value>Organisatiegebruiker</value>
+  </data>
+  <data name="OtherPages" xml:space="preserve">
+    <value>Andere pagina's</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>Andere</value>
+  </data>
+  <data name="OurMission" xml:space="preserve">
+    <value>Onze missie</value>
+  </data>
+  <data name="OurTeam" xml:space="preserve">
+    <value>Ons team</value>
+  </data>
+  <data name="Outside" xml:space="preserve">
+    <value>buiten</value>
+  </data>
+  <data name="PasswordVerification" xml:space="preserve">
+    <value>Wachtwoordverificatie</value>
+  </data>
+  <data name="PayNow" xml:space="preserve">
+    <value>Nu betalen</value>
+  </data>
+  <data name="PaymentSubmissionFailed" xml:space="preserve">
+    <value>Betalingsverzending mislukt</value>
+  </data>
+  <data name="PaymentSubmissionSuccessful" xml:space="preserve">
+    <value>Betalingsverzending gelukt</value>
+  </data>
+  <data name="PercentageStatus" xml:space="preserve">
+    <value>Percentage status</value>
+  </data>
+  <data name="PerfectPlan" xml:space="preserve">
+    <value>Perfect plan</value>
+  </data>
+  <data name="PerformBulkUploads" xml:space="preserve">
+    <value>Bulk-uploads uitvoeren</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>Persoonlijke gegevens</value>
+  </data>
+  <data name="PersonalSettings" xml:space="preserve">
+    <value>Persoonlijke instellingen</value>
+  </data>
+  <data name="Phase" xml:space="preserve">
+    <value>Fase</value>
+  </data>
+  <data name="PhaseContainsAnInvalidValueForTheSelectedMethodology" xml:space="preserve">
+    <value>Fase bevat een ongeldige waarde voor de geselecteerde methodologie.</value>
+  </data>
+  <data name="PhaseActivateToSortColumnAscending" xml:space="preserve">
+    <value>Fase: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="PhoneAndEmail" xml:space="preserve">
+    <value>Telefoon &amp; E-mail</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Telefoonnummer</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>Plan</value>
+  </data>
+  <data name="PlanPrioritiseAndMonitorImprovementIdeas" xml:space="preserve">
+    <value>Plan, prioriteer en monitor verbeterideeën van indiening tot voltooiing. Stel mijlpalen in, wijs eigenaren toe, beheer risico's en volg de voortgang met gestructureerde workflows.</value>
+  </data>
+  <data name="PressToSelect" xml:space="preserve">
+    <value>Druk om te selecteren</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Vorige</value>
+  </data>
+  <data name="PreviousMonthVsThisMonths" xml:space="preserve">
+    <value>Vorige maand vs deze maand</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>Prijzen</value>
+  </data>
+  <data name="PriorityIsRequired" xml:space="preserve">
+    <value>Prioriteit is vereist.</value>
+  </data>
+  <data name="PriorityMustBeOneOfHighMediumOrLow" xml:space="preserve">
+    <value>Prioriteit moet een van de volgende zijn: Hoog, Gemiddeld of Laag</value>
+  </data>
+  <data name="PriorityActivateToSortColumnAscending" xml:space="preserve">
+    <value>Prioriteit: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="ProblemStatement" xml:space="preserve">
+    <value>Probleemstelling</value>
+  </data>
+  <data name="ProblemStatementActivateToSortColumnAscending" xml:space="preserve">
+    <value>Probleemstelling: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="ProblemStatementIsRequired" xml:space="preserve">
+    <value>Probleemstelling is vereist.</value>
+  </data>
+  <data name="ProceedToCITracker" xml:space="preserve">
+    <value>Ga naar CITracker</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Profiel</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ProjectAuditingAndBenefitsCapture" xml:space="preserve">
+    <value>Projectaudit &amp; voordelen vastleggen</value>
+  </data>
+  <data name="ProjectCount" xml:space="preserve">
+    <value>Projectaantal</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>Projectdetails</value>
+  </data>
+  <data name="ProjectIDCannotBeNegative" xml:space="preserve">
+    <value>Project-ID kan niet negatief zijn</value>
+  </data>
+  <data name="ProjectManager" xml:space="preserve">
+    <value>Projectmanager</value>
+  </data>
+  <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
+    <value>Project moet ten minste één Facilitator hebben.</value>
+  </data>
+  <data name="ProjectPhaseIsRequired" xml:space="preserve">
+    <value>Projectfase is vereist.</value>
+  </data>
+  <data name="ProjectStatusIsRequired" xml:space="preserve">
+    <value>Projectstatus is vereist.</value>
+  </data>
+  <data name="ProjectTitle" xml:space="preserve">
+    <value>Projecttitel</value>
+  </data>
+  <data name="ProjectUpdates" xml:space="preserve">
+    <value>Projectupdate(s)</value>
+  </data>
+  <data name="Projects" xml:space="preserve">
+    <value>Projecten</value>
+  </data>
+  <data name="ProvideOrganisationDetails" xml:space="preserve">
+    <value>Organisatiegegevens verstrekken</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Kwaliteit</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Beoordeling :</value>
+  </data>
+  <data name="RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally" xml:space="preserve">
+    <value>Real-time inzichten in alle faciliteiten en afdelingen wereldwijd.</value>
+  </data>
+  <data name="RecentSearches" xml:space="preserve">
+    <value>Recente zoekopdrachten</value>
+  </data>
+  <data name="RecyclingOperation" xml:space="preserve">
+    <value>Recyclingoperatie</value>
+  </data>
+  <data name="RegisterMonthlySavings" xml:space="preserve">
+    <value>Maandelijkse besparingen registreren</value>
+  </data>
+  <data name="Release" xml:space="preserve">
+    <value>Vrijgeven</value>
+  </data>
+  <data name="RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative" xml:space="preserve">
+    <value>Relevante informatie om recente activiteit en updates aan het initiatief te verstrekken</value>
+  </data>
+  <data name="RenameABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Hernoem een bedrijfsdoelafstemming</value>
+  </data>
+  <data name="RenameACountryOfOperation" xml:space="preserve">
+    <value>Hernoem een land van vestiging</value>
+  </data>
+  <data name="RenameADepartment" xml:space="preserve">
+    <value>Hernoem een afdeling</value>
+  </data>
+  <data name="RenameAFacility" xml:space="preserve">
+    <value>Hernoem een faciliteit</value>
+  </data>
+  <data name="RenameASoftSavingCategory" xml:space="preserve">
+    <value>Hernoem een categorie voor zachte besparingen</value>
+  </data>
+  <data name="RenameAUser" xml:space="preserve">
+    <value>Hernoem een gebruiker</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>Opbrengsten</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>ROI</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Rol</value>
+  </data>
+  <data name="Safety" xml:space="preserve">
+    <value>Veiligheid</value>
+  </data>
+  <data name="SavingAmount" xml:space="preserve">
+    <value>Besparingsbedrag</value>
+  </data>
+  <data name="SavingAmountInSecSqftEtc" xml:space="preserve">
+    <value>Besparingsbedrag (in sec, m², enz.)</value>
+  </data>
+  <data name="SavingType" xml:space="preserve">
+    <value>Besparingstype</value>
+  </data>
+  <data name="SavingsClassification" xml:space="preserve">
+    <value>Besparingsclassificatie</value>
+  </data>
+  <data name="SavingsClassificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Besparingsclassificatie: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="SavingsClassificationMustBeOneOf" xml:space="preserve">
+    <value>Besparingsclassificatie moet een van de volgende zijn: Kostenbesparing, Kostenverlaging, Opbrengsten of Kostenvermijding</value>
+  </data>
+  <data name="SavingsSpanningOverMoreThanAYear" xml:space="preserve">
+    <value>Besparingen die meer dan een jaar duren</value>
+  </data>
+  <data name="SavingsThatWillNotBeRecurringOvertime" xml:space="preserve">
+    <value>Besparingen die niet terugkerend zijn in de tijd</value>
+  </data>
+  <data name="SavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Besparingen: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="SearchTrackAndFindProjectsInsightsAndLessonsInstantly" xml:space="preserve">
+    <value>Zoek, volg en vind projecten, inzichten en lessen direct.</value>
+  </data>
+  <data name="SelectABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Selecteer een bedrijfsdoelafstemming</value>
+  </data>
+  <data name="SelectACategory" xml:space="preserve">
+    <value>Selecteer een categorie</value>
+  </data>
+  <data name="SelectACountry" xml:space="preserve">
+    <value>Selecteer een land</value>
+  </data>
+  <data name="SelectADateAfterTheProjectStartDate" xml:space="preserve">
+    <value>Selecteer een datum na de projectstartdatum</value>
+  </data>
+  <data name="SelectADepartment" xml:space="preserve">
+    <value>Selecteer een afdeling</value>
+  </data>
+  <data name="SelectAFacility" xml:space="preserve">
+    <value>Selecteer een faciliteit</value>
+  </data>
+  <data name="SelectAMethodology" xml:space="preserve">
+    <value>Selecteer een methodologie</value>
+  </data>
+  <data name="SelectASavingsType" xml:space="preserve">
+    <value>Selecteer een besparingstype</value>
+  </data>
+  <data name="SelectASoftSavingCategory" xml:space="preserve">
+    <value>Selecteer een categorie voor zachte besparingen</value>
+  </data>
+  <data name="SelectAStatus" xml:space="preserve">
+    <value>Selecteer een status</value>
+  </data>
+  <data name="SelectASubscriptionPlan" xml:space="preserve">
+    <value>Selecteer een abonnementsplan</value>
+  </data>
+  <data name="SelectAUser" xml:space="preserve">
+    <value>Selecteer een gebruiker</value>
+  </data>
+  <data name="SelectAnUploadType" xml:space="preserve">
+    <value>Selecteer een uploadtype</value>
+  </data>
+  <data name="SelectAndModifyTheStatusAsTheInitiativeProjectProgress" xml:space="preserve">
+    <value>Selecteer en wijzig de status naarmate het initiatief/project vordert</value>
+  </data>
+  <data name="SelectClassification" xml:space="preserve">
+    <value>Selecteer classificatie</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>Selecteer land</value>
+  </data>
+  <data name="SelectFacilitatorSponsor" xml:space="preserve">
+    <value>Selecteer facilitator/sponsor</value>
+  </data>
+  <data name="SelectFunctionalGroupsThatOwnsTheProjectBeingImproved" xml:space="preserve">
+    <value>Selecteer functionele groepen die eigenaar zijn van het te verbeteren project</value>
+  </data>
+  <data name="SelectGroupFunction" xml:space="preserve">
+    <value>Selecteer groep/functie</value>
+  </data>
+  <data name="SelectMethodology" xml:space="preserve">
+    <value>Selecteer methodologie</value>
+  </data>
+  <data name="SelectMoreYearsToSaveMore" xml:space="preserve">
+    <value>Selecteer meer jaren om meer te besparen (2 jaar = 10% korting; 3 jaar = 15% korting).</value>
+  </data>
+  <data name="SelectPriority" xml:space="preserve">
+    <value>Selecteer prioriteit</value>
+  </data>
+  <data name="SelectRole" xml:space="preserve">
+    <value>Selecteer rol</value>
+  </data>
+  <data name="SelectRolesForTeamMembers" xml:space="preserve">
+    <value>Selecteer rollen voor teamleden, zorg voor minimaal één facilitator/eigenaar</value>
+  </data>
+  <data name="SelectStatus" xml:space="preserve">
+    <value>Selecteer status</value>
+  </data>
+  <data name="SelectStrategicInitiativeProject" xml:space="preserve">
+    <value>Selecteer strategisch initiatiefproject</value>
+  </data>
+  <data name="SelectStrategicProject" xml:space="preserve">
+    <value>Selecteer strategisch project</value>
+  </data>
+  <data name="SelectTheMostAppropriateApproachForExecutingTheInitiativeProject" xml:space="preserve">
+    <value>Selecteer de meest geschikte aanpak voor het uitvoeren van het initiatief/project.</value>
+  </data>
+  <data name="SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus" xml:space="preserve">
+    <value>Selecteer de meest geschikte doelstellingen op basis van uw bedrijfsfocus</value>
+  </data>
+  <data name="SelectUploadType" xml:space="preserve">
+    <value>Selecteer uploadtype</value>
+  </data>
+  <data name="SelectUser" xml:space="preserve">
+    <value>Selecteer gebruiker</value>
+  </data>
+  <data name="SelectedMethodologyIsRequired" xml:space="preserve">
+    <value>Geselecteerde methodologie is vereist</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>Bericht verzenden</value>
+  </data>
+  <data name="SendVerificationCodeToEmail" xml:space="preserve">
+    <value>Verificatiecode naar e-mail verzenden</value>
+  </data>
+  <data name="Services" xml:space="preserve">
+    <value>Diensten</value>
+  </data>
+  <data name="SetupVerification" xml:space="preserve">
+    <value>Verificatie instellen</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Instellingen</value>
+  </data>
+  <data name="SignInWithSSO" xml:space="preserve">
+    <value>Aanmelden met SSO</value>
+  </data>
+  <data name="SoftSavingCategory" xml:space="preserve">
+    <value>Categorie voor zachte besparingen</value>
+  </data>
+  <data name="SoftSavingCategoryDetails" xml:space="preserve">
+    <value>Details categorie voor zachte besparingen</value>
+  </data>
+  <data name="SoftSavings" xml:space="preserve">
+    <value>Zachte besparingen</value>
+  </data>
+  <data name="Space" xml:space="preserve">
+    <value>Ruimte</value>
+  </data>
+  <data name="Sponsor" xml:space="preserve">
+    <value>Sponsor</value>
+  </data>
+  <data name="SponsorActivateToSortColumnAscending" xml:space="preserve">
+    <value>Sponsor: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="SponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>E-mailadres van sponsor moet een geldig e-mailadres zijn</value>
+  </data>
+  <data name="Stakeholders" xml:space="preserve">
+    <value>Belanghebbenden</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Startdatum</value>
+  </data>
+  <data name="StartDateIsRequired" xml:space="preserve">
+    <value>Startdatum is vereist.</value>
+  </data>
+  <data name="StartDateMustBeEarlierThanEndDate" xml:space="preserve">
+    <value>Startdatum moet eerder zijn dan einddatum.</value>
+  </data>
+  <data name="StartingFrom" xml:space="preserve">
+    <value>Vanaf</value>
+  </data>
+  <data name="StatusPercentageCompletion" xml:space="preserve">
+    <value>Status/percentage voltooiing</value>
+  </data>
+  <data name="StatusPercentageCompletionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Status/percentage voltooiing: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="StatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>Status: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="StoppedProgramBecauseOfException" xml:space="preserve">
+    <value>Programma gestopt vanwege uitzondering</value>
+  </data>
+  <data name="StrategicInitiative" xml:space="preserve">
+    <value>Strategisch initiatief</value>
+  </data>
+  <data name="StrategicInitiativeTemplate" xml:space="preserve">
+    <value>Sjabloon voor strategisch initiatief</value>
+  </data>
+  <data name="StrategicInitiatives" xml:space="preserve">
+    <value>Strategische initiatieven</value>
+  </data>
+  <data name="StrategicProject" xml:space="preserve">
+    <value>Strategisch project</value>
+  </data>
+  <data name="SubProject" xml:space="preserve">
+    <value>Subproject</value>
+  </data>
+  <data name="SubProjectDetails" xml:space="preserve">
+    <value>Subprojectdetails</value>
+  </data>
+  <data name="SubProjects" xml:space="preserve">
+    <value>Subprojecten</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Onderwerp</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Verzenden</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>Abonneren</value>
+  </data>
+  <data name="Subscription" xml:space="preserve">
+    <value>Abonnement</value>
+  </data>
+  <data name="SubscriptionDuration" xml:space="preserve">
+    <value>Abonnementsduur</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Subtotaal</value>
+  </data>
+  <data name="SupplyChain" xml:space="preserve">
+    <value>Toeleveringsketen</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Ondersteuning</value>
+  </data>
+  <data name="SupportingValueStream" xml:space="preserve">
+    <value>Ondersteunende waardestroom</value>
+  </data>
+  <data name="SupportingValueStreamIsRequired" xml:space="preserve">
+    <value>Ondersteunende waardestroom is vereist.</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>Enquête</value>
+  </data>
+  <data name="Sustainability" xml:space="preserve">
+    <value>Duurzaamheid</value>
+  </data>
+  <data name="Tables" xml:space="preserve">
+    <value>Tabellen</value>
+  </data>
+  <data name="TargetSavings" xml:space="preserve">
+    <value>Doelbesparingen</value>
+  </data>
+  <data name="TargetSavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Doelbesparingen: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Team</value>
+  </data>
+  <data name="TeamListCannotBeEmpty" xml:space="preserve">
+    <value>Teamlijst mag niet leeg zijn</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>Teamlid</value>
+  </data>
+  <data name="TeamMemberRoleIsRequired" xml:space="preserve">
+    <value>Teamlidrol is vereist</value>
+  </data>
+  <data name="TeamMembers" xml:space="preserve">
+    <value>Teamleden</value>
+  </data>
+  <data name="TeamActivateToSortColumnAscending" xml:space="preserve">
+    <value>Team: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="TheCITrackerWebAppComesWithReadyToUseFeatures" xml:space="preserve">
+    <value>De CITracker-webapp wordt geleverd met kant-en-klare functies die volledig gebruiksvriendelijk zijn voor elke gebruiker, zelfs voor een beginner.</value>
+  </data>
+  <data name="TheNameOfTheValueStreamThisInitiativeIsTiedTo" xml:space="preserve">
+    <value>De naam van de waardestroom waaraan dit initiatief is gekoppeld</value>
+  </data>
+  <data name="ThisHelpsWithTyingTheInitiativeProjectToAnyLeanSixSigmaCertificationEffort" xml:space="preserve">
+    <value>Dit helpt bij het koppelen van het initiatief/project aan elke Lean Six Sigma-certificeringsinspanning</value>
+  </data>
+  <data name="ThisIncludesNonFinancialSavings" xml:space="preserve">
+    <value>Dit omvat niet-financiële besparingen (bijv. tijd, ruimte, kwaliteit, veiligheid)</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tijd</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Titel</value>
+  </data>
+  <data name="TitleIsRequired" xml:space="preserve">
+    <value>Titel is vereist.</value>
+  </data>
+  <data name="TitleActivateToSortColumnAscending" xml:space="preserve">
+    <value>Titel: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="ToggleForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotification" xml:space="preserve">
+    <value>Schakel voor elk teamlid dat u een e-mailmelding wilt ontvangen wanneer er een update wordt gemaakt</value>
+  </data>
+  <data name="ToolManagement" xml:space="preserve">
+    <value>Toolbeheer</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Tools</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Totaal</value>
+  </data>
+  <data name="TotalExpectedRevenue" xml:space="preserve">
+    <value>Verwachte totale opbrengsten</value>
+  </data>
+  <data name="TotalExpectedRevenueActivateToSortColumnAscending" xml:space="preserve">
+    <value>Verwachte totale opbrengsten: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="TotalExpectedSavings" xml:space="preserve">
+    <value>Verwachte totale besparingen</value>
+  </data>
+  <data name="TotalExpectedSavingsRevenue" xml:space="preserve">
+    <value>Verwachte totale besparingen/opbrengsten</value>
+  </data>
+  <data name="TotalExpenses" xml:space="preserve">
+    <value>Totale uitgaven</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>Totale opbrengsten</value>
+  </data>
+  <data name="TotalSavings" xml:space="preserve">
+    <value>Totale besparingen</value>
+  </data>
+  <data name="TrackPractitionerProgressAndProjectMilestones" xml:space="preserve">
+    <value>Volg de voortgang van beoefenaars en projectmijlpalen voor Lean Six Sigma-certificeringen.</value>
+  </data>
+  <data name="TrackTraditionalProjects" xml:space="preserve">
+    <value>Volg traditionele projecten</value>
+  </data>
+  <data name="TwentyMBMaxFileSize" xml:space="preserve">
+    <value>20MB (maximale bestandsgrootte)</value>
+  </data>
+  <data name="TypeYourMessageHere" xml:space="preserve">
+    <value>Typ uw bericht hier...</value>
+  </data>
+  <data name="UnableToRegisterOrganisation" xml:space="preserve">
+    <value>Kan organisatie niet registreren</value>
+  </data>
+  <data name="UnitOfMeasurement" xml:space="preserve">
+    <value>Meeteenheid (bijv. minuten, m², dpu)</value>
+  </data>
+  <data name="Unlimited" xml:space="preserve">
+    <value>Onbeperkt</value>
+  </data>
+  <data name="UpgradeSubscription" xml:space="preserve">
+    <value>Abonnement upgraden</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Uploaden</value>
+  </data>
+  <data name="UserDetails" xml:space="preserve">
+    <value>Gebruikersgegevens</value>
+  </data>
+  <data name="UserLicenses" xml:space="preserve">
+    <value>Gebruikerslicenties</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Gebruikersbeheer</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Gebruikersnaam</value>
+  </data>
+  <data name="UserTemplate" xml:space="preserve">
+    <value>Gebruikerssjabloon</value>
+  </data>
+  <data name="UsersNameIsRequired" xml:space="preserve">
+    <value>Gebruikersnaam is vereist</value>
+  </data>
+  <data name="Verification" xml:space="preserve">
+    <value>Verificatie</value>
+  </data>
+  <data name="VerifiedUser" xml:space="preserve">
+    <value>Geverifieerde gebruiker</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verifiëren</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Bekijken</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>Alles bekijken</value>
+  </data>
+  <data name="ViewOnMarketplace" xml:space="preserve">
+    <value>Bekijk op Marketplace</value>
+  </data>
+  <data name="WeAreHereToHelpYou" xml:space="preserve">
+    <value>We zijn hier om u te helpen</value>
+  </data>
+  <data name="WelcomeToCITracker" xml:space="preserve">
+    <value>Welkom bij CITracker</value>
+  </data>
+  <data name="WhatPeopleAreSayingAboutCITracker" xml:space="preserve">
+    <value>Wat mensen zeggen over CITracker.</value>
+  </data>
+  <data name="WorkingHours" xml:space="preserve">
+    <value>Werkuren</value>
+  </data>
+  <data name="WorkingTowardsACertification" xml:space="preserve">
+    <value>Werkt u aan een certificering?</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>jaar</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value>jaren</value>
+  </data>
+  <data name="YouHaveTwoProjectsToFinishYouHadCompleted" xml:space="preserve">
+    <value>U heeft twee projecten af te ronden, u had voltooid</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>U heeft uw beschikbare licenties verbruikt. Upgrade uw abonnement</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableUserLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>U heeft uw beschikbare gebruikerslicenties verbruikt. Upgrade uw abonnement</value>
+  </data>
+  <data name="YouMayHaveMistypedTheAddressOrThePageMayHaveMoved" xml:space="preserve">
+    <value>Mogelijk heeft u het adres verkeerd getypt of is de pagina verplaatst. Probeer hieronder te zoeken.</value>
+  </data>
+  <data name="YouNeedToIdentifyIfThisIsACarryOverProject" xml:space="preserve">
+    <value>U moet identificeren of dit een overdrachtsproject is</value>
+  </data>
+  <data name="YourPaymentRequestHasBeenSubmittedSuccessfully" xml:space="preserve">
+    <value>Uw betalingsverzoek is succesvol ingediend. U ontvangt een e-mail zodra uw account is geactiveerd.</value>
+  </data>
+  <data name="YourPaymentRequestSubmissionFailed" xml:space="preserve">
+    <value>Uw betalingsverzoek is mislukt. Neem contact op met uw bank en probeer het opnieuw.</value>
+  </data>
+  <data name="By" xml:space="preserve">
+    <value>door</value>
+  </data>
+  <data name="DesignedWith" xml:space="preserve">
+    <value>Ontworpen met</value>
+  </data>
+  <data name="ForYourBusiness" xml:space="preserve">
+    <value>voor uw bedrijf</value>
+  </data>
+  <data name="Reporting" xml:space="preserve">
+    <value>Rapportage</value>
+  </data>
+  <data name="StrategyFocused" xml:space="preserve">
+    <value>Strategiegericht</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Adres</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Land</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Dagen</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Gebruiker</value>
+  </data>
+  <data name="Suitable for Small Businesses or closed group trials" xml:space="preserve">
+    <value>Geschikt voor Kleine Bedrijven of besloten groepstesten</value>
+  </data>
+  <data name="Perfect for Individuals and Startups." xml:space="preserve">
+    <value>Perfect voor Particulieren en Startups</value>
+  </data>
+  <data name="Great for large businesses with multiple teams tracking several projects  in parallel." xml:space="preserve">
+    <value>Geweldig voor grote bedrijven met meerdere teams die verschillende projecten parallel volgen</value>
+  </data>
+  <data name="Ideal for sizeable projects and businesses with expanding teams." xml:space="preserve">
+    <value>Ideaal voor omvangrijke projecten en bedrijven met groeiende teams</value>
+  </data>
+  <data name="AreYouSureYouWantToCancelYourSubscription" xml:space="preserve">
+    <value>Weet u zeker dat u uw abonnement wilt opzeggen?</value>
+  </data>
+  <data name="SubscriptionCancellationRequestSubmittedSuccessfully" xml:space="preserve">
+    <value>Verzoek tot opzegging van abonnement succesvol ingediend</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Er is iets misgegaan</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>bestandsgrootte limiet</value>
+  </data>
+  <data name="ExcelMustContainHeadersAndAtLeastOneDataRow" xml:space="preserve">
+    <value>Excel moet kopteksten en ten minste één gegevensrij bevatten</value>
+  </data>
+  <data name="PleaseSelectAnUploadType" xml:space="preserve">
+    <value>Selecteer een uploadtype</value>
+  </data>
+  <data name="UploadSuccessful" xml:space="preserve">
+    <value>Upload succesvol</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Gebruikers</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>Licenties</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Geslaagd</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Mislukt</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Ongeldige Bedrijfsdoelstelling Afstemming</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Afdeling</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>Ongeldige Afdeling</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>Ongeldige faciliteitsnaam</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>Ongeldige landnaam</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>Ongeldige spaarcategorie naam</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Upload mislukt</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>Fout bij ophalen van tools</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>Dit bestand uploaden???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Ongeldige gebruikersnaam</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Prioriteit</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Startdatum: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>Geen record gevonden</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>Eigenaar: activeer om kolom oplopend te sorteren</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>Typ gebruiker...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Geen gegevens beschikbaar</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>Projectstatus</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>Besparingscategorie</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>Maandelijkse Projectstatus</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>Maandelijkse Projecten</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>Maandelijkse Projecten per Afdeling</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>Maandelijkse Projecten per Fase</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>Facilitators Projecten</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>Besparingen</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>Bijlagen</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Bijlage</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>Opslaan &amp; Volgende</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>Alle opmerkingen zijn vereist.</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>Alle opmerkingdatums zijn vereist.</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Opmerking</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>Gecontroleerd</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Opslaan</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>Voeg ten minste één besparingstype toe (harde of zachte besparing)</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>Dubbele maand gedetecteerd</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value>U kunt maximaal 12 vermeldingen toevoegen.</value>
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>Zoek alstublieft naar een project</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>Selecteer een Tool</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>Project Opgeslagen. Om teamleden in te voeren, update de status op de projectdetails pagina naar "Gestart".</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>Voeg ten minste één teamlid toe.</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>Alle teamlidnamen zijn vereist.</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>Alle teamlidrollen zijn vereist.</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>Projectdefinitie en afstemming.</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>Huidige staat prestatielijn.</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>Oorzaken van variatie identificeren.</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>Oplossingen ontwikkelen, testen en implementeren.</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>Winsten behouden en opschalen.</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>Identificeer een zakelijke behoefte, probleem of kans en brainstorm over manieren om aan deze behoefte te voldoen, dit probleem op te lossen of deze kans te benutten.</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>Verdeel het grotere project in kleinere taken, bouw uw team en bereid een schema voor voor de voltooiing van opdrachten.</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>Volg, organiseer teamleden, beheer tijdlijnen en zorg ervoor dat het werk volgens het oorspronkelijke plan wordt gedaan.</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>Projectprestaties en monitoring zorgen ervoor dat resultaten aansluiten bij het managementplan.</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>Zorg voor financiële deliverables, vrijgave van projectmiddelen en bepaal het succes van het project, evalueer wat wel en niet werkte met het project.</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>Voeg ten minste één tool toe</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>Teamlid kiezen</value>
+  </data>
+</root>

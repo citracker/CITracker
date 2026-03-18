@@ -1,0 +1,2121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>Sobre</value>
+  </data>
+  <data name="ABusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>É necessário um alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="ACertificationIsRequired" xml:space="preserve">
+    <value>É necessária uma certificação</value>
+  </data>
+  <data name="ACommentCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>Um comentário só pode ser adicionado a um projeto válido.</value>
+  </data>
+  <data name="ACommentIsRequired" xml:space="preserve">
+    <value>É necessário um comentário</value>
+  </data>
+  <data name="ACountryIsRequired" xml:space="preserve">
+    <value>É necessário um país</value>
+  </data>
+  <data name="ACurrencyIsRequired" xml:space="preserve">
+    <value>É necessária uma moeda</value>
+  </data>
+  <data name="ADepartmentIsRequired" xml:space="preserve">
+    <value>É necessário um departamento</value>
+  </data>
+  <data name="ADescriptionIsRequired" xml:space="preserve">
+    <value>É necessária uma descrição</value>
+  </data>
+  <data name="AFacilitatorEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail do facilitador</value>
+  </data>
+  <data name="AFacilityIsRequired" xml:space="preserve">
+    <value>É necessária uma instalação</value>
+  </data>
+  <data name="AGoodProblemStatementShouldContainWhatWhereWhenAndImpactToTheBusiness" xml:space="preserve">
+    <value>Uma boa declaração de problema deve conter - o quê, onde, quando e impacto no negócio.</value>
+  </data>
+  <data name="AGoodTitleShouldBeShortAndContainSearchableWords" xml:space="preserve">
+    <value>Um bom título deve ser curto e conter palavras pesquisáveis</value>
+  </data>
+  <data name="AMethodologyIsRequired" xml:space="preserve">
+    <value>É necessária uma metodologia</value>
+  </data>
+  <data name="AnEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail</value>
+  </data>
+  <data name="AnEndDateIsRequired" xml:space="preserve">
+    <value>É necessária uma data de término</value>
+  </data>
+  <data name="AnErrorOccurred" xml:space="preserve">
+    <value>Ocorreu um erro</value>
+  </data>
+  <data name="AnErrorOccurredWhileCreatingTheCIProject" xml:space="preserve">
+    <value>Ocorreu um erro ao criar o projeto CI</value>
+  </data>
+  <data name="AnErrorOccurredWhileUpdatingTheCIProject" xml:space="preserve">
+    <value>Ocorreu um erro ao atualizar o projeto CI</value>
+  </data>
+  <data name="AnExecutiveSponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail do patrocinador executivo</value>
+  </data>
+  <data name="AnOwnerEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail do proprietário</value>
+  </data>
+  <data name="APriorityIsRequired" xml:space="preserve">
+    <value>É necessária uma prioridade</value>
+  </data>
+  <data name="AProblemStatementIsRequired" xml:space="preserve">
+    <value>É necessária uma declaração do problema</value>
+  </data>
+  <data name="ASavingsClassificationIsRequired" xml:space="preserve">
+    <value>É necessária uma classificação de economias</value>
+  </data>
+  <data name="ASponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail do patrocinador</value>
+  </data>
+  <data name="AStartDateIsRequired" xml:space="preserve">
+    <value>É necessária uma data de início</value>
+  </data>
+  <data name="AStatusIsRequired" xml:space="preserve">
+    <value>É necessário um status</value>
+  </data>
+  <data name="ASupportingValueStreamIsRequired" xml:space="preserve">
+    <value>É necessário um fluxo de valor de suporte</value>
+  </data>
+  <data name="ATeamMemberCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>Um membro da equipe só pode ser adicionado a um projeto válido.</value>
+  </data>
+  <data name="ATitleIsRequired" xml:space="preserve">
+    <value>É necessário um título</value>
+  </data>
+  <data name="AValidEmailAddressIsRequired" xml:space="preserve">
+    <value>É necessário um endereço de e-mail válido</value>
+  </data>
+  <data name="AWideSelectionOfTemplatesAndPowerfulToolsAtYourFingertips" xml:space="preserve">
+    <value>Uma ampla seleção de modelos e ferramentas poderosas ao seu alcance.</value>
+  </data>
+  <data name="AboutToCheckoutOrganization" xml:space="preserve">
+    <value>Prestes a finalizar organização</value>
+  </data>
+  <data name="AboutYourself" xml:space="preserve">
+    <value>Sobre você</value>
+  </data>
+  <data name="AcceptToReceiveEmailSentToMultipleRecipients" xml:space="preserve">
+    <value>Aceitar receber e-mails enviados para múltiplos destinatários</value>
+  </data>
+  <data name="AcceptToReceivePostOrPageNotificationEmails" xml:space="preserve">
+    <value>Aceitar receber e-mails de notificação de postagens ou páginas</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>Conta</value>
+  </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>Configurações da conta</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>Ação</value>
+  </data>
+  <data name="ActionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Ação: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="ActiveProjects" xml:space="preserve">
+    <value>Projetos ativos</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>Atividade</value>
+  </data>
+  <data name="ActualSavings" xml:space="preserve">
+    <value>Economias reais</value>
+  </data>
+  <data name="AddACountryOfOperation" xml:space="preserve">
+    <value>Adicionar um país de operação</value>
+  </data>
+  <data name="AddADepartment" xml:space="preserve">
+    <value>Adicionar um departamento</value>
+  </data>
+  <data name="AddAFacility" xml:space="preserve">
+    <value>Adicionar uma instalação</value>
+  </data>
+  <data name="AddAUser" xml:space="preserve">
+    <value>Adicionar um usuário</value>
+  </data>
+  <data name="AddBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Adicionar alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="AddSoftSavingCategory" xml:space="preserve">
+    <value>Adicionar categoria de economia suave</value>
+  </data>
+  <data name="AddRemove" xml:space="preserve">
+    <value>Adicionar/Remover</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Administrador</value>
+  </data>
+  <data name="AdminEmail" xml:space="preserve">
+    <value>E-mail do administrador</value>
+  </data>
+  <data name="AdminEmailAddress" xml:space="preserve">
+    <value>Endereço de e-mail do administrador</value>
+  </data>
+  <data name="AdminFirstName" xml:space="preserve">
+    <value>Nome do administrador</value>
+  </data>
+  <data name="AdminLastName" xml:space="preserve">
+    <value>Sobrenome do administrador</value>
+  </data>
+  <data name="AdminName" xml:space="preserve">
+    <value>Nome do administrador</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>Administração</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>Administrador</value>
+  </data>
+  <data name="AlignInitiativesToStrategy" xml:space="preserve">
+    <value>Alinhar iniciativas à estratégia</value>
+  </data>
+  <data name="AlignStrategyWithExecutionMeasureProgressInRealTimeAndEnsureEveryInitiativeDrivesOrganizationalGoalsForward" xml:space="preserve">
+    <value>Alinhe a estratégia com a execução, meça o progresso em tempo real e garanta que cada iniciativa impulsione os objetivos organizacionais.</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Todos</value>
+  </data>
+  <data name="AllColumnsMustHaveValues" xml:space="preserve">
+    <value>Todas as colunas devem ter valores</value>
+  </data>
+  <data name="AllCompletedProjects" xml:space="preserve">
+    <value>Todos os projetos concluídos</value>
+  </data>
+  <data name="AllContinuousImprovementInitiatives" xml:space="preserve">
+    <value>Todas as iniciativas de melhoria contínua</value>
+  </data>
+  <data name="AllContinuousImprovementInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Todas as iniciativas de melhoria contínua juntamente com seus objetivos e status.</value>
+  </data>
+  <data name="AllInitiatives" xml:space="preserve">
+    <value>Todas as iniciativas</value>
+  </data>
+  <data name="AllInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Todas as iniciativas juntamente com seus objetivos e status.</value>
+  </data>
+  <data name="AllMonthlySavings" xml:space="preserve">
+    <value>Todas as economias mensais.</value>
+  </data>
+  <data name="AllMyInitiatives" xml:space="preserve">
+    <value>Todas as minhas iniciativas</value>
+  </data>
+  <data name="AllMyInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Todas as minhas iniciativas juntamente com seus objetivos e status.</value>
+  </data>
+  <data name="AllMyOperationalExcellenceInitiatives" xml:space="preserve">
+    <value>Todas as minhas iniciativas de excelência operacional</value>
+  </data>
+  <data name="AllMyStrategicInitiatives" xml:space="preserve">
+    <value>Todas as minhas iniciativas estratégicas</value>
+  </data>
+  <data name="AllMyStrategicInitiativesAlongsideTheirStatuses" xml:space="preserve">
+    <value>Todas as minhas iniciativas estratégicas juntamente com seus status.</value>
+  </data>
+  <data name="AllOperationalExcellenceInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>Todas as iniciativas de excelência operacional juntamente com seus objetivos e status.</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>Todos os projetos</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>Todos os direitos reservados.</value>
+  </data>
+  <data name="AllSubProjects" xml:space="preserve">
+    <value>Todos os subprojetos.</value>
+  </data>
+  <data name="AnalyseFinancialPerformanceWithDetailedReportingOnHardAndSoftSavingsROIAndProjectOutcomesExportDataConnectPowerBIAndGenerateManagementReadyDashboards" xml:space="preserve">
+    <value>Analise o desempenho financeiro com relatórios detalhados sobre economias duras e suaves, ROI e resultados de projetos. Exporte dados, conecte o Power BI e gere painéis prontos para a gestão.</value>
+  </data>
+  <data name="Annual" xml:space="preserve">
+    <value>Anual</value>
+  </data>
+  <data name="AnnualPrice" xml:space="preserve">
+    <value>Preço anual:</value>
+  </data>
+  <data name="AssociateEveryInitiativeWithCorporateStrategyToDriveValueCreationAndPLImpact" xml:space="preserve">
+    <value>This one has &amp;amp; which is already escaped</value>
+  </data>
+  <data name="AtLeastOneBusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>É necessário pelo menos um alinhamento de objetivos de negócio.</value>
+  </data>
+  <data name="AtLeastOneCommentIsRequired" xml:space="preserve">
+    <value>É necessário pelo menos um comentário</value>
+  </data>
+  <data name="AtLeastOneOfHardOrSoftSavingMustContainAValue" xml:space="preserve">
+    <value>Pelo menos uma das economias duras ou suaves deve conter um valor.</value>
+  </data>
+  <data name="AtLeastOneTeamMemberIsRequired" xml:space="preserve">
+    <value>É necessário pelo menos um membro da equipe</value>
+  </data>
+  <data name="AtLeastOneToolIsRequired" xml:space="preserve">
+    <value>É necessária pelo menos uma ferramenta</value>
+  </data>
+  <data name="AuditAndEvidence" xml:space="preserve">
+    <value>Auditoria e Evidência</value>
+  </data>
+  <data name="AuditProjectResultsValidateBenefitsAndMaintainFinancialGovernance" xml:space="preserve">
+    <value>Audite os resultados do projeto, valide os benefícios e mantenha a governança financeira.</value>
+  </data>
+  <data name="AuditedDate" xml:space="preserve">
+    <value>Data auditada</value>
+  </data>
+  <data name="AuditedDetailsAuditorOnly" xml:space="preserve">
+    <value>Detalhes auditados (apenas auditor)</value>
+  </data>
+  <data name="Auditor" xml:space="preserve">
+    <value>Auditor</value>
+  </data>
+  <data name="Audits" xml:space="preserve">
+    <value>Auditorias</value>
+  </data>
+  <data name="BackGuarantee" xml:space="preserve">
+    <value>Garantia de devolução</value>
+  </data>
+  <data name="BackToHome" xml:space="preserve">
+    <value>Voltar ao início</value>
+  </data>
+  <data name="BilledAnnually" xml:space="preserve">
+    <value>Faturado anualmente!!!</value>
+  </data>
+  <data name="BringYourContinuousImprovementIntoOnePlace" xml:space="preserve">
+    <value>Reúna sua melhoria contínua em um só lugar</value>
+  </data>
+  <data name="BuildACultureOfContinuousImprovementWhereEveryTeamMemberIsEmpoweredToContributeIdeasAndTakeOwnership" xml:space="preserve">
+    <value>Construa uma cultura de melhoria contínua onde cada membro da equipe tenha autonomia para contribuir com ideias e assumir responsabilidade. Promova engajamento, responsabilidade e colaboração para garantir que as melhorias sejam sustentadas e ampliadas em toda a organização.</value>
+  </data>
+  <data name="BuildingOperationalBrillianceThatLast" xml:space="preserve">
+    <value>Construindo brilhantismo operacional que perdura.</value>
+  </data>
+  <data name="BulkLocationUpload" xml:space="preserve">
+    <value>Carregamento em massa de locais</value>
+  </data>
+  <data name="BulkManagement" xml:space="preserve">
+    <value>Gestão em massa</value>
+  </data>
+  <data name="BulkUpload" xml:space="preserve">
+    <value>Carregamento em massa</value>
+  </data>
+  <data name="BusinessObjectiveAlignment" xml:space="preserve">
+    <value>Alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="BusinessObjectiveAlignmentDetails" xml:space="preserve">
+    <value>Detalhes do alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="CancelSubscription" xml:space="preserve">
+    <value>Cancelar assinatura</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>Cancelado</value>
+  </data>
+  <data name="CarryOverProject" xml:space="preserve">
+    <value>Projeto transferido?</value>
+  </data>
+  <data name="CarryOverProjectActivateToSortColumnAscending" xml:space="preserve">
+    <value>Projeto transferido?: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="CarryOverSavings" xml:space="preserve">
+    <value>Economias transferidas</value>
+  </data>
+  <data name="Carryover" xml:space="preserve">
+    <value>transferir</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categoria</value>
+  </data>
+  <data name="CategoryEgTimeSpaceQuality" xml:space="preserve">
+    <value>Categoria (ex. Tempo, Espaço, qualidade)</value>
+  </data>
+  <data name="Certification" xml:space="preserve">
+    <value>Certificação</value>
+  </data>
+  <data name="CertificationIsRequired" xml:space="preserve">
+    <value>É necessária certificação.</value>
+  </data>
+  <data name="CertificationMustBeOneOfDMAICGembaKaizenJDIProjectOthers" xml:space="preserve">
+    <value>A certificação deve ser uma de: 'DMAIC', 'Gemba Kaizen', 'JDI', 'Projeto', 'Outros'</value>
+  </data>
+  <data name="CertificationMustBeOneOfGreenBeltBlackBeltPMPNotApplicable" xml:space="preserve">
+    <value>A certificação deve ser uma de: 'Faixa Verde', 'Faixa Preta', 'PMP', 'Não aplicável'</value>
+  </data>
+  <data name="CertificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Certificação: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="Champion" xml:space="preserve">
+    <value>Campeão</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Alterar senha</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>Gráficos</value>
+  </data>
+  <data name="CheckTheBoxForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotificationWheneverAnyUpdateIsMade" xml:space="preserve">
+    <value>Marque a caixa para qualquer membro da equipe que deseje receber uma notificação por e-mail sempre que uma atualização for feita</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>Finalizar compra</value>
+  </data>
+  <data name="CheckoutOptions" xml:space="preserve">
+    <value>Opções de finalização</value>
+  </data>
+  <data name="ChooseAPlan" xml:space="preserve">
+    <value>Escolha um plano</value>
+  </data>
+  <data name="ChooseMonthOfYear" xml:space="preserve">
+    <value>Escolha mês do ano</value>
+  </data>
+  <data name="CITracker" xml:space="preserve">
+    <value>CI Tracker</value>
+  </data>
+  <data name="CITrackerCheckout" xml:space="preserve">
+    <value>CI Tracker - Finalizar compra</value>
+  </data>
+  <data name="CITrackerHelpsTeamsCaptureIdeasAuditProcessesAndMeasureFinancialBenefitsWithDocumentsStoredInYourTenantViaSharePointIntegration" xml:space="preserve">
+    <value>O CI Tracker ajuda as equipes a capturar ideias, auditar processos e medir benefícios financeiros — com documentos armazenados em seu inquilino via integração com SharePoint.</value>
+  </data>
+  <data name="CITrackerStrivesToBridgeTheGapBetweenDataAndActionEmpoweringTeamsToImplementChangeEffectivelyAndExecutivesToSeeResultsImmediately" xml:space="preserve">
+    <value>O CI Tracker se esforça para preencher a lacuna entre dados e ação, capacitando as equipes a implementar mudanças de forma eficaz e os executivos a verem resultados imediatamente.</value>
+  </data>
+  <data name="CITrackerContactForm" xml:space="preserve">
+    <value>Formulário de contato do CITracker</value>
+  </data>
+  <data name="CITrackerProjectUpdate" xml:space="preserve">
+    <value>Atualização do projeto CITracker</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Limpar</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>Clientes</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Fechar</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>Fechado</value>
+  </data>
+  <data name="ClosedProjects" xml:space="preserve">
+    <value>Projetos fechados</value>
+  </data>
+  <data name="ClosedProjectsCanBeRandomlySelectedForAuditing" xml:space="preserve">
+    <value>Projetos fechados podem ser selecionados aleatoriamente para auditoria</value>
+  </data>
+  <data name="CollectReviewAndPrioritizeImprovementIdeasThroughAStructuredIntakeWorkflow" xml:space="preserve">
+    <value>Colete, revise e priorize ideias de melhoria através de um fluxo de trabalho estruturado.</value>
+  </data>
+  <data name="CommentListCannotBeEmpty" xml:space="preserve">
+    <value>A lista de comentários não pode estar vazia</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>Comentários</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Nome da empresa</value>
+  </data>
+  <data name="CompleteCheckout" xml:space="preserve">
+    <value>Concluir finalização</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>Concluído</value>
+  </data>
+  <data name="CompletedProjects" xml:space="preserve">
+    <value>Projetos concluídos</value>
+  </data>
+  <data name="CompletedProjectsByUser" xml:space="preserve">
+    <value>projetosConcluídosPorUsuário</value>
+  </data>
+  <data name="ConductProcessAuditsWithConfigurableChecklistsAndAttachSupportingEvidence" xml:space="preserve">
+    <value>Realize auditorias de processo com listas de verificação configuráveis e anexe evidências de suporte. Todos os documentos são armazenados com segurança no inquilino SharePoint do cliente para manter a propriedade total dos dados.</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>Contato</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>Informações de contato</value>
+  </data>
+  <data name="ContinuousImprovement" xml:space="preserve">
+    <value>Melhoria contínua</value>
+  </data>
+  <data name="ContinuousImprovementInitiatives" xml:space="preserve">
+    <value>Iniciativas de melhoria contínua</value>
+  </data>
+  <data name="ContinuousImprovementTemplate" xml:space="preserve">
+    <value>Modelo de melhoria contínua</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>Direitos autorais</value>
+  </data>
+  <data name="CostAvoidance" xml:space="preserve">
+    <value>Prevenção de custos</value>
+  </data>
+  <data name="CostContainment" xml:space="preserve">
+    <value>Contenção de custos</value>
+  </data>
+  <data name="CostOut" xml:space="preserve">
+    <value>Redução de custos</value>
+  </data>
+  <data name="CostReduction" xml:space="preserve">
+    <value>Redução de custos</value>
+  </data>
+  <data name="CostSavings" xml:space="preserve">
+    <value>Economia de custos</value>
+  </data>
+  <data name="CostRevenue" xml:space="preserve">
+    <value>Custo/Receita</value>
+  </data>
+  <data name="CouldNotSuccessfullyFetchData" xml:space="preserve">
+    <value>Não foi possível obter os dados com sucesso.</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>É necessário país.</value>
+  </data>
+  <data name="CountryOfOperation" xml:space="preserve">
+    <value>País de operação</value>
+  </data>
+  <data name="CreateCIProject" xml:space="preserve">
+    <value>Criar projeto CI</value>
+  </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>Criado por</value>
+  </data>
+  <data name="CreatedByActivateToSortColumnAscending" xml:space="preserve">
+    <value>Criado por: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="CummulatedROI" xml:space="preserve">
+    <value>ROI acumulado</value>
+  </data>
+  <data name="CummulativeMonthlySavings" xml:space="preserve">
+    <value>Economias mensais acumulativas</value>
+  </data>
+  <data name="CummulativeMonthlySavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Economias mensais acumulativas: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="CummulativeROI" xml:space="preserve">
+    <value>ROI acumulativo</value>
+  </data>
+  <data name="CummulativeROIActivateToSortColumnAscending" xml:space="preserve">
+    <value>ROI acumulativo: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="CummulativeSavings" xml:space="preserve">
+    <value>Economias acumulativas</value>
+  </data>
+  <data name="CummulativeStatus" xml:space="preserve">
+    <value>Status acumulativo</value>
+  </data>
+  <data name="CummulativeStatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>Status acumulativo: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="CurrencyIsRequired" xml:space="preserve">
+    <value>É necessária moeda.</value>
+  </data>
+  <data name="CurrencyMustBeInTheISO4217Format" xml:space="preserve">
+    <value>A moeda deve estar no formato ISO 4217 (ex. USD, GBP, NGN, etc.)</value>
+  </data>
+  <data name="CurrentAddress" xml:space="preserve">
+    <value>Endereço atual</value>
+  </data>
+  <data name="CustomerExperience" xml:space="preserve">
+    <value>Experiência do cliente</value>
+  </data>
+  <data name="CustomizableTemplatesAndTools" xml:space="preserve">
+    <value>Modelos personalizáveis e ferramentas</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Painel</value>
+  </data>
+  <data name="DashboardAnalytics" xml:space="preserve">
+    <value>Análises do painel</value>
+  </data>
+  <data name="DataRetrievalError" xml:space="preserve">
+    <value>Erro na recuperação de dados</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>Data de criação</value>
+  </data>
+  <data name="DateCreatedActivateToSortColumnAscending" xml:space="preserve">
+    <value>Data de criação: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="DateMustBeInYYYYMMDDFormat" xml:space="preserve">
+    <value>A data deve estar no formato AAAA-MM-DD</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>dias</value>
+  </data>
+  <data name="DeactivateAccount" xml:space="preserve">
+    <value>Desativar conta</value>
+  </data>
+  <data name="DefectRate" xml:space="preserve">
+    <value>Taxa de defeitos</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Excluir</value>
+  </data>
+  <data name="DeleteABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Excluir um alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="DeleteACountryOfOperation" xml:space="preserve">
+    <value>Excluir um país de operação</value>
+  </data>
+  <data name="DeleteADepartment" xml:space="preserve">
+    <value>Excluir um departamento</value>
+  </data>
+  <data name="DeleteAFacility" xml:space="preserve">
+    <value>Excluir uma instalação</value>
+  </data>
+  <data name="DeleteASoftSavingCategory" xml:space="preserve">
+    <value>Excluir uma categoria de economia suave</value>
+  </data>
+  <data name="DeleteAUser" xml:space="preserve">
+    <value>Excluir um usuário</value>
+  </data>
+  <data name="DeletePost" xml:space="preserve">
+    <value>Excluir postagem</value>
+  </data>
+  <data name="DepartmentIsRequired" xml:space="preserve">
+    <value>É necessário departamento.</value>
+  </data>
+  <data name="DepartmentActivateToSortColumnAscending" xml:space="preserve">
+    <value>Departamento: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="DescriptionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Descrição: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="Designation" xml:space="preserve">
+    <value>Designação</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Desconto (</value>
+  </data>
+  <data name="DMAIC" xml:space="preserve">
+    <value>DMAIC</value>
+  </data>
+  <data name="DownloadReport" xml:space="preserve">
+    <value>Baixar relatório</value>
+  </data>
+  <data name="DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEfficiency" xml:space="preserve">
+    <value>Impulsione a excelência operacional padronizando processos, reduzindo desperdícios e melhorando a eficiência em toda a sua organização. Monitore o desempenho, identifique gargalos e implemente melhorias que entreguem resultados mensuráveis todos os dias.</value>
+  </data>
+  <data name="DuplicateRowsDetectedInUpload" xml:space="preserve">
+    <value>Linhas duplicadas detectadas no carregamento</value>
+  </data>
+  <data name="EachFileMustBeLessThan20MB" xml:space="preserve">
+    <value>Cada arquivo deve ter menos de 20MB!!!</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="EditPost" xml:space="preserve">
+    <value>Editar postagem</value>
+  </data>
+  <data name="EditProfile" xml:space="preserve">
+    <value>Editar perfil</value>
+  </data>
+  <data name="Efficiency" xml:space="preserve">
+    <value>Eficiência</value>
+  </data>
+  <data name="Elements" xml:space="preserve">
+    <value>Elementos</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>E-mail</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>Endereço de e-mail</value>
+  </data>
+  <data name="EmailPreferences" xml:space="preserve">
+    <value>Preferências de e-mail</value>
+  </data>
+  <data name="EmailSentSuccessfullyKindlyVerifyYourEmail" xml:space="preserve">
+    <value>E-mail enviado com sucesso. Por favor, verifique seu e-mail</value>
+  </data>
+  <data name="EmployeesJoinedThisMonth" xml:space="preserve">
+    <value>Funcionários que entraram este mês</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Data de término</value>
+  </data>
+  <data name="EndDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Data de término: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="EndDateIsRequired" xml:space="preserve">
+    <value>É necessária data de término.</value>
+  </data>
+  <data name="EndDateMustBeLaterThanStartDate" xml:space="preserve">
+    <value>A data de término deve ser posterior à data de início.</value>
+  </data>
+  <data name="EnterOTPCode" xml:space="preserve">
+    <value>Insira o código OTP</value>
+  </data>
+  <data name="EnterSavingAmount" xml:space="preserve">
+    <value>Insira o valor da economia</value>
+  </data>
+  <data name="EnterYourEmail" xml:space="preserve">
+    <value>Insira seu e-mail</value>
+  </data>
+  <data name="EnterYourName" xml:space="preserve">
+    <value>Insira seu nome</value>
+  </data>
+  <data name="EnterYourSubject" xml:space="preserve">
+    <value>Insira seu assunto</value>
+  </data>
+  <data name="Enterprise" xml:space="preserve">
+    <value>Empresa</value>
+  </data>
+  <data name="ExecutiveSponsor" xml:space="preserve">
+    <value>Patrocinador executivo</value>
+  </data>
+  <data name="ExecutiveSponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>O endereço de e-mail do patrocinador executivo deve ser um endereço de e-mail válido</value>
+  </data>
+  <data name="ExistingInitiative" xml:space="preserve">
+    <value>Iniciativa existente</value>
+  </data>
+  <data name="ExistingSubProject" xml:space="preserve">
+    <value>Subprojeto existente</value>
+  </data>
+  <data name="Facilitator" xml:space="preserve">
+    <value>Facilitador</value>
+  </data>
+  <data name="FacilitatorOwner" xml:space="preserve">
+    <value>Facilitador/Proprietário</value>
+  </data>
+  <data name="FacilitatorActivateToSortColumnAscending" xml:space="preserve">
+    <value>Facilitador: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="FacilitatorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>O endereço de e-mail do facilitador deve ser um endereço de e-mail válido</value>
+  </data>
+  <data name="Facility" xml:space="preserve">
+    <value>Instalação</value>
+  </data>
+  <data name="FacilityIsRequired" xml:space="preserve">
+    <value>É necessária instalação.</value>
+  </data>
+  <data name="FacilityActivateToSortColumnAscending" xml:space="preserve">
+    <value>Instalação: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>Perguntas frequentes</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>Recursos</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>O arquivo está vazio.</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filtrar</value>
+  </data>
+  <data name="FilterResults" xml:space="preserve">
+    <value>Filtrar resultados</value>
+  </data>
+  <data name="FilterSearch" xml:space="preserve">
+    <value>Filtrar pesquisa</value>
+  </data>
+  <data name="FinalReportSupportedFormat" xml:space="preserve">
+    <value>Relatório final (formatos suportados: PPT, Excel, PDF, Word)</value>
+  </data>
+  <data name="FinanceAndReporting" xml:space="preserve">
+    <value>Finanças e relatórios</value>
+  </data>
+  <data name="FinancialBenefits" xml:space="preserve">
+    <value>Benefícios financeiros</value>
+  </data>
+  <data name="FinancialReportSupportedFormat" xml:space="preserve">
+    <value>Relatório financeiro (formatos suportados: PPT, Excel, PDF, Word)</value>
+  </data>
+  <data name="FinancialVerification" xml:space="preserve">
+    <value>Verificação financeira</value>
+  </data>
+  <data name="FindThe" xml:space="preserve">
+    <value>Encontre o</value>
+  </data>
+  <data name="Finland" xml:space="preserve">
+    <value>Finlândia</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="FreeTrial" xml:space="preserve">
+    <value>Avaliação gratuita</value>
+  </data>
+  <data name="GembaKaizen" xml:space="preserve">
+    <value>Gemba Kaizen</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>Geral</value>
+  </data>
+  <data name="GetInTouchWith" xml:space="preserve">
+    <value>Entre em contato conosco</value>
+  </data>
+  <data name="GreenBlackBeltCertificationTracking" xml:space="preserve">
+    <value>Acompanhamento de certificação faixa verde e preta</value>
+  </data>
+  <data name="Hard" xml:space="preserve">
+    <value>Duras</value>
+  </data>
+  <data name="HardSavings" xml:space="preserve">
+    <value>Economias duras</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>Início</value>
+  </data>
+  <data name="HrsAgo" xml:space="preserve">
+    <value>horas</value>
+  </data>
+  <data name="IdActivateToSortColumnDescending" xml:space="preserve">
+    <value>ID: ativar para ordenar coluna descendente</value>
+  </data>
+  <data name="IdeaProposed" xml:space="preserve">
+    <value>Ideia/Proposto</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>Importar</value>
+  </data>
+  <data name="ImprovementIdeasCapture" xml:space="preserve">
+    <value>Captura de ideias de melhoria</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>Em andamento</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>Caixa de entrada</value>
+  </data>
+  <data name="IncorrectParameter" xml:space="preserve">
+    <value>Parâmetro incorreto</value>
+  </data>
+  <data name="Increased" xml:space="preserve">
+    <value>Aumentado</value>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>Índice</value>
+  </data>
+  <data name="Initiated" xml:space="preserve">
+    <value>Iniciado</value>
+  </data>
+  <data name="Initiative" xml:space="preserve">
+    <value>Iniciativa</value>
+  </data>
+  <data name="InitiativeDetail" xml:space="preserve">
+    <value>Detalhe da iniciativa</value>
+  </data>
+  <data name="InitiativeDetails" xml:space="preserve">
+    <value>Detalhes da iniciativa</value>
+  </data>
+  <data name="InitiativeLibrary" xml:space="preserve">
+    <value>Biblioteca de iniciativas</value>
+  </data>
+  <data name="InitiativeManagement" xml:space="preserve">
+    <value>Gestão de iniciativas</value>
+  </data>
+  <data name="InitiativeTracker" xml:space="preserve">
+    <value>Rastreador de iniciativas</value>
+  </data>
+  <data name="InitiativeActivateToSortColumnDescending" xml:space="preserve">
+    <value>Iniciativa: ativar para ordenar coluna descendente</value>
+  </data>
+  <data name="Initiatives" xml:space="preserve">
+    <value>Iniciativas</value>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>Endereço de e-mail inválido</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>Tipo de arquivo inválido.</value>
+  </data>
+  <data name="InvalidStatusValue" xml:space="preserve">
+    <value>Valor de status inválido. Valores permitidos são: PROPOSTO, INICIADO, CONCLUÍDO, FECHADO, CANCELADO</value>
+  </data>
+  <data name="InvalidUploadType" xml:space="preserve">
+    <value>Tipo de carregamento inválido</value>
+  </data>
+  <data name="IsCarryOverProjectMustBeOneOfYesOrNo" xml:space="preserve">
+    <value>ÉProjetoTransferido deve ser um de: Sim ou Não</value>
+  </data>
+  <data name="IsCarryOverProject" xml:space="preserve">
+    <value>É projeto transferido?</value>
+  </data>
+  <data name="IsCarryOverSavings" xml:space="preserve">
+    <value>São economias transferidas?</value>
+  </data>
+  <data name="IsOneTimeSavings" xml:space="preserve">
+    <value>São economias únicas?</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>Item</value>
+  </data>
+  <data name="JDI" xml:space="preserve">
+    <value>JDI</value>
+  </data>
+  <data name="KeyFeatures" xml:space="preserve">
+    <value>Principais recursos</value>
+  </data>
+  <data name="KindlyCreateAStrategicInitiativeProjectFirst" xml:space="preserve">
+    <value>Por favor, crie primeiro um projeto de iniciativa estratégica</value>
+  </data>
+  <data name="KindlyProvideAValidEmailAddress" xml:space="preserve">
+    <value>Por favor, forneça um endereço de e-mail válido</value>
+  </data>
+  <data name="KindlySelectACountry" xml:space="preserve">
+    <value>Por favor, selecione um país</value>
+  </data>
+  <data name="KindlySelectADepartment" xml:space="preserve">
+    <value>Por favor, selecione um departamento</value>
+  </data>
+  <data name="KindlySelectAFacilitator" xml:space="preserve">
+    <value>Por favor, selecione um facilitador</value>
+  </data>
+  <data name="KindlySelectAFacility" xml:space="preserve">
+    <value>Por favor, selecione uma instalação</value>
+  </data>
+  <data name="KindlySelectAMonthAndYear" xml:space="preserve">
+    <value>Por favor, selecione um mês e ano.</value>
+  </data>
+  <data name="KindlySelectAStrategicInitiativeProject" xml:space="preserve">
+    <value>Por favor, selecione um projeto de iniciativa estratégica</value>
+  </data>
+  <data name="KindlySelectAValidDate" xml:space="preserve">
+    <value>Por favor, selecione uma data válida</value>
+  </data>
+  <data name="KindlySelectAValidTeamMember" xml:space="preserve">
+    <value>Por favor, selecione um membro da equipe válido</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Sobrenome</value>
+  </data>
+  <data name="LicencesAvailableKindlyUpgradeYourSubscriptionPlanForMoreUserLicenses" xml:space="preserve">
+    <value>licenças disponíveis. Por favor, atualize seu plano de assinatura para mais licenças de usuário</value>
+  </data>
+  <data name="ListingMicrosoftAppSource" xml:space="preserve">
+    <value>Listagem: Microsoft AppSource —</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Local</value>
+  </data>
+  <data name="LocationManagement" xml:space="preserve">
+    <value>Gestão de locais</value>
+  </data>
+  <data name="LocationTemplate" xml:space="preserve">
+    <value>Modelo de local</value>
+  </data>
+  <data name="LocationFacility" xml:space="preserve">
+    <value>Local/Instalação</value>
+  </data>
+  <data name="LocationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Local: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>Sair</value>
+  </data>
+  <data name="LoginVerification" xml:space="preserve">
+    <value>Verificação de login</value>
+  </data>
+  <data name="Mail" xml:space="preserve">
+    <value>Correio</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>Principal</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>Filial principal</value>
+  </data>
+  <data name="MakeStrategyClearTrackableAndActionable" xml:space="preserve">
+    <value>Torne a estratégia clara, rastreável e acionável, para que cada iniciativa gere resultados mensuráveis. Alinhe as metas organizacionais com a execução para maximizar o impacto, priorize projetos de alto valor e acelere o crescimento dos negócios.</value>
+  </data>
+  <data name="MakePayment" xml:space="preserve">
+    <value>Efetuar pagamento</value>
+  </data>
+  <data name="MakingContinuousImprovementVisibleMeasurableAndScalable" xml:space="preserve">
+    <value>Tornar a melhoria contínua visível, mensurável e escalável permite que as organizações alinhem equipes, acompanhem o impacto real, repliquem sucessos em todas as operações e impulsionem resultados comerciais sustentáveis.</value>
+  </data>
+  <data name="ManageBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Gerenciar alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="ManageClassicSmallAndMediumSizedProjects" xml:space="preserve">
+    <value>Gerencie projetos clássicos de pequeno e médio porte usando a estrutura de ciclo de vida de 5 etapas.</value>
+  </data>
+  <data name="ManageCountries" xml:space="preserve">
+    <value>Gerenciar países</value>
+  </data>
+  <data name="ManageCountryOfOperation" xml:space="preserve">
+    <value>Gerenciar país de operação</value>
+  </data>
+  <data name="ManageDepartments" xml:space="preserve">
+    <value>Gerenciar departamentos</value>
+  </data>
+  <data name="ManageFacilities" xml:space="preserve">
+    <value>Gerenciar instalações</value>
+  </data>
+  <data name="ManageFacilityDepartments" xml:space="preserve">
+    <value>Gerenciar departamentos de instalações</value>
+  </data>
+  <data name="ManageInitiatives" xml:space="preserve">
+    <value>Gerenciar iniciativas</value>
+  </data>
+  <data name="ManageInitiativesTrackAuditsRealiseBenefits" xml:space="preserve">
+    <value>Gerenciar iniciativas — acompanhar auditorias — obter benefícios</value>
+  </data>
+  <data name="ManageOperationalCountries" xml:space="preserve">
+    <value>Gerenciar países operacionais</value>
+  </data>
+  <data name="ManageOperationalFacilities" xml:space="preserve">
+    <value>Gerenciar instalações operacionais</value>
+  </data>
+  <data name="ManageSavingCategory" xml:space="preserve">
+    <value>Gerenciar categoria de economia</value>
+  </data>
+  <data name="ManageTools" xml:space="preserve">
+    <value>Gerenciar ferramentas</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>Gerenciar usuários</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>Médio</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Mensagem</value>
+  </data>
+  <data name="Methodology" xml:space="preserve">
+    <value>Metodologia</value>
+  </data>
+  <data name="MethodologyIsRequired" xml:space="preserve">
+    <value>É necessária metodologia.</value>
+  </data>
+  <data name="MethodologyActivateToSortColumnAscending" xml:space="preserve">
+    <value>Metodologia: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="MiningOperations" xml:space="preserve">
+    <value>Operações de mineração</value>
+  </data>
+  <data name="ModifyBOA" xml:space="preserve">
+    <value>Modificar AON</value>
+  </data>
+  <data name="ModifySoftSavingCategory" xml:space="preserve">
+    <value>Modificar categoria de economia suave</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>Dinheiro</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>mês</value>
+  </data>
+  <data name="MonthYear" xml:space="preserve">
+    <value>Mês e ano</value>
+  </data>
+  <data name="MonthYearActivateToSortColumnDescending" xml:space="preserve">
+    <value>Mês e ano: ativar para ordenar coluna descendente</value>
+  </data>
+  <data name="MonthAgo" xml:space="preserve">
+    <value>mês</value>
+  </data>
+  <data name="MonthlyPrice" xml:space="preserve">
+    <value>Preço mensal:</value>
+  </data>
+  <data name="MonthlySavings" xml:space="preserve">
+    <value>Poupança Mensal</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>Meses</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>Mais popular</value>
+  </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>Minha conta</value>
+  </data>
+  <data name="MyPortfolio" xml:space="preserve">
+    <value>Meu portfólio</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="NameOfCountry" xml:space="preserve">
+    <value>Nome do país</value>
+  </data>
+  <data name="NameOfDepartment" xml:space="preserve">
+    <value>Nome do departamento</value>
+  </data>
+  <data name="NameOfFacility" xml:space="preserve">
+    <value>Nome da instalação</value>
+  </data>
+  <data name="NameActivateToSortColumnDescending" xml:space="preserve">
+    <value>Nome: ativar para ordenar coluna descendente</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>Navegação</value>
+  </data>
+  <data name="NewEmployees" xml:space="preserve">
+    <value>Novos funcionários</value>
+  </data>
+  <data name="NewInitiative" xml:space="preserve">
+    <value>Nova iniciativa</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>Novo projeto</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>Próximo</value>
+  </data>
+  <data name="NoDataSubmitted" xml:space="preserve">
+    <value>Nenhum dado enviado</value>
+  </data>
+  <data name="NoRowsSubmitted" xml:space="preserve">
+    <value>Nenhuma linha enviada</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>NOTA:</value>
+  </data>
+  <data name="NotePaymentIntegrationRequiresServerSideEndpoints" xml:space="preserve">
+    <value>Nota: A integração de pagamento requer endpoints do lado do servidor para criar sessões de pagamento (Stripe/Square). Esta demonstração chamará endpoints de placeholder.</value>
+  </data>
+  <data name="NoteToAttachTheFinancialReport" xml:space="preserve">
+    <value>Nota: Para anexar o relatório financeiro, certifique-se de inserir as economias duras, carregue o relatório final no status de anexo e mova o projeto para o status concluído na guia de detalhes do projeto.</value>
+  </data>
+  <data name="NoteYouCanDownloadTheSampleTemplates" xml:space="preserve">
+    <value>Nota: Você pode baixar os modelos de exemplo para cada um no ícone de download</value>
+  </data>
+  <data name="NoteYouWillBeDirectedToMakePayment" xml:space="preserve">
+    <value>Nota: Você será direcionado para efetuar o pagamento.</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Notificação</value>
+  </data>
+  <data name="OneTimeSavings" xml:space="preserve">
+    <value>Economias únicas</value>
+  </data>
+  <data name="OnlyLettersAreAllowed" xml:space="preserve">
+    <value>Apenas letras são permitidas</value>
+  </data>
+  <data name="OopsThePageYouAreLookingForDoesntExist" xml:space="preserve">
+    <value>Ops. A página que você está procurando não existe...</value>
+  </data>
+  <data name="OperationalExcellence" xml:space="preserve">
+    <value>Excelência operacional</value>
+  </data>
+  <data name="OperationalExcellenceInitiatives" xml:space="preserve">
+    <value>Iniciativas de excelência operacional</value>
+  </data>
+  <data name="OperationalExcellenceTemplate" xml:space="preserve">
+    <value>Modelo de excelência operacional</value>
+  </data>
+  <data name="OperationalLocation" xml:space="preserve">
+    <value>Local operacional</value>
+  </data>
+  <data name="OpsFocusInc" xml:space="preserve">
+    <value>Ops Focus Inc</value>
+  </data>
+  <data name="OptionalNote" xml:space="preserve">
+    <value>Nota opcional</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>OPÇÕES</value>
+  </data>
+  <data name="OrganizationDetails" xml:space="preserve">
+    <value>Detalhes da organização</value>
+  </data>
+  <data name="OrganizationUser" xml:space="preserve">
+    <value>Usuário da organização</value>
+  </data>
+  <data name="OtherPages" xml:space="preserve">
+    <value>Outras páginas</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>Outros</value>
+  </data>
+  <data name="OurMission" xml:space="preserve">
+    <value>Nossa missão</value>
+  </data>
+  <data name="OurTeam" xml:space="preserve">
+    <value>Nossa equipe</value>
+  </data>
+  <data name="Outside" xml:space="preserve">
+    <value>fora</value>
+  </data>
+  <data name="PasswordVerification" xml:space="preserve">
+    <value>Verificação de senha</value>
+  </data>
+  <data name="PayNow" xml:space="preserve">
+    <value>Pagar agora</value>
+  </data>
+  <data name="PaymentSubmissionFailed" xml:space="preserve">
+    <value>Falha no envio do pagamento</value>
+  </data>
+  <data name="PaymentSubmissionSuccessful" xml:space="preserve">
+    <value>Envio do pagamento bem-sucedido</value>
+  </data>
+  <data name="PercentageStatus" xml:space="preserve">
+    <value>Status percentual</value>
+  </data>
+  <data name="PerfectPlan" xml:space="preserve">
+    <value>Plano perfeito</value>
+  </data>
+  <data name="PerformBulkUploads" xml:space="preserve">
+    <value>Realizar carregamentos em massa</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>Informações pessoais</value>
+  </data>
+  <data name="PersonalSettings" xml:space="preserve">
+    <value>Configurações pessoais</value>
+  </data>
+  <data name="Phase" xml:space="preserve">
+    <value>Fase</value>
+  </data>
+  <data name="PhaseContainsAnInvalidValueForTheSelectedMethodology" xml:space="preserve">
+    <value>A fase contém um valor inválido para a metodologia selecionada.</value>
+  </data>
+  <data name="PhaseActivateToSortColumnAscending" xml:space="preserve">
+    <value>Fase: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="PhoneAndEmail" xml:space="preserve">
+    <value>Telefone e e-mail</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Número de telefone</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>Planejar</value>
+  </data>
+  <data name="PlanPrioritiseAndMonitorImprovementIdeas" xml:space="preserve">
+    <value>Planeje, priorize e monitore ideias de melhoria desde o envio até a conclusão. Estabeleça marcos, atribua proprietários, gerencie riscos e acompanhe o progresso usando fluxos de trabalho estruturados.</value>
+  </data>
+  <data name="PressToSelect" xml:space="preserve">
+    <value>Pressione para selecionar</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Anterior</value>
+  </data>
+  <data name="PreviousMonthVsThisMonths" xml:space="preserve">
+    <value>Mês anterior vs este mês</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>Preços</value>
+  </data>
+  <data name="PriorityIsRequired" xml:space="preserve">
+    <value>É necessária prioridade.</value>
+  </data>
+  <data name="PriorityMustBeOneOfHighMediumOrLow" xml:space="preserve">
+    <value>A prioridade deve ser uma de: Alta, Média ou Baixa</value>
+  </data>
+  <data name="PriorityActivateToSortColumnAscending" xml:space="preserve">
+    <value>Prioridade: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="ProblemStatement" xml:space="preserve">
+    <value>Declaração do problema</value>
+  </data>
+  <data name="ProblemStatementActivateToSortColumnAscending" xml:space="preserve">
+    <value>Declaração do problema: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="ProblemStatementIsRequired" xml:space="preserve">
+    <value>É necessária declaração do problema.</value>
+  </data>
+  <data name="ProceedToCITracker" xml:space="preserve">
+    <value>Prosseguir para o CITracker</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>Perfil</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>Projeto</value>
+  </data>
+  <data name="ProjectAuditingAndBenefitsCapture" xml:space="preserve">
+    <value>Auditoria de projetos e captura de benefícios</value>
+  </data>
+  <data name="ProjectCount" xml:space="preserve">
+    <value>Contagem de projetos</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>Detalhes do projeto</value>
+  </data>
+  <data name="ProjectIDCannotBeNegative" xml:space="preserve">
+    <value>O ID do projeto não pode ser negativo</value>
+  </data>
+  <data name="ProjectManager" xml:space="preserve">
+    <value>Gerente de projeto</value>
+  </data>
+  <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
+    <value>O projeto deve ter pelo menos um Facilitador.</value>
+  </data>
+  <data name="ProjectPhaseIsRequired" xml:space="preserve">
+    <value>É necessária fase do projeto.</value>
+  </data>
+  <data name="ProjectStatusIsRequired" xml:space="preserve">
+    <value>É necessário status do projeto.</value>
+  </data>
+  <data name="ProjectTitle" xml:space="preserve">
+    <value>Título do projeto</value>
+  </data>
+  <data name="ProjectUpdates" xml:space="preserve">
+    <value>Atualização(ões) do projeto</value>
+  </data>
+  <data name="Projects" xml:space="preserve">
+    <value>Projetos</value>
+  </data>
+  <data name="ProvideOrganisationDetails" xml:space="preserve">
+    <value>Fornecer detalhes da organização</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>Qualidade</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>Avaliação:</value>
+  </data>
+  <data name="RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally" xml:space="preserve">
+    <value>Insights em tempo real em todas as instalações e departamentos globalmente.</value>
+  </data>
+  <data name="RecentSearches" xml:space="preserve">
+    <value>Pesquisas recentes</value>
+  </data>
+  <data name="RecyclingOperation" xml:space="preserve">
+    <value>Operação de reciclagem</value>
+  </data>
+  <data name="RegisterMonthlySavings" xml:space="preserve">
+    <value>Registrar economias mensais</value>
+  </data>
+  <data name="Release" xml:space="preserve">
+    <value>Lançamento</value>
+  </data>
+  <data name="RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative" xml:space="preserve">
+    <value>Informações relevantes para fornecer atividade recente e atualizações à iniciativa</value>
+  </data>
+  <data name="RenameABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Renomear um alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="RenameACountryOfOperation" xml:space="preserve">
+    <value>Renomear um país de operação</value>
+  </data>
+  <data name="RenameADepartment" xml:space="preserve">
+    <value>Renomear um departamento</value>
+  </data>
+  <data name="RenameAFacility" xml:space="preserve">
+    <value>Renomear uma instalação</value>
+  </data>
+  <data name="RenameASoftSavingCategory" xml:space="preserve">
+    <value>Renomear uma categoria de economia suave</value>
+  </data>
+  <data name="RenameAUser" xml:space="preserve">
+    <value>Renomear um usuário</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>Receita</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>ROI</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Função</value>
+  </data>
+  <data name="Safety" xml:space="preserve">
+    <value>Segurança</value>
+  </data>
+  <data name="SavingAmount" xml:space="preserve">
+    <value>Valor da economia</value>
+  </data>
+  <data name="SavingAmountInSecSqftEtc" xml:space="preserve">
+    <value>Valor da economia (em segundos, pés quadrados, etc.)</value>
+  </data>
+  <data name="SavingType" xml:space="preserve">
+    <value>Tipo de economia</value>
+  </data>
+  <data name="SavingsClassification" xml:space="preserve">
+    <value>Classificação de economias</value>
+  </data>
+  <data name="SavingsClassificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>Classificação de economias: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="SavingsClassificationMustBeOneOf" xml:space="preserve">
+    <value>A classificação de economias deve ser uma de: Redução de custos, Economia de custos, Receita ou Prevenção de custos</value>
+  </data>
+  <data name="SavingsSpanningOverMoreThanAYear" xml:space="preserve">
+    <value>Economias que abrangem mais de um ano</value>
+  </data>
+  <data name="SavingsThatWillNotBeRecurringOvertime" xml:space="preserve">
+    <value>Economias que não serão recorrentes ao longo do tempo</value>
+  </data>
+  <data name="SavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Economias: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="SearchTrackAndFindProjectsInsightsAndLessonsInstantly" xml:space="preserve">
+    <value>Pesquise, acompanhe e encontre projetos, insights e lições instantaneamente.</value>
+  </data>
+  <data name="SelectABusinessObjectiveAlignment" xml:space="preserve">
+    <value>Selecione um alinhamento de objetivos de negócio</value>
+  </data>
+  <data name="SelectACategory" xml:space="preserve">
+    <value>Selecione uma categoria</value>
+  </data>
+  <data name="SelectACountry" xml:space="preserve">
+    <value>Selecione um país</value>
+  </data>
+  <data name="SelectADateAfterTheProjectStartDate" xml:space="preserve">
+    <value>Selecione uma data após a data de início do projeto</value>
+  </data>
+  <data name="SelectADepartment" xml:space="preserve">
+    <value>Selecione um departamento</value>
+  </data>
+  <data name="SelectAFacility" xml:space="preserve">
+    <value>Selecione uma instalação</value>
+  </data>
+  <data name="SelectAMethodology" xml:space="preserve">
+    <value>Selecione uma metodologia</value>
+  </data>
+  <data name="SelectASavingsType" xml:space="preserve">
+    <value>Selecione um tipo de economia</value>
+  </data>
+  <data name="SelectASoftSavingCategory" xml:space="preserve">
+    <value>Selecione uma categoria de economia suave</value>
+  </data>
+  <data name="SelectAStatus" xml:space="preserve">
+    <value>Selecione um status</value>
+  </data>
+  <data name="SelectASubscriptionPlan" xml:space="preserve">
+    <value>Selecione um plano de assinatura</value>
+  </data>
+  <data name="SelectAUser" xml:space="preserve">
+    <value>Selecione um usuário</value>
+  </data>
+  <data name="SelectAnUploadType" xml:space="preserve">
+    <value>Selecione um tipo de carregamento</value>
+  </data>
+  <data name="SelectAndModifyTheStatusAsTheInitiativeProjectProgress" xml:space="preserve">
+    <value>Selecione e modifique o status conforme o progresso da iniciativa/projeto</value>
+  </data>
+  <data name="SelectClassification" xml:space="preserve">
+    <value>Selecione classificação</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>Selecione país</value>
+  </data>
+  <data name="SelectFacilitatorSponsor" xml:space="preserve">
+    <value>Selecione facilitador/patrocinador</value>
+  </data>
+  <data name="SelectFunctionalGroupsThatOwnsTheProjectBeingImproved" xml:space="preserve">
+    <value>Selecione grupos funcionais proprietários do projeto que está sendo melhorado</value>
+  </data>
+  <data name="SelectGroupFunction" xml:space="preserve">
+    <value>Selecione grupo/função</value>
+  </data>
+  <data name="SelectMethodology" xml:space="preserve">
+    <value>Selecione metodologia</value>
+  </data>
+  <data name="SelectMoreYearsToSaveMore" xml:space="preserve">
+    <value>Selecione mais anos para economizar mais (2 anos = 10% de desconto; 3 anos = 15% de desconto).</value>
+  </data>
+  <data name="SelectPriority" xml:space="preserve">
+    <value>Selecione prioridade</value>
+  </data>
+  <data name="SelectRole" xml:space="preserve">
+    <value>Selecione função</value>
+  </data>
+  <data name="SelectRolesForTeamMembers" xml:space="preserve">
+    <value>Selecione funções para os membros da equipe, certifique-se de ter pelo menos um facilitador/proprietário</value>
+  </data>
+  <data name="SelectStatus" xml:space="preserve">
+    <value>Selecione status</value>
+  </data>
+  <data name="SelectStrategicInitiativeProject" xml:space="preserve">
+    <value>Selecione projeto de iniciativa estratégica</value>
+  </data>
+  <data name="SelectStrategicProject" xml:space="preserve">
+    <value>Selecione projeto estratégico</value>
+  </data>
+  <data name="SelectTheMostAppropriateApproachForExecutingTheInitiativeProject" xml:space="preserve">
+    <value>Selecione a abordagem mais apropriada para executar a iniciativa/projeto.</value>
+  </data>
+  <data name="SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus" xml:space="preserve">
+    <value>Selecione os objetivos mais apropriados com base no foco do seu negócio</value>
+  </data>
+  <data name="SelectUploadType" xml:space="preserve">
+    <value>Selecione tipo de carregamento</value>
+  </data>
+  <data name="SelectUser" xml:space="preserve">
+    <value>Selecione usuário</value>
+  </data>
+  <data name="SelectedMethodologyIsRequired" xml:space="preserve">
+    <value>A metodologia selecionada é necessária</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>Enviar mensagem</value>
+  </data>
+  <data name="SendVerificationCodeToEmail" xml:space="preserve">
+    <value>Enviar código de verificação para e-mail</value>
+  </data>
+  <data name="Services" xml:space="preserve">
+    <value>Serviços</value>
+  </data>
+  <data name="SetupVerification" xml:space="preserve">
+    <value>Configurar verificação</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configurações</value>
+  </data>
+  <data name="SignInWithSSO" xml:space="preserve">
+    <value>Entrar com SSO</value>
+  </data>
+  <data name="SoftSavingCategory" xml:space="preserve">
+    <value>Categoria de economia suave</value>
+  </data>
+  <data name="SoftSavingCategoryDetails" xml:space="preserve">
+    <value>Detalhes da categoria de economia suave</value>
+  </data>
+  <data name="SoftSavings" xml:space="preserve">
+    <value>Economias suaves</value>
+  </data>
+  <data name="Space" xml:space="preserve">
+    <value>Espaço</value>
+  </data>
+  <data name="Sponsor" xml:space="preserve">
+    <value>Patrocinador</value>
+  </data>
+  <data name="SponsorActivateToSortColumnAscending" xml:space="preserve">
+    <value>Patrocinador: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="SponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>O endereço de e-mail do patrocinador deve ser um endereço de e-mail válido</value>
+  </data>
+  <data name="Stakeholders" xml:space="preserve">
+    <value>Partes interessadas</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Data de início</value>
+  </data>
+  <data name="StartDateIsRequired" xml:space="preserve">
+    <value>É necessária data de início.</value>
+  </data>
+  <data name="StartDateMustBeEarlierThanEndDate" xml:space="preserve">
+    <value>A data de início deve ser anterior à data de término.</value>
+  </data>
+  <data name="StartingFrom" xml:space="preserve">
+    <value>A partir de</value>
+  </data>
+  <data name="StatusPercentageCompletion" xml:space="preserve">
+    <value>Status/percentual de conclusão</value>
+  </data>
+  <data name="StatusPercentageCompletionActivateToSortColumnAscending" xml:space="preserve">
+    <value>Status/percentual de conclusão: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="StatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>Status: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="StoppedProgramBecauseOfException" xml:space="preserve">
+    <value>Programa interrompido devido a exceção</value>
+  </data>
+  <data name="StrategicInitiative" xml:space="preserve">
+    <value>Iniciativa estratégica</value>
+  </data>
+  <data name="StrategicInitiativeTemplate" xml:space="preserve">
+    <value>Modelo de iniciativa estratégica</value>
+  </data>
+  <data name="StrategicInitiatives" xml:space="preserve">
+    <value>Iniciativas estratégicas</value>
+  </data>
+  <data name="StrategicProject" xml:space="preserve">
+    <value>Projeto estratégico</value>
+  </data>
+  <data name="SubProject" xml:space="preserve">
+    <value>Subprojeto</value>
+  </data>
+  <data name="SubProjectDetails" xml:space="preserve">
+    <value>Detalhes do subprojeto</value>
+  </data>
+  <data name="SubProjects" xml:space="preserve">
+    <value>Subprojetos</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>Assunto</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>Enviar</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>Assinar</value>
+  </data>
+  <data name="Subscription" xml:space="preserve">
+    <value>Assinatura</value>
+  </data>
+  <data name="SubscriptionDuration" xml:space="preserve">
+    <value>Duração da assinatura</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="SupplyChain" xml:space="preserve">
+    <value>Cadeia de suprimentos</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>Suporte</value>
+  </data>
+  <data name="SupportingValueStream" xml:space="preserve">
+    <value>Fluxo de valor de suporte</value>
+  </data>
+  <data name="SupportingValueStreamIsRequired" xml:space="preserve">
+    <value>É necessário fluxo de valor de suporte.</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>Pesquisa</value>
+  </data>
+  <data name="Sustainability" xml:space="preserve">
+    <value>Sustentabilidade</value>
+  </data>
+  <data name="Tables" xml:space="preserve">
+    <value>Tabelas</value>
+  </data>
+  <data name="TargetSavings" xml:space="preserve">
+    <value>Economias alvo</value>
+  </data>
+  <data name="TargetSavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>Economias alvo: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>Equipe</value>
+  </data>
+  <data name="TeamListCannotBeEmpty" xml:space="preserve">
+    <value>A lista da equipe não pode estar vazia</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>Membro da equipe</value>
+  </data>
+  <data name="TeamMemberRoleIsRequired" xml:space="preserve">
+    <value>É necessária a função do membro da equipe</value>
+  </data>
+  <data name="TeamMembers" xml:space="preserve">
+    <value>Membros da equipe</value>
+  </data>
+  <data name="TeamActivateToSortColumnAscending" xml:space="preserve">
+    <value>Equipe: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="TheCITrackerWebAppComesWithReadyToUseFeatures" xml:space="preserve">
+    <value>O aplicativo web CITracker vem com recursos prontos para uso que são completamente fáceis de usar para qualquer usuário, mesmo para um iniciante.</value>
+  </data>
+  <data name="TheNameOfTheValueStreamThisInitiativeIsTiedTo" xml:space="preserve">
+    <value>O nome do fluxo de valor ao qual esta iniciativa está vinculada</value>
+  </data>
+  <data name="ThisHelpsWithTyingTheInitiativeProjectToAnyLeanSixSigmaCertificationEffort" xml:space="preserve">
+    <value>Isso ajuda a vincular a iniciativa/projeto a qualquer esforço de certificação Lean Seis Sigma</value>
+  </data>
+  <data name="ThisIncludesNonFinancialSavings" xml:space="preserve">
+    <value>Isso inclui economias não financeiras (ex. tempo, espaço, qualidade, segurança)</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>Tempo</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Título</value>
+  </data>
+  <data name="TitleIsRequired" xml:space="preserve">
+    <value>É necessário título.</value>
+  </data>
+  <data name="TitleActivateToSortColumnAscending" xml:space="preserve">
+    <value>Título: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="ToggleForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotification" xml:space="preserve">
+    <value>Ative para qualquer membro da equipe que deseje receber uma notificação por e-mail sempre que uma atualização for feita</value>
+  </data>
+  <data name="ToolManagement" xml:space="preserve">
+    <value>Gestão de ferramentas</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>Ferramentas</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="TotalExpectedRevenue" xml:space="preserve">
+    <value>Receita total esperada</value>
+  </data>
+  <data name="TotalExpectedRevenueActivateToSortColumnAscending" xml:space="preserve">
+    <value>Receita total esperada: ativar para ordenar coluna ascendente</value>
+  </data>
+  <data name="TotalExpectedSavings" xml:space="preserve">
+    <value>Economias totais esperadas</value>
+  </data>
+  <data name="TotalExpectedSavingsRevenue" xml:space="preserve">
+    <value>Economias/Receitas totais esperadas</value>
+  </data>
+  <data name="TotalExpenses" xml:space="preserve">
+    <value>Despesas totais</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>Receita total</value>
+  </data>
+  <data name="TotalSavings" xml:space="preserve">
+    <value>Economias totais</value>
+  </data>
+  <data name="TrackPractitionerProgressAndProjectMilestones" xml:space="preserve">
+    <value>Acompanhe o progresso dos profissionais e os marcos do projeto para certificações Lean Seis Sigma.</value>
+  </data>
+  <data name="TrackTraditionalProjects" xml:space="preserve">
+    <value>Acompanhar projetos tradicionais</value>
+  </data>
+  <data name="TwentyMBMaxFileSize" xml:space="preserve">
+    <value>20 MB (tamanho máximo de arquivo)</value>
+  </data>
+  <data name="TypeYourMessageHere" xml:space="preserve">
+    <value>Digite sua mensagem aqui...</value>
+  </data>
+  <data name="UnableToRegisterOrganisation" xml:space="preserve">
+    <value>Não foi possível registrar a organização</value>
+  </data>
+  <data name="UnitOfMeasurement" xml:space="preserve">
+    <value>Unidade de medida (ex. minutos, m², dpu)</value>
+  </data>
+  <data name="Unlimited" xml:space="preserve">
+    <value>Ilimitado</value>
+  </data>
+  <data name="UpgradeSubscription" xml:space="preserve">
+    <value>Atualizar assinatura</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>Carregar</value>
+  </data>
+  <data name="UserDetails" xml:space="preserve">
+    <value>Detalhes do usuário</value>
+  </data>
+  <data name="UserLicenses" xml:space="preserve">
+    <value>Licenças de usuário</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>Gestão de usuários</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Nome de usuário</value>
+  </data>
+  <data name="UserTemplate" xml:space="preserve">
+    <value>Modelo de usuário</value>
+  </data>
+  <data name="UsersNameIsRequired" xml:space="preserve">
+    <value>É necessário o nome do usuário</value>
+  </data>
+  <data name="Verification" xml:space="preserve">
+    <value>Verificação</value>
+  </data>
+  <data name="VerifiedUser" xml:space="preserve">
+    <value>Usuário verificado</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>Verificar</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>Visualizar</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>Visualizar tudo</value>
+  </data>
+  <data name="ViewOnMarketplace" xml:space="preserve">
+    <value>Ver no Marketplace</value>
+  </data>
+  <data name="WeAreHereToHelpYou" xml:space="preserve">
+    <value>Estamos aqui para ajudá-lo</value>
+  </data>
+  <data name="WelcomeToCITracker" xml:space="preserve">
+    <value>Bem-vindo ao CITracker</value>
+  </data>
+  <data name="WhatPeopleAreSayingAboutCITracker" xml:space="preserve">
+    <value>O que as pessoas estão dizendo sobre o CITracker.</value>
+  </data>
+  <data name="WorkingHours" xml:space="preserve">
+    <value>Horário de trabalho</value>
+  </data>
+  <data name="WorkingTowardsACertification" xml:space="preserve">
+    <value>Trabalhando para obter uma certificação?</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>ano</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value>anos</value>
+  </data>
+  <data name="YouHaveTwoProjectsToFinishYouHadCompleted" xml:space="preserve">
+    <value>Você tem dois projetos para terminar, você havia concluído</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>Você esgotou suas licenças disponíveis. Por favor, atualize seu plano de assinatura</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableUserLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>Você esgotou suas licenças de usuário disponíveis. Por favor, atualize seu plano de assinatura</value>
+  </data>
+  <data name="YouMayHaveMistypedTheAddressOrThePageMayHaveMoved" xml:space="preserve">
+    <value>Você pode ter digitado o endereço errado ou a página pode ter sido movida. Tente pesquisar abaixo.</value>
+  </data>
+  <data name="YouNeedToIdentifyIfThisIsACarryOverProject" xml:space="preserve">
+    <value>Você precisa identificar se este é um projeto transferido</value>
+  </data>
+  <data name="YourPaymentRequestHasBeenSubmittedSuccessfully" xml:space="preserve">
+    <value>Sua solicitação de pagamento foi enviada com sucesso. Você receberá um e-mail assim que sua conta for ativada.</value>
+  </data>
+  <data name="YourPaymentRequestSubmissionFailed" xml:space="preserve">
+    <value>O envio da sua solicitação de pagamento falhou. Por favor, verifique com seu banco e tente novamente.</value>
+  </data>
+  <data name="By" xml:space="preserve">
+    <value>por</value>
+  </data>
+  <data name="DesignedWith" xml:space="preserve">
+    <value>Projetado com</value>
+  </data>
+  <data name="ForYourBusiness" xml:space="preserve">
+    <value>para o seu negócio</value>
+  </data>
+  <data name="Reporting" xml:space="preserve">
+    <value>Relatórios</value>
+  </data>
+  <data name="StrategyFocused" xml:space="preserve">
+    <value>Focado em estratégia</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Endereço</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>País</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>Dias</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Usuário</value>
+  </data>
+  <data name="Suitable for Small Businesses or closed group trials" xml:space="preserve">
+    <value>Adequado para Pequenas Empresas ou testes em grupo fechado</value>
+  </data>
+  <data name="Perfect for Individuals and Startups." xml:space="preserve">
+    <value>Perfeito para Indivíduos e Startups</value>
+  </data>
+  <data name="Great for large businesses with multiple teams tracking several projects  in parallel." xml:space="preserve">
+    <value>Ótimo para grandes empresas com múltiplas equipes acompanhando vários projetos em paralelo</value>
+  </data>
+  <data name="Ideal for sizeable projects and businesses with expanding teams." xml:space="preserve">
+    <value>Ideal para projetos de grande porte e empresas com equipes em expansão</value>
+  </data>
+  <data name="AreYouSureYouWantToCancelYourSubscription" xml:space="preserve">
+    <value>Tem certeza de que deseja cancelar sua assinatura?</value>
+  </data>
+  <data name="SubscriptionCancellationRequestSubmittedSuccessfully" xml:space="preserve">
+    <value>Pedido de cancelamento de assinatura enviado com sucesso</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>Algo deu errado</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>limite de tamanho de arquivo</value>
+  </data>
+  <data name="ExcelMustContainHeadersAndAtLeastOneDataRow" xml:space="preserve">
+    <value>O Excel deve conter cabeçalhos e pelo menos uma linha de dados</value>
+  </data>
+  <data name="PleaseSelectAnUploadType" xml:space="preserve">
+    <value>Por favor, selecione um tipo de upload</value>
+  </data>
+  <data name="UploadSuccessful" xml:space="preserve">
+    <value>Upload realizado com sucesso</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Usuários</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>Licenças</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>Sucesso</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>Falha</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>Alinhamento de Objetivo de Negócio Inválido</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>Departamento</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>Departamento Inválido</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>Nome da instalação inválido</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>Nome do país inválido</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>Categoria de poupança inválida</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>Falha no upload</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>Falha ao buscar ferramentas</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>Carregar este arquivo???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>Nome de usuário inválido</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>Prioridade</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>Data de início: ative para classificar coluna ascendente</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>Nenhum registro encontrado</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descrição</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>Proprietário</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>Proprietário: ative para classificar coluna ascendente</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>Digite o usuário...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>Nenhum dado disponível</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>Status do Projeto</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>Categoria de Poupança</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>Status de Projetos Mensais</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>Projetos Mensais</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>Projetos Mensais por Departamento</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>Projetos Mensais por Fase</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>Projetos dos Facilitadores</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>Economias</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>Anexos</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>Anexo</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>Salvar e Próximo</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>Todos os comentários são obrigatórios.</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>Todas as datas de comentários são obrigatórias.</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>Comentário</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>Auditado</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Salvar</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>Por favor, adicione pelo menos um tipo de economia (economia dura ou suave)</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>Mês duplicado detectado</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value>Você só pode adicionar até 12 entradas.</value>
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>Por favor, procure um projeto</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>Selecione uma Ferramenta</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>Projeto Salvo. Para inserir membros da equipe, atualize o status na página de detalhes do projeto para "Iniciado".</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>Por favor, adicione pelo menos um membro da equipe.</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>Todos os nomes dos membros da equipe são obrigatórios.</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>Todas as funções dos membros da equipe são obrigatórias.</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>Definição e alinhamento do projeto.</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>Linha de base de desempenho do estado atual.</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>Identificar causas de variação.</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>Desenvolver, testar e implementar soluções.</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>Sustentar ganhos e escalar.</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>Identifique uma necessidade comercial, problema ou oportunidade e faça um brainstorming de maneiras de atender a essa necessidade, resolver esse problema ou aproveitar essa oportunidade.</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>Divida o projeto maior em tarefas menores, monte sua equipe e prepare um cronograma para a conclusão das tarefas.</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>Acompanhe, organize os membros da equipe, gerencie prazos e certifique-se de que o trabalho seja feito de acordo com o plano original.</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>O desempenho e monitoramento do projeto garantem que os resultados estejam alinhados com o plano de gestão.</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>Forneça entregáveis financeiros, libere recursos do projeto e determine o sucesso do projeto, avaliando o que funcionou e o que não funcionou no projeto.</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>Por favor, adicione pelo menos uma ferramenta</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>Selecione um Membro da Equipe</value>
+  </data>
+</root>

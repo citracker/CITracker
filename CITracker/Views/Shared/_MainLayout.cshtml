@@ -1,4 +1,5 @@
-﻿@inject IHttpContextAccessor hca
+﻿@using CITracker.Resources
+@inject IHttpContextAccessor hca
 
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
@@ -128,6 +129,60 @@
                 <!-- End::header-content-left -->
                 <!-- Start::header-content-right -->
                 <div class="header-content-right">
+
+                    <div class="header-element country-selector">
+                        <!-- Start::header-link|dropdown-toggle -->
+                        <a href="javascript:void(0);" class="header-link dropdown-toggle country-Flag" data-bs-auto-close="outside" data-bs-toggle="dropdown" id="selectedLanguage">
+                            <span id="currentLanguageFlag" class="avatar avatar-xs lh-1 me-2">
+                                <img src="~/assets/images/flags/us.svg" alt="img">
+                            </span>
+                        </a>
+                        <!-- End::header-link|dropdown-toggle -->
+                        <ul class="main-header-dropdown dropdown-menu dropdown-menu-end" data-popper-placement="none">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="en-US" data-flag="us.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/us.svg" alt="img">
+                                    </span> English
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="es" data-flag="es.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/es.svg" alt="img">
+                                    </span> Spanish
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="fr" data-flag="mf.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/mf.svg" alt="img">
+                                    </span> French
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="nl" data-flag="nl.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/nl.svg" alt="img">
+                                    </span> Dutch
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="pt" data-flag="pt.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/pt.svg" alt="img">
+                                    </span> Portuguese
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="zh" data-flag="cn.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/cn.svg" alt="img">
+                                    </span> Chinese
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <!-- Start::header-element -->
                     <div class="header-element header-fullscreen d-xl-flex d-none">
                         <!-- Start::header-link -->
@@ -161,12 +216,12 @@
                                     <p class="main-notification-text mb-0">@hca.HttpContext.Session.GetString("UserRole")?.ToString()</p>
                                 </div>
                             </li>
-                            <li><a class="dropdown-item d-flex border-bottom" href="profile.html"><i class="fe fe-user fs-16 align-middle me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item d-flex border-bottom" href="profile.html"><i class="fe fe-user fs-16 align-middle me-2"></i>@SharedResource.Profile</a></li>
                             @* <li><a class="dropdown-item d-flex border-bottom" href="mail-inbox.html"><i class="fe fe-inbox fs-16 align-middle me-2"></i>Inbox <span class="badge bg-success ms-auto">25</span></a></li>
                             <li><a class="dropdown-item d-flex border-bottom border-block-end" href="notifications-list.html"><i class="fe fe-compass fs-16 align-middle me-2"></i>Activity</a></li>
                             <li><a class="dropdown-item d-flex border-bottom" href="settings.html"><i class="fe fe-settings fs-16 align-middle me-2"></i>Settings</a></li>
                             <li><a class="dropdown-item d-flex border-bottom" href="chat.html"><i class="fe fe-headphones fs-16 align-middle me-2"></i>Support</a></li>*@
-                            <li><a class="dropdown-item d-flex" href="@Url.Action("Logout", "Main")"><i class="fe fe-power fs-16 align-middle me-2"></i>Log Out</a></li>
+                            <li><a class="dropdown-item d-flex" href="@Url.Action("Logout", "Main")"><i class="fe fe-power fs-16 align-middle me-2"></i>@SharedResource.LogOut</a></li>
                         </ul>
                     </div>
                     <!-- End::header-element -->
@@ -198,42 +253,43 @@
                               </div>
                               <ul class="main-menu" style="margin-left: 0px; margin-right: 0px;">
                                  <!-- Start::slide__category --> 
-                                 <li class="slide__category"><span class="category-name">Dashboard</span></li>
+                                 <li class="slide__category"><span class="category-name">@SharedResource.Dashboard</span></li>
                                  <!-- End::slide__category --> <!-- Start::slide -->
                                     <li class="slide @(ViewBag.Active == "Dashboard" ? "active" : "")">
                                         <a href="@Url.Action("Dashboard", "Main")" class="side-menu__item">
-                                            <span class="shape1"></span> <span class="shape2"></span> <i class="ti-home side-menu__icon"></i> <span class="side-menu__label">Dashboard</span>
+                                            <span class="shape1"></span> <span class="shape2"></span> <i class="ti-home side-menu__icon"></i> <span class="side-menu__label">@SharedResource.Dashboard</span>
                                         </a>
                                     </li>
                                  <!-- End::slide --> 
-                                 <li class="slide__category"><span class="category-name">Initiative Management</span></li>
+                                 <li class="slide__category"><span class="category-name">@SharedResource.InitiativeManagement</span></li>
                                  <!-- End::slide__category --> <!-- Start::slide -->
                                  <li class="slide has-sub @(ViewBag.Base == "InitiativeManagement" ? "open active" : "")">
-                                    <a href="javascript:void(0);" class="side-menu__item"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-write side-menu__icon"></i> <span class="side-menu__label">Initiative Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                    <a href="javascript:void(0);" class="side-menu__item"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-write side-menu__icon"></i> <span class="side-menu__label">@SharedResource.InitiativeManagement</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                     <ul class="slide-menu child1" data-popper-placement="bottom" data-popper-reference-hidden="" data-popper-escaped="" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, -168px);">
-                                       <li class="slide side-menu__label1"> <a href="javascript:void(0)">Initiative Management</a> </li>
+                                       <li class="slide side-menu__label1"> <a href="javascript:void(0)">@SharedResource.InitiativeManagement</a> </li>
 @*                                        <li class="slide"> <a href="@Url.Action("Initiatives", "Main")" class="side-menu__item @(ViewBag.Active == "Initiatives" ? "active" : "")">All Initiatives</a> </li>*@                                       <li class="slide has-sub @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")">
                                             <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "AllCIProjects" || ViewBag.Active == "CICreateProject" ? "active" : "")"> Continuous Improvement </a>
                                             <ul class="slide-menu child2 @(ViewBag.Active == "CICreateProject" || ViewBag.Active == "AllCIProjects" ? "active" : "")">
-                                                <li class="slide @(ViewBag.Active == "CICreateProject" ? "active" : "")"> <a href="@Url.Action("CreateCIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CICreateProject" ? "active" : "")"> New Project </a></li>
-                                                <li class="slide @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> <a href="@Url.Action("AllCIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> All Projects</a></li>
+                                                <li class="slide @(ViewBag.Active == "CICreateProject" ? "active" : "")"> <a href="@Url.Action("CreateCIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CICreateProject" ? "active" : "")"> @SharedResource.NewProject </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> <a href="@Url.Action("AllCIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllCIProjects" ? "active" : "")"> @SharedResource.AllProjects</a></li>
                                             </ul>
                                         </li>
-                                        <li class="slide has-sub @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")"> 
-                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">Operational Excellence
+                                        <li class="slide has-sub @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
+                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
+                                                            @SharedResource.OperationalExcellence
                                                 <i class="fe fe-chevron-right side-menu__angle"></i>
                                             </a> 
                                             <ul class="slide-menu child2 @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
-                                                <li class="slide @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> <a href="@Url.Action("CreateOEProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> New Project </a></li>
-                                                <li class="slide @(ViewBag.Active == "AllOEProjects" ? "active" : "")"> <a href="@Url.Action("AllOEProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllOEProjects" ? "active" : "")">All Projects </a></li>
+                                                <li class="slide @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> <a href="@Url.Action("CreateOEProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> @SharedResource.NewProject </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllOEProjects" ? "active" : "")"> <a href="@Url.Action("AllOEProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllOEProjects" ? "active" : "")">@SharedResource.AllProjects </a></li>
                                             </ul>
                                         </li>
                                         <li class="slide has-sub @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")"> 
-                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")">Strategic Initiatives</a>
+                                            <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")">@SharedResource.StrategicInitiatives</a>
                                             <ul class="slide-menu child2 @(ViewBag.Active == "AllSIProjects" || ViewBag.Active == "CreateSIProject" || ViewBag.Active == "CreateSISubProject" ? "active" : "")">
-                                                <li class="slide @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> <a href="@Url.Action("CreateSIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> Strategic Project </a></li>
-                                                <li class="slide @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> <a href="@Url.Action("CreateSISubProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> Sub Project </a></li>
-                                                <li class="slide @(ViewBag.Active == "AllSIProjects" ? "active" : "")"> <a href="@Url.Action("AllSIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllSIProjects" ? "active" : "")">All Projects </a></li>
+                                                <li class="slide @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> <a href="@Url.Action("CreateSIProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSIProject" ? "active" : "")"> @SharedResource.StrategicProject </a></li>
+                                                <li class="slide @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> <a href="@Url.Action("CreateSISubProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateSISubProject" ? "active" : "")"> @SharedResource.SubProject </a></li>
+                                                <li class="slide @(ViewBag.Active == "AllSIProjects" ? "active" : "")"> <a href="@Url.Action("AllSIProjects", "Main")" class="side-menu__item @(ViewBag.Active == "AllSIProjects" ? "active" : "")">@SharedResource.AllProjects </a></li>
                                             </ul>
                                         </li>
                                     </ul>
@@ -241,40 +297,40 @@
                                  <!-- End::slide --> <!-- Start::slide__category --> 
                                  @if((bool)hca?.HttpContext?.Session?.GetString("UserRole")?.ToString().Equals("Admin"))
                                  {
-                                     <li class="slide__category"><span class="category-name">Administration</span></li>
+                                     <li class="slide__category"><span class="category-name">@SharedResource.Administration</span></li>
                                      <!-- End::slide__category --> <!-- Start::slide --> 
                                      <li class="slide has-sub @(ViewBag.Base == "LocationManagement" ? "open active" : "")">
-                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" || ViewBag.Active == "ManageFacilities" || ViewBag.Active == "ManageDepartments" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Location Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" || ViewBag.Active == "ManageFacilities" || ViewBag.Active == "ManageDepartments" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">@SharedResource.LocationManagement</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                         <ul class="slide-menu child2 @(ViewBag.Active == "ManageOperationalLocation" || ViewBag.Active == "ManageFacilities" || ViewBag.Active == "ManageDepartments" ? "active" : "")">
-                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">Location Management</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")"> <a href="@Url.Action("ManageOperationalLocation", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")">Manage Operational Countries</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageFacilities" ? "active" : "")"> <a href="@Url.Action("ManageFacilities", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageFacilities" ? "active" : "")">Manage Facilities</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageDepartments" ? "active" : "")"> <a href="@Url.Action("ManageDepartments", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageDepartments" ? "active" : "")">Manage Departments</a> </li>
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">@SharedResource.LocationManagement</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")"> <a href="@Url.Action("ManageOperationalLocation", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageOperationalLocation" ? "active" : "")">@SharedResource.ManageOperationalCountries</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageFacilities" ? "active" : "")"> <a href="@Url.Action("ManageFacilities", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageFacilities" ? "active" : "")">@SharedResource.ManageFacilities</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageDepartments" ? "active" : "")"> <a href="@Url.Action("ManageDepartments", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageDepartments" ? "active" : "")">@SharedResource.ManageDepartments</a> </li>
                                         </ul>
                                      </li>
                                      <li class="slide has-sub @(ViewBag.Base == "UserManagement" ? "open active" : "")">
-                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageUsers" || ViewBag.Active == "Account" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">User Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageUsers" || ViewBag.Active == "Account" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">@SharedResource.UserManagement</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                         <ul class="slide-menu child2 @(ViewBag.Active == "ManageUsers" || ViewBag.Active == "Account" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
-                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">User Management</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageUsers" ? "active" : "")"> <a href="@Url.Action("ManageUsers", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageUsers" ? "active" : "")">Manage Users</a> </li>
-                                           <li class="slide @(ViewBag.Active == "Account" ? "active" : "")"> <a href="@Url.Action("Account", "Admin")" class="side-menu__item @(ViewBag.Active == "Account" ? "active" : "")">My Account</a> </li>
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">@SharedResource.UserManagement</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageUsers" ? "active" : "")"> <a href="@Url.Action("ManageUsers", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageUsers" ? "active" : "")">@SharedResource.ManageUsers</a> </li>
+                                           <li class="slide @(ViewBag.Active == "Account" ? "active" : "")"> <a href="@Url.Action("Account", "Admin")" class="side-menu__item @(ViewBag.Active == "Account" ? "active" : "")">@SharedResource.MyAccount</a> </li>
                                            @* <li class="slide @(ViewBag.Active == "Settings" ? "active" : "")"> <a href="#" class="side-menu__item @(ViewBag.Active == "Settings" ? "active" : "")">Settings</a> </li> *@
                                         </ul>
                                      </li>
                                      <li class="slide has-sub @(ViewBag.Base == "ToolManagement" ? "open active" : "")">
-                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Tools Management</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">@SharedResource.ToolManagement</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                         <ul class="slide-menu child2 @(ViewBag.Active == "ManageTools" || ViewBag.Active == "ManageSavingCategory" || ViewBag.Active == "ManageBOA" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
-                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">Tool Management</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageTools" ? "active" : "")"> <a href="@Url.Action("ManageTools", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageTools" ? "active" : "")">Manage Tools</a> </li>
-                                           <li class="slide @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <a href="@Url.Action("ManageSavingCategory", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")">Manage Saving Category</a> </li>
-                                            <li class="slide @(ViewBag.Active == "ManageBOA" ? "active" : "")"> <a href="@Url.Action("ManageBOA", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageBOA" ? "active" : "")">Manage Business Objective Alignment</a> </li>
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">@SharedResource.ToolManagement</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageTools" ? "active" : "")"> <a href="@Url.Action("ManageTools", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageTools" ? "active" : "")">@SharedResource.ManageTools</a> </li>
+                                           <li class="slide @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")"> <a href="@Url.Action("ManageSavingCategory", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageSavingCategory" ? "active" : "")">@SharedResource.ManageSavingCategory</a> </li>
+                                            <li class="slide @(ViewBag.Active == "ManageBOA" ? "active" : "")"> <a href="@Url.Action("ManageBOA", "Admin")" class="side-menu__item @(ViewBag.Active == "ManageBOA" ? "active" : "")">@SharedResource.ManageBusinessObjectiveAlignment</a> </li>
                                         </ul>
                                      </li>
                                      <li class="slide has-sub @(ViewBag.Base == "Uploads" ? "open active" : "")">
-                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "BulkUploads" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">Uploads</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
+                                        <a href="javascript:void(0);" class="side-menu__item @(ViewBag.Active == "BulkUploads" ? "active" : "")"> <span class="shape1"></span> <span class="shape2"></span> <i class="ti-shield side-menu__icon"></i> <span class="side-menu__label">@SharedResource.Upload</span> <i class="fe fe-chevron-right side-menu__angle"></i> </a> 
                                         <ul class="slide-menu child2 @(ViewBag.Active == "BulkUploads" ? "active" : "")" data-popper-placement="bottom" style="position: relative; left: 0px; top: 0px; margin: 0px; transform: translate(128px, 96px);">
-                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">Bulk Uploads</a> </li>
-                                           <li class="slide @(ViewBag.Active == "BulkUploads" ? "active" : "")"><a href="@Url.Action("BulkUploads", "Admin")" class="side-menu__item @(ViewBag.Active == "BulkUploads" ? "active" : "")">Bulk Uploads</a> </li>
+                                           <li class="slide side-menu__label1"> <a href="javascript:void(0)">@SharedResource.BulkUpload</a> </li>
+                                           <li class="slide @(ViewBag.Active == "BulkUploads" ? "active" : "")"><a href="@Url.Action("BulkUploads", "Admin")" class="side-menu__item @(ViewBag.Active == "BulkUploads" ? "active" : "")">@SharedResource.BulkUpload</a> </li>
                                         </ul>
                                      </li>
                                      <!-- End::slide -->
@@ -308,7 +364,7 @@
 
       <!-- Footer Start --> 
       <footer class="footer mt-auto py-3 bg-white text-center">
-         <div class="container"> <span class="text-muted"> Copyright &copy; <span id="year">@DateTime.Now.Year</span>. Designed with <span class="bi bi-heart-fill text-danger"></span> by <a href="https://citracker.org" target="_blank"> <span class="fw-semibold text-primary text-decoration-underline">CI Tracker</span> </a> All rights reserved </span> </div>
+         <div class="container"> <span class="text-muted"> @SharedResource.Copyright &copy; <span id="year">@DateTime.Now.Year</span>. @SharedResource.DesignedWith <span class="bi bi-heart-fill text-danger"></span> @SharedResource.By <a href="https://citracker.org" target="_blank"> <span class="fw-semibold text-primary text-decoration-underline">@SharedResource.CITracker</span> </a> @SharedResource.AllRightsReserved </span> </div>
       </footer>
       
    </div>
@@ -317,25 +373,16 @@
    <div id="responsive-overlay"></div>
    <!-- Scroll To Top -->
 
-    <div id="sensei-widget-container">
-        <div id="sensei-overlay" style="display:none; position:fixed; bottom:90px; right:20px; width:400px; height:600px; z-index:9999; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border-radius:12px; overflow:hidden; background:#fff;">
-            <iframe src="https://ai-sensei-chat.lovable.app" style="width:100%; height:100%; border:none;" allow="clipboard-write"></iframe>
-        </div>
-
-        <button onclick="toggleSensei()" style="position:fixed; bottom:20px; right:20px; width:60px; height:60px; border-radius:50%; background:#85b5f3; color:white; border:none; cursor:pointer; z-index:10000; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display:flex; align-items:center; justify-content:center; font-size:24px;">
-            ⛩️
-        </button>
-    </div>
-
     <script>
-        function toggleSensei() {
-            var overlay = document.getElementById('sensei-overlay');
-            if (overlay.style.display === "none") {
-                overlay.style.display = "block";
-            } else {
-                overlay.style.display = "none";
-            }
-        }
+        (function(){
+          var iframe = document.createElement('iframe');
+          iframe.src = 'https://ai-sensei-chat.lovable.app/widget';
+          // CHANGE: set pointer-events to 'auto' so users can click the buttons
+          iframe.style.cssText = 'position:fixed;bottom:0;right:0;width:400px;height:620px;border:none;z-index:99999;background:transparent;pointer-events:auto;';
+          iframe.setAttribute('allowtransparency', 'true');
+          iframe.allow = 'clipboard-read; clipboard-write';
+          document.body.appendChild(iframe);
+        })();
     </script>
 
     <script>
@@ -365,6 +412,108 @@
         });
     </script>
 
+
+    <script>
+        document.querySelectorAll('.language-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const culture = this.dataset.culture;
+                const flagFile = this.dataset.flag;
+
+                // Get current path WITHOUT any culture prefix
+                const currentPath = window.location.pathname;
+                const segments = currentPath.split('/').filter(s => s.length > 0);
+
+                // Check if first segment is a culture code and remove it
+                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh'];
+                let pathWithoutCulture = currentPath;
+
+                if (segments.length > 0 && cultures.includes(segments[0])) {
+                    // Remove culture from path
+                    pathWithoutCulture = '/' + segments.slice(1).join('/');
+                    // Ensure we don't end up with empty path
+                    if (pathWithoutCulture === '/') {
+                        pathWithoutCulture = '';
+                    }
+                }
+
+                // Get existing query parameters and REMOVE the old 'culture' parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.delete('culture'); // Remove old culture parameter
+                urlParams.set('culture', culture); // Add new culture parameter
+
+                // Build the query string
+                const queryString = urlParams.toString();
+                const urlQuery = queryString ? `?${queryString}` : '';
+
+                // Build the new URL
+                const basePath = pathWithoutCulture === '/' ? '' : pathWithoutCulture;
+                const newUrl = `${basePath}${urlQuery}`;
+
+                // Store preference
+                localStorage.setItem('selectedLanguage', culture);
+                localStorage.setItem('selectedFlag', flagFile);
+
+                // Set the cookie and navigate
+                document.cookie = `.AspNetCore.Culture=c=${culture}|uic=${culture}; path=/; expires=${new Date(new Date().getTime() + 365*24*60*60*1000).toUTCString()}`;
+
+                console.log(`Navigating to: ${newUrl}`); // For debugging
+                window.location.href = newUrl;
+            });
+        });
+
+        // Helper function to get cookie (keep this)
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        // On page load, update the flag based on current culture
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get culture from query string
+            const urlParams = new URLSearchParams(window.location.search);
+            let currentCulture = urlParams.get('culture');
+
+            // If not in query string, try cookie
+            if (!currentCulture) {
+                const cultureCookie = getCookie('.AspNetCore.Culture');
+                if (cultureCookie) {
+                    const match = cultureCookie.match(/uic=([^|]+)/);
+                    currentCulture = match ? match[1] : 'en-US';
+                }
+            }
+
+            // Default to English
+            if (!currentCulture) {
+                currentCulture = 'en-US';
+            }
+
+            // Update the flag display
+            updateFlagForCulture(currentCulture);
+        });
+
+        // Helper function to update flag
+        function updateFlagForCulture(culture) {
+            const flagMap = {
+                'en-US': 'us.svg',
+                'es': 'es.svg',
+                'pt': 'pt.svg',
+                'nl': 'nl.svg',
+                'fr': 'mf.svg',
+                'zh': 'cn.svg'
+            };
+
+            const flagFile = flagMap[culture] || 'us.svg';
+
+            // Update the flag image/svg
+            const flagContainer = document.getElementById('currentLanguageFlag');
+            if (flagContainer) {
+                flagContainer.innerHTML = `<img src="../assets/images/flags/${flagFile}" alt="img">`;
+            }
+        }
+    </script>
 
    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
    <script src="~/assets/libs/popperjs/core/umd/popper.min.js"></script>

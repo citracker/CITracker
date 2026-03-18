@@ -1,0 +1,2121 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>关于</value>
+  </data>
+  <data name="ABusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>需要业务目标对齐</value>
+  </data>
+  <data name="ACertificationIsRequired" xml:space="preserve">
+    <value>需要认证</value>
+  </data>
+  <data name="ACommentCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>评论只能添加到有效项目。</value>
+  </data>
+  <data name="ACommentIsRequired" xml:space="preserve">
+    <value>需要评论</value>
+  </data>
+  <data name="ACountryIsRequired" xml:space="preserve">
+    <value>需要国家</value>
+  </data>
+  <data name="ACurrencyIsRequired" xml:space="preserve">
+    <value>需要货币</value>
+  </data>
+  <data name="ADepartmentIsRequired" xml:space="preserve">
+    <value>需要部门</value>
+  </data>
+  <data name="ADescriptionIsRequired" xml:space="preserve">
+    <value>需要描述</value>
+  </data>
+  <data name="AFacilitatorEmailAddressIsRequired" xml:space="preserve">
+    <value>需要促进者电子邮件地址</value>
+  </data>
+  <data name="AFacilityIsRequired" xml:space="preserve">
+    <value>需要设施</value>
+  </data>
+  <data name="AGoodProblemStatementShouldContainWhatWhereWhenAndImpactToTheBusiness" xml:space="preserve">
+    <value>好的问题陈述应包含：什么、哪里、何时以及对业务的影响。</value>
+  </data>
+  <data name="AGoodTitleShouldBeShortAndContainSearchableWords" xml:space="preserve">
+    <value>好的标题应简短并包含可搜索的词</value>
+  </data>
+  <data name="AMethodologyIsRequired" xml:space="preserve">
+    <value>需要方法论</value>
+  </data>
+  <data name="AnEmailAddressIsRequired" xml:space="preserve">
+    <value>需要电子邮件地址</value>
+  </data>
+  <data name="AnEndDateIsRequired" xml:space="preserve">
+    <value>需要结束日期</value>
+  </data>
+  <data name="AnErrorOccurred" xml:space="preserve">
+    <value>发生错误</value>
+  </data>
+  <data name="AnErrorOccurredWhileCreatingTheCIProject" xml:space="preserve">
+    <value>创建CI项目时发生错误</value>
+  </data>
+  <data name="AnErrorOccurredWhileUpdatingTheCIProject" xml:space="preserve">
+    <value>更新CI项目时发生错误</value>
+  </data>
+  <data name="AnExecutiveSponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>需要执行赞助人电子邮件地址</value>
+  </data>
+  <data name="AnOwnerEmailAddressIsRequired" xml:space="preserve">
+    <value>需要所有者电子邮件地址</value>
+  </data>
+  <data name="APriorityIsRequired" xml:space="preserve">
+    <value>需要优先级</value>
+  </data>
+  <data name="AProblemStatementIsRequired" xml:space="preserve">
+    <value>需要问题陈述</value>
+  </data>
+  <data name="ASavingsClassificationIsRequired" xml:space="preserve">
+    <value>需要节约分类</value>
+  </data>
+  <data name="ASponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>需要赞助人电子邮件地址</value>
+  </data>
+  <data name="AStartDateIsRequired" xml:space="preserve">
+    <value>需要开始日期</value>
+  </data>
+  <data name="AStatusIsRequired" xml:space="preserve">
+    <value>需要状态</value>
+  </data>
+  <data name="ASupportingValueStreamIsRequired" xml:space="preserve">
+    <value>需要支持性价值流</value>
+  </data>
+  <data name="ATeamMemberCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>团队成员只能添加到有效项目。</value>
+  </data>
+  <data name="ATitleIsRequired" xml:space="preserve">
+    <value>需要标题</value>
+  </data>
+  <data name="AValidEmailAddressIsRequired" xml:space="preserve">
+    <value>需要有效的电子邮件地址</value>
+  </data>
+  <data name="AWideSelectionOfTemplatesAndPowerfulToolsAtYourFingertips" xml:space="preserve">
+    <value>丰富的模板选择和强大工具触手可及。</value>
+  </data>
+  <data name="AboutToCheckoutOrganization" xml:space="preserve">
+    <value>即将结账组织</value>
+  </data>
+  <data name="AboutYourself" xml:space="preserve">
+    <value>关于您自己</value>
+  </data>
+  <data name="AcceptToReceiveEmailSentToMultipleRecipients" xml:space="preserve">
+    <value>接受接收发送给多个收件人的电子邮件</value>
+  </data>
+  <data name="AcceptToReceivePostOrPageNotificationEmails" xml:space="preserve">
+    <value>接受接收帖子或页面通知电子邮件</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>账户</value>
+  </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>账户设置</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>操作</value>
+  </data>
+  <data name="ActionActivateToSortColumnAscending" xml:space="preserve">
+    <value>操作：激活以升序排序列</value>
+  </data>
+  <data name="ActiveProjects" xml:space="preserve">
+    <value>活跃项目</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>活动</value>
+  </data>
+  <data name="ActualSavings" xml:space="preserve">
+    <value>实际节约</value>
+  </data>
+  <data name="AddACountryOfOperation" xml:space="preserve">
+    <value>添加运营国家</value>
+  </data>
+  <data name="AddADepartment" xml:space="preserve">
+    <value>添加部门</value>
+  </data>
+  <data name="AddAFacility" xml:space="preserve">
+    <value>添加设施</value>
+  </data>
+  <data name="AddAUser" xml:space="preserve">
+    <value>添加用户</value>
+  </data>
+  <data name="AddBusinessObjectiveAlignment" xml:space="preserve">
+    <value>添加业务目标对齐</value>
+  </data>
+  <data name="AddSoftSavingCategory" xml:space="preserve">
+    <value>添加软节约类别</value>
+  </data>
+  <data name="AddRemove" xml:space="preserve">
+    <value>添加/删除</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>管理员</value>
+  </data>
+  <data name="AdminEmail" xml:space="preserve">
+    <value>管理员电子邮件</value>
+  </data>
+  <data name="AdminEmailAddress" xml:space="preserve">
+    <value>管理员电子邮件地址</value>
+  </data>
+  <data name="AdminFirstName" xml:space="preserve">
+    <value>管理员名字</value>
+  </data>
+  <data name="AdminLastName" xml:space="preserve">
+    <value>管理员姓氏</value>
+  </data>
+  <data name="AdminName" xml:space="preserve">
+    <value>管理员姓名</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>管理</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>管理员</value>
+  </data>
+  <data name="AlignInitiativesToStrategy" xml:space="preserve">
+    <value>将计划与战略对齐</value>
+  </data>
+  <data name="AlignStrategyWithExecutionMeasureProgressInRealTimeAndEnsureEveryInitiativeDrivesOrganizationalGoalsForward" xml:space="preserve">
+    <value>将战略与执行对齐，实时衡量进展，确保每项计划推动组织目标前进。</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>全部</value>
+  </data>
+  <data name="AllColumnsMustHaveValues" xml:space="preserve">
+    <value>所有列必须有值</value>
+  </data>
+  <data name="AllCompletedProjects" xml:space="preserve">
+    <value>所有已完成项目</value>
+  </data>
+  <data name="AllContinuousImprovementInitiatives" xml:space="preserve">
+    <value>所有持续改进计划</value>
+  </data>
+  <data name="AllContinuousImprovementInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>所有持续改进计划及其目标和状态。</value>
+  </data>
+  <data name="AllInitiatives" xml:space="preserve">
+    <value>所有计划</value>
+  </data>
+  <data name="AllInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>所有计划及其目标和状态。</value>
+  </data>
+  <data name="AllMonthlySavings" xml:space="preserve">
+    <value>所有月度节约。</value>
+  </data>
+  <data name="AllMyInitiatives" xml:space="preserve">
+    <value>我所有的计划</value>
+  </data>
+  <data name="AllMyInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>我所有的计划及其目标和状态。</value>
+  </data>
+  <data name="AllMyOperationalExcellenceInitiatives" xml:space="preserve">
+    <value>我所有的卓越运营计划</value>
+  </data>
+  <data name="AllMyStrategicInitiatives" xml:space="preserve">
+    <value>我所有的战略计划</value>
+  </data>
+  <data name="AllMyStrategicInitiativesAlongsideTheirStatuses" xml:space="preserve">
+    <value>我所有的战略计划及其状态。</value>
+  </data>
+  <data name="AllOperationalExcellenceInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>所有卓越运营计划及其目标和状态。</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>所有项目</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>保留所有权利。</value>
+  </data>
+  <data name="AllSubProjects" xml:space="preserve">
+    <value>所有子项目。</value>
+  </data>
+  <data name="AnalyseFinancialPerformanceWithDetailedReportingOnHardAndSoftSavingsROIAndProjectOutcomesExportDataConnectPowerBIAndGenerateManagementReadyDashboards" xml:space="preserve">
+    <value>通过硬节约和软节约、投资回报率和项目成果的详细报告分析财务绩效。导出数据，连接Power BI，生成管理层就绪的仪表板。</value>
+  </data>
+  <data name="Annual" xml:space="preserve">
+    <value>年度</value>
+  </data>
+  <data name="AnnualPrice" xml:space="preserve">
+    <value>年度价格：</value>
+  </data>
+  <data name="AssociateEveryInitiativeWithCorporateStrategyToDriveValueCreationAndPLImpact" xml:space="preserve">
+    <value>将每项计划与企业战略关联，以推动价值创造和损益影响。</value>
+  </data>
+  <data name="AtLeastOneBusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>至少需要一个业务目标对齐。</value>
+  </data>
+  <data name="AtLeastOneCommentIsRequired" xml:space="preserve">
+    <value>至少需要一个评论</value>
+  </data>
+  <data name="AtLeastOneOfHardOrSoftSavingMustContainAValue" xml:space="preserve">
+    <value>至少一个硬节约或软节约必须包含值。</value>
+  </data>
+  <data name="AtLeastOneTeamMemberIsRequired" xml:space="preserve">
+    <value>至少需要一个团队成员</value>
+  </data>
+  <data name="AtLeastOneToolIsRequired" xml:space="preserve">
+    <value>至少需要一个工具</value>
+  </data>
+  <data name="AuditAndEvidence" xml:space="preserve">
+    <value>审计与证据</value>
+  </data>
+  <data name="AuditProjectResultsValidateBenefitsAndMaintainFinancialGovernance" xml:space="preserve">
+    <value>审计项目结果，验证效益，维护财务治理。</value>
+  </data>
+  <data name="AuditedDate" xml:space="preserve">
+    <value>审计日期</value>
+  </data>
+  <data name="AuditedDetailsAuditorOnly" xml:space="preserve">
+    <value>审计详情（仅审计员）</value>
+  </data>
+  <data name="Auditor" xml:space="preserve">
+    <value>审计员</value>
+  </data>
+  <data name="Audits" xml:space="preserve">
+    <value>审计</value>
+  </data>
+  <data name="BackGuarantee" xml:space="preserve">
+    <value>退款保证</value>
+  </data>
+  <data name="BackToHome" xml:space="preserve">
+    <value>返回首页</value>
+  </data>
+  <data name="BilledAnnually" xml:space="preserve">
+    <value>按年计费！！！</value>
+  </data>
+  <data name="BringYourContinuousImprovementIntoOnePlace" xml:space="preserve">
+    <value>将您的持续改进集中到一个地方</value>
+  </data>
+  <data name="BuildACultureOfContinuousImprovementWhereEveryTeamMemberIsEmpoweredToContributeIdeasAndTakeOwnership" xml:space="preserve">
+    <value>建立持续改进文化，让每位团队成员都有能力贡献想法并承担责任。促进参与、问责和协作，确保改进得以持续并在组织范围内推广。</value>
+  </data>
+  <data name="BuildingOperationalBrillianceThatLast" xml:space="preserve">
+    <value>建立持久的卓越运营。</value>
+  </data>
+  <data name="BulkLocationUpload" xml:space="preserve">
+    <value>批量位置上传</value>
+  </data>
+  <data name="BulkManagement" xml:space="preserve">
+    <value>批量管理</value>
+  </data>
+  <data name="BulkUpload" xml:space="preserve">
+    <value>批量上传</value>
+  </data>
+  <data name="BusinessObjectiveAlignment" xml:space="preserve">
+    <value>业务目标对齐</value>
+  </data>
+  <data name="BusinessObjectiveAlignmentDetails" xml:space="preserve">
+    <value>业务目标对齐详情</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="CancelSubscription" xml:space="preserve">
+    <value>取消订阅</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>已取消</value>
+  </data>
+  <data name="CarryOverProject" xml:space="preserve">
+    <value>结转项目？</value>
+  </data>
+  <data name="CarryOverProjectActivateToSortColumnAscending" xml:space="preserve">
+    <value>结转项目？：激活以升序排序列</value>
+  </data>
+  <data name="CarryOverSavings" xml:space="preserve">
+    <value>结转节约</value>
+  </data>
+  <data name="Carryover" xml:space="preserve">
+    <value>结转</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>类别</value>
+  </data>
+  <data name="CategoryEgTimeSpaceQuality" xml:space="preserve">
+    <value>类别（例如：时间、空间、质量）</value>
+  </data>
+  <data name="Certification" xml:space="preserve">
+    <value>认证</value>
+  </data>
+  <data name="CertificationIsRequired" xml:space="preserve">
+    <value>需要认证。</value>
+  </data>
+  <data name="CertificationMustBeOneOfDMAICGembaKaizenJDIProjectOthers" xml:space="preserve">
+    <value>认证必须是以下之一：'DMAIC'、'Gemba Kaizen'、'JDI'、'项目'、'其他'</value>
+  </data>
+  <data name="CertificationMustBeOneOfGreenBeltBlackBeltPMPNotApplicable" xml:space="preserve">
+    <value>认证必须是以下之一：'绿带'、'黑带'、'PMP'、'不适用'</value>
+  </data>
+  <data name="CertificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>认证：激活以升序排序列</value>
+  </data>
+  <data name="Champion" xml:space="preserve">
+    <value>倡导者</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>更改密码</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>图表</value>
+  </data>
+  <data name="CheckTheBoxForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotificationWheneverAnyUpdateIsMade" xml:space="preserve">
+    <value>勾选您希望在进行任何更新时接收电子邮件通知的任何团队成员</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>结账</value>
+  </data>
+  <data name="CheckoutOptions" xml:space="preserve">
+    <value>结账选项</value>
+  </data>
+  <data name="ChooseAPlan" xml:space="preserve">
+    <value>选择计划</value>
+  </data>
+  <data name="ChooseMonthOfYear" xml:space="preserve">
+    <value>选择年份月份</value>
+  </data>
+  <data name="CITracker" xml:space="preserve">
+    <value>CI追踪器</value>
+  </data>
+  <data name="CITrackerCheckout" xml:space="preserve">
+    <value>CI追踪器 - 结账</value>
+  </data>
+  <data name="CITrackerHelpsTeamsCaptureIdeasAuditProcessesAndMeasureFinancialBenefitsWithDocumentsStoredInYourTenantViaSharePointIntegration" xml:space="preserve">
+    <value>CI追踪器帮助团队捕捉想法、审计流程和衡量财务效益，文档通过SharePoint集成存储在您的租户中。</value>
+  </data>
+  <data name="CITrackerStrivesToBridgeTheGapBetweenDataAndActionEmpoweringTeamsToImplementChangeEffectivelyAndExecutivesToSeeResultsImmediately" xml:space="preserve">
+    <value>CI追踪器致力于弥合数据与行动之间的差距，使团队能够有效实施变革，高管能够立即看到结果。</value>
+  </data>
+  <data name="CITrackerContactForm" xml:space="preserve">
+    <value>CITracker联系表单</value>
+  </data>
+  <data name="CITrackerProjectUpdate" xml:space="preserve">
+    <value>CITracker项目更新</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>客户</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>已关闭</value>
+  </data>
+  <data name="ClosedProjects" xml:space="preserve">
+    <value>已关闭项目</value>
+  </data>
+  <data name="ClosedProjectsCanBeRandomlySelectedForAuditing" xml:space="preserve">
+    <value>已关闭项目可随机选择进行审计</value>
+  </data>
+  <data name="CollectReviewAndPrioritizeImprovementIdeasThroughAStructuredIntakeWorkflow" xml:space="preserve">
+    <value>通过结构化接收工作流程收集、审查和优先排序改进想法。</value>
+  </data>
+  <data name="CommentListCannotBeEmpty" xml:space="preserve">
+    <value>评论列表不能为空</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>评论</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>公司名称</value>
+  </data>
+  <data name="CompleteCheckout" xml:space="preserve">
+    <value>完成结账</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>已完成</value>
+  </data>
+  <data name="CompletedProjects" xml:space="preserve">
+    <value>已完成项目</value>
+  </data>
+  <data name="CompletedProjectsByUser" xml:space="preserve">
+    <value>用户已完成项目</value>
+  </data>
+  <data name="ConductProcessAuditsWithConfigurableChecklistsAndAttachSupportingEvidence" xml:space="preserve">
+    <value>使用可配置检查表进行流程审计，并附上支持证据。所有文档安全存储在客户的SharePoint租户中，以保持完全的数据所有权。</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>联系方式</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>联系信息</value>
+  </data>
+  <data name="ContinuousImprovement" xml:space="preserve">
+    <value>持续改进</value>
+  </data>
+  <data name="ContinuousImprovementInitiatives" xml:space="preserve">
+    <value>持续改进计划</value>
+  </data>
+  <data name="ContinuousImprovementTemplate" xml:space="preserve">
+    <value>持续改进模板</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>版权</value>
+  </data>
+  <data name="CostAvoidance" xml:space="preserve">
+    <value>成本规避</value>
+  </data>
+  <data name="CostContainment" xml:space="preserve">
+    <value>成本控制</value>
+  </data>
+  <data name="CostOut" xml:space="preserve">
+    <value>成本削减</value>
+  </data>
+  <data name="CostReduction" xml:space="preserve">
+    <value>成本降低</value>
+  </data>
+  <data name="CostSavings" xml:space="preserve">
+    <value>成本节约</value>
+  </data>
+  <data name="CostRevenue" xml:space="preserve">
+    <value>成本/收入</value>
+  </data>
+  <data name="CouldNotSuccessfullyFetchData" xml:space="preserve">
+    <value>无法成功获取数据。</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>需要国家。</value>
+  </data>
+  <data name="CountryOfOperation" xml:space="preserve">
+    <value>运营国家</value>
+  </data>
+  <data name="CreateCIProject" xml:space="preserve">
+    <value>创建CI项目</value>
+  </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>创建者</value>
+  </data>
+  <data name="CreatedByActivateToSortColumnAscending" xml:space="preserve">
+    <value>创建者：激活以升序排序列</value>
+  </data>
+  <data name="CummulatedROI" xml:space="preserve">
+    <value>累积投资回报率</value>
+  </data>
+  <data name="CummulativeMonthlySavings" xml:space="preserve">
+    <value>累计月度节约</value>
+  </data>
+  <data name="CummulativeMonthlySavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>累计月度节约：激活以升序排序列</value>
+  </data>
+  <data name="CummulativeROI" xml:space="preserve">
+    <value>累计投资回报率</value>
+  </data>
+  <data name="CummulativeROIActivateToSortColumnAscending" xml:space="preserve">
+    <value>累计投资回报率：激活以升序排序列</value>
+  </data>
+  <data name="CummulativeSavings" xml:space="preserve">
+    <value>累计节约</value>
+  </data>
+  <data name="CummulativeStatus" xml:space="preserve">
+    <value>累计状态</value>
+  </data>
+  <data name="CummulativeStatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>累计状态：激活以升序排序列</value>
+  </data>
+  <data name="CurrencyIsRequired" xml:space="preserve">
+    <value>需要货币。</value>
+  </data>
+  <data name="CurrencyMustBeInTheISO4217Format" xml:space="preserve">
+    <value>货币必须符合ISO 4217格式（例如USD、GBP、NGN等）</value>
+  </data>
+  <data name="CurrentAddress" xml:space="preserve">
+    <value>当前地址</value>
+  </data>
+  <data name="CustomerExperience" xml:space="preserve">
+    <value>客户体验</value>
+  </data>
+  <data name="CustomizableTemplatesAndTools" xml:space="preserve">
+    <value>可定制模板和工具</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>仪表板</value>
+  </data>
+  <data name="DashboardAnalytics" xml:space="preserve">
+    <value>仪表板分析</value>
+  </data>
+  <data name="DataRetrievalError" xml:space="preserve">
+    <value>数据检索错误</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>日期</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>创建日期</value>
+  </data>
+  <data name="DateCreatedActivateToSortColumnAscending" xml:space="preserve">
+    <value>创建日期：激活以升序排序列</value>
+  </data>
+  <data name="DateMustBeInYYYYMMDDFormat" xml:space="preserve">
+    <value>日期必须采用YYYY-MM-DD格式</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>天前</value>
+  </data>
+  <data name="DeactivateAccount" xml:space="preserve">
+    <value>停用账户</value>
+  </data>
+  <data name="DefectRate" xml:space="preserve">
+    <value>缺陷率</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="DeleteABusinessObjectiveAlignment" xml:space="preserve">
+    <value>删除业务目标对齐</value>
+  </data>
+  <data name="DeleteACountryOfOperation" xml:space="preserve">
+    <value>删除运营国家</value>
+  </data>
+  <data name="DeleteADepartment" xml:space="preserve">
+    <value>删除部门</value>
+  </data>
+  <data name="DeleteAFacility" xml:space="preserve">
+    <value>删除设施</value>
+  </data>
+  <data name="DeleteASoftSavingCategory" xml:space="preserve">
+    <value>删除软节约类别</value>
+  </data>
+  <data name="DeleteAUser" xml:space="preserve">
+    <value>删除用户</value>
+  </data>
+  <data name="DeletePost" xml:space="preserve">
+    <value>删除帖子</value>
+  </data>
+  <data name="DepartmentIsRequired" xml:space="preserve">
+    <value>需要部门。</value>
+  </data>
+  <data name="DepartmentActivateToSortColumnAscending" xml:space="preserve">
+    <value>部门：激活以升序排序列</value>
+  </data>
+  <data name="DescriptionActivateToSortColumnAscending" xml:space="preserve">
+    <value>描述：激活以升序排序列</value>
+  </data>
+  <data name="Designation" xml:space="preserve">
+    <value>职务</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>折扣（</value>
+  </data>
+  <data name="DMAIC" xml:space="preserve">
+    <value>DMAIC</value>
+  </data>
+  <data name="DownloadReport" xml:space="preserve">
+    <value>下载报告</value>
+  </data>
+  <data name="DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEfficiency" xml:space="preserve">
+    <value>通过标准化流程、减少浪费和提高效率，推动卓越运营。监控绩效，识别瓶颈，实施改进，每天交付可衡量的结果。</value>
+  </data>
+  <data name="DuplicateRowsDetectedInUpload" xml:space="preserve">
+    <value>上传中检测到重复行</value>
+  </data>
+  <data name="EachFileMustBeLessThan20MB" xml:space="preserve">
+    <value>每个文件必须小于20MB！！！</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="EditPost" xml:space="preserve">
+    <value>编辑帖子</value>
+  </data>
+  <data name="EditProfile" xml:space="preserve">
+    <value>编辑个人资料</value>
+  </data>
+  <data name="Efficiency" xml:space="preserve">
+    <value>效率</value>
+  </data>
+  <data name="Elements" xml:space="preserve">
+    <value>要素</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>电子邮件</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>电子邮件地址</value>
+  </data>
+  <data name="EmailPreferences" xml:space="preserve">
+    <value>电子邮件偏好</value>
+  </data>
+  <data name="EmailSentSuccessfullyKindlyVerifyYourEmail" xml:space="preserve">
+    <value>电子邮件发送成功。请验证您的电子邮件</value>
+  </data>
+  <data name="EmployeesJoinedThisMonth" xml:space="preserve">
+    <value>本月加入的员工</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>结束日期</value>
+  </data>
+  <data name="EndDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>结束日期：激活以升序排序列</value>
+  </data>
+  <data name="EndDateIsRequired" xml:space="preserve">
+    <value>需要结束日期。</value>
+  </data>
+  <data name="EndDateMustBeLaterThanStartDate" xml:space="preserve">
+    <value>结束日期必须晚于开始日期。</value>
+  </data>
+  <data name="EnterOTPCode" xml:space="preserve">
+    <value>输入OTP代码</value>
+  </data>
+  <data name="EnterSavingAmount" xml:space="preserve">
+    <value>输入节约金额</value>
+  </data>
+  <data name="EnterYourEmail" xml:space="preserve">
+    <value>输入您的电子邮件</value>
+  </data>
+  <data name="EnterYourName" xml:space="preserve">
+    <value>输入您的姓名</value>
+  </data>
+  <data name="EnterYourSubject" xml:space="preserve">
+    <value>输入您的主题</value>
+  </data>
+  <data name="Enterprise" xml:space="preserve">
+    <value>企业版</value>
+  </data>
+  <data name="ExecutiveSponsor" xml:space="preserve">
+    <value>执行赞助人</value>
+  </data>
+  <data name="ExecutiveSponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>执行赞助人电子邮件地址必须是有效的电子邮件地址</value>
+  </data>
+  <data name="ExistingInitiative" xml:space="preserve">
+    <value>现有计划</value>
+  </data>
+  <data name="ExistingSubProject" xml:space="preserve">
+    <value>现有子项目</value>
+  </data>
+  <data name="Facilitator" xml:space="preserve">
+    <value>促进者</value>
+  </data>
+  <data name="FacilitatorOwner" xml:space="preserve">
+    <value>促进者/所有者</value>
+  </data>
+  <data name="FacilitatorActivateToSortColumnAscending" xml:space="preserve">
+    <value>促进者：激活以升序排序列</value>
+  </data>
+  <data name="FacilitatorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>促进者电子邮件地址必须是有效的电子邮件地址</value>
+  </data>
+  <data name="Facility" xml:space="preserve">
+    <value>设施</value>
+  </data>
+  <data name="FacilityIsRequired" xml:space="preserve">
+    <value>需要设施。</value>
+  </data>
+  <data name="FacilityActivateToSortColumnAscending" xml:space="preserve">
+    <value>设施：激活以升序排序列</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>常见问题解答</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>功能特点</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>文件为空。</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>筛选</value>
+  </data>
+  <data name="FilterResults" xml:space="preserve">
+    <value>筛选结果</value>
+  </data>
+  <data name="FilterSearch" xml:space="preserve">
+    <value>筛选搜索</value>
+  </data>
+  <data name="FinalReportSupportedFormat" xml:space="preserve">
+    <value>最终报告（支持格式：PPT、Excel、PDF、Word）</value>
+  </data>
+  <data name="FinanceAndReporting" xml:space="preserve">
+    <value>财务与报告</value>
+  </data>
+  <data name="FinancialBenefits" xml:space="preserve">
+    <value>财务效益</value>
+  </data>
+  <data name="FinancialReportSupportedFormat" xml:space="preserve">
+    <value>财务报告（支持格式：PPT、Excel、PDF、Word）</value>
+  </data>
+  <data name="FinancialVerification" xml:space="preserve">
+    <value>财务验证</value>
+  </data>
+  <data name="FindThe" xml:space="preserve">
+    <value>找到</value>
+  </data>
+  <data name="Finland" xml:space="preserve">
+    <value>芬兰</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>名字</value>
+  </data>
+  <data name="FreeTrial" xml:space="preserve">
+    <value>免费试用</value>
+  </data>
+  <data name="GembaKaizen" xml:space="preserve">
+    <value>现场改善</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>常规</value>
+  </data>
+  <data name="GetInTouchWith" xml:space="preserve">
+    <value>联系我们</value>
+  </data>
+  <data name="GreenBlackBeltCertificationTracking" xml:space="preserve">
+    <value>绿带和黑带认证追踪</value>
+  </data>
+  <data name="Hard" xml:space="preserve">
+    <value>硬节约</value>
+  </data>
+  <data name="HardSavings" xml:space="preserve">
+    <value>硬节约</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>首页</value>
+  </data>
+  <data name="HrsAgo" xml:space="preserve">
+    <value>小时前</value>
+  </data>
+  <data name="IdActivateToSortColumnDescending" xml:space="preserve">
+    <value>ID：激活以降序排序列</value>
+  </data>
+  <data name="IdeaProposed" xml:space="preserve">
+    <value>想法/已提议</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>导入</value>
+  </data>
+  <data name="ImprovementIdeasCapture" xml:space="preserve">
+    <value>改进想法捕捉</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>进行中</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>收件箱</value>
+  </data>
+  <data name="IncorrectParameter" xml:space="preserve">
+    <value>参数不正确</value>
+  </data>
+  <data name="Increased" xml:space="preserve">
+    <value>增加</value>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>索引</value>
+  </data>
+  <data name="Initiated" xml:space="preserve">
+    <value>已启动</value>
+  </data>
+  <data name="Initiative" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="InitiativeDetail" xml:space="preserve">
+    <value>计划详情</value>
+  </data>
+  <data name="InitiativeDetails" xml:space="preserve">
+    <value>计划详情</value>
+  </data>
+  <data name="InitiativeLibrary" xml:space="preserve">
+    <value>计划库</value>
+  </data>
+  <data name="InitiativeManagement" xml:space="preserve">
+    <value>计划管理</value>
+  </data>
+  <data name="InitiativeTracker" xml:space="preserve">
+    <value>计划追踪器</value>
+  </data>
+  <data name="InitiativeActivateToSortColumnDescending" xml:space="preserve">
+    <value>计划：激活以降序排序列</value>
+  </data>
+  <data name="Initiatives" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>无效的电子邮件地址</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>无效的文件类型。</value>
+  </data>
+  <data name="InvalidStatusValue" xml:space="preserve">
+    <value>无效的状态值。允许的值：已提议、已启动、已完成、已关闭、已取消</value>
+  </data>
+  <data name="InvalidUploadType" xml:space="preserve">
+    <value>无效的上传类型</value>
+  </data>
+  <data name="IsCarryOverProjectMustBeOneOfYesOrNo" xml:space="preserve">
+    <value>是否为结转项目必须是：是或否</value>
+  </data>
+  <data name="IsCarryOverProject" xml:space="preserve">
+    <value>是否为结转项目？</value>
+  </data>
+  <data name="IsCarryOverSavings" xml:space="preserve">
+    <value>是否为结转节约？</value>
+  </data>
+  <data name="IsOneTimeSavings" xml:space="preserve">
+    <value>是否为一次性节约？</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>项目</value>
+  </data>
+  <data name="JDI" xml:space="preserve">
+    <value>JDI</value>
+  </data>
+  <data name="KeyFeatures" xml:space="preserve">
+    <value>主要功能</value>
+  </data>
+  <data name="KindlyCreateAStrategicInitiativeProjectFirst" xml:space="preserve">
+    <value>请先创建战略计划项目</value>
+  </data>
+  <data name="KindlyProvideAValidEmailAddress" xml:space="preserve">
+    <value>请提供有效的电子邮件地址</value>
+  </data>
+  <data name="KindlySelectACountry" xml:space="preserve">
+    <value>请选择国家</value>
+  </data>
+  <data name="KindlySelectADepartment" xml:space="preserve">
+    <value>请选择部门</value>
+  </data>
+  <data name="KindlySelectAFacilitator" xml:space="preserve">
+    <value>请选择促进者</value>
+  </data>
+  <data name="KindlySelectAFacility" xml:space="preserve">
+    <value>请选择设施</value>
+  </data>
+  <data name="KindlySelectAMonthAndYear" xml:space="preserve">
+    <value>请选择月份和年份。</value>
+  </data>
+  <data name="KindlySelectAStrategicInitiativeProject" xml:space="preserve">
+    <value>请选择战略计划项目</value>
+  </data>
+  <data name="KindlySelectAValidDate" xml:space="preserve">
+    <value>请选择有效日期</value>
+  </data>
+  <data name="KindlySelectAValidTeamMember" xml:space="preserve">
+    <value>请选择有效的团队成员</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>姓氏</value>
+  </data>
+  <data name="LicencesAvailableKindlyUpgradeYourSubscriptionPlanForMoreUserLicenses" xml:space="preserve">
+    <value>可用许可证。请升级您的订阅计划以获取更多用户许可证</value>
+  </data>
+  <data name="ListingMicrosoftAppSource" xml:space="preserve">
+    <value>列表：Microsoft AppSource —</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>位置</value>
+  </data>
+  <data name="LocationManagement" xml:space="preserve">
+    <value>位置管理</value>
+  </data>
+  <data name="LocationTemplate" xml:space="preserve">
+    <value>位置模板</value>
+  </data>
+  <data name="LocationFacility" xml:space="preserve">
+    <value>位置/设施</value>
+  </data>
+  <data name="LocationActivateToSortColumnAscending" xml:space="preserve">
+    <value>位置：激活以升序排序列</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>退出登录</value>
+  </data>
+  <data name="LoginVerification" xml:space="preserve">
+    <value>登录验证</value>
+  </data>
+  <data name="Mail" xml:space="preserve">
+    <value>邮件</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>主要</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>主分支</value>
+  </data>
+  <data name="MakeStrategyClearTrackableAndActionable" xml:space="preserve">
+    <value>使战略清晰、可追踪、可执行，让每项计划都能推动可衡量的结果。将组织目标与执行对齐，以最大化影响力，优先考虑高价值项目，加速业务增长。</value>
+  </data>
+  <data name="MakePayment" xml:space="preserve">
+    <value>付款</value>
+  </data>
+  <data name="MakingContinuousImprovementVisibleMeasurableAndScalable" xml:space="preserve">
+    <value>使持续改进可见、可衡量、可扩展，使组织能够协调团队，追踪真实影响，跨运营复制成功，推动可持续的业务成果。</value>
+  </data>
+  <data name="ManageBusinessObjectiveAlignment" xml:space="preserve">
+    <value>管理业务目标对齐</value>
+  </data>
+  <data name="ManageClassicSmallAndMediumSizedProjects" xml:space="preserve">
+    <value>使用5阶段生命周期框架管理经典中小型项目。</value>
+  </data>
+  <data name="ManageCountries" xml:space="preserve">
+    <value>管理国家</value>
+  </data>
+  <data name="ManageCountryOfOperation" xml:space="preserve">
+    <value>管理运营国家</value>
+  </data>
+  <data name="ManageDepartments" xml:space="preserve">
+    <value>管理部门</value>
+  </data>
+  <data name="ManageFacilities" xml:space="preserve">
+    <value>管理设施</value>
+  </data>
+  <data name="ManageFacilityDepartments" xml:space="preserve">
+    <value>管理设施部门</value>
+  </data>
+  <data name="ManageInitiatives" xml:space="preserve">
+    <value>管理计划</value>
+  </data>
+  <data name="ManageInitiativesTrackAuditsRealiseBenefits" xml:space="preserve">
+    <value>管理计划 — 追踪审计 — 实现效益</value>
+  </data>
+  <data name="ManageOperationalCountries" xml:space="preserve">
+    <value>管理运营国家</value>
+  </data>
+  <data name="ManageOperationalFacilities" xml:space="preserve">
+    <value>管理运营设施</value>
+  </data>
+  <data name="ManageSavingCategory" xml:space="preserve">
+    <value>管理节约类别</value>
+  </data>
+  <data name="ManageTools" xml:space="preserve">
+    <value>管理工具</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>管理用户</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>中等</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>消息</value>
+  </data>
+  <data name="Methodology" xml:space="preserve">
+    <value>方法论</value>
+  </data>
+  <data name="MethodologyIsRequired" xml:space="preserve">
+    <value>需要方法论。</value>
+  </data>
+  <data name="MethodologyActivateToSortColumnAscending" xml:space="preserve">
+    <value>方法论：激活以升序排序列</value>
+  </data>
+  <data name="MiningOperations" xml:space="preserve">
+    <value>采矿作业</value>
+  </data>
+  <data name="ModifyBOA" xml:space="preserve">
+    <value>修改业务目标对齐</value>
+  </data>
+  <data name="ModifySoftSavingCategory" xml:space="preserve">
+    <value>修改软节约类别</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>资金</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>月</value>
+  </data>
+  <data name="MonthYear" xml:space="preserve">
+    <value>月份与年份</value>
+  </data>
+  <data name="MonthYearActivateToSortColumnDescending" xml:space="preserve">
+    <value>月份与年份：激活以降序排序列</value>
+  </data>
+  <data name="MonthAgo" xml:space="preserve">
+    <value>个月前</value>
+  </data>
+  <data name="MonthlyPrice" xml:space="preserve">
+    <value>月度价格：</value>
+  </data>
+  <data name="MonthlySavings" xml:space="preserve">
+    <value>月度储蓄</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>月份</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>最受欢迎</value>
+  </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>我的账户</value>
+  </data>
+  <data name="MyPortfolio" xml:space="preserve">
+    <value>我的投资组合</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>姓名</value>
+  </data>
+  <data name="NameOfCountry" xml:space="preserve">
+    <value>国家名称</value>
+  </data>
+  <data name="NameOfDepartment" xml:space="preserve">
+    <value>部门名称</value>
+  </data>
+  <data name="NameOfFacility" xml:space="preserve">
+    <value>设施名称</value>
+  </data>
+  <data name="NameActivateToSortColumnDescending" xml:space="preserve">
+    <value>姓名：激活以降序排序列</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>导航</value>
+  </data>
+  <data name="NewEmployees" xml:space="preserve">
+    <value>新员工</value>
+  </data>
+  <data name="NewInitiative" xml:space="preserve">
+    <value>新计划</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>新项目</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>下一步</value>
+  </data>
+  <data name="NoDataSubmitted" xml:space="preserve">
+    <value>未提交数据</value>
+  </data>
+  <data name="NoRowsSubmitted" xml:space="preserve">
+    <value>未提交行</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>注意：</value>
+  </data>
+  <data name="NotePaymentIntegrationRequiresServerSideEndpoints" xml:space="preserve">
+    <value>注意：支付集成需要服务器端端点来创建支付会话（Stripe/Square）。此演示将调用占位端点。</value>
+  </data>
+  <data name="NoteToAttachTheFinancialReport" xml:space="preserve">
+    <value>注意：要附加财务报告，请确保输入硬节约，在附件状态下上传最终报告，并在项目详情选项卡下将项目移至已完成状态。</value>
+  </data>
+  <data name="NoteYouCanDownloadTheSampleTemplates" xml:space="preserve">
+    <value>注意：您可以从下载图标下载每个的示例模板</value>
+  </data>
+  <data name="NoteYouWillBeDirectedToMakePayment" xml:space="preserve">
+    <value>注意：您将被引导进行付款。</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>通知</value>
+  </data>
+  <data name="OneTimeSavings" xml:space="preserve">
+    <value>一次性节约</value>
+  </data>
+  <data name="OnlyLettersAreAllowed" xml:space="preserve">
+    <value>只允许字母</value>
+  </data>
+  <data name="OopsThePageYouAreLookingForDoesntExist" xml:space="preserve">
+    <value>哎呀。您查找的页面不存在。。</value>
+  </data>
+  <data name="OperationalExcellence" xml:space="preserve">
+    <value>卓越运营</value>
+  </data>
+  <data name="OperationalExcellenceInitiatives" xml:space="preserve">
+    <value>卓越运营计划</value>
+  </data>
+  <data name="OperationalExcellenceTemplate" xml:space="preserve">
+    <value>卓越运营模板</value>
+  </data>
+  <data name="OperationalLocation" xml:space="preserve">
+    <value>运营位置</value>
+  </data>
+  <data name="OpsFocusInc" xml:space="preserve">
+    <value>Ops Focus公司</value>
+  </data>
+  <data name="OptionalNote" xml:space="preserve">
+    <value>可选备注</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>选项</value>
+  </data>
+  <data name="OrganizationDetails" xml:space="preserve">
+    <value>组织详情</value>
+  </data>
+  <data name="OrganizationUser" xml:space="preserve">
+    <value>组织用户</value>
+  </data>
+  <data name="OtherPages" xml:space="preserve">
+    <value>其他页面</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>其他</value>
+  </data>
+  <data name="OurMission" xml:space="preserve">
+    <value>我们的使命</value>
+  </data>
+  <data name="OurTeam" xml:space="preserve">
+    <value>我们的团队</value>
+  </data>
+  <data name="Outside" xml:space="preserve">
+    <value>外部</value>
+  </data>
+  <data name="PasswordVerification" xml:space="preserve">
+    <value>密码验证</value>
+  </data>
+  <data name="PayNow" xml:space="preserve">
+    <value>立即支付</value>
+  </data>
+  <data name="PaymentSubmissionFailed" xml:space="preserve">
+    <value>支付提交失败</value>
+  </data>
+  <data name="PaymentSubmissionSuccessful" xml:space="preserve">
+    <value>支付提交成功</value>
+  </data>
+  <data name="PercentageStatus" xml:space="preserve">
+    <value>百分比状态</value>
+  </data>
+  <data name="PerfectPlan" xml:space="preserve">
+    <value>完美计划</value>
+  </data>
+  <data name="PerformBulkUploads" xml:space="preserve">
+    <value>执行批量上传</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>个人信息</value>
+  </data>
+  <data name="PersonalSettings" xml:space="preserve">
+    <value>个人设置</value>
+  </data>
+  <data name="Phase" xml:space="preserve">
+    <value>阶段</value>
+  </data>
+  <data name="PhaseContainsAnInvalidValueForTheSelectedMethodology" xml:space="preserve">
+    <value>阶段包含所选方法论的无效值。</value>
+  </data>
+  <data name="PhaseActivateToSortColumnAscending" xml:space="preserve">
+    <value>阶段：激活以升序排序列</value>
+  </data>
+  <data name="PhoneAndEmail" xml:space="preserve">
+    <value>电话与电子邮件</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>电话号码</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>计划</value>
+  </data>
+  <data name="PlanPrioritiseAndMonitorImprovementIdeas" xml:space="preserve">
+    <value>计划、优先排序和监控改进想法，从提交到完成。设定里程碑，分配负责人，管理风险，使用结构化工作流程跟踪进度。</value>
+  </data>
+  <data name="PressToSelect" xml:space="preserve">
+    <value>按下选择</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>上一个</value>
+  </data>
+  <data name="PreviousMonthVsThisMonths" xml:space="preserve">
+    <value>上个月对比本月</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>定价</value>
+  </data>
+  <data name="PriorityIsRequired" xml:space="preserve">
+    <value>需要优先级。</value>
+  </data>
+  <data name="PriorityMustBeOneOfHighMediumOrLow" xml:space="preserve">
+    <value>优先级必须是：高、中或低</value>
+  </data>
+  <data name="PriorityActivateToSortColumnAscending" xml:space="preserve">
+    <value>优先级：激活以升序排序列</value>
+  </data>
+  <data name="ProblemStatement" xml:space="preserve">
+    <value>问题陈述</value>
+  </data>
+  <data name="ProblemStatementActivateToSortColumnAscending" xml:space="preserve">
+    <value>问题陈述：激活以升序排序列</value>
+  </data>
+  <data name="ProblemStatementIsRequired" xml:space="preserve">
+    <value>需要问题陈述。</value>
+  </data>
+  <data name="ProceedToCITracker" xml:space="preserve">
+    <value>前往CITracker</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>个人资料</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>项目</value>
+  </data>
+  <data name="ProjectAuditingAndBenefitsCapture" xml:space="preserve">
+    <value>项目审计与效益捕捉</value>
+  </data>
+  <data name="ProjectCount" xml:space="preserve">
+    <value>项目计数</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>项目详情</value>
+  </data>
+  <data name="ProjectIDCannotBeNegative" xml:space="preserve">
+    <value>项目ID不能为负数</value>
+  </data>
+  <data name="ProjectManager" xml:space="preserve">
+    <value>项目经理</value>
+  </data>
+  <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
+    <value>项目必须至少有一名促进者。</value>
+  </data>
+  <data name="ProjectPhaseIsRequired" xml:space="preserve">
+    <value>需要项目阶段。</value>
+  </data>
+  <data name="ProjectStatusIsRequired" xml:space="preserve">
+    <value>需要项目状态。</value>
+  </data>
+  <data name="ProjectTitle" xml:space="preserve">
+    <value>项目标题</value>
+  </data>
+  <data name="ProjectUpdates" xml:space="preserve">
+    <value>项目更新</value>
+  </data>
+  <data name="Projects" xml:space="preserve">
+    <value>项目</value>
+  </data>
+  <data name="ProvideOrganisationDetails" xml:space="preserve">
+    <value>提供组织详情</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>质量</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>评分：</value>
+  </data>
+  <data name="RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally" xml:space="preserve">
+    <value>全球所有设施和部门的实时洞察。</value>
+  </data>
+  <data name="RecentSearches" xml:space="preserve">
+    <value>最近搜索</value>
+  </data>
+  <data name="RecyclingOperation" xml:space="preserve">
+    <value>回收作业</value>
+  </data>
+  <data name="RegisterMonthlySavings" xml:space="preserve">
+    <value>注册月度节约</value>
+  </data>
+  <data name="Release" xml:space="preserve">
+    <value>发布</value>
+  </data>
+  <data name="RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative" xml:space="preserve">
+    <value>为计划提供近期活动和更新的相关信息</value>
+  </data>
+  <data name="RenameABusinessObjectiveAlignment" xml:space="preserve">
+    <value>重命名业务目标对齐</value>
+  </data>
+  <data name="RenameACountryOfOperation" xml:space="preserve">
+    <value>重命名运营国家</value>
+  </data>
+  <data name="RenameADepartment" xml:space="preserve">
+    <value>重命名部门</value>
+  </data>
+  <data name="RenameAFacility" xml:space="preserve">
+    <value>重命名设施</value>
+  </data>
+  <data name="RenameASoftSavingCategory" xml:space="preserve">
+    <value>重命名软节约类别</value>
+  </data>
+  <data name="RenameAUser" xml:space="preserve">
+    <value>重命名用户</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>收入</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>投资回报率</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>角色</value>
+  </data>
+  <data name="Safety" xml:space="preserve">
+    <value>安全</value>
+  </data>
+  <data name="SavingAmount" xml:space="preserve">
+    <value>节约金额</value>
+  </data>
+  <data name="SavingAmountInSecSqftEtc" xml:space="preserve">
+    <value>节约金额（以秒、平方英尺等为单位）</value>
+  </data>
+  <data name="SavingType" xml:space="preserve">
+    <value>节约类型</value>
+  </data>
+  <data name="SavingsClassification" xml:space="preserve">
+    <value>节约分类</value>
+  </data>
+  <data name="SavingsClassificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>节约分类：激活以升序排序列</value>
+  </data>
+  <data name="SavingsClassificationMustBeOneOf" xml:space="preserve">
+    <value>节约分类必须是以下之一：成本削减、成本节约、收入或成本规避</value>
+  </data>
+  <data name="SavingsSpanningOverMoreThanAYear" xml:space="preserve">
+    <value>跨年节约</value>
+  </data>
+  <data name="SavingsThatWillNotBeRecurringOvertime" xml:space="preserve">
+    <value>不会随时间重复的节约</value>
+  </data>
+  <data name="SavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>节约：激活以升序排序列</value>
+  </data>
+  <data name="SearchTrackAndFindProjectsInsightsAndLessonsInstantly" xml:space="preserve">
+    <value>即时搜索、追踪和查找项目、洞察和经验教训。</value>
+  </data>
+  <data name="SelectABusinessObjectiveAlignment" xml:space="preserve">
+    <value>选择业务目标对齐</value>
+  </data>
+  <data name="SelectACategory" xml:space="preserve">
+    <value>选择类别</value>
+  </data>
+  <data name="SelectACountry" xml:space="preserve">
+    <value>选择国家</value>
+  </data>
+  <data name="SelectADateAfterTheProjectStartDate" xml:space="preserve">
+    <value>选择项目开始日期之后的日期</value>
+  </data>
+  <data name="SelectADepartment" xml:space="preserve">
+    <value>选择部门</value>
+  </data>
+  <data name="SelectAFacility" xml:space="preserve">
+    <value>选择设施</value>
+  </data>
+  <data name="SelectAMethodology" xml:space="preserve">
+    <value>选择方法论</value>
+  </data>
+  <data name="SelectASavingsType" xml:space="preserve">
+    <value>选择节约类型</value>
+  </data>
+  <data name="SelectASoftSavingCategory" xml:space="preserve">
+    <value>选择软节约类别</value>
+  </data>
+  <data name="SelectAStatus" xml:space="preserve">
+    <value>选择状态</value>
+  </data>
+  <data name="SelectASubscriptionPlan" xml:space="preserve">
+    <value>选择订阅计划</value>
+  </data>
+  <data name="SelectAUser" xml:space="preserve">
+    <value>选择用户</value>
+  </data>
+  <data name="SelectAnUploadType" xml:space="preserve">
+    <value>选择上传类型</value>
+  </data>
+  <data name="SelectAndModifyTheStatusAsTheInitiativeProjectProgress" xml:space="preserve">
+    <value>随着计划/项目进展选择并修改状态</value>
+  </data>
+  <data name="SelectClassification" xml:space="preserve">
+    <value>选择分类</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>选择国家</value>
+  </data>
+  <data name="SelectFacilitatorSponsor" xml:space="preserve">
+    <value>选择促进者/赞助人</value>
+  </data>
+  <data name="SelectFunctionalGroupsThatOwnsTheProjectBeingImproved" xml:space="preserve">
+    <value>选择拥有正在改进项目的职能小组</value>
+  </data>
+  <data name="SelectGroupFunction" xml:space="preserve">
+    <value>选择小组/职能</value>
+  </data>
+  <data name="SelectMethodology" xml:space="preserve">
+    <value>选择方法论</value>
+  </data>
+  <data name="SelectMoreYearsToSaveMore" xml:space="preserve">
+    <value>选择更多年份以节省更多（2年=10%折扣；3年=15%折扣）。</value>
+  </data>
+  <data name="SelectPriority" xml:space="preserve">
+    <value>选择优先级</value>
+  </data>
+  <data name="SelectRole" xml:space="preserve">
+    <value>选择角色</value>
+  </data>
+  <data name="SelectRolesForTeamMembers" xml:space="preserve">
+    <value>为团队成员选择角色，确保至少有一名促进者/所有者</value>
+  </data>
+  <data name="SelectStatus" xml:space="preserve">
+    <value>选择状态</value>
+  </data>
+  <data name="SelectStrategicInitiativeProject" xml:space="preserve">
+    <value>选择战略计划项目</value>
+  </data>
+  <data name="SelectStrategicProject" xml:space="preserve">
+    <value>选择战略项目</value>
+  </data>
+  <data name="SelectTheMostAppropriateApproachForExecutingTheInitiativeProject" xml:space="preserve">
+    <value>选择执行计划/项目的最合适方法。</value>
+  </data>
+  <data name="SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus" xml:space="preserve">
+    <value>根据您的业务重点选择最合适的目标</value>
+  </data>
+  <data name="SelectUploadType" xml:space="preserve">
+    <value>选择上传类型</value>
+  </data>
+  <data name="SelectUser" xml:space="preserve">
+    <value>选择用户</value>
+  </data>
+  <data name="SelectedMethodologyIsRequired" xml:space="preserve">
+    <value>需要所选方法论</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>发送消息</value>
+  </data>
+  <data name="SendVerificationCodeToEmail" xml:space="preserve">
+    <value>发送验证码到电子邮件</value>
+  </data>
+  <data name="Services" xml:space="preserve">
+    <value>服务</value>
+  </data>
+  <data name="SetupVerification" xml:space="preserve">
+    <value>设置验证</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="SignInWithSSO" xml:space="preserve">
+    <value>使用SSO登录</value>
+  </data>
+  <data name="SoftSavingCategory" xml:space="preserve">
+    <value>软节约类别</value>
+  </data>
+  <data name="SoftSavingCategoryDetails" xml:space="preserve">
+    <value>软节约类别详情</value>
+  </data>
+  <data name="SoftSavings" xml:space="preserve">
+    <value>软节约</value>
+  </data>
+  <data name="Space" xml:space="preserve">
+    <value>空间</value>
+  </data>
+  <data name="Sponsor" xml:space="preserve">
+    <value>赞助人</value>
+  </data>
+  <data name="SponsorActivateToSortColumnAscending" xml:space="preserve">
+    <value>赞助人：激活以升序排序列</value>
+  </data>
+  <data name="SponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>赞助人电子邮件地址必须是有效的电子邮件地址</value>
+  </data>
+  <data name="Stakeholders" xml:space="preserve">
+    <value>利益相关者</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>开始日期</value>
+  </data>
+  <data name="StartDateIsRequired" xml:space="preserve">
+    <value>需要开始日期。</value>
+  </data>
+  <data name="StartDateMustBeEarlierThanEndDate" xml:space="preserve">
+    <value>开始日期必须早于结束日期。</value>
+  </data>
+  <data name="StartingFrom" xml:space="preserve">
+    <value>起始于</value>
+  </data>
+  <data name="StatusPercentageCompletion" xml:space="preserve">
+    <value>状态/完成百分比</value>
+  </data>
+  <data name="StatusPercentageCompletionActivateToSortColumnAscending" xml:space="preserve">
+    <value>状态/完成百分比：激活以升序排序列</value>
+  </data>
+  <data name="StatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>状态：激活以升序排序列</value>
+  </data>
+  <data name="StoppedProgramBecauseOfException" xml:space="preserve">
+    <value>因异常而停止程序</value>
+  </data>
+  <data name="StrategicInitiative" xml:space="preserve">
+    <value>战略计划</value>
+  </data>
+  <data name="StrategicInitiativeTemplate" xml:space="preserve">
+    <value>战略计划模板</value>
+  </data>
+  <data name="StrategicInitiatives" xml:space="preserve">
+    <value>战略计划</value>
+  </data>
+  <data name="StrategicProject" xml:space="preserve">
+    <value>战略项目</value>
+  </data>
+  <data name="SubProject" xml:space="preserve">
+    <value>子项目</value>
+  </data>
+  <data name="SubProjectDetails" xml:space="preserve">
+    <value>子项目详情</value>
+  </data>
+  <data name="SubProjects" xml:space="preserve">
+    <value>子项目</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>主题</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>提交</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>订阅</value>
+  </data>
+  <data name="Subscription" xml:space="preserve">
+    <value>订阅</value>
+  </data>
+  <data name="SubscriptionDuration" xml:space="preserve">
+    <value>订阅期限</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>小计</value>
+  </data>
+  <data name="SupplyChain" xml:space="preserve">
+    <value>供应链</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>支持</value>
+  </data>
+  <data name="SupportingValueStream" xml:space="preserve">
+    <value>支持性价值流</value>
+  </data>
+  <data name="SupportingValueStreamIsRequired" xml:space="preserve">
+    <value>需要支持性价值流。</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>调查</value>
+  </data>
+  <data name="Sustainability" xml:space="preserve">
+    <value>可持续性</value>
+  </data>
+  <data name="Tables" xml:space="preserve">
+    <value>表格</value>
+  </data>
+  <data name="TargetSavings" xml:space="preserve">
+    <value>目标节约</value>
+  </data>
+  <data name="TargetSavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>目标节约：激活以升序排序列</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>团队</value>
+  </data>
+  <data name="TeamListCannotBeEmpty" xml:space="preserve">
+    <value>团队列表不能为空</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>团队成员</value>
+  </data>
+  <data name="TeamMemberRoleIsRequired" xml:space="preserve">
+    <value>需要团队成员角色</value>
+  </data>
+  <data name="TeamMembers" xml:space="preserve">
+    <value>团队成员</value>
+  </data>
+  <data name="TeamActivateToSortColumnAscending" xml:space="preserve">
+    <value>团队：激活以升序排序列</value>
+  </data>
+  <data name="TheCITrackerWebAppComesWithReadyToUseFeatures" xml:space="preserve">
+    <value>CITracker网络应用程序带有即用型功能，任何用户（即使是初学者）都能轻松使用。</value>
+  </data>
+  <data name="TheNameOfTheValueStreamThisInitiativeIsTiedTo" xml:space="preserve">
+    <value>此计划所关联的价值流名称</value>
+  </data>
+  <data name="ThisHelpsWithTyingTheInitiativeProjectToAnyLeanSixSigmaCertificationEffort" xml:space="preserve">
+    <value>这有助于将计划/项目与任何精益六西格玛认证工作联系起来</value>
+  </data>
+  <data name="ThisIncludesNonFinancialSavings" xml:space="preserve">
+    <value>这包括非财务节约（例如：时间、空间、质量、安全）</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>时间</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>标题</value>
+  </data>
+  <data name="TitleIsRequired" xml:space="preserve">
+    <value>需要标题。</value>
+  </data>
+  <data name="TitleActivateToSortColumnAscending" xml:space="preserve">
+    <value>标题：激活以升序排序列</value>
+  </data>
+  <data name="ToggleForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotification" xml:space="preserve">
+    <value>为任何希望在进行更新时接收电子邮件通知的团队成员切换</value>
+  </data>
+  <data name="ToolManagement" xml:space="preserve">
+    <value>工具管理</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>工具</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>总计</value>
+  </data>
+  <data name="TotalExpectedRevenue" xml:space="preserve">
+    <value>预期总收入</value>
+  </data>
+  <data name="TotalExpectedRevenueActivateToSortColumnAscending" xml:space="preserve">
+    <value>预期总收入：激活以升序排序列</value>
+  </data>
+  <data name="TotalExpectedSavings" xml:space="preserve">
+    <value>预期总节约</value>
+  </data>
+  <data name="TotalExpectedSavingsRevenue" xml:space="preserve">
+    <value>预期总节约/收入</value>
+  </data>
+  <data name="TotalExpenses" xml:space="preserve">
+    <value>总支出</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>总收入</value>
+  </data>
+  <data name="TotalSavings" xml:space="preserve">
+    <value>总节约</value>
+  </data>
+  <data name="TrackPractitionerProgressAndProjectMilestones" xml:space="preserve">
+    <value>追踪从业者进度和项目里程碑，用于精益六西格玛认证。</value>
+  </data>
+  <data name="TrackTraditionalProjects" xml:space="preserve">
+    <value>追踪传统项目</value>
+  </data>
+  <data name="TwentyMBMaxFileSize" xml:space="preserve">
+    <value>20MB（最大文件大小）</value>
+  </data>
+  <data name="TypeYourMessageHere" xml:space="preserve">
+    <value>在此输入您的消息...</value>
+  </data>
+  <data name="UnableToRegisterOrganisation" xml:space="preserve">
+    <value>无法注册组织</value>
+  </data>
+  <data name="UnitOfMeasurement" xml:space="preserve">
+    <value>测量单位（例如：分钟、平方米、dpu）</value>
+  </data>
+  <data name="Unlimited" xml:space="preserve">
+    <value>无限制</value>
+  </data>
+  <data name="UpgradeSubscription" xml:space="preserve">
+    <value>升级订阅</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>上传</value>
+  </data>
+  <data name="UserDetails" xml:space="preserve">
+    <value>用户详情</value>
+  </data>
+  <data name="UserLicenses" xml:space="preserve">
+    <value>用户许可证</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>用户管理</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>用户名</value>
+  </data>
+  <data name="UserTemplate" xml:space="preserve">
+    <value>用户模板</value>
+  </data>
+  <data name="UsersNameIsRequired" xml:space="preserve">
+    <value>需要用户名</value>
+  </data>
+  <data name="Verification" xml:space="preserve">
+    <value>验证</value>
+  </data>
+  <data name="VerifiedUser" xml:space="preserve">
+    <value>已验证用户</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>验证</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>查看</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>查看全部</value>
+  </data>
+  <data name="ViewOnMarketplace" xml:space="preserve">
+    <value>在Marketplace上查看</value>
+  </data>
+  <data name="WeAreHereToHelpYou" xml:space="preserve">
+    <value>我们随时为您提供帮助</value>
+  </data>
+  <data name="WelcomeToCITracker" xml:space="preserve">
+    <value>欢迎使用CITracker</value>
+  </data>
+  <data name="WhatPeopleAreSayingAboutCITracker" xml:space="preserve">
+    <value>人们对CITracker的评价。</value>
+  </data>
+  <data name="WorkingHours" xml:space="preserve">
+    <value>工作时间</value>
+  </data>
+  <data name="WorkingTowardsACertification" xml:space="preserve">
+    <value>正在努力获得认证？</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value>年</value>
+  </data>
+  <data name="YouHaveTwoProjectsToFinishYouHadCompleted" xml:space="preserve">
+    <value>您有两个项目要完成，您已完成</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>您已用完可用许可证，请升级您的订阅计划</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableUserLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>您已用完可用用户许可证，请升级您的订阅计划</value>
+  </data>
+  <data name="YouMayHaveMistypedTheAddressOrThePageMayHaveMoved" xml:space="preserve">
+    <value>您可能输错了地址或页面已移动。请尝试在下面搜索。</value>
+  </data>
+  <data name="YouNeedToIdentifyIfThisIsACarryOverProject" xml:space="preserve">
+    <value>您需要确定这是否为结转项目</value>
+  </data>
+  <data name="YourPaymentRequestHasBeenSubmittedSuccessfully" xml:space="preserve">
+    <value>您的付款请求已成功提交，账户激活后您将收到一封电子邮件。</value>
+  </data>
+  <data name="YourPaymentRequestSubmissionFailed" xml:space="preserve">
+    <value>您的付款请求提交失败，请与您的银行核实后重试。</value>
+  </data>
+  <data name="By" xml:space="preserve">
+    <value>由</value>
+  </data>
+  <data name="DesignedWith" xml:space="preserve">
+    <value>设计采用</value>
+  </data>
+  <data name="ForYourBusiness" xml:space="preserve">
+    <value>为您的业务</value>
+  </data>
+  <data name="Reporting" xml:space="preserve">
+    <value>报告</value>
+  </data>
+  <data name="StrategyFocused" xml:space="preserve">
+    <value>战略聚焦</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>地址</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>国家</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>天</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Suitable for Small Businesses or closed group trials" xml:space="preserve">
+    <value>适用于小型企业或封闭小组测试</value>
+  </data>
+  <data name="Perfect for Individuals and Startups." xml:space="preserve">
+    <value>非常适合个人和初创企业</value>
+  </data>
+  <data name="Great for large businesses with multiple teams tracking several projects  in parallel." xml:space="preserve">
+    <value>多团队并行项目跟踪，大型企业理想之选</value>
+  </data>
+  <data name="Ideal for sizeable projects and businesses with expanding teams." xml:space="preserve">
+    <value>适合大型项目和团队不断扩展的企业</value>
+  </data>
+  <data name="AreYouSureYouWantToCancelYourSubscription" xml:space="preserve">
+    <value>您确定要取消订阅吗？</value>
+  </data>
+  <data name="SubscriptionCancellationRequestSubmittedSuccessfully" xml:space="preserve">
+    <value>订阅取消请求已成功提交</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>出现问题</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>文件大小上限</value>
+  </data>
+  <data name="ExcelMustContainHeadersAndAtLeastOneDataRow" xml:space="preserve">
+    <value>Excel必须包含标题行和至少一行数据</value>
+  </data>
+  <data name="PleaseSelectAnUploadType" xml:space="preserve">
+    <value>请选择上传类型</value>
+  </data>
+  <data name="UploadSuccessful" xml:space="preserve">
+    <value>上传成功</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>用户</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>许可证</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>失败</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>无效的业务目标对齐</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>部门</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>无效的部门</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>无效的设施名称</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>无效的国家名称</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>无效的储蓄类别名称</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>上传失败</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>获取工具失败</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>上传此文件???</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>无效的用户名</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>状态</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>优先级</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>开始日期：激活以升序排序列</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>未找到记录</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>所有者</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>所有者：激活以升序排序列</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>输入用户...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>无可用数据</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>项目状态</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>储蓄类别</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>月度项目状态</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>月度项目</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>各部门月度项目</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>各阶段月度项目</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>促进者项目</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>节省</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>附件</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>保存并下一步</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>所有评论都是必需的。</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>所有评论日期都是必需的。</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>评论</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>已审核</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>请至少添加一种节省类型（硬节省或软节省）</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>检测到重复月份</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value />
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>请搜索项目</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>选择工具</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>项目已保存。要输入团队成员，请在项目详细信息页面中将状态更新为"已启动"。</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>请至少添加一名团队成员。</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>所有团队成员姓名都是必需的。</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>所有团队成员角色都是必需的。</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>项目定义和对齐。</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>当前状态绩效基线。</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>识别变异原因。</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>开发、测试和实施解决方案。</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>维持成果并扩大规模。</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>识别业务需求、问题或机会，并集思广益，找到满足此需求、解决此问题或抓住此机会的方法。</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>将较大的项目分解为较小的任务，组建您的团队，并为完成分配的任务制定时间表。</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>跟踪、组织团队成员，管理时间表，确保按照原计划完成工作。</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>项目绩效和监控确保结果与管理计划保持一致。</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>提供可交付的财务成果，释放项目资源，确定项目的成功，评估项目中哪些有效哪些无效。</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>请至少添加一个工具</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>请选择团队成员</value>
+  </data>
+</root>

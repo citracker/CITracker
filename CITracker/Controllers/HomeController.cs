@@ -5,6 +5,7 @@ using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Graph.Models;
@@ -144,6 +145,33 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"Payment request for Organization with tenantId {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} Failed.");
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult SetLanguage(string culture, string returnUrl = null)
+        {
+            // Set the culture cookie
+            Response.Cookies.Append(
+                CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddYears(1),
+                    HttpOnly = true,
+                    IsEssential = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax
+                }
+            );
+
+            // Redirect to the return URL or home page
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                // Ensure the return URL includes the culture
+                return LocalRedirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
 

@@ -1,4 +1,5 @@
-﻿@model Shared.DTO.OperationalExcellenceMonthlySavingDTO
+﻿@using CITracker.Resources
+@model Shared.DTO.OperationalExcellenceMonthlySavingDTO
 
 @{
     ViewData["Title"] = "CI Tracker";
@@ -13,10 +14,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Monthly Savings</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.MonthlySavings</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Operational Excellence</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">{Operational Excellence Title}</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.OperationalExcellence</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"></li>
                 </ol>
             </div>
         </div>
@@ -26,7 +27,7 @@
             <div class="col-xl-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Monthly Savings</div>
+                        <div class="card-title"> @SharedResource.MonthlySavings</div>
                     </div>
                     @using (Html.BeginForm("UpdateOEProjectMonthlySavings", "Main", FormMethod.Post))
                     {
@@ -35,11 +36,11 @@
                             <div class="row gy-4">
 
                                 <div class="col-xl-2 col-lg-2 col-md-2 col-sm-12">
-                                    <label for="input-text" class="form-label">Choose Month of Year<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.ChooseMonthOfYear<span style="color:red">*</span></label>
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                            <input type="text" class="form-control flatpickr-input active" id="monthyear" name="monthyear" value="@(Convert.ToDateTime(Model.MonthYear).ToString("MMMM yyyy"))" placeholder="Month & Year" readonly="readonly" required>
+                                            <input type="text" class="form-control flatpickr-input active" id="monthyear" name="monthyear" value="@(Convert.ToDateTime(Model.MonthYear).ToString("MMMM yyyy"))" placeholder="@SharedResource.MonthYear" readonly="readonly" required>
                                             <input type="text" class="form-control" name="msid" value="@Model.Id" hidden required>
                                             <input type="text" class="form-control" name="pjid" value="@Model.ProjectId" hidden required>
                                             <input type="text" class="form-control" name="orgid" value="@Model.OrganizationId" hidden required>
@@ -48,9 +49,9 @@
                                 </div>
 
                                 <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12">
-                                    <label for="savings" class="form-label">Savings<span style="color:red">*</span></label>
+                                    <label for="savings" class="form-label">@SharedResource.Savings<span style="color:red">*</span></label>
                                     <div class="input-group">
-                                        <input type="text" name="savings" id="savings" class="form-control" placeholder="Enter saving amount" value="@Model.Savings.ToString("N2")" oninput="formatNumberRealTime(this)" onpaste="return false" inputmode="decimal" required>
+                                        <input type="text" name="savings" id="savings" class="form-control" placeholder="@SharedResource.EnterSavingAmount" value="@Model.Savings.ToString("N2")" oninput="formatNumberRealTime(this)" onpaste="return false" inputmode="decimal" required>
                                         <button id="currencyBtn" class="btn btn-outline-primary" type="button">@Model.Currency</button>
                                     </div>
                                     <input type="hidden" name="currency" id="selectedCurrency" value="@Model.Currency">
@@ -58,7 +59,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>

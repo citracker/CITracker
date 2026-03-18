@@ -1,4 +1,5 @@
-﻿@using Shared.Enumerations 
+﻿@using CITracker.Resources
+@using Shared.Enumerations 
 @model Shared.ViewModels.OperationalExcellenceVM
 
 @{
@@ -13,10 +14,10 @@
         <!-- Start::page-header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">All Projects</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.AllProjects</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">All Projects</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.AllProjects</li>
                 </ol>
             </div>
         </div>
@@ -35,15 +36,15 @@
                             <div class="card-body">
                                 <div class="card-header border-bottom-0 pt-0 ps-0 pe-0 pb-2 d-flex">
                                     <div>
-                                        <div class="card-title">All my Operational Excellence Initiatives</div>
-                                        <p class="mb-0 fs-12 mb-3 text-muted">All Operational Excellence initiatives alongside their objectives and statuses.</p>
+                                        <div class="card-title">@SharedResource.AllMyOperationalExcellenceInitiatives</div>
+                                        <p class="mb-0 fs-12 mb-3 text-muted">@SharedResource.AllMyInitiativesAlongsideTheirObjectivesAndStatuses</p>
                                     </div>
                                 </div>
 
                                 <div class="accordion accordion-primary mb-5" id="filterAccord">
                                     <div class="accordion-item">
                                         <h2 class="accordion-header" id="filterHeader">
-                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-controls="collapseFilter"> Filter Search</button>
+                                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFilter" aria-controls="collapseFilter"> @SharedResource.FilterSearch</button>
                                         </h2>
                                         <div id="collapseFilter" class="accordion-collapse collapse" aria-labelledby="filterHeader" data-bs-parent="#filterAccord">
                                             <div class="accordion-body">
@@ -52,13 +53,13 @@
                                                     @Html.AntiForgeryToken()
                                                     <div class="row gy-4">
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                                                            <input type="text" class="form-control" id="title" name="title" placeholder="Project Title">
+                                                            <input type="text" class="form-control" id="title" name="title" placeholder="@SharedResource.ProjectTitle">
                                                         </div>
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <div class="form-group">
                                                                 <div class="input-group">
                                                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                                                    <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="Start Date" readonly="readonly">
+                                                                    <input type="text" class="form-control flatpickr-input active" id="startdate" name="startdate" placeholder="@SharedResource.StartDate" readonly="readonly">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -66,13 +67,13 @@
                                                             <div class="form-group">
                                                                 <div class="input-group">
                                                                     <div class="input-group-text text-muted"> <i class="ri-calendar-line"></i> </div>
-                                                                    <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="End Date" readonly="readonly">
+                                                                    <input type="text" class="form-control flatpickr-input active" id="enddate" name="enddate" placeholder="@SharedResource.EndDate" readonly="readonly">
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <select class="form-control" id="priority" name="priority">
-                                                                <option selected disabled>Select Priority</option>
+                                                                <option selected disabled>@SharedResource.SelectPriority</option>
                                                                 <option value="All">All</option>
                                                                 <option value="High">High</option>
                                                                 <option value="Medium">Medium</option>
@@ -81,7 +82,7 @@
                                                         </div>
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <select class="form-control" name="users" id="users">
-                                                                <option selected disabled>Select Facilitator/Sponsor</option>
+                                                                <option selected disabled>@SharedResource.SelectFacilitatorSponsor</option>
                                                                 <option value="All">All</option>
                                                                 @if (Model.OrganizationUser != null)
                                                                 {
@@ -97,7 +98,7 @@
                                                         </div>
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <select class="form-control" id="country" name="country">
-                                                                <option selected disabled>Select Country</option>
+                                                                <option selected disabled>@SharedResource.SelectCountry</option>
                                                                 @if (Model.OrganizationCountry != null)
                                                                 {
                                                                     if (Model.OrganizationCountry.Any())
@@ -112,7 +113,7 @@
                                                         </div>
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <select class="form-control" id="department" name="department">
-                                                                <option selected disabled>Select Group/Function</option>
+                                                                <option selected disabled>@SharedResource.SelectGroupFunction</option>
                                                                 @if (Model.OrganizationDepartment != null)
                                                                 {
                                                                     if (Model.OrganizationDepartment.Any())
@@ -128,7 +129,7 @@
 
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
                                                             <select class="form-control" name="status" id="status" required>
-                                                                <option selected disabled>Select a Status</option>
+                                                                <option selected disabled>@SharedResource.SelectAStatus</option>
                                                                 @foreach (Status item in Enum.GetValues(typeof(Status)))
                                                                 {
                                                                     <option value="@item">@item</option>
@@ -137,8 +138,8 @@
                                                         </div>
 
                                                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                                                            <button type="submit" class="btn btn-success me-5">Submit</button>
-                                                            <button onclick="" class="btn btn-outline-dark btn-wave">Clear</button>
+                                                            <button type="submit" class="btn btn-success me-5">@SharedResource.Submit</button>
+                                                            <button onclick="" class="btn btn-outline-dark btn-wave">@SharedResource.Clear</button>
                                                         </div>
                                                     </div>
                                                 }
@@ -154,23 +155,23 @@
                                                 <table id="myOEInitiatives" class="table table-bordered dataTable no-footer" style="width: 100%;" aria-describedby="datatable-basic_info">
                                                     <thead>
                                                         <tr>
-                                                            <th class="sorting color_left sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Id: activate to sort column descending">Id</th>
-                                                            <th class="sorting color_left" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Title: activate to sort column ascending">Title</th>
-                                                            <th class="sorting color_left" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Description: activate to sort column ascending" style="min-width: 300px !important; max-width: 300px !important">Description</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Facilitator: activate to sort column ascending">Facilitator</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Department: activate to sort column ascending">Department</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Target Savings: activate to sort column ascending">Target Savings</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Sponsor: activate to sort column ascending">Sponsor</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Priority: activate to sort column ascending">Priority</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending">Status</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending">Start date</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="End date: activate to sort column ascending">End date</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Cummulative Monthly Savings: activate to sort column ascending">Cummulative Monthly Savings</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Carry Over Project?: activate to sort column ascending">Carry Over Project?</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Savings Classification: activate to sort column ascending">Savings Classification</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Location: activate to sort column ascending">Location</th>
-                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Facility: activate to sort column ascending">Facility</th>
-                                                            <th class="sorting color_right text-nowrap" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="Action: activate to sort column ascending">Action</th>
+                                                            <th class="sorting color_left sorting_asc" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-sort="ascending" aria-label="@SharedResource.IdActivateToSortColumnDescending">Id</th>
+                                                            <th class="sorting color_left" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.TitleActivateToSortColumnAscending">@SharedResource.Title</th>
+                                                            <th class="sorting color_left" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.DescriptionActivateToSortColumnAscending" style="min-width: 300px !important; max-width: 300px !important">@SharedResource.Description</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.FacilitatorActivateToSortColumnAscending">@SharedResource.Facilitator</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.DepartmentActivateToSortColumnAscending">@SharedResource.Department</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.TargetSavingsActivateToSortColumnAscending">@SharedResource.TargetSavings</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.SponsorActivateToSortColumnAscending">@SharedResource.Sponsor</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.PriorityActivateToSortColumnAscending">@SharedResource.Priority</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.StatusActivateToSortColumnAscending">@SharedResource.Status</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.StartDateActivateToSortColumnAscending">@SharedResource.StartDate</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.EndDateActivateToSortColumnAscending">@SharedResource.EndDate</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.CummulativeMonthlySavingsActivateToSortColumnAscending">@SharedResource.CummulativeMonthlySavings</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.CarryOverProjectActivateToSortColumnAscending">@SharedResource.CarryOverProject</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.SavingsClassificationActivateToSortColumnAscending">@SharedResource.SavingsClassification</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.LocationActivateToSortColumnAscending">@SharedResource.Location</th>
+                                                            <th class="sorting color_mid" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1" aria-label="@SharedResource.FacilityActivateToSortColumnAscending">@SharedResource.Facility</th>
+                                                            <th class="sorting color_right text-nowrap" tabindex="0" aria-controls="datatable-basic" rowspan="1" colspan="1">@SharedResource.Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
@@ -211,11 +212,11 @@
                                             <nav aria-label="Navigation">
                                                 <ul class="pagination justify-content-end mb-0" id="pagination">
                                                     <li class="page-item" id="prevPage">
-                                                        <a class="page-link" href="javascript:void(0);">Previous</a>
+                                                        <a class="page-link" href="javascript:void(0);">@SharedResource.Previous</a>
                                                     </li>
 
                                                     <li class="page-item" id="nextPage">
-                                                        <a class="page-link" href="javascript:void(0);">Next</a>
+                                                        <a class="page-link" href="javascript:void(0);">@SharedResource.Next</a>
                                                     </li>
                                                 </ul>
                                             </nav>
@@ -236,6 +237,9 @@
 </div>
 
 <script>
+    const resources = {
+        recordFound: '@SharedResource.NoRecordFound'
+    }
     $(document).ready(function () {
         var table = $('#myOEInitiatives').DataTable({
             order: [],
@@ -250,7 +254,7 @@
                 rightColumns: 1 // optional
             },
             language: {
-                emptyTable: "No record found"
+                emptyTable: resources.recordFound
             },
             autoWidth: true
         });

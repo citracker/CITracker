@@ -1,10 +1,17 @@
-﻿@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationSoftSaving>
+﻿@using CITracker.Resources
+@using System.Reflection
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizerFactory LocalizerFactory
+@model Shared.DTO.ResponseHandler<Shared.Models.OrganizationSoftSaving>
 
 @{
     ViewData["Title"] = "CI Tracker";
     ViewData["Base"] = "ToolManagement";
     ViewData["Active"] = "ManageSavingCategory";
     Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+@{
+    var localizer = LocalizerFactory.Create("SharedResource", Assembly.GetExecutingAssembly().GetName().Name);
 }
 
 <!--APP-CONTENT START-->
@@ -13,10 +20,10 @@
         <!-- Page Header -->
         <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb">
             <div>
-                <h2 class="main-content-title fs-24 mb-1">Tool Management</h2>
+                <h2 class="main-content-title fs-24 mb-1">@SharedResource.ToolManagement</h2>
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="javascript:void(0)">Administration</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Tool Management</li>
+                    <li class="breadcrumb-item"><a href="javascript:void(0)">@SharedResource.Administration</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@SharedResource.ToolManagement</li>
                 </ol>
             </div>
         </div>
@@ -27,14 +34,14 @@
                 if (Model.StatusCode == 200)
                 {
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
                 else
                 {
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>@Model.Message</strong>
+                        <strong>@localizer[Model.Message]</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-x"></i></button>
                     </div>
                 }
@@ -42,7 +49,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Add Soft Saving Category </div>
+                        <div class="card-title"> @SharedResource.AddSoftSavingCategory </div>
                     </div>
                     @using (Html.BeginForm("AddSoftSavingCategory", "Admin", FormMethod.Post))
                     {
@@ -51,16 +58,16 @@
                             <div class="row gy-4">
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Soft Saving Category <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Country of Operation"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.SoftSavingCategory <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3" id="ssc" name="ssc" placeholder="Category (e.g. Time, Space, quality)" required>
-                                    <input type="text" class="form-control mt-3 mb-3" id="ssu" name="ssu" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                    <input type="text" class="form-control mt-3 mb-3" id="ssc" name="ssc" placeholder="@SharedResource.CategoryEgTimeSpaceQuality" required>
+                                    <input type="text" class="form-control mt-3 mb-3" id="ssu" name="ssu" placeholder="@SharedResource.UnitOfMeasurement" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -68,7 +75,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Rename a Soft Saving Category </div>
+                        <div class="card-title"> @SharedResource.RenameASoftSavingCategory </div>
                     </div>
                     @using (Html.BeginForm("ModifySoftSavingCategory", "Admin", FormMethod.Post))
                     {
@@ -77,9 +84,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectASoftSavingCategory<span style="color:red">*</span></label>
                                     <select class="form-control" name="sss" id="sss" onchange="onCategoryChange(this, 'sscM', 'ssuM')" required>
-                                        <option disabled>Select a Soft Saving Category</option>
+                                        <option disabled>@SharedResource.SelectASoftSavingCategory</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -94,16 +101,16 @@
                                 </div>
                                 <div class="col-12">
                                     <p class="mb-2 fw-medium">
-                                        Soft Saving Category Details <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="Organization User"> <i class="fe fe-info"></i></a>
+                                        @SharedResource.SoftSavingCategoryDetails <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
                                     </p>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="sscM" name="sscM" placeholder="Category (e.g. Time, Space, quality)" required>
-                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="ssuM" name="ssuM" placeholder="Unit of measurement (e.g. minutes, m², dpu))" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="sscM" name="sscM" placeholder="@SharedResource.CategoryEgTimeSpaceQuality" required>
+                                    <input type="text" class="form-control mt-3 mb-3 country-input" id="ssuM" name="ssuM" placeholder="@SharedResource.UnitOfMeasurement" required>
                                 </div>
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -111,7 +118,7 @@
             <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
                 <div class="card custom-card">
                     <div class="card-header justify-content-between">
-                        <div class="card-title"> Delete a Soft Saving Category </div>
+                        <div class="card-title"> @SharedResource.DeleteASoftSavingCategory </div>
                     </div>
                     @using (Html.BeginForm("DeleteSoftSavingCategory", "Admin", FormMethod.Post))
                     {
@@ -120,9 +127,9 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">Select a Soft Saving Category<span style="color:red">*</span></label>
+                                    <label for="input-text" class="form-label">@SharedResource.SelectASoftSavingCategory<span style="color:red">*</span></label>
                                     <select class="form-control" name="sssD" id="sssD">
-                                        <option disabled>Select a Soft Saving Category</option>
+                                        <option disabled>@SharedResource.SelectASoftSavingCategory</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -138,7 +145,7 @@
                             </div>
                         </div>
                         <div class="card-footer border-top-card">
-                            <button type="submit" class="btn btn-success shadow-success">Submit</button>
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
                         </div>
                     }
                 </div>
@@ -149,6 +156,9 @@
 <!--APP-CONTENT CLOSE-->
 <script>
     const categories = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Result));
+    const resources = {
+        invalidSSC: '@SharedResource.InvalidSavingCategoryName'
+    }
 
     document.addEventListener("DOMContentLoaded", function () {
 
@@ -166,7 +176,7 @@
                 }
 
                 if (!countryRegex.test(this.value)) {
-                    this.setCustomValidity("Invalid saving category name.");
+                    this.setCustomValidity(resources.invalidSSC);
                 } else {
                     this.setCustomValidity("");
                 }
