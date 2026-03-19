@@ -123,7 +123,7 @@
     const users = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.OrganizationUser));
     window.initialTeamMembers = @Html.Raw(Json.Serialize(Model.ProjectTeam?.Team == null ? new List<Shared.Request.TeamMembersDTO>() : Model.ProjectTeam?.Team));
 
-    const resources = {
+    const teamEditResources = {
         typeUser: '@SharedResource.TypeUser',
         selTeamMember: '@SharedResource.SelectTeamMember',
         errorOccured: '@SharedResource.AnErrorOccurred',
@@ -140,7 +140,7 @@
         // Utilities
         // =========================
         function populateTeamMemberOptions(select) {
-            select.innerHTML = `<option value="">${resources.selTeamMember}</option>`;
+            select.innerHTML = `<option value="">${teamEditResources.selTeamMember}</option>`;
 
             users.forEach(u => {
                 const opt = document.createElement("option");
@@ -275,7 +275,7 @@
             });
         }catch (err) {
             console.error(err);
-            displayErrorTP(`${resources.errorOccured} - ${err}`);
+            displayErrorTP(`${teamEditResources.errorOccured} - ${err}`);
         }
 
         return team;
@@ -304,36 +304,36 @@
 
         // Validation
         if (teamData.length === 0) {
-            displayErrorTP(resources.minTeamMember);
+            displayErrorTP(teamEditResources.minTeamMember);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamEditResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasEmptyName = teamData.some(member => !member.Name || member.Name.trim() === '');
         if (hasEmptyName) {
-            displayErrorTP(resources.requiredTeamNames);
+            displayErrorTP(teamEditResources.requiredTeamNames);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamEditResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasEmptyRole = teamData.some(member => !member.Role || member.Role.trim() === '');
         if (hasEmptyRole) {
-            displayErrorTP(resources.requiredTeamRole);
+            displayErrorTP(teamEditResources.requiredTeamRole);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamEditResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasFacilitator = teamData.some(member => member.Role === 'Facilitator');
         if (!hasFacilitator) {
-            displayErrorTP(resources.requiredFacilitator);
+            displayErrorTP(teamEditResources.requiredFacilitator);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamEditResources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -349,7 +349,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsTP(result.errors);
-                ref.innerHTML = resources.saveNext;
+                ref.innerHTML = teamEditResources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -363,9 +363,9 @@
 
         } catch (err) {
             console.error(err);
-            displayErrorTP(`${resources.errorOccured} - ${err}`);
+            displayErrorTP(`${teamEditResources.errorOccured} - ${err}`);
         }
-        ref.innerHTML = resources.saveNext;
+        ref.innerHTML = teamEditResources.saveNext;
         ref.disabled = false;
     }
 

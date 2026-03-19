@@ -217,7 +217,7 @@
 
     const CATEGORY_UNIT_MAP = window.CATEGORY_UNIT_MAP || {};
 
-     const resources = {
+     const finResources = {
          addSavingType: '@SharedResource.PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving',
          selectCategory: '@SharedResource.SelectACategory',
          duplicateMonth: '@SharedResource.DuplicateMonthDetected',
@@ -307,7 +307,7 @@
         }
         const count = $('.finBody').length;
         if (count >= MAX_FORMS) {
-            alert(resources.entriesLimit);
+            alert(finResources.entriesLimit);
             return;
         }
 
@@ -359,7 +359,7 @@
                 removeItemButton: true,
                 searchEnabled: true,
                 shouldSort: false,
-                placeholderValue: resources.typeUser
+                placeholderValue: finResources.typeUser
             });
 
             auditMemberChoices.set(selectEl, choice);
@@ -446,7 +446,7 @@
 
         $select.empty();
 
-        $select.append('<option value="">-- '+resources.selectCategory+' --</option>');
+        $select.append('<option value="">-- '+finResources.selectCategory+' --</option>');
 
         Object.keys(map).forEach(category => {
 
@@ -653,17 +653,17 @@
 
         // Validation
         if (hardData.length === 0 && softData.length === 0) {
-            displayErrorFP(resources.addSavingType);
+            displayErrorFP(finResources.addSavingType);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = finResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         if (duplicateMonth) {
-            displayErrorFP(`${resources.duplicateMonth}: ${duplicateMonth}`);
+            displayErrorFP(`${finResources.duplicateMonth}: ${duplicateMonth}`);
             
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = finResources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -684,7 +684,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsFP(result.errors);
-                ref.innerHTML = resources.saveNext;
+                ref.innerHTML = finResources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -693,9 +693,9 @@
 
         } catch (err) {
             console.error(err);
-            displayErrorFP(resources.errorOccured +' - '+ err);
+            displayErrorFP(finResources.errorOccured +' - '+ err);
         }
-        ref.innerHTML = resources.saveNext;
+        ref.innerHTML = finResources.saveNext;
         ref.disabled = false;
     }
 
