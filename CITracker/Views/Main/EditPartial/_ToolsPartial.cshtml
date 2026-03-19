@@ -29,7 +29,7 @@
     </div>
 </div>
 <script>
-    const resources = {
+    const toolsEditResources = {
         projDef: '@SharedResource.ProjectDefinitionAndAlignment',
         measure: '@SharedResource.CurrentStatePerformanceBaseline',
         analyse: '@SharedResource.IdentifyCausesOfVariation',
@@ -72,16 +72,16 @@
         }
 
         const phaseTooltips = {
-            Define: resources.projDef,
-            Measure: resources.measure,
-            Analyze: resources.analyse,
-            Improve: resources.improve,
-            Control: resources.control,
-            'Concept & Initiation': resources.concept,
-            'Definition & Planning': resources.definition,
-            Execution: resources.execution,
-            'Performance & Control': resources.performance,
-            'Project Closure': resources.closure
+            Define: toolsEditResources.projDef,
+            Measure: toolsEditResources.measure,
+            Analyze: toolsEditResources.analyse,
+            Improve: toolsEditResources.improve,
+            Control: toolsEditResources.control,
+            'Concept & Initiation': toolsEditResources.concept,
+            'Definition & Planning': toolsEditResources.definition,
+            Execution: toolsEditResources.execution,
+            'Performance & Control': toolsEditResources.performance,
+            'Project Closure': toolsEditResources.closure
         };
 
         const phaseColors = {
@@ -244,9 +244,9 @@
 
         // Validation
         if (toolvalue.length === 0) {
-            displayErrorToP(resources.toolRequired);
+            displayErrorToP(toolsEditResources.toolRequired);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = toolsEditResources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -262,7 +262,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsToP(result.errors);
-                ref.innerHTML = resources.saveNext;
+                ref.innerHTML = toolsEditResources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -276,9 +276,9 @@
 
         } catch (err) {
             console.error(err);
-            alert(resources.errorOccured);
+            alert(toolsEditResources.errorOccured);
         }
-        ref.innerHTML = resources.saveNext;
+        ref.innerHTML = toolsEditResources.saveNext;
         ref.disabled = false;
     }
 

@@ -275,7 +275,7 @@
 </div>
 
 <script>
-    const resources = {
+    const projEditResources = {
         projectSearch: '@SharedResource.KindlySearchForAProject',
         selectFacility: '@SharedResource.SelectAFacility',
         selectDept: '@SharedResource.SelectADepartment',
@@ -323,7 +323,7 @@
 
         function initSelect2() {
             $select.select2({
-                placeholder: resources.projectSearch,
+                placeholder: projEditResources.projectSearch,
                 minimumInputLength: 3,
                 allowClear: true,
                 ajax: {
@@ -473,7 +473,7 @@
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = `<option selected disabled>${resources.selectFacility}</option>`;
+        locationSelect.innerHTML = `<option selected disabled>${projEditResources.selectFacility}</option>`;
 
         if (isNaN(countryId)) return;
 
@@ -490,12 +490,12 @@
         });
     }
 
-    function onFacilityChange(selectEl, targetInputId) {1   
+    function onFacilityChange(selectEl, targetInputId) {   
         const facilityId = parseInt(selectEl.value);
         const locationSelect = document.getElementById(targetInputId);
 
         // Clear existing options
-        locationSelect.innerHTML = `<option selected disabled>${resources.selectDept}</option>`;
+        locationSelect.innerHTML = `<option selected disabled>${projEditResources.selectDept}</option>`;
 
         if (isNaN(facilityId)) return;
 
@@ -560,7 +560,7 @@
         const savedPhaseId = document.getElementById("savedPhaseId")?.value;
 
         // Clear existing options
-        select.innerHTML = `<option value="">-- ${resources.selectTool} --</option>`;
+        select.innerHTML = `<option value="">-- ${projEditResources.selectTool} --</option>`;
 
         tools.forEach(tool => {
             const option = document.createElement("option");
@@ -602,7 +602,7 @@
 
         // Handle invalid dates
         if (isNaN(date.getTime())) {
-            displayError('Invalid date:', dateString);
+            displayError('Invalid date:'+ dateString);
             return '';
         }
 
@@ -658,7 +658,7 @@
                 if (!response.ok) {
                     const result = await response.json();
                     displayErrors(result.errors);
-                    ref.innerHTML = resources.saveNext;
+                    ref.innerHTML = projEditResources.saveNext;
                     ref.disabled = false;
                     return;
                 }
@@ -683,9 +683,9 @@
                 // }
         }
         catch (err) {
-            displayError(`${resources.errorOccured} - ${err}`);
+            displayError(`${projEditResources.errorOccured} - ${err}`);
         }
-        ref.innerHTML = resources.saveNext;
+        ref.innerHTML = projEditResources.saveNext;
         ref.disabled = false;
     }
 

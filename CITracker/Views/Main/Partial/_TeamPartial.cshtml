@@ -117,7 +117,7 @@
 
 <script>
 
-    const resources = {
+    const teamResources = {
         typeUser: '@SharedResource.TypeUser',
         errorOccured: '@SharedResource.AnErrorOccurred',
         minTeamMember: '@SharedResource.PleaseAddAtLeastOneTeamMember',
@@ -140,7 +140,7 @@
                 removeItemButton: true,
                 searchEnabled: true,
                 shouldSort: false,
-                placeholderValue: resources.typeUser
+                placeholderValue: teamResources.typeUser
             });
 
             teamMemberChoices.set(selectEl, choice);
@@ -230,7 +230,7 @@
             });
         }catch (err) {
             console.error(err);
-            displayErrorTP(`${resources.errorOccured} - ${err}`);
+            displayErrorTP(`${teamResources.errorOccured} - ${err}`);
         }
 
         return team;
@@ -258,36 +258,36 @@
 
         // Validation
         if (teamData.length === 0) {
-            displayErrorTP(resources.minTeamMember);
+            displayErrorTP(teamResources.minTeamMember);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasEmptyName = teamData.some(member => !member.Name || member.Name.trim() === '');
         if (hasEmptyName) {
-            displayErrorTP(resources.requiredTeamNames);
+            displayErrorTP(teamResources.requiredTeamNames);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasEmptyRole = teamData.some(member => !member.Role || member.Role.trim() === '');
         if (hasEmptyRole) {
-            displayErrorTP(resources.requiredTeamRole);
+            displayErrorTP(teamResources.requiredTeamRole);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamResources.saveNext;
             ref.disabled = false;
             return;
         }
 
         const hasFacilitator = teamData.some(member => member.Role === 'Facilitator');
         if (!hasFacilitator) {
-            displayErrorTP(resources.requiredFacilitator);
+            displayErrorTP(teamResources.requiredFacilitator);
 
-            ref.innerHTML = resources.saveNext;
+            ref.innerHTML = teamResources.saveNext;
             ref.disabled = false;
             return;
         }
@@ -303,7 +303,7 @@
             if (!response.ok) {
                 const result = await response.json();
                 displayErrorsTP(result.errors);
-                ref.innerHTML = resources.saveNext;
+                ref.innerHTML = teamResources.saveNext;
                 ref.disabled = false;
                 return;
             }
@@ -317,9 +317,9 @@
 
         } catch (err) {
             console.error(err);
-            displayErrorTP(`${resources.errorOccured} - ${err}`);
+            displayErrorTP(`${teamResources.errorOccured} - ${err}`);
         }
-        ref.innerHTML = resources.saveNext;
+        ref.innerHTML = teamResources.saveNext;
         ref.disabled = false;
     }
 
