@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.Enumerations;
+using Shared.ExternalModels;
 using Shared.Implementations;
 using Shared.Interfaces;
 using Shared.Models;
@@ -16,6 +17,7 @@ using Shared.Utilities;
 using System.Data;
 using System.Data.Common;
 using System.Net;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace Datalayer.Implementations
 {
@@ -411,6 +413,87 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<SubscriptionPlan>> GetDefaultSubscriptionPlan()
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
+                    "Select top(1) * from SubscriptionPlan where NumberOfLicences > 10 and NumberOfLicences < 250", CommandType.Text);
+
+                if (resi != null)
+                {
+
+                    return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetDefaultSubscriptionPlan)} - {JsonConvert.SerializeObject(ex)}");
+
+                return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
+        public async Task<ResponseHandler<SubscriptionPlan>> GetSubscriptionPlanByMarketPlaceId(string id)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
+                    "Select * from SubscriptionPlan where PriceId = @subId", new
+                    {
+                        subId = id
+                    }, CommandType.Text);
+
+                if (resi != null)
+                {
+
+                    return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetSubscriptionPlanByMarketPlaceId)} - {JsonConvert.SerializeObject(ex)}");
+
+                return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub)
         {
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
@@ -565,5 +648,40 @@ namespace Datalayer.Implementations
                 dbConnection.Close();
             }
         }
+
+        public async Task UpdateOrganizationSubscriptionFromMPEvent(CIMarketplaceSubscription subscription)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                var resi = await _repository.GetAsync<Subscription>(dbConnection,
+                    "SELECT * from Subscription where OrganizationId = @oid and PaymentCustomerId = @pid", new
+                    {
+                        oid = clientReferenceId,
+                        pid = stripeCustomerId
+                    }, CommandType.Text);
+
+                if (resi != null)
+                {
+                    if (!resi.Status.ToLower().Equals("active"))
+                        resi.Status = subscriptionStatus;
+                    resi.PaymentCustomerId = stripeCustomerId;
+                    resi.PaymentSubscriptionId = subscriptionId;
+                    resi.LastUpdatedDate = DateTime.UtcNow;
+
+                    var updRes = await _repository.UpdateAsync(dbConnection, resi);
+                    _logger.LogInformation($"Subscription update for orgId {clientReferenceId} is now {subscriptionStatus}. Result: {updRes}");
+                }
+                else
+                {
+                    _logger.LogInformation($"Couldn't fetch Subscription information for orgId {clientReferenceId}.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionFromEvent)} - {JsonConvert.SerializeObject(ex)}");
+            }
+        }
+
     }
 }
