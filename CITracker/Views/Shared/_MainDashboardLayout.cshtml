@@ -382,37 +382,19 @@
 
     <script>
         (function(){
-
           var iframe = document.createElement('iframe');
-
           iframe.src = 'https://ai-sensei-chat.lovable.app/widget';
-
-          iframe.style.cssText = 'bottom:24px;right:24px;width:140px;height:48px;border:none;z-index:99999;background:transparent;';
-
+          iframe.style.cssText = 'position:fixed;bottom:0;right:0;width:180px;height:72px;border:none;z-index:99999;background:transparent;';
           iframe.setAttribute('allowtransparency', 'true');
-
           iframe.allow = 'clipboard-read; clipboard-write';
-
           document.body.appendChild(iframe);
-
           window.addEventListener('message', function(e){
-
             if(e.data && e.data.type === 'ai-sensei-resize'){
-
-              iframe.style.width = e.data.isOpen ? '400px' : '140px';
-
-              iframe.style.height = e.data.isOpen ? '620px' : '48px';
-
-              iframe.style.bottom = e.data.isOpen ? '0' : '24px';
-
-              iframe.style.right = e.data.isOpen ? '0' : '24px';
-
+              iframe.style.width = e.data.isOpen ? '400px' : '180px';
+              iframe.style.height = e.data.isOpen ? '620px' : '72px';
             }
-
           });
-
         })();
-
     </script>
 
     <script>
