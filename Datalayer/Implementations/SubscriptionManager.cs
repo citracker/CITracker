@@ -654,28 +654,28 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    "SELECT * from Subscription where OrganizationId = @oid and PaymentCustomerId = @pid", new
-                    {
-                        oid = clientReferenceId,
-                        pid = stripeCustomerId
-                    }, CommandType.Text);
+                //var resi = await _repository.GetAsync<Subscription>(dbConnection,
+                //    "SELECT * from Subscription where OrganizationId = @oid and PaymentCustomerId = @pid", new
+                //    {
+                //        oid = clientReferenceId,
+                //        pid = stripeCustomerId
+                //    }, CommandType.Text);
 
-                if (resi != null)
-                {
-                    if (!resi.Status.ToLower().Equals("active"))
-                        resi.Status = subscriptionStatus;
-                    resi.PaymentCustomerId = stripeCustomerId;
-                    resi.PaymentSubscriptionId = subscriptionId;
-                    resi.LastUpdatedDate = DateTime.UtcNow;
+                //if (resi != null)
+                //{
+                //    if (!resi.Status.ToLower().Equals("active"))
+                //        resi.Status = subscriptionStatus;
+                //    resi.PaymentCustomerId = stripeCustomerId;
+                //    resi.PaymentSubscriptionId = subscriptionId;
+                //    resi.LastUpdatedDate = DateTime.UtcNow;
 
-                    var updRes = await _repository.UpdateAsync(dbConnection, resi);
-                    _logger.LogInformation($"Subscription update for orgId {clientReferenceId} is now {subscriptionStatus}. Result: {updRes}");
-                }
-                else
-                {
-                    _logger.LogInformation($"Couldn't fetch Subscription information for orgId {clientReferenceId}.");
-                }
+                //    var updRes = await _repository.UpdateAsync(dbConnection, resi);
+                //    _logger.LogInformation($"Subscription update for orgId {clientReferenceId} is now {subscriptionStatus}. Result: {updRes}");
+                //}
+                //else
+                //{
+                //    _logger.LogInformation($"Couldn't fetch Subscription information for orgId {clientReferenceId}.");
+                //}
             }
             catch (Exception ex)
             {
