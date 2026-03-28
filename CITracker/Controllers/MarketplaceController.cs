@@ -1,8 +1,13 @@
 ﻿using CITracker.Helpers;
 using Datalayer.Interfaces;
+using Infastructure.Interface;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Shared;
+using Shared.Enumerations;
+using Shared.ExternalModels;
 
 namespace CITracker.Controllers
 {
@@ -11,34 +16,64 @@ namespace CITracker.Controllers
     {
         private readonly ILogger<MarketplaceController> _logger;
         private readonly ISubscriptionManager _subManager;
+        private readonly IMicrosoftOperations _msOps;
+        private readonly IOptions<ADKeyValues> _config;
         private readonly Mailer _mail;
 
-        public MarketplaceController(ISubscriptionManager subManager, ILogger<MarketplaceController> logger, Mailer mail)
+        public MarketplaceController(ISubscriptionManager subManager, IMicrosoftOperations msOps, ILogger<MarketplaceController> logger, IOptions<ADKeyValues> config, Mailer mail)
         {
             _subManager = subManager;
             _logger = logger;
             _mail = mail;
+            _msOps = msOps;
+            _config = config;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> HandleWebhook([FromBody] WebhookPayload payload)
-        //{
-        //    // The payload contains the action (e.g., Unsubscribe, ChangePlan)
-        //    switch (payload.Action)
-        //    {
-        //        case WebhookAction.Unsubscribe:
-        //            // Deactivate the user's access in your database
-        //            await DeactivateTenant(payload.SubscriptionId);
-        //            break;
+        public async Task HandleWebhook(Webhook payload)
+        {
+            _logger.LogInformation($"Received webhook with action: {payload.Action} for subscription: {payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
 
-        //        case WebhookAction.ChangePlan:
-        //            // Update the user's features/limits
-        //            await UpdateTenantPlan(payload.SubscriptionId, payload.PlanId);
-        //            break;
-        //    }
+            var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
 
-        //    // Always return 200 OK to acknowledge receipt
-        //    return Ok();
-        //}
+            switch (payload.Action)
+            {
+                case "Unsubscribe":
+                case "Suspend":
+                    DeactivateOrDisable(subscription);
+                    break;
+
+                case "Reinstate":
+                    Enable(subscription);
+                    break;
+
+                case "ChangePlan":
+                    UpdatePlan(subscription);
+                    break;
+            }
+        }
+
+
+        private async Task DeactivateOrDisable(CIMarketplaceSubscription subscription)
+        {
+            _logger.LogInformation($"Unsubscribe or Suspend Event hit |||  {JsonConvert.SerializeObject(subscription)}");
+
+            await _subManager.MPDeactivateOrganizationSubscription(subscription); //Deactivate or Disable
+        }
+
+
+        private async Task Enable(CIMarketplaceSubscription subscription)
+        {
+            _logger.LogInformation($"Reinstate Event hit |||  {JsonConvert.SerializeObject(subscription)}");
+
+            await _subManager.UpdateOrganizationSubscriptionFromMPEvent(subscription); //Enable user Account
+        }
+
+
+        private async Task UpdatePlan(CIMarketplaceSubscription subscription)
+        {
+            _logger.LogInformation($"UpdatePlan Event hit |||  {JsonConvert.SerializeObject(subscription)}");
+
+            await _subManager.UpdateOrganizationSubscriptionFromMPEvent(subscription); //Update user Subscription Plan
+        }
     }
 }

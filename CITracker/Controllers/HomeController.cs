@@ -35,9 +35,10 @@ namespace CITracker.Controllers
         private readonly IStripePayment _strPay;
         private readonly ITokenAcquisition _tokenAcquisition;
         private readonly IOptions<KeyValues> _config;
+        private readonly IOptions<ADKeyValues> _adconfig;
         private readonly Mailer _mail;
 
-        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail, IMicrosoftOperations msOps, ITokenAcquisition tokenAcquisition, IStripePayment strPay)
+        public HomeController(ILogger<HomeController> logger, IOptions<KeyValues> config, IOptions<ADKeyValues> adconfig, ISubscriptionManager subManager, IPaymentManager payManager, IOperationManager opsManager, IUserManager usrManager, Mailer mail, IMicrosoftOperations msOps, ITokenAcquisition tokenAcquisition, IStripePayment strPay)
         {
             _logger = logger;
             _subManager = subManager;
@@ -49,6 +50,7 @@ namespace CITracker.Controllers
             _msOps = msOps;
             _tokenAcquisition = tokenAcquisition;
             _strPay = strPay;
+            _adconfig = adconfig;
         }
 
 
@@ -64,7 +66,7 @@ namespace CITracker.Controllers
 
             _logger.LogInformation($"User {User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value} session variables not set. Fetching user org details and setting session variables.");
                 
-            //check if tenant of logged in user has existing subscription
+            //check if tenant of logged in user has existing mpSub
             var orgdetails = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
 
             _logger.LogInformation($"Organization details for tenant {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} fetched with status code {orgdetails.StatusCode}");
@@ -98,6 +100,38 @@ namespace CITracker.Controllers
             }
 
             return View(_subManager.GetAllSubscriptionPlans().Result);
+        }
+
+
+        [HttpGet("saas/landing")]
+        public async Task<IActionResult> Landing(string token)
+        {
+            _logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
+
+            var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
+
+            if(mpSub == null)
+            {
+                //somehow subscription failed from Microsoft
+                return RedirectToAction("Index");
+            }
+
+            _logger.LogInformation($"Response from ResolveAsync for token {token} ||| {JsonConvert.SerializeObject(mpSub)}");
+
+            if(mpSub.Status == "PendingFulfillmentStart")
+            {
+                var re = await _subManager.GetSubscriptionPlanByMarketPlaceId(mpSub.PlanId);
+
+                //redirect user to checkout page to fill in the details they need to.
+                HttpContext.Session.SetString("UserEmail", mpSub.Purchaser.EmailId);
+                HttpContext.Session.SetString("UserName", mpSub.Purchaser.EmailId.Split('@')[0]?.Replace('.', ' '));
+                HttpContext.Session.SetString("TenantId", mpSub.Purchaser.TenantId);
+                HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Id);
+
+                return RedirectToAction("Checkout", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
+            }
+
+            return RedirectToAction("Index");
         }
 
 
@@ -147,6 +181,7 @@ namespace CITracker.Controllers
             return View();
         }
 
+
         [HttpPost]
         public IActionResult SetLanguage(string culture, string returnUrl = null)
         {
@@ -177,20 +212,20 @@ namespace CITracker.Controllers
 
         [HttpPost("Checkout")]
         [ValidateAntiForgeryToken]
-        public IActionResult Checkout(string Subscribe)
+        public IActionResult Checkout(string Subscribe, bool IsMarketPlace = false)
         {
             try
             {
                 if (IsAuthenticated())
                 {
-                    //check if organization has existing subscription
+                    //check if organization has existing mpSub
                     var isSubscribed = HttpContext.Session.GetString("OrganisationSubscriptionStatus");
                     if (isSubscribed == "true")
                         return RedirectToAction("Index");
 
                     if (!String.IsNullOrEmpty(Subscribe) && !String.IsNullOrWhiteSpace(Subscribe))
                     {
-                        //get single subscription details
+                        //get single mpSub details
                         try
                         {
                             var subs = _subManager.GetSubscriptionPlanById(int.Parse(Subscribe)).Result;
@@ -206,7 +241,7 @@ namespace CITracker.Controllers
 
                             var cvm = new CheckoutVM
                             {
-                                PaymentProvider = payopts.Result.ToList(),
+                                PaymentProvider = IsMarketPlace == true ? payopts.Result.Where(t => t.Name == "Microsoft").ToList() : payopts.Result.Where(t => t.Name != "Microsoft").ToList(),
                                 SubscriptionPlan = subs.SingleResult,
                                 Country = country.Result.ToList()
                             };
@@ -240,15 +275,11 @@ namespace CITracker.Controllers
             ResponseHandler<SubscriptionPlan> subscription = null;
             try
             {
-                //var accessToken = _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "Organization.Read.All" }).Result;
-
-                //string domain = _msOps.GetOrganizationDomain(accessToken).Result;
-
                 string domain = Request.Form["adminEmail"].ToString().Split('@')[1];
 
-                //check if organization has an existing active subscription
+                //check if organization has an existing active mpSub
                 //this is to deter any other member of an organization from creating multiple subscriptions for the same organization
-                var orgSubscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+                var orgSubscription = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId").ToString()).Result;
 
                 if(orgSubscription.SingleResult != null)
                 {
@@ -257,7 +288,7 @@ namespace CITracker.Controllers
                         return View("Checkout", new CheckoutVM
                         {
                             StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                            Message = $"Organisation - {Request.Form["companyName"]} - has existing subscription.",
+                            Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
                             SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
                             PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
                             Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
@@ -265,17 +296,19 @@ namespace CITracker.Controllers
                     }
                 }
 
+                var provider = Request.Form["paymentMethod"].ToString().ToLower();
+
                 //build Organisation details
                 var org = new Organization
                 {
                     Name = Request.Form["companyName"],
-                    TenantId = User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "",
+                    TenantId = HttpContext.Session.GetString("TenantId").ToString(),
                     Address = Request.Form["address"],
                     AdminName = Request.Form["firstName"],
                     AdminEmailAddress = Request.Form["adminEmail"],
                     AdminPhoneNumber = Request.Form["phone"],
                     CountryId = int.Parse(Request.Form["country"]),
-                    Provider = "Microsoft",
+                    Provider = provider,
                     Domain = domain,
                     DateCreated = DateTime.UtcNow                    
                 };
@@ -289,7 +322,7 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow                    
                 };
 
-                //get subscription Details
+                //get mpSub Details
                 subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
 
                 if (subscription == null || subscription?.SingleResult == null)
@@ -299,10 +332,11 @@ namespace CITracker.Controllers
 
                 var selectedDuration = int.Parse(Request.Form["subscriptionDuration"]);
 
-                //build subscription details
+                //build mpSub details
                 var sub = new Subscription
                 {
                     SubscriptionPlanId = int.Parse(Request.Form["subscriptionId"]),
+                    PaymentSubscriptionId = provider == "microsoft" ? HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString() : null,
                     StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
                     EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
                     DateCreated = DateTime.UtcNow                    
@@ -324,34 +358,42 @@ namespace CITracker.Controllers
                     });
                 }
 
-                //HttpContext.Session.SetString("OrganisationSubscriptionStatus", "true");
-
                 //get user's detail
-                var user = _usrManager.GetUserByEmail(User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value).Result;
-                SetSessionVariables(user.SingleResult);
+                var user = _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail").ToString()).Result;
+                SetSessionVariables(user.SingleResult, provider == "microsoft" ? true : false);
 
-
-                //create organization as stripe customer and get customer id
-                var orgi = _usrManager.GetOrganizationByTenant(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
-                _logger.LogInformation($"About to CreateStripeCustomer for {orgi.SingleResult.Name} with {orgi.SingleResult.AdminEmailAddress} and Id {orgi.SingleResult.Id}");
-                var res = _strPay.CreateStripeCustomer(orgi.SingleResult.AdminEmailAddress, orgi.SingleResult.Id.ToString()).Result;
-                _logger.LogInformation($"CreateStripeCustomer response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(res)}");
-                if (!String.IsNullOrEmpty(res.Id))
+                if(provider == "stripe")
                 {
-                    //update user's subscription with their stripecustomerId as reference for future payments
-                    await _subManager.UpdateOrganizationSubscription(orgi.SingleResult.Id, res.Id, SubscriptionStatus.INITIATED.ToString(), user.SingleResult.Id);
-                }
+                    //create organization as stripe customer and get customer id
+                    var orgi = _usrManager.GetOrganizationByTenant(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+                    _logger.LogInformation($"About to CreateStripeCustomer for {orgi.SingleResult.Name} with {orgi.SingleResult.AdminEmailAddress} and Id {orgi.SingleResult.Id}");
+                    var res = _strPay.CreateStripeCustomer(orgi.SingleResult.AdminEmailAddress, orgi.SingleResult.Id.ToString()).Result;
+                    _logger.LogInformation($"CreateStripeCustomer response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(res)}");
+                    if (!String.IsNullOrEmpty(res.Id))
+                    {
+                        //update user's mpSub with their stripecustomerId as reference for future payments
+                        await _subManager.UpdateOrganizationSubscription(orgi.SingleResult.Id, res.Id, SubscriptionStatus.INITIATED.ToString(), user.SingleResult.Id);
+                    }
 
-                _logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
-                var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration).Result;
-                _logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
-                if (!string.IsNullOrEmpty(chkres))
+                    _logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
+                    var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration).Result;
+                    _logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
+                    if (!string.IsNullOrEmpty(chkres))
+                    {
+                        return Redirect(chkres);
+                    }
+
+                    //Redirect to failed mpSub page
+                    return RedirectToAction("Index", "Home");
+                }
+                else
                 {
-                    return Redirect(chkres);
-                }
+                    //call microsoft to activate subscription
+                    await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.CITenantId);
 
-                //Redirect to failed subscription page
-                return RedirectToAction("Index", "Home");
+                    //Redirect to failed mpSub page
+                    return RedirectToAction("Index", "Home");
+                }
             }
             catch (Exception ex)
             {
@@ -436,12 +478,15 @@ namespace CITracker.Controllers
         }
 
 
-        private void SetSessionVariables(CIUserDTO user = null)
+        private void SetSessionVariables(CIUserDTO user = null, bool IsMarketPlace = false)
         {
-            HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
-            HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
-            HttpContext.Session.SetString("TenantId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "");
-            HttpContext.Session.SetString("ObjectId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? "");
+            if (!IsMarketPlace)
+            {
+                HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
+                HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
+                HttpContext.Session.SetString("TenantId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "");
+                HttpContext.Session.SetString("ObjectId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? "");
+            }
 
             if (user != null)
             {

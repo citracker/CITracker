@@ -5,6 +5,7 @@ namespace DataRepository
     public interface IRepository
     {
         Task<T> GetAsync<T>(IDbConnection dbConnection, object id) where T : class;
+        Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, CommandType commandType) where T : class;
         Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType) where T : class;
         Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType, IDbTransaction transaction) where T : class;
         Task<T?> GetSumOrCountAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType);

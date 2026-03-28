@@ -83,7 +83,7 @@
                                         </div> 
                                         <div class=""> 
                                             <div class="btn-profile"> 
-                                                <button class="btn rounded-10 btn-danger" onclick="cancelSubscription('@Model.Subscription.PaymentSubscriptionId')"> <i class="fa fa-ban"></i> <span>@SharedResource.CancelSubscription</span> </button>
+                                                <button class="btn rounded-10 btn-danger" onclick="cancelSubscription('@Model.Subscription.PaymentSubscriptionId', '@Model.Subscription.Provider')"> <i class="fa fa-ban"></i> <span>@SharedResource.CancelSubscription</span> </button>
                                                 @* <button class="btn rounded-10 btn-success" onclick="upgradeSubscription()"> <i class="fa fa-arrow-up"></i> <span>Upgrade Subscription</span> </button> *@
                                             </div>
                                         </div> 
@@ -1021,20 +1021,18 @@
         cancelSubResp: '@SharedResource.SubscriptionCancellationRequestSubmittedSuccessfully',
         someWentWrong: '@SharedResource.SomethingWentWrong'
     }
-    function cancelSubscription(sid) {
+    function cancelSubscription(sid, prov) {
 
         if (!confirm(resources.cancelSub)) {
             return;
         }
-
-        console.log(JSON.stringify({ strId: sid }))
 
         fetch('/Cancel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ StrId: sid })
+            body: JSON.stringify({ StrId: sid, Provider: prov })
             })
         .then(res => res.json())
         .then(data => {

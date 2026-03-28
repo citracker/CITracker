@@ -1203,7 +1203,12 @@ namespace CITracker.Controllers
 
             try
             {
-                var res = await _strPay.CancelSubscription(request.StrId);
+                ResponseHandler res = null;
+
+                if (request.Provider.ToLower() == "stripe")
+                    res = await _strPay.CancelSubscription(request.StrId);
+                else
+                    res = await _micOps.CancelSubscription(request.StrId, HttpContext.Session.GetString("TenantId").ToString());
 
                 TempData["Message"] = res.Message;
                 TempData["StatusCode"] = res.StatusCode;
