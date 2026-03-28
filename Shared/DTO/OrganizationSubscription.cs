@@ -9,6 +9,7 @@ namespace Shared.DTO
     public class OrganizationSubscription
     {
         public long OrganizationId { get; set; }
+        public string Provider { get; set; }
         public int SubscriptionPlanId { get; set; }
         public string SubscriptionStatus { get; set; }
         public string SubscriptionName { get; set; }

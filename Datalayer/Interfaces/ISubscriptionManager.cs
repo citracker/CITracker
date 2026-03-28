@@ -21,5 +21,6 @@ namespace Datalayer.Interfaces
         Task UpdateOrganizationSubscriptionFromDeletedEvent(string subscriptionId, string subscriptionStatus);
         Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId);
         Task UpdateOrganizationSubscriptionFromMPEvent(CIMarketplaceSubscription subscription);
+        Task MPDeactivateOrganizationSubscription(CIMarketplaceSubscription subscription);
     }
 }

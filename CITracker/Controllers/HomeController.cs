@@ -108,7 +108,7 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
 
-            var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.TenantId);
+            var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
 
             if(mpSub == null)
             {
@@ -336,6 +336,7 @@ namespace CITracker.Controllers
                 var sub = new Subscription
                 {
                     SubscriptionPlanId = int.Parse(Request.Form["subscriptionId"]),
+                    PaymentSubscriptionId = provider == "microsoft" ? HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString() : null,
                     StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
                     EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
                     DateCreated = DateTime.UtcNow                    
@@ -388,7 +389,7 @@ namespace CITracker.Controllers
                 else
                 {
                     //call microsoft to activate subscription
-                    await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.TenantId);
+                    await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.CITenantId);
 
                     //Redirect to failed mpSub page
                     return RedirectToAction("Index", "Home");

@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure;
+using Azure.Identity;
 using Datalayer.Interfaces;
 using Infastructure.Interface;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.ExternalModels;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using static System.Net.WebRequestMethods;
@@ -220,6 +222,41 @@ namespace Infastructure.Implementation
             }
         }
 
+        public async Task<ResponseHandler> CancelSubscription(string subscriptionId, string tenantId)
+        {
+            try
+            {
+                var accessToken = await GetAccessToken(tenantId);
+
+                if (accessToken == null)
+                {
+                    _logger.LogInformation($"Raw Response from GetAccessToken ||| {accessToken}");
+                }
+
+                var client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var response = await client.DeleteAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/{subscriptionId}?api-version=2018-08-31");
+
+                _logger.LogInformation($"Raw Response from CancelSubscription ||| {JsonConvert.SerializeObject(response)}");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Message = response.ReasonPhrase
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at CancelSubscription ||| {JsonConvert.SerializeObject(ex)}");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An Error Occured"
+                };
+            }
+        }
         public async Task<CIMarketplaceSubscription> GetSubscription(string subscriptionId, string tenantId)
         {
             try

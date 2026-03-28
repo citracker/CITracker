@@ -9,5 +9,6 @@ namespace Shared.DTO
     public class CancelSubscriptionRequest
     {
         public string StrId { get; set; }
+        public string Provider { get; set; }
     }
 }

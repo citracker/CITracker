@@ -33,7 +33,7 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"Received webhook with action: {payload.Action} for subscription: {payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
 
-            var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.TenantId);
+            var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
 
             switch (payload.Action)
             {
@@ -57,7 +57,7 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"Unsubscribe or Suspend Event hit |||  {JsonConvert.SerializeObject(subscription)}");
 
-            //await _subManager.MPUpdateOrganizationSubscription(); //Deactivate or Disable
+            await _subManager.MPDeactivateOrganizationSubscription(subscription); //Deactivate or Disable
         }
 
 
@@ -65,7 +65,7 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"Reinstate Event hit |||  {JsonConvert.SerializeObject(subscription)}");
 
-            //await _subManager.MPUpdateOrganizationSubscription(); //Enable user Account
+            await _subManager.UpdateOrganizationSubscriptionFromMPEvent(subscription); //Enable user Account
         }
 
 
@@ -73,7 +73,7 @@ namespace CITracker.Controllers
         {
             _logger.LogInformation($"UpdatePlan Event hit |||  {JsonConvert.SerializeObject(subscription)}");
 
-            //await _subManager.MPUpdateOrganizationSubscription(); //Update user Subscription Plan
+            await _subManager.UpdateOrganizationSubscriptionFromMPEvent(subscription); //Update user Subscription Plan
         }
     }
 }
