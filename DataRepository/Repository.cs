@@ -16,6 +16,11 @@ namespace DataRepository
             return await dbConnection.GetAsync<T>(id);
         }
 
+        public async Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, CommandType commandType) where T : class
+        {
+            return await dbConnection.QueryFirstOrDefaultAsync<T>(commandText, commandType: commandType);
+        }
+
         public async Task<T> GetAsync<T>(IDbConnection dbConnection, string commandText, object parameters, CommandType commandType) where T : class
         {
             return await dbConnection.QueryFirstOrDefaultAsync<T>(commandText, parameters, commandType: commandType);
