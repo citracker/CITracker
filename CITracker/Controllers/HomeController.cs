@@ -453,7 +453,7 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
 
-                TempData["message"] = $"{JsonConvert.SerializeObject(ex)}}";
+                TempData["message"] = $"{JsonConvert.SerializeObject(ex)}";
 
                 return RedirectToAction("Index");
             }
