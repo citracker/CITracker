@@ -9,5 +9,9 @@
         public string ClientId { get; set; }
         public string? ClientSecret { get; set; }
         public string? CallbackPath { get; set; }
+        public string SMTPClientID { get; set; }
+        public string SMTPTenantID { get; set; }
+        public string SMTPClientSecret { get; set; }
+
     }
 }
