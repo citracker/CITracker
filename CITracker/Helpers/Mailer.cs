@@ -117,9 +117,9 @@ namespace CITracker.Helpers
             try
             {
                 var credential = new ClientSecretCredential(
-                    _adconfig.Value.CITenantId,
-                    _adconfig.Value.ClientId,
-                    _adconfig.Value.ClientSecret
+                    _adconfig.Value.SMTPTenantID,
+                    _adconfig.Value.SMTPClientID,
+                    _adconfig.Value.SMTPClientSecret
                 );
 
                 var graphClient = new GraphServiceClient(
@@ -156,6 +156,18 @@ namespace CITracker.Helpers
                 graphClient.Users[_config.Value.From]
                     .SendMail
                     .PostAsync(requestBody);
+
+                _resp = new Shared.DTO.ResponseHandler<EmailDTO>
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Email sent successfully. Kindly verify your email",
+                    SingleResult = new EmailDTO
+                    {
+                        Email = recepientEmail,
+                        Subject = subject,
+                        Name = displayName
+                    }
+                };
 
                 //using (MailMessage message = new MailMessage())
                 //{
