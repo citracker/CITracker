@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
+﻿using Azure.Identity;
+using Microsoft.Extensions.Options;
+using Microsoft.Graph;
+using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
@@ -110,50 +112,50 @@ namespace CITracker.Helpers
         }
 
 
-        public ResponseHandler<EmailDTO> sendEmail(string recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
+        public Shared.DTO.ResponseHandler<EmailDTO> sendEmail(string recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
         {
             try
             {
-                var app = ConfidentialClientApplicationBuilder
-                        .Create(_adconfig.Value.SMTPClientID)
-                        .WithTenantId(_adconfig.Value.SMTPTenantID)
-                        .WithClientSecret(_adconfig.Value.SMTPClientSecret)
-                        .Build();
+                var credential = new ClientSecretCredential(
+                    _adconfig.Value.CITenantId,
+                    _adconfig.Value.ClientId,
+                    _adconfig.Value.ClientSecret
+                );
 
-                // Scopes for SMTP via OAuth
-                var scopes = new[] { "https://outlook.office365.com/.default" };
+                var graphClient = new GraphServiceClient(
+                    credential,
+                    new[] { "https://graph.microsoft.com/.default" }
+                );
 
-                // Get token
-                var authResult = app.AcquireTokenForClient(scopes).ExecuteAsync().Result;
-                var accessToken = authResult.AccessToken;
-
-                var smtpClient = new SmtpClient("smtp.office365.com", 587)
-                {
-                    EnableSsl = true,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(_config.Value.From, accessToken) // OAuth token instead of password
-                };
-
-                // Send email
-                var mail = new MailMessage(_config.Value.From, recepientEmail)
+                var message = new Message
                 {
                     Subject = subject,
-                    Body = body
-                };
-
-                smtpClient.Send(mail);
-
-                _resp = new ResponseHandler<EmailDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Email sent successfully. Kindly verify your email",
-                    SingleResult = new EmailDTO
+                    Body = new ItemBody
                     {
-                        Email = recepientEmail,
-                        Subject = subject,
-                        Name = displayName
+                        ContentType = BodyType.Html,
+                        Content = body
+                    },
+                    ToRecipients = new List<Recipient>
+                    {
+                        new Recipient
+                        {
+                            EmailAddress = new EmailAddress
+                            {
+                                Address = recepientEmail
+                            }
+                        }
                     }
                 };
+
+                var requestBody = new Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody
+                {
+                    Message = message,
+                    SaveToSentItems = true
+                };
+
+                graphClient.Users[_config.Value.From]
+                    .SendMail
+                    .PostAsync(requestBody);
 
                 //using (MailMessage message = new MailMessage())
                 //{
@@ -202,7 +204,7 @@ namespace CITracker.Helpers
             }
             catch (Exception e)
             {
-                _resp = new ResponseHandler<EmailDTO>
+                _resp = new Shared.DTO.ResponseHandler<EmailDTO>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = e.Message,
