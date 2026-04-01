@@ -453,11 +453,9 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
 
-                return Json(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = ex.Message
-                });
+                TempData["message"] = $"{JsonConvert.SerializeObject(ex)}}";
+
+                return RedirectToAction("Index");
             }
         }
 
