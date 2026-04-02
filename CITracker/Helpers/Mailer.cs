@@ -112,7 +112,7 @@ namespace CITracker.Helpers
         }
 
 
-        public Shared.DTO.ResponseHandler<EmailDTO> sendEmail(string recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
+        public async Task<Shared.DTO.ResponseHandler<EmailDTO>> sendEmail(string recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
         {
             try
             {
@@ -153,7 +153,7 @@ namespace CITracker.Helpers
                     SaveToSentItems = true
                 };
 
-                graphClient.Users[_config.Value.From]
+                await graphClient.Users[_config.Value.From]
                     .SendMail
                     .PostAsync(requestBody);
 

@@ -441,9 +441,9 @@ namespace CITracker.Controllers
                     }
                 };
 
-                var resp = _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true);
+                var resp = _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true).Result;
 
-                var resp2 = _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org));
+                var resp2 = _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org)).Result;
 
                 TempData["message"] = $"{resp.Message} ||| {resp2.Message}";
 
