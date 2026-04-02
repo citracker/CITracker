@@ -22,7 +22,7 @@
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                         <p class="mb-2 fw-medium">
                             @SharedResource.Title <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.AGoodTitleShouldBeShortAndContainSearchableWords"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.AGoodTitleShouldBeShortAndContainSearchableWords"> <i class="fe fe-info"></i></a>
                         </p>
                         <input type="text" class="form-control" id="title" name="title" placeholder="@SharedResource.ProjectTitle" value="@Model.Project.Title" @(isAdminOrFacilitator == true ? "" : "readonly") required>
                         <input type="text" class="form-control" id="id" name="id" value="@Model.Project.Id" hidden>
@@ -60,7 +60,7 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12">
                         <p class="mb-2 fw-medium">
                             @SharedResource.BusinessObjectiveAlignment <span style="color:red">*</span>
-                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus"> <i class="fe fe-info"></i></a>
+                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus"> <i class="fe fe-info"></i></a>
                         </p>
                         <div class="card-body d-sm-flex justify-content-between p-0">
                             @if (Model.BusinessObjectiveAlignment != null)
@@ -366,6 +366,11 @@
         } else {
             initSelect2();
         }
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
     });
 
     document.addEventListener('DOMContentLoaded', function () {

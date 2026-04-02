@@ -14,7 +14,7 @@
                 @Html.AntiForgeryToken()
                 <label for="text-area" class="form-label">
                     @SharedResource.ProjectUpdates
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative"> <i class="fe fe-info"></i></a>
                 </label>
                 <nav class="navbar navbar-expand-lg bg-light">
                     <div class="container-fluid">
@@ -367,6 +367,12 @@
                 })
                 .catch(console.error);
             };
+
+
+            const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+                tooltipTriggerList.forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
 
         });
 
