@@ -1111,7 +1111,7 @@ namespace Datalayer.Implementations
                     {
                         where.Append(" AND a.Status = @Stat");
                         where1.Append(" AND Status LIKE @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     if (!string.IsNullOrWhiteSpace(filt.Priority))
@@ -1142,14 +1142,14 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND a.StartDate >= @StartDate");
                         where1.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate.Date);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND a.EndDate <= @EndDate");
                         where1.Append(" AND EndDate <= @EndDate");
@@ -1746,8 +1746,8 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND a.Status = @Stat");
-                        where1.Append(" AND Status LIKE @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        where1.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     if (filt.UserId > 0)
@@ -1771,14 +1771,14 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND a.StartDate >= @StartDate");
                         where1.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate.Date);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND a.EndDate <= @EndDate");
                         where1.Append(" AND EndDate <= @EndDate");
@@ -2925,8 +2925,8 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND a.Status = @Stat");
-                        where1.Append(" AND Status LIKE @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        where1.Append(" AND Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     if (!string.IsNullOrWhiteSpace(filt.Priority))
@@ -2957,14 +2957,14 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND a.StartDate >= @StartDate");
                         where1.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate.Date);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND a.EndDate <= @EndDate");
                         where1.Append(" AND EndDate <= @EndDate");
@@ -4690,7 +4690,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -4711,13 +4711,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -4764,7 +4764,7 @@ namespace Datalayer.Implementations
 
                 var query = "select Status as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Status";
 
-                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                if ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.EndDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0 && filt.Status == null)
                 {
                     resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
@@ -4782,7 +4782,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -4803,13 +4803,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -4874,7 +4874,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -4895,13 +4895,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -4966,7 +4966,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -4987,13 +4987,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5058,7 +5058,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND a.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5079,13 +5079,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND a.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND a.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5150,7 +5150,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND p.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5171,13 +5171,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND p.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND p.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5242,7 +5242,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5263,13 +5263,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND ci.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND ci.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5334,7 +5334,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5355,13 +5355,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5426,7 +5426,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5447,13 +5447,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND ci.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND ci.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5545,7 +5545,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5566,13 +5566,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND ci.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND ci.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
@@ -5674,7 +5674,7 @@ namespace Datalayer.Implementations
                     if (!string.IsNullOrWhiteSpace(filt.Status))
                     {
                         where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"%{filt.Status.Trim()}%");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
                     }
 
                     //if (filt.UserId > 0)
@@ -5695,13 +5695,13 @@ namespace Datalayer.Implementations
                         parameters.Add("@DepartmentId", filt.DepartmentId);
                     }
 
-                    if (filt.StartDate != DateTime.MinValue)
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
                     {
                         where.Append(" AND ci.StartDate >= @StartDate");
                         parameters.Add("@StartDate", filt.StartDate);
                     }
 
-                    if (filt.EndDate != DateTime.MinValue)
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
                     {
                         where.Append(" AND ci.EndDate <= @EndDate");
                         parameters.Add("@EndDate", filt.EndDate);
