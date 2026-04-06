@@ -58,8 +58,8 @@
                                 <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
                                     <label for="input-text" class="form-label">
                                         @SharedResource.SelectStrategicProject<span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
-                                    </label>
+@*                                         <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
+ *@                                    </label>
                                     <select class="form-control" name="siproject" onchange="UpdateSIProjectCurrency(this)" required>
                                         <option selected disabled>@SharedResource.SelectStrategicInitiativeProject</option>
                                         @if (Model.Initiative.Result != null)
@@ -79,7 +79,7 @@
                                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                     <p class="mb-2 fw-medium">
                                         @SharedResource.Initiative <span style="color:red">*</span>
-                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary"> <i class="fe fe-info"></i></a>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.AGoodTitleShouldBeShortAndContainSearchableWords"> <i class="fe fe-info"></i></a>
                                     </p>
                                     <input type="text" class="form-control" name="title" placeholder="Project Title" required>
                                 </div>
