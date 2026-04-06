@@ -441,9 +441,11 @@ namespace CITracker.Controllers
                     }
                 };
 
-                _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true);
+                var resp = _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true).Result;
 
-                _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org));
+                var resp2 = _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org)).Result;
+
+                TempData["message"] = $"{resp.Message} ||| {resp2.Message}";
 
                 return RedirectToAction("Index");
             }
@@ -451,11 +453,9 @@ namespace CITracker.Controllers
             {
                 _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
 
-                return Json(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = ex.Message
-                });
+                TempData["message"] = $"{JsonConvert.SerializeObject(ex)}";
+
+                return RedirectToAction("Index");
             }
         }
 

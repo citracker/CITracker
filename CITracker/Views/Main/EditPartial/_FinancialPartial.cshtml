@@ -63,7 +63,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     @SharedResource.HardSavings
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.FinancialBenefits"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.FinancialBenefits"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -114,7 +114,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     @SharedResource.SoftSavings
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.ThisIncludesNonFinancialSavings"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.ThisIncludesNonFinancialSavings"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -195,7 +195,7 @@
 
                 <label class="main-content-label main-content-label-lg mt-5 mb-5">
                     @SharedResource.AuditedDetailsAuditorOnly
-                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" title="@SharedResource.ClosedProjectsCanBeRandomlySelectedForAuditing"> <i class="fe fe-info"></i></a>
+                    <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.ClosedProjectsCanBeRandomlySelectedForAuditing"> <i class="fe fe-info"></i></a>
                 </label>
 
                 <nav class="navbar navbar-expand-lg bg-light">
@@ -277,6 +277,12 @@
             currencyInp.innerHTML = window.AppState.CIProject.Currency.toString();
 
         }
+
+
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltipTriggerList.forEach(el => {
+            new bootstrap.Tooltip(el);
+        });
     });
 
     $(document).ready(function () {
