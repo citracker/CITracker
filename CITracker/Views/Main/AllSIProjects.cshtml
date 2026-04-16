@@ -291,6 +291,17 @@
             var html = `
                 <div class="table-responsive child-table-wrapper1">
                     <table class="child-table1 table table-primary">
+                        <colgroup>
+                            <col style="width: 7%">  <!-- Initiative -->
+                            <col style="width: 15%">  <!-- Description -->
+                            <col style="width: 5%">   <!-- Facilitator -->
+                            <col style="width: 5%">   <!-- Status -->
+                            <col style="width: 5%">   <!-- Savings -->
+                            <col style="width: 5%">   <!-- Start Date -->
+                            <col style="width: 5%">   <!-- End Date -->
+                            <col style="width: 5%">   <!-- Date Created -->
+                            <col style="width: 5%">   <!-- Created By -->
+                        </colgroup>
                         <thead>
                             <tr>
                                 <th>Initiative</th>
@@ -314,7 +325,7 @@
                     html += `
                         <tr>
                             <td>${r.Initiative}</td>
-                            <td class="wrap-cell" style="width:70%">${r.Description}</td>
+                            <td>${r.Description}</td>
                             <td>${r.Facilitator}</td>
                             <td>${r.Percentage}%</td>
                             <td>${r.Currency}${Number(String(r.Savings).replace(/,/g, '')).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
