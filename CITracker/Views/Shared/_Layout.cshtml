@@ -532,5 +532,80 @@
             }
         }
     </script>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+        let player;
+        let qualityCheckInterval;
+
+        function onYouTubeIframeAPIReady() {
+          player = new YT.Player('player', {
+            videoId: 'nSVI0PPnJxw',
+            playerVars: {
+              autoplay: 1,
+              mute: 1,
+              loop: 1,
+              playlist: 'nSVI0PPnJxw',
+              controls: 0,
+              rel: 0
+            },
+            events: {
+              onReady: onPlayerReady,
+              onStateChange: onPlayerStateChange
+            }
+          });
+        }
+
+        function onPlayerReady(event) {
+          event.target.playVideo();
+          setHighestQuality();
+          startQualityMonitor();
+        }
+
+        function onPlayerStateChange(event) {
+          // When video starts playing, try again
+          if (event.data === YT.PlayerState.PLAYING) {
+            setHighestQuality();
+          }
+        }
+
+        function setHighestQuality() {
+          if (!player) return;
+
+          const levels = player.getAvailableQualityLevels();
+
+          // Try best possible quality available
+          if (levels.includes('hd1080')) {
+            player.setPlaybackQuality('hd1080');
+          } else if (levels.includes('hd720')) {
+            player.setPlaybackQuality('hd720');
+          } else if (levels.length > 0) {
+            player.setPlaybackQuality(levels[0]); // fallback to highest available
+          }
+        }
+
+        function startQualityMonitor() {
+          // Keep checking because YouTube may downgrade quality
+          qualityCheckInterval = setInterval(() => {
+            if (!player) return;
+
+            const current = player.getPlaybackQuality();
+            const levels = player.getAvailableQualityLevels();
+
+            if (levels.length === 0) return;
+
+            const best = levels.includes('hd1080')
+              ? 'hd1080'
+              : levels.includes('hd720')
+              ? 'hd720'
+              : levels[0];
+
+            if (current !== best) {
+              player.setPlaybackQuality(best);
+            }
+          }, 5000); // every 5 seconds
+        }
+    </script>
 </body>
 </html>
