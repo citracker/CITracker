@@ -376,7 +376,7 @@ namespace CITracker.Controllers
                     }
 
                     _logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
-                    var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration).Result;
+                    var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration, subscription.SingleResult.FreeTrialDuration).Result;
                     _logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
                     if (!string.IsNullOrEmpty(chkres))
                     {
