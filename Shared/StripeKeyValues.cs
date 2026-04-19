@@ -17,6 +17,5 @@ namespace Shared
         public string SuccessCallBack { get; set; }
         public string FailedCallBack { get; set; }
         public string Dashboard { get; set; }
-        public double SubscriptionTrialPeriod { get; set; }
     }
 }

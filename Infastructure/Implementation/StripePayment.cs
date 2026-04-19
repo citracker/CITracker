@@ -58,7 +58,7 @@ namespace Infastructure.Implementation
             }
         }
 
-        public async Task<string> CreateCheckout(string uid, string stripeCustomerId, string stripePriceId, int qty)
+        public async Task<string> CreateCheckout(string uid, string stripeCustomerId, string stripePriceId, int qty, int trial)
         {
             try
             {
@@ -75,7 +75,11 @@ namespace Infastructure.Implementation
                         }
                     },
                     ClientReferenceId = uid,
-
+                    SubscriptionData = new SessionSubscriptionDataOptions
+                    {
+                        TrialPeriodDays = trial
+                    },
+                    PaymentMethodCollection = "always",
                     SuccessUrl = _config.Value.SuccessCallBack,
                     CancelUrl = _config.Value.FailedCallBack
                 };
