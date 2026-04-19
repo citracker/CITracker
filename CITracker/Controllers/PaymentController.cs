@@ -85,12 +85,7 @@ namespace CITracker.Controllers
 
             _logger.LogInformation($"HandleSubscriptionUpdated Event hit ||| {JsonConvert.SerializeObject(subscription)}");
 
-            var endDate = subscription.Items.Data[0].CurrentPeriodEnd;
-            if (stripeEvent.Type == "customer.subscription.created")
-            {
-                endDate = subscription.Items.Data[0].CurrentPeriodEnd.AddDays(_config.Value.SubscriptionTrialPeriod);
-            }
-            await _subManager.UpdateOrganizationSubscriptionFromUpdatedEvent(subscription.Id, subscription.CustomerId, subscription.Items.Data[0].CurrentPeriodStart, endDate, subscription.Items.Data[0].Price.Id, subscription.Status);
+            await _subManager.UpdateOrganizationSubscriptionFromUpdatedEvent(subscription.Id, subscription.CustomerId, subscription.Items.Data[0].CurrentPeriodStart, subscription.Items.Data[0].CurrentPeriodEnd, subscription.Items.Data[0].Price.Id, subscription.Status);
         }
 
         private async Task HandleSubscriptionDeleted(Event stripeEvent)
