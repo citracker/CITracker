@@ -116,103 +116,100 @@ namespace CITracker.Helpers
         {
             try
             {
-                var credential = new ClientSecretCredential(
-                    _adconfig.Value.SMTPTenantID,
-                    _adconfig.Value.SMTPClientID,
-                    _adconfig.Value.SMTPClientSecret
-                );
+                //var credential = new ClientSecretCredential(
+                //    _adconfig.Value.SMTPTenantID,
+                //    _adconfig.Value.SMTPClientID,
+                //    _adconfig.Value.SMTPClientSecret
+                //);
 
-                var graphClient = new GraphServiceClient(
-                    credential,
-                    new[] { "https://graph.microsoft.com/.default" }
-                );
+                //var graphClient = new GraphServiceClient(
+                //    credential,
+                //    new[] { "https://graph.microsoft.com/.default" }
+                //);
 
-                var message = new Message
-                {
-                    Subject = subject,
-                    Body = new ItemBody
-                    {
-                        ContentType = BodyType.Html,
-                        Content = body
-                    },
-                    ToRecipients = new List<Recipient>
-                    {
-                        new Recipient
-                        {
-                            EmailAddress = new EmailAddress
-                            {
-                                Address = recepientEmail
-                            }
-                        }
-                    }
-                };
-
-                var requestBody = new Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody
-                {
-                    Message = message,
-                    SaveToSentItems = true
-                };
-
-                await graphClient.Users[_config.Value.From]
-                    .SendMail
-                    .PostAsync(requestBody);
-
-                _resp = new Shared.DTO.ResponseHandler<EmailDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Email sent successfully. Kindly verify your email",
-                    SingleResult = new EmailDTO
-                    {
-                        Email = recepientEmail,
-                        Subject = subject,
-                        Name = displayName
-                    }
-                };
-
-                //using (MailMessage message = new MailMessage())
+                //var message = new Message
                 //{
-                //    string address = _config.Value.Username;
-                //    message.From = new MailAddress(_config.Value.From, displayName);
-                //    message.Subject = subject;
-                //    message.Body = body;
-                //    message.IsBodyHtml = true;
-                //    message.To.Add(recepientEmail);
-                //    if (replyto)
+                //    Subject = subject,
+                //    Body = new ItemBody
                 //    {
-                //        message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
-                //    }
-                //    SmtpClient client1 = new SmtpClient
+                //        ContentType = BodyType.Html,
+                //        Content = body
+                //    },
+                //    ToRecipients = new List<Recipient>
                 //    {
-                //        Host = _config.Value.Host,
-                //        EnableSsl = Convert.ToBoolean(_config.Value.EnableSsl)
-                //    };
-                //    client1.UseDefaultCredentials = false;
-                //    //client1.Timeout = 10000;
-                //    NetworkCredential credential = new NetworkCredential
-                //    {
-                //        UserName = _config.Value.Username,
-                //        Password = _config.Value.Password
-                //    };
-                //    client1.Credentials = credential;
-                //    client1.Port = _config.Value.Port;
-                //    client1.TargetName = "STARTTLS/smtp.office365.com";
-                //    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                //    client1.Send(message);
-                //    client1.Dispose();
-
-                //    _resp = new ResponseHandler<EmailDTO>
-                //    {
-                //        StatusCode = (int)HttpStatusCode.OK,
-                //        Message = "Email sent successfully. Kindly verify your email",
-                //        SingleResult = new EmailDTO
+                //        new Recipient
                 //        {
-                //            Email = recepientEmail,
-                //            Subject = subject,
-                //            Name = displayName
+                //            EmailAddress = new EmailAddress
+                //            {
+                //                Address = recepientEmail
+                //            }
                 //        }
-                //    };
-                //    _log.LogInformation($"Response{nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
-                //}
+                //    }
+                //};
+
+                //var requestBody = new Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody
+                //{
+                //    Message = message,
+                //    SaveToSentItems = true
+                //};
+
+                //await graphClient.Users[_config.Value.From]
+                //    .SendMail
+                //    .PostAsync(requestBody);
+
+                //_resp = new Shared.DTO.ResponseHandler<EmailDTO>
+                //{
+                //    StatusCode = (int)HttpStatusCode.OK,
+                //    Message = "Email sent successfully. Kindly verify your email",
+                //    SingleResult = new EmailDTO
+                //    {
+                //        Email = recepientEmail,
+                //        Subject = subject,
+                //        Name = displayName
+                //    }
+                //};
+
+                using (MailMessage message = new MailMessage())
+                {
+                    message.From = new MailAddress(_config.Value.From, displayName);
+                    message.Subject = subject;
+                    message.Body = body;
+                    message.IsBodyHtml = true;
+                    message.To.Add(recepientEmail);
+                    if (replyto)
+                    {
+                        message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
+                    }
+                    SmtpClient client1 = new SmtpClient
+                    {
+                        Host = _config.Value.Host,
+                        EnableSsl = Convert.ToBoolean(_config.Value.EnableSsl)
+                    };
+                    client1.UseDefaultCredentials = false;
+                    //client1.Timeout = 10000;
+                    NetworkCredential credential = new NetworkCredential
+                    {
+                        UserName = _config.Value.From,
+                        Password = _config.Value.Password
+                    };
+                    client1.Credentials = credential;
+                    client1.Port = _config.Value.Port;
+                    client1.Send(message);
+                    client1.Dispose();
+
+                    _resp = new Shared.DTO.ResponseHandler<EmailDTO>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Email sent successfully. Kindly verify your email",
+                        SingleResult = new EmailDTO
+                        {
+                            Email = recepientEmail,
+                            Subject = subject,
+                            Name = displayName
+                        }
+                    };
+                    _log.LogInformation($"Response{nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
+                }
             }
             catch (Exception e)
             {
@@ -241,7 +238,6 @@ namespace CITracker.Helpers
             {
                 using (MailMessage message = new MailMessage())
                 {
-                    string address = _config.Value.Username;
                     message.From = new MailAddress(_config.Value.From, displayName);
                     message.Subject = subject;
                     message.Body = body;
@@ -263,7 +259,7 @@ namespace CITracker.Helpers
                     //client1.Timeout = 10000;
                     NetworkCredential credential = new NetworkCredential
                     {
-                        UserName = _config.Value.Username,
+                        UserName = _config.Value.From,
                         Password = _config.Value.Password
                     };
                     client1.Credentials = credential;

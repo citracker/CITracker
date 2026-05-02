@@ -839,6 +839,9 @@
     loadChartData2();
     myChart2.showLoading();
     myChart2.hideLoading();
+    window.addEventListener('resize', function () {
+        myChart2.resize();
+    });
 
 
 
