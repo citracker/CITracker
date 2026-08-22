@@ -39,8 +39,6 @@
       <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
       <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
       <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-@*       <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
- *@      <!-- Prism CSS --> 
       <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
       <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -78,6 +76,122 @@
             justify-content: flex-start; /* align to the right */
         }
       </style>
+      <style>
+        .floating-tabs {
+            position: sticky;
+            top: 0;
+            z-index: 1040;
+            background: transparent !important;
+            padding: 12px 0 10px 0;
+            margin-bottom: 24px;
+            border-bottom: none !important;
+            box-shadow: none !important;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+            .floating-tabs .nav-tabs {
+                border-bottom: none;
+                gap: 6px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                justify-content: center !important;
+            }
+
+                .floating-tabs .nav-tabs::-webkit-scrollbar {
+                    display: none;
+                }
+
+            .floating-tabs .nav-link {
+                border: none;
+                border-radius: 30px;
+                padding: 8px 24px;
+                font-weight: 600;
+                font-size: 0.9rem;
+                color: #2c3e50;
+                background: rgba(255, 255, 255, 0.55);
+                backdrop-filter: blur(6px);
+                -webkit-backdrop-filter: blur(6px);
+                transition: all 0.25s ease;
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            }
+
+                .floating-tabs .nav-link i {
+                    font-size: 1.15rem;
+                }
+
+                .floating-tabs .nav-link:hover {
+                    color: #0d6efd;
+                    background: rgba(255, 255, 255, 0.9);
+                }
+
+                .floating-tabs .nav-link.active {
+                    color: #fff;
+                    background: #0d6efd;
+                    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.35);
+                }
+
+        /* ----------------------------- */
+        /* TAB PANELS (show/hide)        */
+        /* ----------------------------- */
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+            .tab-pane.active {
+                display: block;
+            }
+
+        @@keyframes fadeIn {
+            0%
+
+        {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* ----------------------------- */
+        /* OFFSET FOR STICKY BAR         */
+        /* ----------------------------- */
+        .section-anchor {
+            scroll-margin-top: 90px;
+        }
+
+        /* ----------------------------- */
+        /* RESPONSIVE                    */
+        /* ----------------------------- */
+        @@media (max-width: 576px) {
+            .floating-tabs .nav-link
+
+        {
+            padding: 6px 14px;
+            font-size: 0.78rem;
+        }
+
+        .floating-tabs .nav-link i {
+            font-size: 0.9rem;
+        }
+
+        .section-anchor {
+            scroll-margin-top: 75px;
+        }
+
+        }
+    </style>
    </head>
    <body>
    <!-- Loader --> 
@@ -525,5 +639,72 @@
    <script src="~/assets/js/custom.js"></script>
    <script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
    <script src="~/assets/js/date&time_pickers.js"></script>
+
+    <script>
+        (function() {
+            'use strict';
+
+            // --- Get elements ---
+            const tabs = document.querySelectorAll('#floatingTabList .nav-link');
+            const panes = document.querySelectorAll('.tab-pane');
+
+            // --- Helper: activate a tab by target ID ---
+            function activateTab(targetId) {
+                // 1. Hide all panes
+                panes.forEach(p => p.classList.remove('active'));
+
+                // 2. Show the target pane
+                const targetPane = document.getElementById(targetId);
+                if (targetPane) {
+                    targetPane.classList.add('active');
+                }
+
+                // 3. Update active tab class
+                tabs.forEach(t => t.classList.remove('active'));
+                const activeTab = document.querySelector(`#floatingTabList .nav-link[data-target="${targetId}"]`);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                }
+
+                // 4. Smooth scroll to the top of the newly visible section
+                //    (offset accounts for the sticky bar height)
+                if (targetPane) {
+                    const offset = 90;
+                    const top = targetPane.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            }
+
+            // --- Tab click listeners ---
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function(e) {
+                    const target = this.getAttribute('data-target');
+                    if (target) {
+                        activateTab(target);
+                    }
+                });
+            });
+
+            // --- Optional: set initial state based on the active class already present ---
+            // The "Filters" tab and pane already have "active", so nothing else to do.
+            // But if you want to ensure consistency on load:
+            window.addEventListener('load', function() {
+                // If no pane is active, fallback to first tab
+                let anyActive = false;
+                panes.forEach(p => {
+                    if (p.classList.contains('active')) anyActive = true;
+                });
+                if (!anyActive && panes.length > 0) {
+                    // Activate the first tab
+                    const firstTab = tabs[0];
+                    if (firstTab) {
+                        const target = firstTab.getAttribute('data-target');
+                        if (target) activateTab(target);
+                    }
+                }
+            });
+
+        })();
+    </script>
 </body>
 </html>
