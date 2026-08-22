@@ -5637,7 +5637,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId, DashFilter filt)
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataCI(int orgId, DashFilter filt)
         {
             try
             {
@@ -5648,17 +5648,9 @@ namespace Datalayer.Implementations
 
                 var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
 
-                //var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
-
-                //var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
-
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
                     cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-
-                    //var oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-
-                    //var sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
                 else
                 {
@@ -5738,8 +5730,6 @@ namespace Datalayer.Implementations
                 }
 
                 Merge(cire);
-                //Merge(oere);
-                //Merge(sire);
 
                 if (dict.Any())
                 {
@@ -5762,7 +5752,247 @@ namespace Datalayer.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(GetOrganizationData)} - {JsonConvert.SerializeObject(ex)}");
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataCI)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+            }
+        }
+
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataOE(int orgId, DashFilter filt)
+        {
+            try
+            {
+                IEnumerable<DashboardAnalytics> oere = null;
+                List<DashboardAnalytics> resi = null;
+                var dict = new Dictionary<string, DashboardAnalytics>();
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
+
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
+                    }
+
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
+
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
+
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
+
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
+
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
+
+                    var finalQuery = oequery.Replace("@where", where.ToString());
+
+                    parameters.Add("@oid", orgId);
+
+                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
+
+                void Merge(IEnumerable<DashboardAnalytics> items)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!dict.TryGetValue(item.Currency, out var existing))
+                        {
+                            dict[item.Currency] = new DashboardAnalytics
+                            {
+                                Currency = item.Currency,
+                                ProjectCount = item.ProjectCount,
+                                TotalExpectedRevenue = item.TotalExpectedRevenue,
+                                TotalHardSavings = item.TotalHardSavings
+                            };
+                        }
+                        else
+                        {
+                            existing.ProjectCount += item.ProjectCount;
+                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
+                            existing.TotalHardSavings += item.TotalHardSavings;
+                        }
+                    }
+                }
+
+                Merge(oere);
+
+                if (dict.Any())
+                {
+                    resi = dict.Values.ToList();
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataOE)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+            }
+        }
+
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataSI(int orgId, DashFilter filt)
+        {
+            try
+            {
+                IEnumerable<DashboardAnalytics> sire = null;
+                List<DashboardAnalytics> resi = null;
+                var dict = new Dictionary<string, DashboardAnalytics>();
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
+
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
+                    }
+
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
+
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
+
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
+
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
+
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
+
+                    var finalQuery = siquery.Replace("@where", where.ToString());
+
+                    parameters.Add("@oid", orgId);
+
+                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
+
+                void Merge(IEnumerable<DashboardAnalytics> items)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!dict.TryGetValue(item.Currency, out var existing))
+                        {
+                            dict[item.Currency] = new DashboardAnalytics
+                            {
+                                Currency = item.Currency,
+                                ProjectCount = item.ProjectCount,
+                                TotalExpectedRevenue = item.TotalExpectedRevenue,
+                                TotalHardSavings = item.TotalHardSavings
+                            };
+                        }
+                        else
+                        {
+                            existing.ProjectCount += item.ProjectCount;
+                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
+                            existing.TotalHardSavings += item.TotalHardSavings;
+                        }
+                    }
+                }
+
+                Merge(sire);
+
+                if (dict.Any())
+                {
+                    resi = dict.Values.ToList();
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataSI)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
             }
         }

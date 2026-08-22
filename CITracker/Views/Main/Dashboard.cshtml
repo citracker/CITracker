@@ -8,8 +8,34 @@
     Layout = "~/Views/Shared/_MainDashboardLayout.cshtml";
 }
 
+
 <div class="main-content app-content">
-    <div class="container-fluid">
+    <div class="container-fluid px-3 px-md-4">
+
+
+        <!-- ============================================================ -->
+        <!--  FLOATING TABS  (fixed at top)                                -->
+        <!-- ============================================================ -->
+        <nav class="floating-tabs" id="floatingTabs">
+            <ul class="nav nav-tabs" id="floatingTabList" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-target="section-ci" type="button">
+                        <i class="ri-filter-3-line"></i> Continuous Improvement
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-target="section-oe" type="button">
+                        <i class="ri-dashboard-3-line"></i> Operational Excellence
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-target="section-si" type="button">
+                        <i class="ri-bar-chart-2-line"></i> Strategic Initiatives
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
         <div class="row row-sm">
             <div class="accordion accordion-primary mb-5" id="filterAccord">
                 <div class="accordion-item">
@@ -112,85 +138,90 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-lg-12 col-xl-12">
-                <div class="row row-sm mt-4">
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+        </div>
+
+
+        <div id="section-ci" class="section-anchor tab-pane active">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
                                     </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
-                                   </div>
-                                    <div class="card-item-body" id="totalsavings" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
-                                       </div>
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalsavings" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8 0 1.82.62 3.49 1.64 4.83 1.43-1.74 4.9-2.33 6.36-2.33s4.93.59 6.36 2.33C19.38 15.49 20 13.82 20 12c0-4.41-3.59-8-8-8zm0 9c-1.94 0-3.5-1.56-3.5-3.5S10.06 6 12 6s3.5 1.56 3.5 3.5S13.94 13 12 13z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z"></path> </svg>
                                     </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
-                                    </div>
-                                    <div class="card-item-body" id="projectcount" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">0</h4>
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
+                                        </div>
+                                        <div class="card-item-body" id="projectcount" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold">0</h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
                                     </div> *@
-                                    <div class="card-item-title  mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
-                                    </div>
-                                    <div class="card-item-body" id="audited" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
+                                        <div class="card-item-title  mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
+                                        </div>
+                                        <div class="card-item-body" id="audited" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
                                     </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
-                                    </div>
-                                    <div class="card-item-body" id="totalexpectedsavings" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalexpectedsavings" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @* <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        @* <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
                         <div class="card custom-card">
                             <div class="card-body">
                                 <div class="card-item">
@@ -209,96 +240,267 @@
                             </div>
                         </div>
                     </div> *@
-                </div>
-                <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="projCountbyMethodology" class="chart-container"></div>
+                    </div>
+                    <div class="row row-sm mt-2">
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="projCountbyMethodology" class="chart-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="projCountbyStatus" class="chart-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <canvas id="projCountInCert" class="chart-container"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="savingsByCategory" class="chart-container"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="projCountbyStatus" class="chart-container"></div>
+                    <div class="row row-sm mt-2">
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyProjectsStatus"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlySavings"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="completedProjectsByUser"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyProjectsbyMeth"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyDeptChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyPhaseChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-oe" class="section-anchor tab-pane">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalsavings_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8 0 1.82.62 3.49 1.64 4.83 1.43-1.74 4.9-2.33 6.36-2.33s4.93.59 6.36 2.33C19.38 15.49 20 13.82 20 12c0-4.41-3.59-8-8-8zm0 9c-1.94 0-3.5-1.56-3.5-3.5S10.06 6 12 6s3.5 1.56 3.5 3.5S13.94 13 12 13z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z"></path> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
+                                        </div>
+                                        <div class="card-item-body" id="projectcount_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold">0</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
+                                    </div> *@
+                                        <div class="card-item-title  mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
+                                        </div>
+                                        <div class="card-item-body" id="audited_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalexpectedsavings_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>                    
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <canvas id="projCountInCert" class="chart-container"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="savingsByCategory" class="chart-container"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-                <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyProjectsStatus"></canvas>
+            </div>
+        </div>
+
+        <div id="section-si" class="section-anchor tab-pane">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalsavings_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlySavings"></canvas>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8 0 1.82.62 3.49 1.64 4.83 1.43-1.74 4.9-2.33 6.36-2.33s4.93.59 6.36 2.33C19.38 15.49 20 13.82 20 12c0-4.41-3.59-8-8-8zm0 9c-1.94 0-3.5-1.56-3.5-3.5S10.06 6 12 6s3.5 1.56 3.5 3.5S13.94 13 12 13z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z"></path> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
+                                        </div>
+                                        <div class="card-item-body" id="projectcount_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold">0</h4>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="completedProjectsByUser"></canvas>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
+                                    </div> *@
+                                        <div class="card-item-title  mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
+                                        </div>
+                                        <div class="card-item-body" id="audited_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyProjectsbyMeth"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyDeptChart"></canvas>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyPhaseChart"></canvas>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalexpectedsavings_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -308,6 +510,7 @@
         </div>
     </div>
 </div>
+
 <script>
     let currentFilters = {};
     const resources = {
@@ -384,7 +587,7 @@
         if (department) filters.department = department;
         if (status) filters.status = status;
 
-        console.log("Filters:", filters);
+        //console.log("Filters:", filters);
 
         return filters;
     }
@@ -431,6 +634,8 @@
         // Load all charts in parallel
         await Promise.all([
             loadData(),
+            loadDataOE(),
+            loadDataSI(),
             loadChartData(),
             loadChartData1(),
             loadPolarData(),
@@ -462,7 +667,7 @@
     async function loadData() {
         try {
             const queryString = buildQueryString(currentFilters);
-            const response = await fetch('/DashboardAnalytics' + queryString);
+            const response = await fetch('/DashboardAnalyticsCI' + queryString);
 
             if (!response.ok) {
                 prepUI();
@@ -482,14 +687,94 @@
                 prepUI();
                 return;
             }
+            const c = document.getElementById('totalsavings');
+            const c1 = document.getElementById('projectcount');
+            const c2 = document.getElementById('audited');
+            const c3 = document.getElementById('totalexpectedsavings');
 
-            prepUI(result);
+            prepUI(result, c, c1, c2, c3);
 
         } catch (error) {
             prepUI();
         }
     }
     loadData();
+
+
+
+    async function loadDataOE() {
+        try {
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/DashboardAnalyticsOE' + queryString);
+
+            if (!response.ok) {
+                prepUI();
+                return;
+            }
+
+            let result = [];
+
+            try {
+                result = await response.json();
+            } catch {
+                prepUI();
+                return;
+            }
+
+            if (!result || result.length === 0) {
+                prepUI();
+                return;
+            }
+            const c = document.getElementById('totalsavings_oe');
+            const c1 = document.getElementById('projectcount_oe');
+            const c2 = document.getElementById('audited_oe');
+            const c3 = document.getElementById('totalexpectedsavings_oe');
+
+            prepUI(result, c, c1, c2, c3);
+
+        } catch (error) {
+            prepUI();
+        }
+    }
+    loadDataOE();
+
+
+
+    async function loadDataSI() {
+        try {
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/DashboardAnalyticsSI' + queryString);
+
+            if (!response.ok) {
+                prepUI();
+                return;
+            }
+
+            let result = [];
+
+            try {
+                result = await response.json();
+            } catch {
+                prepUI();
+                return;
+            }
+
+            if (!result || result.length === 0) {
+                prepUI();
+                return;
+            }
+            const c = document.getElementById('totalsavings_si');
+            const c1 = document.getElementById('projectcount_si');
+            const c2 = document.getElementById('audited_si');
+            const c3 = document.getElementById('totalexpectedsavings_si');
+
+            prepUI(result, c, c1, c2, c3);
+
+        } catch (error) {
+            prepUI();
+        }
+    }
+    loadDataSI();
 
 
 
@@ -908,7 +1193,6 @@
             }
         }
     });
-
 
     async function loadBarChartData() {
         try {
@@ -1460,15 +1744,11 @@
     }, 60000);
 
 
-    function prepUI(list){
-        const container = document.getElementById('totalsavings');
-        const container1 = document.getElementById('projectcount');
-        const container2 = document.getElementById('audited');
-        const container3 = document.getElementById('totalexpectedsavings');
-        container.innerHTML = '';
-        container1.innerHTML = '';
-        container2.innerHTML = '';
-        container3.innerHTML = '';
+    function prepUI(list, c, c1, c2, c3){
+        c.innerHTML = '';
+        c1.innerHTML = '';
+        c2.innerHTML = '';
+        c3.innerHTML = '';
 
         if (!list || list.length === 0) {
             return;
@@ -1503,10 +1783,10 @@
                 maximumFractionDigits: 2
             })}</h4>`;
 
-            container.appendChild(div);
-            container1.appendChild(div1);
-            container2.appendChild(div2);
-            container3.appendChild(div3);
+            c.appendChild(div);
+            c1.appendChild(div1);
+            c2.appendChild(div2);
+            c3.appendChild(div3);
         });
     }
 

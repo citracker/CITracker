@@ -143,9 +143,9 @@ namespace CITracker.Controllers
             HttpContext.Session.SetString("TenantId", "");
             HttpContext.Session.SetString("ObjectId", "");
             HttpContext.Session.SetString("OrganisationSubscriptionStatus", "false");
-            
-            return Challenge(            
-                new AuthenticationProperties { RedirectUri = "/" },            
+
+            return Challenge(
+                new AuthenticationProperties { RedirectUri = "/" },
                 OpenIdConnectDefaults.AuthenticationScheme);
         }
 
@@ -462,7 +462,7 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if(User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
             {
                 //set user Email first if user email is null
                 if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))

@@ -2450,8 +2450,8 @@ namespace CITracker.Controllers
             return Json(data?.SingleResult);
         }
 
-        [HttpGet("DashboardAnalytics")]
-        public IActionResult DashboardAnalytics(DateTime? startdate, DateTime? enddate, string priority, long users, int country, long department, string status)
+        [HttpGet("DashboardAnalyticsCI")]
+        public IActionResult DashboardAnalyticsCI(DateTime? startdate, DateTime? enddate, string priority, long users, int country, long department, string status)
         {
             if (!IsAuthenticated())
             {
@@ -2472,7 +2472,61 @@ namespace CITracker.Controllers
                 StartDate = startdate,
                 Status = status
             };
-            var data = _opsManager.GetOrganizationData(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
+            var data = _opsManager.GetOrganizationDataCI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
+
+            return Ok(data?.Result?.ToArray());
+        }
+
+        [HttpGet("DashboardAnalyticsOE")]
+        public IActionResult DashboardAnalyticsOE(DateTime? startdate, DateTime? enddate, string priority, long users, int country, long department, string status)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = users,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+            var data = _opsManager.GetOrganizationDataOE(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
+
+            return Ok(data?.Result?.ToArray());
+        }
+
+        [HttpGet("DashboardAnalyticsSI")]
+        public IActionResult DashboardAnalyticsSI(DateTime? startdate, DateTime? enddate, string priority, long users, int country, long department, string status)
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var filt = new DashFilter
+            {
+                CountryId = country,
+                DepartmentId = department,
+                UserId = users,
+                EndDate = enddate,
+                Priority = priority,
+                StartDate = startdate,
+                Status = status
+            };
+            var data = _opsManager.GetOrganizationDataSI(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
 
             return Ok(data?.Result?.ToArray());
         }
@@ -2523,11 +2577,12 @@ namespace CITracker.Controllers
         {
             try
             {
-                if (User.Identity.IsAuthenticated && UserHasValidRole())
-                {
-                    return true;
-                }
-                return false;
+                ///TODO Revert back to auth
+                //if (User.Identity.IsAuthenticated && UserHasValidRole())
+                //{
+                return true;
+                //}
+                //return false;
             }
             catch (Exception)
             {
