@@ -147,7 +147,7 @@ namespace Infastructure.Implementation
                         { "grant_type", "client_credentials" },
                         { "client_id", _config.Value.ClientId },
                         { "client_secret", _config.Value.ClientSecret },
-                        { "resource", "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" }
+                        { "resource", "20e940b3-4c77-4b0b-9a53-9e16a1b010a7" }
                     };
 
                 var response = await client.PostAsync(
@@ -180,9 +180,10 @@ namespace Infastructure.Implementation
 
                 var client = new HttpClient();
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                client.DefaultRequestHeaders.Add("x-ms-marketplace-token", Uri.UnescapeDataString(token));
 
-                var response = await client.PostAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/resolve?api-version=2018-08-31", new StringContent(
-                    JsonConvert.SerializeObject(new { token }), Encoding.UTF8, "application/json"));
+
+                var response = await client.PostAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/resolve?api-version=2018-08-31", null);
 
                 _logger.LogInformation($"Raw Response from ResolveAsync ||| {JsonConvert.SerializeObject(response)}");
 
