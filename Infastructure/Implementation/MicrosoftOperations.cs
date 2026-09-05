@@ -147,7 +147,7 @@ namespace Infastructure.Implementation
                         { "grant_type", "client_credentials" },
                         { "client_id", _config.Value.ClientId },
                         { "client_secret", _config.Value.ClientSecret },
-                        { "resource", "https://marketplaceapi.microsoft.com" }
+                        { "resource", "20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default" } //https://marketplaceapi.microsoft.com
                     };
 
                 var response = await client.PostAsync(
