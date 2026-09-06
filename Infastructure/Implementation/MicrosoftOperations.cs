@@ -167,7 +167,7 @@ namespace Infastructure.Implementation
             }
         }
 
-        public async Task<MarketplaceSubscription> ResolveAsync(string token, string tenantId)
+        public async Task<ResolveTokenResponse> ResolveAsync(string token, string tenantId)
         {
             try
             {
@@ -191,7 +191,7 @@ namespace Infastructure.Implementation
 
                 _logger.LogInformation($"Response from ResolveAsync ||| {content}");
 
-                return JsonConvert.DeserializeObject<MarketplaceSubscription>(content);
+                return JsonConvert.DeserializeObject<ResolveTokenResponse>(content);
             }
             catch (Exception ex)
             {
@@ -259,6 +259,7 @@ namespace Infastructure.Implementation
                 };
             }
         }
+
         public async Task<CIMarketplaceSubscription> GetSubscription(string subscriptionId, string tenantId)
         {
             try

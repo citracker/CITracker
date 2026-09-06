@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Shared.Enumerations;
+using Shared.ExternalModels;
 using Shared.Models;
 using Shared.Utilities;
 using Shared.ViewModels;
@@ -106,33 +107,33 @@ namespace CITracker.Controllers
         [HttpGet("saas/landing")]
         public async Task<IActionResult> Landing(string token)
         {
-            _logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
+            //_logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
 
-            var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
+            //var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
 
-            if(mpSub == null)
-            {
-                //somehow subscription failed from Microsoft
-                return RedirectToAction("Index");
-            }
+            //if(mpSub == null)
+            //{
+            //    //somehow subscription failed from Microsoft
+            //    return RedirectToAction("Index");
+            //}
+
+            var mpSub = JsonConvert.DeserializeObject<ResolveTokenResponse>("{\"id\":\"599b4d11-b787-4919-c5d5-82c9deb479cf\",\"subscriptionName\":\"CI Tracker - Starter Plan\",\"offerId\":\"ci_tracker\",\"planId\":\"ci_tracker_starter_plan\",\"quantity\":1,\"subscription\":{\"id\":\"599b4d11-b787-4919-c5d5-82c9deb479cf\",\"publisherId\":\"ci_tracker\",\"offerId\":\"ci_tracker\",\"name\":\"CI Tracker - Starter Plan\",\"saasSubscriptionStatus\":\"Subscribed\",\"beneficiary\":{\"emailId\":\"onyi@homeschola.onmicrosoft.com\",\"objectId\":\"4ee66deb-5e54-4b2f-8bff-30178aff5484\",\"tenantId\":\"c3e87432-ab8c-4476-8cd9-469b6ddc1331\",\"puid\":\"100320063C895FB1\"},\"purchaser\":{\"emailId\":\"onyi@homeschola.onmicrosoft.com\",\"objectId\":\"4ee66deb-5e54-4b2f-8bff-30178aff5484\",\"tenantId\":\"c3e87432-ab8c-4476-8cd9-469b6ddc1331\",\"puid\":\"100320063C895FB1\"},\"planId\":\"ci_tracker_starter_plan\",\"term\":{\"startDate\":\"2026-09-06T00:00:00Z\",\"endDate\":\"2026-10-05T00:00:00Z\",\"termUnit\":\"P1M\"},\"autoRenew\":true,\"isTest\":false,\"isFreeTrial\":true,\"allowedCustomerOperations\":[\"Delete\",\"Read\",\"Update\"],\"sandboxType\":\"None\",\"created\":\"2026-09-06T20:24:43.7783485Z\",\"lastModified\":\"0001-01-01T00:00:00\",\"quantity\":1,\"sessionMode\":\"None\"}}");
 
             _logger.LogInformation($"Response from ResolveAsync for token {token} ||| {JsonConvert.SerializeObject(mpSub)}");
 
-            if(mpSub.Status == "PendingFulfillmentStart")
+            if(mpSub.Subscription.SaasSubscriptionStatus == "Subscribed")
             {
                 var re = await _subManager.GetSubscriptionPlanByMarketPlaceId(mpSub.PlanId);
 
                 //redirect user to checkout page to fill in the details they need to.
-                HttpContext.Session.SetString("UserEmail", mpSub.Purchaser.EmailId);
-                HttpContext.Session.SetString("UserName", mpSub.Purchaser.EmailId.Split('@')[0]?.Replace('.', ' '));
-                HttpContext.Session.SetString("TenantId", mpSub.Purchaser.TenantId);
+                HttpContext.Session.SetString("UserEmail", mpSub.Subscription.Purchaser.EmailId);
+                HttpContext.Session.SetString("UserName", mpSub.Subscription.Purchaser.EmailId.Split('@')[0]?.Replace('.', ' '));
+                HttpContext.Session.SetString("TenantId", mpSub.Subscription.Purchaser.TenantId);
                 HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Id);
+                HttpContext.Session.SetString("MarketplaceResolvedToken", JsonConvert.SerializeObject(mpSub));
 
-                return RedirectToAction("Checkout", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
+                return RedirectToAction("Register", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
             }
-
-            //
-
             return RedirectToAction("Index");
         }
 
@@ -212,6 +213,51 @@ namespace CITracker.Controllers
         }
 
 
+        [HttpGet("Register")]
+        public IActionResult Register(string Subscribe, bool IsMarketPlace = false)
+        {
+            try
+            {
+                if (!String.IsNullOrEmpty(Subscribe) && !String.IsNullOrWhiteSpace(Subscribe))
+                {
+                    //get single mpSub details
+                    try
+                    {
+                        var subs = _subManager.GetSubscriptionPlanById(int.Parse(Subscribe)).Result;
+                        var payopts = _payManager.FetchPaymentOptions().Result;
+                        var country = _opsManager.FetchOperationalCountry().Result;
+
+                        if (subs.StatusCode != (int)HttpStatusCode.OK || payopts.StatusCode != (int)HttpStatusCode.OK)
+                        {
+                            _logger.LogInformation($"Invalid Subscription or PaymentOptions Error || subscriptionId - {JsonConvert.SerializeObject(subs)} ||| {JsonConvert.SerializeObject(payopts)}");
+
+                            return RedirectToAction("Index");
+                        }
+
+                        var cvm = new CheckoutVM
+                        {
+                            PaymentProvider = IsMarketPlace == true ? payopts.Result.Where(t => t.Name == "Microsoft").ToList() : payopts.Result.Where(t => t.Name != "Microsoft").ToList(),
+                            SubscriptionPlan = subs.SingleResult,
+                            Country = country.Result.ToList()
+                        };
+
+                        return View(cvm);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Exception at Checkout || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(ex)}");
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index");
+            }
+
+        }
+
+
         [HttpPost("Checkout")]
         [ValidateAntiForgeryToken]
         public IActionResult Checkout(string Subscribe, bool IsMarketPlace = false)
@@ -266,9 +312,123 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index");
             }
-           
+
         }
-        
+
+
+        [HttpPost("RegisterPayment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterPayment()
+        {
+            ResponseHandler<SubscriptionPlan> subscription = null;
+            try
+            {
+                string domain = Request.Form["adminEmail"].ToString().Split('@')[1];
+
+                //check if organization has an existing active mpSub
+                //this is to deter any other member of an organization from creating multiple subscriptions for the same organization
+                var orgSubscription = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId").ToString()).Result;
+
+                if (orgSubscription.SingleResult != null)
+                {
+                    if (orgSubscription.SingleResult.EndDate > DateTime.Now)
+                    {
+                        return View("Checkout", new CheckoutVM
+                        {
+                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                            Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
+                            SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
+                            PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                        });
+                    }
+                }
+
+                //build Organisation details
+                var org = new Organization
+                {
+                    Name = Request.Form["companyName"],
+                    TenantId = HttpContext.Session.GetString("TenantId").ToString(),
+                    Address = Request.Form["address"],
+                    AdminName = Request.Form["firstName"],
+                    AdminEmailAddress = Request.Form["adminEmail"],
+                    AdminPhoneNumber = Request.Form["phone"],
+                    CountryId = int.Parse(Request.Form["country"]),
+                    Provider = "Microsoft",
+                    Domain = domain,
+                    DateCreated = DateTime.UtcNow
+                };
+
+                //build user details
+                var usr = new CIUser
+                {
+                    Name = Request.Form["firstName"],
+                    EmailAddress = Request.Form["adminEmail"],
+                    Role = Shared.Enumerations.Role.Admin.ToString(),
+                    DateCreated = DateTime.UtcNow
+                };
+
+                //get mpSub Details
+                subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
+
+                if (subscription == null || subscription?.SingleResult == null)
+                {
+                    return RedirectToAction("Index");
+                }
+
+                var selectedDuration = 1; // int.Parse(Request.Form["subscriptionDuration"]);
+
+                //build mpSub details
+                var sub = new Subscription
+                {
+                    SubscriptionPlanId = int.Parse(Request.Form["subscriptionId"]),
+                    PaymentSubscriptionId = HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(),
+                    StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
+                    EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
+                    DateCreated = DateTime.UtcNow
+                };
+
+                var resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
+
+                if (resp.StatusCode != (int)HttpStatusCode.OK)
+                {
+                    _logger.LogInformation($"Unable to Register Organization {org.Name}");
+
+                    return View("Checkout", new CheckoutVM
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = $"Unable to Register Organisation  {org.Name} ||| {resp.Message}",
+                        SubscriptionPlan = subscription.SingleResult,
+                        PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                        Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                    });
+                }
+
+                //get user's detail
+                var user = _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail").ToString()).Result;
+                SetSessionVariables(user.SingleResult, true);
+
+                ////call microsoft to activate subscription
+                //await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.CITenantId);
+
+                //Redirect to failed mpSub page
+                return RedirectToAction("Index", "Home");                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at RegisterPayment || - {JsonConvert.SerializeObject(ex)}");
+
+                return View("Register", new CheckoutVM
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = $"Unable to Register Organisation ",
+                    SubscriptionPlan = subscription.SingleResult,
+                    PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                    Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                });
+            }
+        }
+
 
         [HttpPost("MakePayment")]
         [ValidateAntiForgeryToken]

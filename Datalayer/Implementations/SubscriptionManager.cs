@@ -460,7 +460,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
-                    "Select * from SubscriptionPlan where PriceId = @subId", new
+                    "Select * from SubscriptionPlan where PlanId = @subId", new
                     {
                         subId = id
                     }, CommandType.Text);

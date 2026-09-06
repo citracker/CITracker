@@ -2118,4 +2118,10 @@
   <data name="SelectTeamMember" xml:space="preserve">
     <value>Teamlid kiezen</value>
   </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registreren</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>Opmerking: U wordt niet doorgestuurd om een betaling te doen.</value>
+  </data>
 </root>
