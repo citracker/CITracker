@@ -3743,6 +3743,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Note: You will not be directed to make payment..
+        /// </summary>
+        public static string NoteYouWillNotBeDirectedToMakePayment {
+            get {
+                return ResourceManager.GetString("NoteYouWillNotBeDirectedToMakePayment", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Notification.
         /// </summary>
         public static string Notification {
@@ -4433,6 +4442,15 @@ namespace CITracker.Resources {
         public static string RecyclingOperation {
             get {
                 return ResourceManager.GetString("RecyclingOperation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Register.
+        /// </summary>
+        public static string Register {
+            get {
+                return ResourceManager.GetString("Register", resourceCulture);
             }
         }
         

@@ -2118,4 +2118,10 @@
   <data name="SelectTeamMember" xml:space="preserve">
     <value>请选择团队成员</value>
   </data>
+  <data name="Register" xml:space="preserve">
+    <value>注册</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>注意：您不会被引导进行付款。</value>
+  </data>
 </root>

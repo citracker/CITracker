@@ -11,18 +11,6 @@
         public Purchaser Purchaser { get; set; }
     }
 
-    public class Purchaser
-    {
-        public string EmailId { get; set; }
-        public string TenantId { get; set; }
-    }
-
-    public class Term
-    {
-        public string StartDate { get; set; }
-        public string EndDate { get; set; }
-    }
-
 
     public class CIMarketplaceSubscription
     {
