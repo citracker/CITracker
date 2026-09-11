@@ -143,15 +143,15 @@ namespace CITracker
 
                 // Configure the HTTP request pipeline
                 app.UseForwardedHeaders();
-                if (!app.Environment.IsDevelopment())
-                {
-                    app.UseExceptionHandler("/Error");
+                ////if (!app.Environment.IsDevelopment())
+                ////{
+                ////    app.UseExceptionHandler("/Error");
                     app.UseHsts();
-                }
-                else
-                {
+                ////}
+                ////else
+                ////{
                     app.UseDeveloperExceptionPage();
-                }
+                ////}
 
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();

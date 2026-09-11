@@ -243,13 +243,15 @@ namespace CITracker.Controllers
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Exception at Checkout || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(ex)}");
+                        _logger.LogError($"Exception at Register || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(ex)}");
                     }
                 }
                 return RedirectToAction("Index");
             }
             catch (Exception e)
             {
+                _logger.LogError($"Exception at Register2 || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(e)}");
+
                 return RedirectToAction("Index");
             }
 
