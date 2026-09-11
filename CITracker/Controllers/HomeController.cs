@@ -385,7 +385,8 @@ namespace CITracker.Controllers
                     PaymentSubscriptionId = HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(),
                     StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
                     EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    Status = SubscriptionStatus.ACTIVE.ToString()
                 };
 
                 var resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
