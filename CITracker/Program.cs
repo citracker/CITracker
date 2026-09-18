@@ -53,7 +53,7 @@ namespace CITracker
 
                 builder.Services.AddControllers().AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Case-sensitive matching
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 });
 
                 builder.Services.AddSession(options =>
@@ -118,7 +118,7 @@ namespace CITracker
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
                 builder.Services.Configure<ADKeyValues>(builder.Configuration.GetSection("AzureAd"));
                 builder.Services.Configure<StripeKeyValues>(builder.Configuration.GetSection("Stripe"));
-                builder.Services.AddTransient<HttpClient>();
+                builder.Services.AddHttpClient();
                 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
                 builder.Services.AddTransient<IPathProvider, PathProvider>();

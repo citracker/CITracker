@@ -200,7 +200,7 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
-            }
+            
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationSubscription)} - {JsonConvert.SerializeObject(ex)}");

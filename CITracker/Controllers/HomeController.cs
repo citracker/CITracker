@@ -110,29 +110,34 @@ namespace CITracker.Controllers
             _logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
 
             var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
-
             if (mpSub == null)
             {
-                //somehow subscription failed from Microsoft
+                _logger.LogWarning("Resolve returned null; redirecting to Index.");
                 return RedirectToAction("Index");
             }
 
-           _logger.LogInformation($"Response from ResolveAsync for token {token} ||| {JsonConvert.SerializeObject(mpSub)}");
+            _logger.LogInformation($"Response from ResolveAsync for token {token} ||| {JsonConvert.SerializeObject(mpSub)}");
 
-            if(mpSub.Subscription.SaasSubscriptionStatus == "Subscribed")
+            if (mpSub.Subscription.SaasSubscriptionStatus != "Subscribed")
             {
-                var re = await _subManager.GetSubscriptionPlanByMarketPlaceId(mpSub.PlanId);
-
-                //redirect user to checkout page to fill in the details they need to.
-                HttpContext.Session.SetString("UserEmail", mpSub.Subscription.Purchaser.EmailId);
-                HttpContext.Session.SetString("UserName", mpSub.Subscription.Purchaser.EmailId.Split('@')[0]?.Replace('.', ' '));
-                HttpContext.Session.SetString("TenantId", mpSub.Subscription.Purchaser.TenantId);
-                HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Id);
-                HttpContext.Session.SetString("MarketplaceResolvedToken", JsonConvert.SerializeObject(mpSub));
-
-                return RedirectToAction("Register", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
+                // Activate immediately after a successful resolve
+                var activated = await _msOps.ActivateAsync(mpSub.Id, _adconfig.Value.CITenantId);
+                if (activated)
+                {
+                    _logger.LogError($"Activation failed for subscription {mpSub.Id}");
+                }
             }
-            return RedirectToAction("Index");
+
+
+            var re = await _subManager.GetSubscriptionPlanByMarketPlaceId(mpSub.PlanId);
+
+            HttpContext.Session.SetString("UserEmail", mpSub.Subscription.Purchaser.EmailId);
+            HttpContext.Session.SetString("UserName", mpSub.Subscription.Purchaser.EmailId.Split('@')[0]?.Replace('.', ' '));
+            HttpContext.Session.SetString("TenantId", mpSub.Subscription.Purchaser.TenantId);
+            HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Id);
+            HttpContext.Session.SetString("MarketplaceResolvedToken", JsonConvert.SerializeObject(mpSub));
+
+            return RedirectToAction("Register", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
         }
 
 

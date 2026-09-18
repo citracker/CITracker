@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.Enumerations;
 using Shared.ExternalModels;
+using System.Text;
 
 namespace CITracker.Controllers
 {
@@ -29,27 +30,43 @@ namespace CITracker.Controllers
             _config = config;
         }
 
-        public async Task HandleWebhook(Webhook payload)
+        [HttpPost]
+        public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
         {
-            _logger.LogInformation($"Received webhook with action: {payload.Action} for subscription: {payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+            Request.EnableBuffering();
+            using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+            var raw = await reader.ReadToEndAsync();
+            Request.Body.Position = 0;
+            _logger.LogInformation($"RAW WEBHOOK BODY: {raw}");
+
+
+            if (payload == null)
+            {
+                _logger.LogWarning("Webhook received but payload was null.");
+                return BadRequest();
+            }
+
+            _logger.LogInformation($"Received webhook. Action={payload.MarketplaceAction}, SubId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
 
             var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
 
-            switch (payload.Action)
+            switch (payload.MarketplaceAction)
             {
                 case "Unsubscribe":
-                case "Suspend":
-                    DeactivateOrDisable(subscription);
+                case "Suspended":
+                    await DeactivateOrDisable(subscription);
                     break;
 
                 case "Reinstate":
-                    Enable(subscription);
+                    await Enable(subscription);
                     break;
 
                 case "ChangePlan":
-                    UpdatePlan(subscription);
+                    await UpdatePlan(subscription);
                     break;
             }
+
+            return Ok();
         }
 
 
