@@ -220,86 +220,81 @@ namespace CITracker.Controllers
         [HttpGet("saas/landing")]
         public async Task<IActionResult> Landing(string token)
         {
-            _logger.LogInformation($"SaaS landing page accessed with token {token} at {DateTime.Now}");
+            _logger.LogInformation($"SaaS landing accessed at {DateTime.UtcNow}");
 
             var mpSub = await _msOps.ResolveAsync(token, _adconfig.Value.CITenantId);
-            if (mpSub == null)
-            {
-                _logger.LogWarning("Resolve returned null; redirecting to Index.");
+            if (mpSub?.Subscription == null)
                 return RedirectToAction("Index");
+
+            var purchaser = mpSub.Subscription.Purchaser;
+            var status = mpSub.Subscription.SaasSubscriptionStatus;
+
+            // ─── 1. Is this tenant already known to MY system? ───
+            var existingOrg = await _subManager.GetOrganizationByTenantId(purchaser.TenantId);
+            if (existingOrg?.SingleResult != null)
+            {
+                _logger.LogInformation($"Returning customer {purchaser.TenantId}");
+
+                // Already signed in → go to dashboard
+                if (User.Identity?.IsAuthenticated == true)
+                    return RedirectToAction("Dashboard", "Main");
+
+                // Not signed in → send them to sign-in, then dashboard
+                return RedirectToAction("SignIn", new { returnUrl = "/Main/Dashboard" });
             }
 
-            _logger.LogInformation($"Response from ResolveAsync for token {token} ||| {JsonConvert.SerializeObject(mpSub)}");
+            // ─── 2. New customer — provision them ───
+            _logger.LogInformation($"New customer {purchaser.TenantId}, status={status}");
 
-            if (mpSub.Subscription.SaasSubscriptionStatus != "Subscribed")
+            var plan = (await _subManager.GetSubscriptionPlanByMarketPlaceId(mpSub.Subscription.PlanId)).SingleResult;
+
+            var res = await _subManager.CreatePendingSubscription(new PendingSubscription
             {
-                // First time buyer: create PendingSubscription so the flow matches Stripe
-                var planId = mpSub.Subscription.PlanId switch
-                {
-                    "ci_tracker_starter_plan" => 1,
-                    "ci_tracker_growth_plan" => 2,
-                    "ci_tracker_maturity_plan" => 3,
-                    "ci_tracker_enterprise_plan" => 4,
-                    _ => 1
-                };
+                PlanId = plan.Id,
+                SeatsRequested = mpSub.Quantity,   // MSFT sells the full plan
+                Provider = "Microsoft",
+                ProviderCustomerId = purchaser.TenantId,
+                ProviderSubscriptionId = mpSub.Subscription.Id,
+                BillingEmail = purchaser.EmailId,
+                TrialDays = mpSub.Subscription.IsFreeTrial ? 30 : 0,
+                Status = "PaidAwaitingTenant",
+                CreatedAt = DateTime.UtcNow,
+                ExpiresAtUtc = DateTime.UtcNow.AddDays(30)
+            });
 
-                var plan = (await _subManager.GetSubscriptionPlanById(planId)).SingleResult;
-
-                var res = await _subManager.CreatePendingSubscription(new PendingSubscription
-                {
-                    PlanId = planId,
-                    SeatsRequested = plan.MinSeats,
-                    Provider = "Microsoft",
-                    ProviderCustomerId = mpSub.Subscription.Purchaser.TenantId,
-                    ProviderSubscriptionId = mpSub.Subscription.Id,
-                    BillingEmail = mpSub.Subscription.Purchaser.EmailId,
-                    TrialDays = mpSub.Subscription.IsFreeTrial ? 30 : 0,
-                    Status = "PaidAwaitingTenant",   // payment already processed
-                    CreatedAt = DateTime.UtcNow,
-                    ExpiresAtUtc = DateTime.UtcNow.AddDays(30)
-                });
-
-                // Activate immediately after a successful resolve
+            // ─── 3. Activate ONLY if Microsoft hasn't already ───
+            //     (Microsoft-managed activation => status is already "Subscribed")
+            if (status == "PendingFulfillmentStart")
+            {
                 var activated = await _msOps.ActivateAsync(mpSub.Id, _adconfig.Value.CITenantId);
                 if (!activated)
-                {
                     _logger.LogError($"Activation failed for subscription {mpSub.Id}");
-                }
-                HttpContext.Session.SetString("PendingId", res.SingleResult.Id.ToString());
-                HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Subscription.Id);
-                HttpContext.Session.SetString("UserEmail", mpSub.Subscription.Purchaser.EmailId);
-                HttpContext.Session.SetString("UserName", mpSub.Subscription.Purchaser.EmailId.Split('@')[0]);
-                HttpContext.Session.SetString("TenantId", mpSub.Subscription.Purchaser.TenantId);
-
-                return RedirectToAction("Register", new { Subscribe = planId, IsMarketPlace = true });
+                // Don't hard-fail — a retry job can retry activation within the 30-day window
             }
-
-            // Already subscribed → send to dashboard
-            return RedirectToAction("Index");
-        }
-
-        private async Task<IActionResult> CompleteMicrosoftRegistration(int planId, int seats)
-        {
-            var pendingIdStr = HttpContext.Session.GetString("PendingId");
-            if (!long.TryParse(pendingIdStr, out var pendingId))
-                return RedirectToAction("Index");
-
-            var pending = await _subManager.GetPendingSubscription(pendingId);
-            if (pending == null) return RedirectToAction("Index");
-
-            var plan = (await _subManager.GetSubscriptionPlanById(planId)).SingleResult;
-
-            if (seats < plan.MinSeats || seats > plan.NumberOfLicences)
+            else
             {
-                TempData["Error"] = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats.";
-                return RedirectToAction("Register", new { Subscribe = planId, IsMarketPlace = true });
+                _logger.LogInformation($"Skipping Activate — status is already {status} (Microsoft-managed).");
             }
 
-            pending.PlanId = planId;
-            pending.SeatsRequested = seats;
-            await _subManager.UpdatePendingSubscription(pending);
+            // ─── 4. Stash session and continue ───
+            HttpContext.Session.SetString("PendingId", res.SingleResult.Id.ToString());
+            HttpContext.Session.SetString("SubscriptionPlanId", plan.Id.ToString());
+            HttpContext.Session.SetString("SeatsPurchased", mpSub.Subscription.Quantity.ToString());
+            HttpContext.Session.SetString("MarketplaceSubscriptionId", mpSub.Subscription.Id);
+            HttpContext.Session.SetString("UserEmail", purchaser.EmailId);
+            HttpContext.Session.SetString("UserName", purchaser.EmailId.Split('@')[0]);
+            HttpContext.Session.SetString("TenantId", purchaser.TenantId);
 
-            return await LinkPendingAndProvision(pending, "Microsoft");
+            // ─── 5. Drive them through sign-in → register ───
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return RedirectToAction("SignIn", new
+                {
+                    returnUrl = $"/Home/Register?Subscribe={plan.Id}&IsMarketPlace=true"
+                });
+            }
+
+            return RedirectToAction("Register", new { Subscribe = plan.Id, IsMarketPlace = true });
         }
 
         //    var purchaser = mpSub.Subscription.Purchaser;
@@ -345,65 +340,6 @@ namespace CITracker.Controllers
         //    //return RedirectToAction("Register", new { Subscribe = re.SingleResult.Id.ToString(), IsMarketPlace = true });
         //}
 
-        [HttpPost("StartSubscription")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StartSubscription(int planId, int seats, string provider)
-        {
-            if (!IsAuthenticated()) return RedirectToAction("SignIn");
-
-            var tenantId = HttpContext.Session.GetString("TenantId");
-            var email = HttpContext.Session.GetString("UserEmail");
-
-            var plan = (await _subManager.GetSubscriptionPlanById(planId)).SingleResult;
-            if (plan == null) return RedirectToAction("Index");
-
-            if (seats < plan.MinSeats || seats > plan.NumberOfLicences)
-            {
-                TempData["Error"] = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats for {plan.Name}.";
-                return RedirectToAction("Register", new { Subscribe = planId });
-            }
-
-            // Existing organization?
-            var orgResp = await _subManager.GetOrganizationByTenantId(tenantId);
-            int? orgId = orgResp?.SingleResult?.Id;
-
-            if (provider == "stripe")
-            {
-                var trialDays = plan.FreeTrialDuration;
-
-                var res = await _subManager.CreatePendingSubscription(new PendingSubscription
-                {
-                    OrganizationId = orgId,
-                    PlanId = planId,
-                    SeatsRequested = seats,
-                    Provider = "Stripe",
-                    BillingEmail = email,
-                    TrialDays = trialDays,
-                    Status = "AwaitingPayment",
-                    CreatedAt = DateTime.UtcNow,
-                    ExpiresAtUtc = DateTime.UtcNow.AddHours(24)
-                });
-
-                var url = _strPay.BuildPaymentLinkUrl(plan.StripePaymentLinkUrl, res.SingleResult.Id, email, seats);
-                return Redirect(url);
-            }
-
-            if (provider == "microsoft")
-            {
-                // Only valid if the tenant already has a Microsoft-created PendingSubscription
-                var mpSubId = HttpContext.Session.GetString("MarketplaceSubscriptionId");
-                if (string.IsNullOrEmpty(mpSubId))
-                {
-                    TempData["Error"] = "Please purchase the Microsoft Marketplace offer first.";
-                    return RedirectToAction("Index");
-                }
-                // Set seats + plan on the session-stored subscription; complete registration
-                return await CompleteMicrosoftRegistration(planId, seats);
-            }
-
-            return RedirectToAction("Index");
-        }
-
 
         [HttpGet("saas/stripe-success")]
         public async Task<IActionResult> StripeSuccess(string session_id)
@@ -433,81 +369,18 @@ namespace CITracker.Controllers
         }
 
 
-        private async Task<IActionResult> LinkPendingAndProvision(PendingSubscription pending, string provider)
+        [HttpGet("signin")]
+        public IActionResult SignIn(string provider = "Microsoft", string? returnUrl = null)
         {
-            var plan = (await _subManager.GetSubscriptionPlanById(pending.PlanId)).SingleResult;
-
-            // Create organization if not yet created
-            int orgId;
-            var existingOrg = await _subManager.GetOrganizationByTenantId(HttpContext.Session.GetString("TenantId"));
-            if (existingOrg?.SingleResult == null)
+            var scheme = provider switch
             {
-                var org = new Organization
-                {
-                    Name = HttpContext.Session.GetString("CompanyName") ?? pending.BillingEmail,
-                    TenantId = HttpContext.Session.GetString("TenantId"),
-                    AdminName = HttpContext.Session.GetString("UserName"),
-                    AdminEmailAddress = pending.BillingEmail,
-                    AdminPhoneNumber = "",
-                    Domain = pending.BillingEmail.Split('@').Last(),
-                    CountryId = 1,
-                    Address = "",
-                    Provider = provider,
-                    IsSubscribed = true,
-                    DateCreated = DateTime.UtcNow
-                };
-                var admin = new CIUser
-                {
-                    Name = org.AdminName,
-                    EmailAddress = org.AdminEmailAddress,
-                    Role = "Admin",
-                    IsActive = true,
-                    DateCreated = DateTime.UtcNow,
-                    IdentityProvider = provider
-                };
-                var trialStart = pending.TrialDays > 0 ? DateTime.UtcNow : (DateTime?)null;
-                var trialEnd = pending.TrialDays > 0 ? DateTime.UtcNow.AddDays(pending.TrialDays) : (DateTime?)null;
-
-                var sub = new Subscription
-                {
-                    SubscriptionPlanId = pending.PlanId,
-                    PaymentCustomerId = pending.ProviderCustomerId,
-                    PaymentSubscriptionId = pending.ProviderSubscriptionId,
-                    Provider = provider,
-                    SeatsPurchased = pending.SeatsRequested,
-                    SeatsAllocated = 0,
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddYears(1),
-                    Status = trialEnd.HasValue ? "TRIALING" : "ACTIVE",
-                    TrialStartUtc = trialStart,
-                    TrialEndUtc = trialEnd,
-                    DateCreated = DateTime.UtcNow
-                };
-                var res = await _subManager.RegisterOrganizationSubscription(org, admin, sub);
-                if (res.StatusCode != 200) { TempData["Error"] = res.Message; return RedirectToAction("Index"); }
-                orgId = org.Id;
-            }
-            else
-            {
-                orgId = existingOrg.SingleResult.Id;
-            }
-
-            await _subManager.MarkPendingSubscriptionLinked(pending.Id, orgId);
-            await _subManager.UpdateOrganizationSubscription(orgId, pending.ProviderCustomerId, pending.TrialDays > 0 ? "TRIALING" : "ACTIVE", 0);
-
-            // Refresh session state
-            var userResp = await _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail"));
-            SetSessionVariables(userResp?.SingleResult, true, provider);
-
-            return RedirectToAction("Dashboard", "Main");
-        }
-
-
-        public IActionResult SignIn()
-        {
-            ClearSessionIdentity();
-
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, OpenIdConnectDefaults.AuthenticationScheme);
+                "Google" => "Google",
+                "Corporate" => "CorporateSso",
+                _ => "Microsoft"
+            };
+            return Challenge(
+                new AuthenticationProperties { RedirectUri = returnUrl ?? "/" },
+                scheme);
         }
 
 
@@ -571,53 +444,6 @@ namespace CITracker.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [HttpGet("Register")]
-        public IActionResult Register(string Subscribe, bool IsMarketPlace = false)
-        {
-            try
-            {
-                if (!String.IsNullOrEmpty(Subscribe) && !String.IsNullOrWhiteSpace(Subscribe))
-                {
-                    //get single mpSub details
-                    try
-                    {
-                        var subs = _subManager.GetSubscriptionPlanById(int.Parse(Subscribe)).Result;
-                        var payopts = _payManager.FetchPaymentOptions().Result;
-                        var country = _opsManager.FetchOperationalCountry().Result;
-
-                        if (subs.StatusCode != (int)HttpStatusCode.OK || payopts.StatusCode != (int)HttpStatusCode.OK)
-                        {
-                            _logger.LogInformation($"Invalid Subscription or PaymentOptions Error || subscriptionId - {JsonConvert.SerializeObject(subs)} ||| {JsonConvert.SerializeObject(payopts)}");
-
-                            return RedirectToAction("Index");
-                        }
-
-                        var cvm = new CheckoutVM
-                        {
-                            PaymentProvider = IsMarketPlace == true ? payopts.Result.Where(t => t.Name == "Microsoft").ToList() : payopts.Result.Where(t => t.Name != "Microsoft").ToList(),
-                            SubscriptionPlan = subs.SingleResult,
-                            Country = country.Result.ToList(),
-                            PendingId = long.Parse(HttpContext.Session.GetString("PendingId"))
-                        };
-
-                        return View(cvm);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Exception at Register || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(ex)}");
-                    }
-                }
-                return RedirectToAction("Index");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception at Register2 || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(e)}");
-
-                return RedirectToAction("Index");
-            }
-
-        }
-
 
         [HttpPost("Checkout")]
         [ValidateAntiForgeryToken]
@@ -676,6 +502,250 @@ namespace CITracker.Controllers
 
         }
 
+        private async Task<IActionResult> CompleteMicrosoftRegistration(int planId, int seats)
+        {
+            var pendingIdStr = HttpContext.Session.GetString("PendingId");
+            if (!long.TryParse(pendingIdStr, out var pendingId))
+                return RedirectToAction("Index");
+
+            var pending = await _subManager.GetPendingSubscription(pendingId);
+            if (pending == null) return RedirectToAction("Index");
+
+            var plan = (await _subManager.GetSubscriptionPlanById(planId)).SingleResult;
+
+            if (seats < plan.MinSeats || seats > plan.NumberOfLicences)
+            {
+                TempData["Error"] = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats.";
+                return RedirectToAction("Register", new { Subscribe = planId, IsMarketPlace = true });
+            }
+
+            pending.PlanId = planId;
+            pending.SeatsRequested = seats;
+            await _subManager.UpdatePendingSubscription(pending);
+
+            return await LinkPendingAndProvision(pending, "Microsoft");
+        }
+
+        private async Task<IActionResult> LinkPendingAndProvision(PendingSubscription pending, string provider)
+        {
+            var plan = (await _subManager.GetSubscriptionPlanById(pending.PlanId)).SingleResult;
+
+            // Create organization if not yet created
+            int orgId;
+            var existingOrg = await _subManager.GetOrganizationByTenantId(HttpContext.Session.GetString("TenantId"));
+            if (existingOrg?.SingleResult == null)
+            {
+                var org = new Organization
+                {
+                    Name = HttpContext.Session.GetString("CompanyName") ?? pending.BillingEmail,
+                    TenantId = HttpContext.Session.GetString("TenantId"),
+                    AdminName = HttpContext.Session.GetString("UserName"),
+                    AdminEmailAddress = pending.BillingEmail,
+                    AdminPhoneNumber = HttpContext.Session.GetString("AdminPhone"),
+                    Domain = pending.BillingEmail.Split('@').Last(),
+                    CountryId = HttpContext.Session.GetInt32("CountryId") ?? 1,
+                    Address = HttpContext.Session.GetString("CompanyAddr"),
+                    Provider = provider,
+                    IsSubscribed = true,
+                    DateCreated = DateTime.UtcNow
+                };
+                var admin = new CIUser
+                {
+                    Name = org.AdminName,
+                    EmailAddress = org.AdminEmailAddress,
+                    Role = "Admin",
+                    IsActive = true,
+                    DateCreated = DateTime.UtcNow,
+                    IdentityProvider = provider
+                };
+                var trialStart = pending.TrialDays > 0 ? DateTime.UtcNow : (DateTime?)null;
+                var trialEnd = pending.TrialDays > 0 ? DateTime.UtcNow.AddDays(pending.TrialDays) : (DateTime?)null;
+
+                var sub = new Subscription
+                {
+                    SubscriptionPlanId = pending.PlanId,
+                    PaymentCustomerId = pending.ProviderCustomerId,
+                    PaymentSubscriptionId = pending.ProviderSubscriptionId,
+                    Provider = provider,
+                    SeatsPurchased = pending.SeatsRequested,
+                    SeatsAllocated = 0,
+                    StartDate = DateTime.UtcNow,
+                    EndDate = DateTime.UtcNow.AddYears(1),
+                    Status = trialEnd.HasValue ? "TRIALING" : "ACTIVE",
+                    TrialStartUtc = trialStart,
+                    TrialEndUtc = trialEnd,
+                    DateCreated = DateTime.UtcNow
+                };
+                var res = await _subManager.RegisterOrganizationSubscription(org, admin, sub);
+                if (res.StatusCode != 200) { TempData["Error"] = res.Message; return RedirectToAction("Index"); }
+                orgId = org.Id;
+            }
+            else
+            {
+                orgId = existingOrg.SingleResult.Id;
+            }
+
+            await _subManager.MarkPendingSubscriptionLinked(pending.Id, orgId);
+            await _subManager.UpdateOrganizationSubscription(orgId, pending.ProviderCustomerId, pending.TrialDays > 0 ? "TRIALING" : "ACTIVE", 0);
+
+            // Refresh session state
+            var userResp = await _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail"));
+            SetSessionVariables(userResp?.SingleResult, true, provider);
+
+            return RedirectToAction("Dashboard", "Main");
+        }
+
+        [HttpGet("Register")]
+        public IActionResult Register(int Subscribe, bool IsMarketPlace = false)
+        {
+            try
+            {
+                if (Subscribe > 0)
+                {
+                    //get single mpSub details
+                    try
+                    {
+                        var subs = _subManager.GetSubscriptionPlanById(Subscribe).Result;
+                        var payopts = _payManager.FetchPaymentOptions().Result;
+                        var country = _opsManager.FetchOperationalCountry().Result;
+
+                        if (subs.StatusCode != (int)HttpStatusCode.OK || payopts.StatusCode != (int)HttpStatusCode.OK)
+                        {
+                            _logger.LogInformation($"Invalid Subscription or PaymentOptions Error || subscriptionId - {JsonConvert.SerializeObject(subs)} ||| {JsonConvert.SerializeObject(payopts)}");
+
+                            return RedirectToAction("Index");
+                        }
+
+                        var cvm = new CheckoutVM
+                        {
+                            PaymentProvider = IsMarketPlace == true ? payopts.Result.Where(t => t.Name == "Microsoft").ToList() : payopts.Result.Where(t => t.Name != "Microsoft").ToList(),
+                            SubscriptionPlan = subs.SingleResult,
+                            Country = country.Result.ToList(),
+                            PendingId = long.Parse(HttpContext.Session.GetString("PendingId"))
+                        };
+
+                        return View(cvm);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Exception at Register || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(ex)}");
+                    }
+                }
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception at Register2 || subscriptionId - {Subscribe} ||| - {JsonConvert.SerializeObject(e)}");
+
+                return RedirectToAction("Index");
+            }
+        }
+
+
+        [HttpPost("StartSubscription")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StartSubscription(int planId, int seats, string provider)
+        {
+            if (!IsAuthenticated()) return RedirectToAction("SignIn");
+
+            var tenantId = HttpContext.Session.GetString("TenantId");
+            var email = HttpContext.Session.GetString("UserEmail");
+
+            var plan = (await _subManager.GetSubscriptionPlanById(planId)).SingleResult;
+            if (plan == null) return RedirectToAction("Index");
+
+            if (seats < plan.MinSeats || seats > plan.NumberOfLicences)
+            {
+                TempData["Error"] = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats for {plan.Name}.";
+                return RedirectToAction("Register", new { Subscribe = planId });
+            }
+
+            // Existing organization?
+            var orgResp = await _subManager.GetOrganizationByTenantId(tenantId);
+            int? orgId = orgResp?.SingleResult?.Id;
+
+            if (provider == "stripe")
+            {
+                var trialDays = plan.FreeTrialDuration;
+
+                var res = await _subManager.CreatePendingSubscription(new PendingSubscription
+                {
+                    OrganizationId = orgId,
+                    PlanId = planId,
+                    SeatsRequested = seats,
+                    Provider = "Stripe",
+                    BillingEmail = email,
+                    TrialDays = trialDays,
+                    Status = "AwaitingPayment",
+                    CreatedAt = DateTime.UtcNow,
+                    ExpiresAtUtc = DateTime.UtcNow.AddHours(24)
+                });
+
+                var url = _strPay.BuildPaymentLinkUrl(plan.StripePaymentLinkUrl, res.SingleResult.Id, email, seats);
+                return Redirect(url);
+            }
+
+            if (provider == "microsoft")
+            {
+                // Only valid if the tenant already has a Microsoft-created PendingSubscription
+                var mpSubId = HttpContext.Session.GetString("MarketplaceSubscriptionId");
+                if (string.IsNullOrEmpty(mpSubId))
+                {
+                    TempData["Error"] = "Please purchase the Microsoft Marketplace offer first.";
+                    return RedirectToAction("Index");
+                }
+                // Set seats + plan on the session-stored subscription; complete registration
+                return await CompleteMicrosoftRegistration(planId, seats);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost("RegisterPayment")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RegisterPayment()
+        {
+            try
+            {
+                // 1. Pending subscription is the source of truth for plan + seats
+                var pendingIdStr = HttpContext.Session.GetString("PendingId");
+                if (!long.TryParse(pendingIdStr, out var pendingId))
+                    return RedirectToAction("Index");
+
+                var pending = await _subManager.GetPendingSubscription(pendingId);
+                if (pending == null)
+                    return RedirectToAction("Index");
+
+                // 2. Reject duplicates (an org already active)
+                var tenantId = HttpContext.Session.GetString("TenantId") ?? "";
+                var existingSub = await _subManager.GetOrganizationSubscription(tenantId);
+                if (existingSub?.SingleResult?.EndDate > DateTime.UtcNow)
+                {
+                    TempData["Error"] = "Your organisation already has an active subscription.";
+                    return RedirectToAction("Index");
+                }
+
+                // 3. Capture additional info the Marketplace doesn't give us
+                HttpContext.Session.SetString("CompanyName", Request.Form["companyName"]);
+                HttpContext.Session.SetString("CompanyAddr", Request.Form["address"]);
+                HttpContext.Session.SetString("AdminPhone", Request.Form["phone"]);
+                HttpContext.Session.SetString("AdminName", Request.Form["firstName"]);
+                HttpContext.Session.SetInt32("CountryId", int.Parse(Request.Form["country"]));
+
+                // 4. No need to touch pending.SeatsRequested — it already
+                //    contains the seats the customer paid for on Marketplace.
+
+                // 5. Provision
+                return await LinkPendingAndProvision(pending, "Microsoft");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"RegisterPayment error ||| {JsonConvert.SerializeObject(ex)}");
+                TempData["Error"] = "We could not complete your registration. Please try again.";
+                return RedirectToAction("Index");
+            }
+        }
 
         //[HttpPost("RegisterPayment")]
         //[ValidateAntiForgeryToken]
@@ -685,6 +755,15 @@ namespace CITracker.Controllers
         //    try
         //    {
         //        string domain = Request.Form["adminEmail"].ToString().Split('@')[1];
+        //        int subscriptionPlanId = int.Parse(HttpContext.Session.GetString("SubscriptionPlanId"));
+        //        int seatsPurchased = int.Parse(HttpContext.Session.GetString("SeatsPurchased"));
+
+        //        subscription = await _subManager.GetSubscriptionPlanById(subscriptionPlanId);
+
+        //        if (subscription == null)
+        //        {
+        //            return RedirectToAction("Index");
+        //        }
 
         //        //check if organization has an existing active mpSub
         //        //this is to deter any other member of an organization from creating multiple subscriptions for the same organization
@@ -698,7 +777,7 @@ namespace CITracker.Controllers
         //                {
         //                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
         //                    Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
-        //                    SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
+        //                    SubscriptionPlan = subscription.SingleResult,
         //                    PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
         //                    Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
         //                });
@@ -729,25 +808,20 @@ namespace CITracker.Controllers
         //            DateCreated = DateTime.UtcNow
         //        };
 
-        //        //get mpSub Details
-        //        subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
-
-        //        if (subscription == null || subscription?.SingleResult == null)
-        //        {
-        //            return RedirectToAction("Index");
-        //        }
 
         //        var selectedDuration = 1; // int.Parse(Request.Form["subscriptionDuration"]);
 
         //        //build mpSub details
         //        var sub = new Subscription
         //        {
-        //            PlanId = int.Parse(Request.Form["subscriptionId"]),
+        //            SubscriptionPlanId = subscriptionPlanId,
         //            PaymentSubscriptionId = HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(),
         //            StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
         //            EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
         //            DateCreated = DateTime.UtcNow,
-        //            Status = SubscriptionStatus.ACTIVE.ToString()
+        //            Status = SubscriptionStatus.ACTIVE.ToString(),
+        //            SeatsPurchased = seatsPurchased,
+        //            SeatsAllocated = seatsPurchased
         //        };
 
         //        var resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
@@ -770,11 +844,8 @@ namespace CITracker.Controllers
         //        var user = _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail").ToString()).Result;
         //        SetSessionVariables(user.SingleResult, true);
 
-        //        ////call microsoft to activate subscription
-        //        //await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.CITenantId);
-
         //        //Redirect to failed mpSub page
-        //        return RedirectToAction("Index", "Home");                
+        //        return RedirectToAction("Index", "Home");
         //    }
         //    catch (Exception ex)
         //    {
