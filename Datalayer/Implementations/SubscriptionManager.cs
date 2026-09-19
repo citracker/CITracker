@@ -178,7 +178,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, o.Provider, s.PlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.PlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.PlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
@@ -845,7 +845,7 @@ namespace Datalayer.Implementations
                         Provider = provider,
                         EventId = eventId,
                         ProcessedAtUtc = DateTime.UtcNow
-                    });
+                    }, dbTransaction);
 
                     dbTransaction.Commit();
 
@@ -861,6 +861,10 @@ namespace Datalayer.Implementations
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
                 return false; // duplicate
+            }
+            finally
+            {
+                db.Close();
             }
         }
 

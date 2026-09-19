@@ -914,7 +914,8 @@ namespace CITracker.Controllers
                     Name = Request.Form["firstName"],
                     EmailAddress = Request.Form["adminEmail"],
                     Role = Shared.Enumerations.Role.Admin.ToString(),
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    IdentityProvider = provider                    
                 };
 
                 //get mpSub Details
