@@ -956,7 +956,7 @@ namespace CITracker.Controllers
 
                 //get user's detail
                 var user = _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail").ToString()).Result;
-                SetSessionVariables(user.SingleResult, provider == "microsoft" ? true : false);
+                SetSessionVariables(user.SingleResult, true, provider);
 
                 if (provider == "stripe")
                 {
@@ -1006,9 +1006,6 @@ namespace CITracker.Controllers
                 else
                 {
                     _logger.LogInformation($"should not manually activate a subscription till I know what it is for. Microsoft should handle this ||| MarketplaceSubscriptionId - {HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString()}, Tenant ||| {_adconfig.Value.CITenantId}");
-
-                    ////call microsoft to activate subscription
-                    //await _msOps.ActivateAsync(HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString(), _adconfig.Value.CITenantId);
 
                     //Redirect to failed mpSub page
                     return RedirectToAction("Index", "Home");
