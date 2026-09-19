@@ -5058,11 +5058,20 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign in with SSO.
+        ///   Looks up a localized string similar to Sign in with Google.
         /// </summary>
-        public static string SignInWithSSO {
+        public static string SignInWithGoogle {
             get {
-                return ResourceManager.GetString("SignInWithSSO", resourceCulture);
+                return ResourceManager.GetString("SignInWithGoogle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sign in with Microsoft.
+        /// </summary>
+        public static string SignInWithMicrosoft {
+            get {
+                return ResourceManager.GetString("SignInWithMicrosoft", resourceCulture);
             }
         }
         

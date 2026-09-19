@@ -77,6 +77,15 @@
                                     <div class="m-t-30"> 
                                         <div class=" p-t-10"> 
                                             <h5 class="text-primary m-b-5 fs-14">@Model.Subscription.SubscriptionName @SharedResource.Plan</h5>
+
+                                            @* <p>@Model.Subscription.SeatsPurchased seats purchased (@Model.Subscription.SeatsAllocated in use of @Model.Subscription.MaxSeats max)</p>
+                                            @if (Model.Subscription.TrialEndUtc.HasValue)
+                                            {
+                                                <p>Trial ends <b>@Model.Subscription.TrialEndUtc.Value.ToString("dd MMM yyy")</b></p>
+                                            }
+                                            <button class="btn btn-success" onclick="openUpgrade()">Upgrade seats / plan</button> *@
+
+
                                             <p>@Model.Subscription.NumberOfLicences @SharedResource.Licences (<b>@Model.Subscription.NumberOfUsedLicences @SharedResource.Users</b>)</p>
                                             <p>@SharedResource.StartDate: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.StartDate))</b></p>
                                             <p>@SharedResource.EndDate: <b>@String.Format("{0:dd MMMM, yyy}", Convert.ToDateTime(Model.Subscription.EndDate))</b></p>

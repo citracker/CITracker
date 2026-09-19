@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>Paramètres</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>Se connecter avec SSO</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>Se connecter avec Microsoft</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>Catégorie d'économies immatérielles</value>
@@ -2123,5 +2123,8 @@
   </data>
   <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
     <value>Remarque : Vous ne serez pas redirigé(e) pour effectuer un paiement.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Se connecter avec Google</value>
   </data>
 </root>

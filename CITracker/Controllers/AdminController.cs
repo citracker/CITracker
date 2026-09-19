@@ -1,4 +1,5 @@
 ﻿using CITracker.Validator;
+using Datalayer.Implementations;
 using Datalayer.Interfaces;
 using FluentValidation;
 using Infastructure.Interface;
@@ -24,8 +25,9 @@ namespace CITracker.Controllers
         private readonly IMicrosoftOperations _micOps;
         private readonly ISubscriptionManager _subManager;
         private readonly IStripePayment _strPay;
+        private readonly ISeatService _seatService;
 
-        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription, IStripePayment strPay)
+        public AdminController(ILogger<AdminController> logger, IOptions<ADKeyValues> config, IOperationManager opsManager, IMicrosoftOperations micOps, ISubscriptionManager subscription, IStripePayment strPay, ISeatService seatService)
         {
             _logger = logger;
             _config = config;
@@ -33,6 +35,7 @@ namespace CITracker.Controllers
             _micOps = micOps;
             _subManager = subscription;
             _strPay = strPay;
+            _seatService = seatService;
         }
 
 
@@ -1563,7 +1566,8 @@ namespace CITracker.Controllers
                 {
                     return true;
                 }
-                return false;
+
+                return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail"));
             }
             catch (Exception)
             {
@@ -1585,6 +1589,77 @@ namespace CITracker.Controllers
             {
                 return false;
             }
+        }
+
+        [HttpPost("api/subscription/upgrade-seats")]
+        public async Task<IActionResult> UpgradeSeats(int newSeats)
+        {
+            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
+            var sub = (await _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId"))).SingleResult;
+
+            if (sub.Provider == "Stripe")
+            {
+                // Mid-cycle: create a Stripe Checkout for the prorated difference
+                var plan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
+                var extraSeats = newSeats - sub.SeatsPurchased;
+                if (extraSeats <= 0) return BadRequest("Only increase through this endpoint.");
+
+                // Reuse Payment Link with adjustable quantity OR create a Session
+                var sessionUrl = await _strPay.CreateSeatUpgradeCheckout(sub.PaymentCustomerId, plan.PriceId, extraSeats, successUrl: "/Account/SeatUpgradeSuccess");
+
+                return Ok(new { url = sessionUrl });
+            }
+            else // Microsoft
+            {
+                // Marketplace requires ChangeQuantity. This is only allowed at renewal in most cases;
+                // otherwise use ChangePlan if crossing a plan boundary.
+                return await ScheduleMicrosoftQuantityChange(newSeats);
+            }
+        }
+
+        [HttpPost("api/subscription/schedule-change")]
+        public async Task<IActionResult> ScheduleChange(int? seats, int? planId)
+        {
+            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
+            var res = await _seatService.ScheduleSeatChangeAtRenewalAsync(orgId, seats, planId);
+            return StatusCode(res.StatusCode, res);
+        }
+
+
+
+        private async Task<IActionResult> ScheduleMicrosoftQuantityChange(int newSeats)
+        {
+            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
+
+            // Fetch the current subscription row so we know which plan and provider
+            var subResp = await _subManager.GetOrganizationSubscription(
+                HttpContext.Session.GetString("TenantId"));
+
+            if (subResp?.SingleResult == null)
+                return BadRequest(new { message = "No subscription for this organization." });
+
+            var sub = subResp.SingleResult;
+
+            if (sub.Provider != "Microsoft")
+                return BadRequest(new { message = "Not a Microsoft Marketplace subscription." });
+
+            // Validate against plan bounds
+            var plan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
+            if (newSeats < plan.MinSeats || newSeats > plan.NumberOfLicences)
+                return BadRequest(new { message = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats." });
+
+            if (newSeats < sub.NumberOfUsedLicences)
+                return BadRequest(new { message = $"You have {sub.NumberOfUsedLicences} users active. Reduce users before decreasing seats." });
+
+            // Call Microsoft
+            var res = await _micOps.ChangeQuantity(sub.PaymentSubscriptionId, newSeats, _config.Value.CITenantId);
+            if (res.StatusCode != (int)HttpStatusCode.OK)
+                return StatusCode(res.StatusCode, new { message = res.Message });
+
+            // Optimistically update local rows; the ChangeQuantity webhook will confirm
+            await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(sub.PaymentSubscriptionId, newSeats);
+
+            return Ok(new { message = "Seat change submitted to Microsoft. It will reflect shortly." });
         }
     }
 }

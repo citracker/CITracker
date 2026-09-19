@@ -178,7 +178,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.PlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.PlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.PlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
@@ -200,7 +200,7 @@ namespace Datalayer.Implementations
                         Message = "Record not found"
                     });
                 }
-            
+            }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationSubscription)} - {JsonConvert.SerializeObject(ex)}");
@@ -496,7 +496,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub)
+        public async Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub)
         {
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
@@ -537,16 +537,20 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return new ResponseHandler
+                return new ResponseHandler<Organization>
                 {
                     StatusCode = (int) HttpStatusCode.OK,
-                    Message = "Organization registration was successful"
+                    Message = "Organization registration was successful",
+                    SingleResult = new Organization
+                    {
+                        Id = org.Id
+                    }
                 };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
                 // Duplicate admin email insert detected
-                return await Task.FromResult(new ResponseHandler
+                return await Task.FromResult(new ResponseHandler<Organization>
                 {
                     StatusCode = (int)HttpStatusCode.ExpectationFailed,
                     Message = "Admin Email Exists"
@@ -556,7 +560,7 @@ namespace Datalayer.Implementations
             {
                 dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(RegisterOrganizationSubscription)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler
+                return new ResponseHandler<Organization>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
@@ -667,15 +671,15 @@ namespace Datalayer.Implementations
 
                 if (resi != null)
                 {
-                    resi.Status = subscription.Status;
+                    resi.Status = subscription.Subscription.SaasSubscriptionStatus;
                     resi.LastUpdatedDate = DateTime.UtcNow;
-                    resi.StartDate = Convert.ToDateTime(subscription.Term.StartDate);
-                    resi.EndDate = Convert.ToDateTime(subscription.Term.EndDate);
+                    resi.StartDate = Convert.ToDateTime(subscription.Subscription.Term.StartDate);
+                    resi.EndDate = Convert.ToDateTime(subscription.Subscription.Term.EndDate);
 
                     var updRes = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
-                    _logger.LogInformation($"Subscription update for orgId {resi.OrganizationId} is now {subscription.Status}. Result: {updRes}");
+                    _logger.LogInformation($"Subscription update for orgId {resi.OrganizationId} is now {subscription.Subscription.SaasSubscriptionStatus}. Result: {updRes}");
 
-                    if(subscription.Status.ToLower().Equals("active"))
+                    if(subscription.Subscription.SaasSubscriptionStatus.ToLower().Equals("active"))
                     {
                         var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
 
@@ -688,7 +692,7 @@ namespace Datalayer.Implementations
                         audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                         var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
 
-                        _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {resi.Id} is now {subscription.Status}.");
+                        _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {resi.Id} is now {subscription.Subscription.SaasSubscriptionStatus}.");
                     }
 
                     dbTransaction.Commit();
@@ -724,13 +728,13 @@ namespace Datalayer.Implementations
 
                 if (resi != null)
                 {
-                    resi.Status = subscription.Status;
+                    resi.Status = subscription.Subscription.SaasSubscriptionStatus;
                     resi.LastUpdatedDate = DateTime.UtcNow;
-                    resi.StartDate = Convert.ToDateTime(subscription.Term.StartDate);
-                    resi.EndDate = Convert.ToDateTime(subscription.Term.EndDate);
+                    resi.StartDate = Convert.ToDateTime(subscription.Subscription.Term.StartDate);
+                    resi.EndDate = Convert.ToDateTime(subscription.Subscription.Term.EndDate);
 
                     var updRes = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
-                    _logger.LogInformation($"Subscription update for orgId {resi.OrganizationId} is now {subscription.Status}. Result: {updRes}");
+                    _logger.LogInformation($"Subscription update for orgId {resi.OrganizationId} is now {subscription.Subscription.SaasSubscriptionStatus}. Result: {updRes}");
 
                     var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
 
@@ -743,7 +747,7 @@ namespace Datalayer.Implementations
                     audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
 
-                    _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {resi.Id} is now {subscription.Status}.");
+                    _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {resi.Id} is now {subscription.Subscription.SaasSubscriptionStatus}.");
 
                     dbTransaction.Commit();
                 }
@@ -763,5 +767,132 @@ namespace Datalayer.Implementations
             }
         }
 
+
+        public async Task<ResponseHandler<PendingSubscription>> CreatePendingSubscription(PendingSubscription pending)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            try
+            {
+                using var dbTransaction = dbConnection.BeginTransaction();
+
+                //add pendingId to object
+                pending.Id = (int)_genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PendingSubscriptionTable).Result;
+
+                try
+                {  
+                    await _repository.InsertAsync(dbConnection, pending, dbTransaction);
+                    dbTransaction.Commit();
+                    return new ResponseHandler<PendingSubscription> { StatusCode = 200, Message = "Created", SingleResult = { Id = pending.Id } };
+                }
+                catch(Exception ex)
+                {
+                    dbTransaction.Rollback();
+                    _logger.LogError($"Exception at {nameof(CreatePendingSubscription)} - {JsonConvert.SerializeObject(ex)}");
+                    return new ResponseHandler<PendingSubscription> { StatusCode = 500, Message = "Error" };
+                } 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(CreatePendingSubscription)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler<PendingSubscription> { StatusCode = 500, Message = "Error" };
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
+        public async Task<PendingSubscription> GetPendingSubscription(long pendingId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE PendingId = @id", new { id = pendingId }, CommandType.Text);
+        }
+
+        public async Task<PendingSubscription> GetPendingSubscriptionByStripeSession(string sessionId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE StripeSessionId = @sid", new { sid = sessionId }, CommandType.Text);
+        }
+
+        public async Task UpdatePendingSubscription(PendingSubscription pending)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            await _repository.UpdateAsync(db, pending);
+        }
+
+        public async Task MarkPendingSubscriptionLinked(long pendingId, int organizationId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            await _repository.ExecuteAsync(db, "UPDATE PendingSubscription SET Status='Linked', OrganizationId=@oid WHERE PendingId=@id", new { oid = organizationId, id = pendingId }, CommandType.Text);
+        }
+
+        public async Task<bool> MarkWebhookEventProcessedAsync(string provider, string eventId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            db.Open();
+            var dbTransaction = db.BeginTransaction();
+            try
+            {
+                //add id to object
+                var id = (int)_genManager.GetNextTableId(db, dbTransaction, DatabaseScripts.ProcessedWebhookEventTable).Result;
+
+                try
+                {
+                    await _repository.InsertAsync(db, new ProcessedWebhookEvent
+                    {
+                        Id = id,
+                        Provider = provider,
+                        EventId = eventId,
+                        ProcessedAtUtc = DateTime.UtcNow
+                    });
+
+                    dbTransaction.Commit();
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    dbTransaction.Rollback();
+                    _logger.LogError($"Exception at {nameof(MarkWebhookEventProcessedAsync)} - {JsonConvert.SerializeObject(ex)}");
+                    return false;
+                }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                return false; // duplicate
+            }
+        }
+
+        public async Task<ResponseHandler> UpsertUserIdentity(UserIdentity identity)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var existing = await _repository.GetAsync<UserIdentity>(db, "SELECT * FROM UserIdentity WHERE Provider=@p AND ExternalId=@e", new { p = identity.Provider, e = identity.ExternalId }, CommandType.Text);
+
+            if (existing == null)
+            {
+                await _repository.InsertAsync(db, identity);
+            }
+            else
+            {
+                existing.Email = identity.Email;
+                existing.TenantHint = identity.TenantHint;
+                await _repository.UpdateAsync(db, existing);
+            }
+            return new ResponseHandler { StatusCode = 200 };
+        }
+
+        public async Task<UserIdentity> GetUserIdentity(string provider, string externalId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            return await _repository.GetAsync<UserIdentity>(db, "SELECT * FROM UserIdentity WHERE Provider=@p AND ExternalId=@e", new { p = provider, e = externalId }, CommandType.Text);
+        }
+
+
+        public async Task UpdateOrganizationSubscriptionFromMPEventSeats(string subscriptionId, int newSeats)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            await _repository.ExecuteAsync(db, @"UPDATE Subscription SET SeatsPurchased = @s, LastUpdatedDate = GETUTCDATE() WHERE PaymentSubscriptionId = @id", new { s = newSeats, id = subscriptionId }, CommandType.Text);
+        }
     }
 }

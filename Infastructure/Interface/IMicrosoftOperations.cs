@@ -12,5 +12,6 @@ namespace Infastructure.Interface
         Task<bool> ActivateAsync(string subsId, string tenantId);
         Task<ResponseHandler> CancelSubscription(string subsId, string tenantId);
         Task<CIMarketplaceSubscription> GetSubscription(string subsId, string tenantId);
+        Task<ResponseHandler> ChangeQuantity(string subscriptionId, int newQuantity, string tenantId);
     }
 }

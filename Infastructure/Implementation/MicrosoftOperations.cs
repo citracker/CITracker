@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using Datalayer.Interfaces;
 using Infastructure.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,6 +13,7 @@ using Shared.ExternalModels;
 using Shared.Interfaces;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Text;
 using DriveInfo = Shared.ExternalModels.DriveInfo;
 
 namespace Infastructure.Implementation
@@ -375,6 +377,51 @@ namespace Infastructure.Implementation
             {
                 _logger.LogError($"Exception at GetSubscription ||| {JsonConvert.SerializeObject(ex)}");
                 return null;
+            }
+        }
+
+        public async Task<ResponseHandler> ChangeQuantity(string subscriptionId, int newQuantity, string tenantId)
+        {
+            try
+            {
+                var accessToken = await GetAccessToken(tenantId);
+                if (accessToken == null)
+                {
+                    _logger.LogError("ChangeQuantity: no access token.");
+                    return new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.Unauthorized,
+                        Message = "Could not obtain access token"
+                    };
+                }
+
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var payload = new { quantity = newQuantity };
+                var json = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PatchAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/{subscriptionId}?api-version=2018-08-31", content);
+
+                var body = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"ChangeQuantity {response.StatusCode} ||| {body}");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Message = response.IsSuccessStatusCode ? "Quantity change submitted" : body
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at ChangeQuantity ||| {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occurred"
+                };
             }
         }
     }
