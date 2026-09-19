@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>Configurações</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>Entrar com SSO</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>Entrar com Microsoft</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>Categoria de economia suave</value>
@@ -2123,5 +2123,8 @@
   </data>
   <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
     <value>Nota: Você não será redirecionado para efetuar um pagamento.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Entrar com Google</value>
   </data>
 </root>

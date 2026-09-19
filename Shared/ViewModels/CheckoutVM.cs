@@ -1,9 +1,4 @@
 ﻿using Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shared.ViewModels
 {
@@ -14,5 +9,7 @@ namespace Shared.ViewModels
         public List<PaymentProvider> PaymentProvider { get; set; }
         public List<Country> Country { get; set; }
         public SubscriptionPlan SubscriptionPlan { get; set; }
+        public int? PendingSeats { get; set; }
+        public long? PendingId { get; set; }
     }
 }

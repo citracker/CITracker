@@ -14,5 +14,7 @@ namespace Shared.Models
         public bool IsActive { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
+        public string IdentityProvider { get; set; }
+
     }
 }

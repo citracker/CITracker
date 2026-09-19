@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.Enumerations;
 using Shared.ExternalModels;
+using System.Text;
 
 namespace CITracker.Controllers
 {
@@ -29,27 +30,73 @@ namespace CITracker.Controllers
             _config = config;
         }
 
-        public async Task HandleWebhook(Webhook payload)
+        //[HttpPost]
+        //public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
+        //{
+        //    Request.EnableBuffering();
+        //    using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+        //    var raw = await reader.ReadToEndAsync();
+        //    Request.Body.Position = 0;
+        //    _logger.LogInformation($"RAW WEBHOOK BODY: {raw}");
+
+
+        //    if (payload == null)
+        //    {
+        //        _logger.LogWarning("Webhook received but payload was null.");
+        //        return BadRequest();
+        //    }
+
+        //    _logger.LogInformation($"Received webhook. Action={payload.MarketplaceAction}, SubId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+
+        //    var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
+
+        //    switch (payload.MarketplaceAction)
+        //    {
+        //        case "Unsubscribe":
+        //        case "Suspended":
+        //            await DeactivateOrDisable(subscription);
+        //            break;
+
+        //        case "Reinstate":
+        //            await Enable(subscription);
+        //            break;
+
+        //        case "ChangePlan":
+        //            await UpdatePlan(subscription);
+        //            break;
+        //    }
+
+        //    return Ok();
+        //}
+
+        [HttpPost]
+        public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
         {
-            _logger.LogInformation($"Received webhook with action: {payload.Action} for subscription: {payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+            if (payload == null) return BadRequest();
+            _logger.LogInformation($"MS webhook: action={payload.MarketplaceAction} subId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+
+            // Microsoft doesn't provide a stable event id we can rely on; use correlation + timestamp
+            var eventKey = $"{payload.SubscriptionId}|{payload.MarketplaceAction}|{payload.TimeStamp:O}";
+            if (!await _subManager.MarkWebhookEventProcessedAsync("MicrosoftMarketplace", eventKey))
+            {
+                _logger.LogInformation($"Duplicate MS webhook {eventKey} ignored.");
+                return Ok();
+            }
+
+            if (string.IsNullOrEmpty(payload.SubscriptionId)) return Ok();
 
             var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
+            if (subscription == null) { _logger.LogWarning("GetSubscription returned null."); return Ok(); }
 
-            switch (payload.Action)
+            switch (payload.MarketplaceAction)
             {
                 case "Unsubscribe":
-                case "Suspend":
-                    DeactivateOrDisable(subscription);
-                    break;
-
+                case "Suspended": await _subManager.MPDeactivateOrganizationSubscription(subscription); break;
                 case "Reinstate":
-                    Enable(subscription);
-                    break;
-
                 case "ChangePlan":
-                    UpdatePlan(subscription);
-                    break;
+                case "ChangeQuantity": await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(subscription.Id, payload.Quantity ?? subscription.Quantity); break;
             }
+            return Ok();
         }
 
 

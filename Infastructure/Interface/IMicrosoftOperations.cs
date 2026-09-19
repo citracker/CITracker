@@ -8,9 +8,10 @@ namespace Infastructure.Interface
     {
         Task<List<DriveInfo>> DiscoverSharePointSites(string tenantId, string clientId, string clientSecret);
         Task<string> GetOrganizationDomain(string accesstoken);
-        Task<ResolveTokenResponse> ResolveAsync(string token, string tenantId);
-        Task ActivateAsync(string subsId, string tenantId);
+        Task<CIMarketplaceSubscription> ResolveAsync(string token, string tenantId);
+        Task<bool> ActivateAsync(string subsId, string tenantId);
         Task<ResponseHandler> CancelSubscription(string subsId, string tenantId);
         Task<CIMarketplaceSubscription> GetSubscription(string subsId, string tenantId);
+        Task<ResponseHandler> ChangeQuantity(string subscriptionId, int newQuantity, string tenantId);
     }
 }

@@ -19,5 +19,7 @@ namespace Shared.Models
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
         public string Domain { get; set; }
+        public bool HasUsedTrial { get; set; }
+
     }
 }

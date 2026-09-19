@@ -1,13 +1,10 @@
 ﻿using CITracker.Helpers;
 using Datalayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.Enumerations;
-using Shared.Models;
 using Stripe;
 using Stripe.Checkout;
 using System.Net;
@@ -32,51 +29,102 @@ namespace CITracker.Controllers
             _mail = mail;
         }
 
+        //[HttpPost]
+        //public async Task<IActionResult> Handle()
+        //{
+        //    var json = await new StreamReader(Request.Body).ReadToEndAsync();
+
+        //    _logger.LogInformation($"Stripe Event just arrived -- Raw Json ||| {json}");
+
+        //    var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _config.Value.WebhookSecret);
+
+        //    _logger.LogInformation($"Stripe Event ||| {JsonConvert.SerializeObject(stripeEvent)}");
+
+        //    switch (stripeEvent.Type)
+        //    {
+        //        case "checkout.session.completed":
+        //            await HandleCheckoutCompleted(stripeEvent);
+        //            break;
+
+        //        case "customer.subscription.created":
+        //        case "customer.subscription.updated":
+        //            await HandleSubscriptionUpdated(stripeEvent);
+        //            break;
+
+        //        case "customer.subscription.deleted":
+        //            await HandleSubscriptionDeleted(stripeEvent);
+        //            break;
+
+        //        case "invoice.payment_succeeded":
+        //            await HandlePaymentSucceeded(stripeEvent);
+        //            break;
+
+        //        case "invoice.payment_failed":
+        //            await HandlePaymentFailed(stripeEvent);
+        //            break;
+        //    }
+
+        //    return Ok();
+        //}
+
+        //private async Task HandleCheckoutCompleted(Event stripeEvent)
+        //{
+        //    var session = stripeEvent.Data.Object as Session;
+
+        //    _logger.LogInformation($"HandleCheckoutCompleted Event hit |||  {JsonConvert.SerializeObject(session)}");
+
+        //    await _subManager.UpdateOrganizationSubscriptionFromEvent(Convert.ToInt32(session.ClientReferenceId), session.CustomerId, session.SubscriptionId, SubscriptionStatus.PENDING_CONFIRMATION.ToString());
+        //}
+
         [HttpPost]
         public async Task<IActionResult> Handle()
         {
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
+            var sig = Request.Headers["Stripe-Signature"];
+            Event stripeEvent;
+            try { stripeEvent = EventUtility.ConstructEvent(json, sig, _config.Value.WebhookSecret); }
+            catch (Exception ex) { _logger.LogWarning($"Stripe signature verification failed: {ex.Message}"); return BadRequest(); }
 
-            _logger.LogInformation($"Stripe Event just arrived -- Raw Json ||| {json}");
-
-            var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _config.Value.WebhookSecret);
-
-            _logger.LogInformation($"Stripe Event ||| {JsonConvert.SerializeObject(stripeEvent)}");
+            // Idempotency
+            if (!await _subManager.MarkWebhookEventProcessedAsync("Stripe", stripeEvent.Id))
+            {
+                _logger.LogInformation($"Duplicate Stripe event {stripeEvent.Id} ignored.");
+                return Ok();
+            }
 
             switch (stripeEvent.Type)
             {
-                case "checkout.session.completed":
-                    await HandleCheckoutCompleted(stripeEvent);
-                    break;
-
+                case "checkout.session.completed": await HandleCheckoutCompleted(stripeEvent); break;
                 case "customer.subscription.created":
-                case "customer.subscription.updated":
-                    await HandleSubscriptionUpdated(stripeEvent);
-                    break;
-
-                case "customer.subscription.deleted":
-                    await HandleSubscriptionDeleted(stripeEvent);
-                    break;
-
-                case "invoice.payment_succeeded":
-                    await HandlePaymentSucceeded(stripeEvent);
-                    break;
-
-                case "invoice.payment_failed":
-                    await HandlePaymentFailed(stripeEvent);
-                    break;
+                case "customer.subscription.updated": await HandleSubscriptionUpdated(stripeEvent); break;
+                case "customer.subscription.deleted": await HandleSubscriptionDeleted(stripeEvent); break;
+                case "invoice.payment_succeeded": await HandlePaymentSucceeded(stripeEvent); break;
+                case "invoice.payment_failed": await HandlePaymentFailed(stripeEvent); break;
             }
-
             return Ok();
         }
 
         private async Task HandleCheckoutCompleted(Event stripeEvent)
         {
             var session = stripeEvent.Data.Object as Session;
+            _logger.LogInformation($"Checkout completed. ClientReferenceId={session.ClientReferenceId} ||| {JsonConvert.SerializeObject(session)}");
 
-            _logger.LogInformation($"HandleCheckoutCompleted Event hit |||  {JsonConvert.SerializeObject(session)}");
+            if (!long.TryParse(session.ClientReferenceId, out var pendingId))
+            {
+                _logger.LogWarning("No client_reference_id on Stripe session.");
+                return;
+            }
 
-            await _subManager.UpdateOrganizationSubscriptionFromEvent(Convert.ToInt32(session.ClientReferenceId), session.CustomerId, session.SubscriptionId, SubscriptionStatus.PENDING_CONFIRMATION.ToString());
+            var pending = await _subManager.GetPendingSubscription(pendingId);
+            if (pending == null) { _logger.LogWarning($"PendingSubscription {pendingId} not found."); return; }
+
+            pending.ProviderCustomerId = session.CustomerId;
+            pending.ProviderSubscriptionId = session.SubscriptionId;
+            pending.StripeSessionId = session.Id;
+            pending.BillingEmail = session.CustomerDetails?.Email ?? session.CustomerEmail ?? pending.BillingEmail;
+            pending.SeatsRequested = (int)((decimal)(session.AmountTotal / (decimal)(await _subManager.GetSubscriptionPlanById(pending.PlanId)).SingleResult.PricePerSeatPerYear));
+            pending.Status = "PaidAwaitingTenant";
+            await _subManager.UpdatePendingSubscription(pending);
         }
 
         private async Task HandleSubscriptionUpdated(Event stripeEvent)
