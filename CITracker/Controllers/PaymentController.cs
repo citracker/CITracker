@@ -31,53 +31,6 @@ namespace CITracker.Controllers
             _mail = mail;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Handle()
-        //{
-        //    var json = await new StreamReader(Request.Body).ReadToEndAsync();
-
-        //    _logger.LogInformation($"Stripe Event just arrived -- Raw Json ||| {json}");
-
-        //    var stripeEvent = EventUtility.ConstructEvent(json, Request.Headers["Stripe-Signature"], _config.Value.WebhookSecret);
-
-        //    _logger.LogInformation($"Stripe Event ||| {JsonConvert.SerializeObject(stripeEvent)}");
-
-        //    switch (stripeEvent.Type)
-        //    {
-        //        case "checkout.session.completed":
-        //            await HandleCheckoutCompleted(stripeEvent);
-        //            break;
-
-        //        case "customer.subscription.created":
-        //        case "customer.subscription.updated":
-        //            await HandleSubscriptionUpdated(stripeEvent);
-        //            break;
-
-        //        case "customer.subscription.deleted":
-        //            await HandleSubscriptionDeleted(stripeEvent);
-        //            break;
-
-        //        case "invoice.payment_succeeded":
-        //            await HandlePaymentSucceeded(stripeEvent);
-        //            break;
-
-        //        case "invoice.payment_failed":
-        //            await HandlePaymentFailed(stripeEvent);
-        //            break;
-        //    }
-
-        //    return Ok();
-        //}
-
-        //private async Task HandleCheckoutCompleted(Event stripeEvent)
-        //{
-        //    var session = stripeEvent.Data.Object as Session;
-
-        //    _logger.LogInformation($"HandleCheckoutCompleted Event hit |||  {JsonConvert.SerializeObject(session)}");
-
-        //    await _subManager.UpdateOrganizationSubscriptionFromEvent(Convert.ToInt32(session.ClientReferenceId), session.CustomerId, session.SubscriptionId, SubscriptionStatus.PENDING_CONFIRMATION.ToString());
-        //}
-
         [HttpPost]
         public async Task<IActionResult> Handle()
         {
@@ -102,6 +55,7 @@ namespace CITracker.Controllers
                 case "customer.subscription.deleted": await HandleSubscriptionDeleted(stripeEvent); break;
                 case "invoice.payment_succeeded": await HandlePaymentSucceeded(stripeEvent); break;
                 case "invoice.payment_failed": await HandlePaymentFailed(stripeEvent); break;
+                case "customer.subscription.trial_will_end": await HandleTrialWillEnd(stripeEvent); break;
             }
             return Ok();
         }
@@ -134,34 +88,6 @@ namespace CITracker.Controllers
                 _logger.LogInformation($"Pending {pendingId} already in status {pending.Status}; skipping.");
                 return;
             }
-
-            ///No need for this, for stripe payment, user always pays for the complete set of licenses for a period of 1 year (quantity)
-            ////// ── Fetch the subscription to get the REAL seat count ──
-            ////int seats = pending.SeatsRequested;   // fallback to what the user asked for
-            ////try
-            ////{
-            ////    var subService = new SubscriptionService();
-            ////    var stripeSub = await subService.GetAsync(session.SubscriptionId);
-
-            ////    _logger.LogInformation($"Subscription details ||| {JsonConvert.SerializeObject(stripeSub)}");
-
-            ////    var item = stripeSub.Items.Data.FirstOrDefault();
-            ////    if (item != null && item.Quantity > 0)
-            ////    {
-            ////        seats = (int)item.Quantity;
-            ////        _logger.LogInformation($"Extracted {seats} seats from Stripe subscription line item.");
-            ////    }
-            ////    else
-            ////    {
-            ////        _logger.LogWarning($"Subscription {session.SubscriptionId} has no line item quantity; " +
-            ////                           $"falling back to requested seats ({pending.SeatsRequested}).");
-            ////    }
-            ////}
-            ////catch (Exception ex)
-            ////{
-            ////    _logger.LogError($"Failed to fetch Stripe subscription {session.SubscriptionId}: {ex.Message}");
-            ////    // Don't abort — we still want to record the customer/subscription IDs.
-            ////}
 
             pending.ProviderCustomerId = session.CustomerId;
             pending.ProviderSubscriptionId = session.SubscriptionId;
@@ -257,9 +183,7 @@ namespace CITracker.Controllers
             // ── 2. Trial $0 invoice: do NOT record a payment, do NOT flip to ACTIVE.
             if (isTrialInvoice || isZeroAmount)
             {
-                _logger.LogInformation(
-                    $"Trial invoice for {subscriptionId} ($0) — " +
-                    $"leaving subscription in {subscription.Status}. No payment recorded.");
+                _logger.LogInformation($"Trial invoice for {subscriptionId} ($0) — leaving subscription in {subscription.Status}. No payment recorded.");
 
                 // Find the pending row by stripe customer (already stored by checkout.session.completed)
                 var pending = await _subManager.GetPendingSubscriptionByStripeCustomer(subscription.CustomerId);
@@ -274,8 +198,7 @@ namespace CITracker.Controllers
             // ── 3. Real paid invoice: apply the update
             var item = subscription.Items.Data[0];
 
-            var result = await _subManager.UpdateOrganizationSubscriptionFromPaymentSuceededEvent(subscription.Id, subscription.CustomerId, item.CurrentPeriodStart, item.CurrentPeriodEnd, subscription.TrialStart, subscription.TrialEnd, Utils.MapStripeStatus(subscription.Status),   // ⬅ use actual status, not forced ACTIVE
-                invoice.AmountPaid / 100m, "Stripe", invoice.Id, invoice.Payments?.Data?.FirstOrDefault()?.Payment?.PaymentIntent?.Id);
+            var result = await _subManager.UpdateOrganizationSubscriptionFromPaymentSuceededEvent(subscription.Id, subscription.CustomerId, item.CurrentPeriodStart, item.CurrentPeriodEnd, subscription.TrialStart, subscription.TrialEnd, Utils.MapStripeStatus(subscription.Status), invoice.AmountPaid / 100m, "Stripe", invoice.Id, invoice.Payments?.Data?.FirstOrDefault()?.Payment?.PaymentIntent?.Id);
 
             if (result?.StatusCode == (int)HttpStatusCode.OK && result.SingleResult != null)
             {
@@ -287,12 +210,66 @@ namespace CITracker.Controllers
             }
         }
 
+        private async Task HandleTrialWillEnd(Event stripeEvent)
+        {
+            var subscription = stripeEvent.Data.Object as Subscription;
+
+            _logger.LogInformation($"HandleTrialWillEnd Event hit ||| {JsonConvert.SerializeObject(subscription)}");
+
+            if (subscription?.Items?.Data == null || subscription.Items.Data.Count == 0)
+            {
+                _logger.LogWarning("trial_will_end: no items on subscription; skipping.");
+                return;
+            }
+
+            var item = subscription.Items.Data[0];
+
+            var res = await _subManager.MarkTrialEndingAsync(subscription.Id, subscription.CustomerId, subscription.TrialEnd, item.Price.Id);
+
+            if (res.StatusCode == (int)HttpStatusCode.OK && res.SingleResult != null)
+            {
+                // Notify the tenant admin that billing starts in 3 days.
+                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Your CITracker trial ends soon", "CITracker", _mail.PopulateTrialEndingBody(res.SingleResult.Name, subscription.TrialEnd ?? DateTime.UtcNow.AddDays(3)));
+            }
+            else
+            {
+                _logger.LogWarning($"TrialWillEnd post-processing returned {res.StatusCode}: {res.Message}");
+            }
+        }
+
         private async Task HandlePaymentFailed(Event stripeEvent)
         {
             var invoice = stripeEvent.Data.Object as Invoice;
+
             _logger.LogInformation($"HandlePaymentFailed Event hit ||| {JsonConvert.SerializeObject(invoice)}");
-            ///TODO
-            //await _repo.MarkPaymentFailed(invoice.SubscriptionId);
+
+            if (invoice == null)
+            {
+                _logger.LogWarning("invoice.payment_failed: no invoice on event.");
+                return;
+            }
+
+            var subscriptionId = invoice.Parent?.SubscriptionDetails?.SubscriptionId;
+            if (string.IsNullOrEmpty(subscriptionId))
+            {
+                _logger.LogWarning($"Invoice {invoice.Id} has no parent subscription; ignoring.");
+                return;
+            }
+
+            var attemptCount = invoice.AttemptCount;
+            var nextAttempt = invoice.NextPaymentAttempt;
+            var hostedUrl = invoice.HostedInvoiceUrl;
+
+            var res = await _subManager.MarkPaymentFailedAsync(subscriptionId, invoice.CustomerId, invoice.Id, invoice.AmountDue / 100m, attemptCount, nextAttempt, hostedUrl);
+
+            if (res.StatusCode == (int)HttpStatusCode.OK && res.SingleResult != null)
+            {
+                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Action required: CITracker payment failed", "CITracker", _mail.PopulatePaymentFailedBody(res.SingleResult.Name, invoice.AmountDue / 100m, attemptCount, hostedUrl));
+            }
+            else
+            {
+                _logger.LogWarning($"PaymentFailed post-processing returned {res.StatusCode}: {res.Message}");
+            }
         }
     }
 }
