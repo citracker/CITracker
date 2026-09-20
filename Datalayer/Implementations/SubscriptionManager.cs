@@ -783,7 +783,15 @@ namespace Datalayer.Implementations
                 {  
                     await _repository.InsertAsync(dbConnection, pending, dbTransaction);
                     dbTransaction.Commit();
-                    return new ResponseHandler<PendingSubscription> { StatusCode = 200, Message = "Created", SingleResult = { Id = pending.Id } };
+                    return new ResponseHandler<PendingSubscription> 
+                    { 
+                        StatusCode = 200, 
+                        Message = "Created", 
+                        SingleResult = new PendingSubscription
+                        { 
+                            Id = pending.Id 
+                        } 
+                    };
                 }
                 catch(Exception ex)
                 {

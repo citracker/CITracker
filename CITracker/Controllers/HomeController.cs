@@ -370,13 +370,13 @@ namespace CITracker.Controllers
 
 
         [HttpGet("signin")]
-        public IActionResult SignIn(string provider = "Microsoft", string? returnUrl = null)
+        public IActionResult SignIn(string provider = "OpenIdConnect", string? returnUrl = null)
         {
             var scheme = provider switch
             {
                 "Google" => "Google",
                 "Corporate" => "CorporateSso",
-                _ => "Microsoft"
+                _ => "OpenIdConnect"
             };
             return Challenge(
                 new AuthenticationProperties { RedirectUri = returnUrl ?? "/" },
@@ -935,7 +935,10 @@ namespace CITracker.Controllers
                     PaymentSubscriptionId = provider == "microsoft" ? HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString() : null,
                     StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
                     EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
-                    DateCreated = DateTime.UtcNow
+                    DateCreated = DateTime.UtcNow,
+                    Provider = provider,
+                    SeatsPurchased = subscription.SingleResult.NumberOfLicences,
+                    Status = "PENDING"
                 };
 
                 var resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
