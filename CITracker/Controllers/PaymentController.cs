@@ -229,7 +229,7 @@ namespace CITracker.Controllers
             if (res.StatusCode == (int)HttpStatusCode.OK && res.SingleResult != null)
             {
                 // Notify the tenant admin that billing starts in 3 days.
-                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Your CITracker trial ends soon", "CITracker", _mail.PopulateTrialEndingBody(res.SingleResult.Name, subscription.TrialEnd ?? DateTime.UtcNow.AddDays(3)));
+                _mail.sendEmail(res.SingleResult.AdminEmailAddress, "Your CITracker trial ends soon", "CITracker", _mail.PopulateTrialEndingBody(res.SingleResult.Name, subscription.TrialEnd ?? DateTime.UtcNow.AddDays(3), item.Price.Nickname, (decimal)(item.Price.UnitAmountDecimal / 100m)));
             }
             else
             {
@@ -256,7 +256,7 @@ namespace CITracker.Controllers
                 return;
             }
 
-            var attemptCount = invoice.AttemptCount;
+            var attemptCount = (int)invoice.AttemptCount;
             var nextAttempt = invoice.NextPaymentAttempt;
             var hostedUrl = invoice.HostedInvoiceUrl;
 
