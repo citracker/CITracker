@@ -178,7 +178,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, sp.Name, sp.NumberOfLicences", new
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.NumberOfLicences", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
@@ -279,24 +279,28 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task UpdateOrganizationSubscriptionFromUpdatedEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string priceId, string subscriptionStatus)
+        public async Task UpdateOrganizationSubscriptionFromUpdatedEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string priceId, string subscriptionStatus, DateTime? trialStart, DateTime? trialEnd, long quantity, bool cancelAtPeriodEnd)
         {
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    "SELECT * from Subscription where PaymentCustomerId = @pid", new
+                    "SELECT * from Subscription where PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new
                     {
-                        pid = stripeCustomerId
+                        sid = subscriptionId,
+                        cid = stripeCustomerId
                     }, CommandType.Text);
 
                 if (resi != null)
                 {
                     resi.PaymentSubscriptionId = subscriptionId;
-                    resi.StartDate = (DateTime) startDate;
-                    resi.EndDate = (DateTime)startDate;
-                    resi.Status = subscriptionStatus;
+                    resi.StartDate = startDate.Value;
+                    resi.EndDate = quantity > 1 ? endDate.Value.AddYears((int)(quantity - 1)) : endDate.Value;
+                    resi.Status = Utils.MapStripeStatus(subscriptionStatus);
                     resi.LastUpdatedDate = DateTime.UtcNow;
+                    resi.TrialStartUtc = trialStart;
+                    resi.TrialEndUtc = trialEnd;
+                    resi.CancelAtPeriodEnd = cancelAtPeriodEnd;
 
                     //fetch subscriptionPlan for this subscription.
                     var subPlan = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
@@ -331,6 +335,8 @@ namespace Datalayer.Implementations
                         _logger.LogInformation($"Couldn't fetch subscription plan with Id {resi.SubscriptionPlanId} for Organization Id {resi.OrganizationId}.");
                     }
 
+                    resi.SeatsPurchased = subPlan.NumberOfLicences;
+
                     var updRes = await _repository.UpdateAsync(dbConnection, resi);
                     _logger.LogInformation($"Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {updRes}");
                 }
@@ -344,6 +350,7 @@ namespace Datalayer.Implementations
                 _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionFromUpdatedEvent)} - {JsonConvert.SerializeObject(ex)}");
             }
         }
+
 
         public async Task UpdateOrganizationSubscriptionFromDeletedEvent(string subscriptionId, string subscriptionStatus)
         {
@@ -572,16 +579,104 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
+        //public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
+        //{
+        //    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+        //    dbConnection.Open();
+        //    using var dbTransaction = dbConnection.BeginTransaction();
+        //    try
+        //    {
+
+        //        var resi = await _repository.GetAsync<Subscription>(dbConnection,
+        //            "SELECT * from Subscription where PaymentSubscriptionId = @psid and PaymentCustomerId = @pid", new
+        //            {
+        //                psid = subscriptionId,
+        //                pid = stripeCustomerId
+        //            }, CommandType.Text, dbTransaction);
+
+        //        if (resi != null)
+        //        {
+        //            resi.StartDate = (DateTime)startDate;
+        //            resi.EndDate = (DateTime)endDate;
+        //            resi.Status = subscriptionStatus;
+        //            resi.LastUpdatedDate = DateTime.UtcNow;
+
+        //            var updRes = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+        //            _logger.LogInformation($"Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {updRes}");
+
+        //            //create payment object for this subscription
+        //            var pay = new Payment
+        //            {
+        //                Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PaymentTable),
+        //                Amount = amount,
+        //                Provider = provider,
+        //                Reference = $"{invoiceId}||{paymentIntentId}" ,
+        //                SubscriptionId = resi.Id,
+        //                DateCreated = DateTime.UtcNow,
+        //                OrganizationId = resi.OrganizationId,
+        //                CreatedBy = resi.OrganizationId
+        //            };
+
+        //            var payRes = await _repository.InsertAsync(dbConnection, pay, dbTransaction);
+
+        //            var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
+
+        //            //update subscription status as true                    
+        //            org.SingleResult.IsSubscribed = true;
+
+        //            _logger.LogInformation($"Organization's ({org.SingleResult.Name}) update Result is. Result: {await _repository.UpdateAsync(dbConnection, org.SingleResult, dbTransaction)}");
+
+        //            var audit2 = ModelBuilder.BuildAuditLog("Payment Made", $"{org.SingleResult.Name} made a subscription payment.", org.SingleResult.AdminEmailAddress);
+        //            audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+        //            var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
+
+        //            _logger.LogInformation($"Organization's ({org.SingleResult.Name}) Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {payRes}");
+
+        //            dbTransaction.Commit();
+
+        //            return org;
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInformation($"Couldn't fetch Subscription information for SubscriptionId {subscriptionId}.");
+        //            return await Task.FromResult(new ResponseHandler<Organization>
+        //            {
+        //                StatusCode = (int)HttpStatusCode.ExpectationFailed,
+        //                Message = "Couldn't fetch Subscription information for SubscriptionId {subscriptionId}."
+        //            });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        dbTransaction.Rollback();
+        //        _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionFromPaymentSuceededEvent)} - {JsonConvert.SerializeObject(ex)}");
+        //        return await Task.FromResult(new ResponseHandler<Organization>
+        //        {
+        //            StatusCode = (int)HttpStatusCode.InternalServerError,
+        //            Message = "An error occured"
+        //        });
+        //    }
+        //    finally
+        //    {
+        //        dbConnection.Close();
+        //    }
+        //}
+
+        public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, DateTime? trialStartDate, DateTime? trialEndDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
         {
             using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             dbConnection.Open();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-
+                // CHANGE 1: Lookup by subscription first, fall back to customer.
+                // The old "AND" version misses rows when PaymentSubscriptionId is still null
+                // (trial invoices can fire before checkout.session.completed links the row).
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    "SELECT * from Subscription where PaymentSubscriptionId = @psid and PaymentCustomerId = @pid", new
+                    @"SELECT TOP 1 * FROM Subscription 
+              WHERE PaymentSubscriptionId = @psid 
+                 OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @pid)",
+                    new
                     {
                         psid = subscriptionId,
                         pid = stripeCustomerId
@@ -589,11 +684,15 @@ namespace Datalayer.Implementations
 
                 if (resi != null)
                 {
-                    resi.StartDate = (DateTime)startDate;
-                    resi.EndDate = (DateTime)endDate;
+                    // CHANGE 2: Null-safe date assignment. The old (DateTime)startDate cast
+                    // throws InvalidOperationException if Stripe sends null.
+                    resi.StartDate = startDate ?? resi.StartDate;
+                    resi.EndDate = endDate ?? resi.EndDate;
                     resi.Status = subscriptionStatus;
                     resi.LastUpdatedDate = DateTime.UtcNow;
-                                        
+                    resi.TrialStartUtc = trialStartDate;
+                    resi.TrialEndUtc = trialEndDate; 
+
                     var updRes = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
                     _logger.LogInformation($"Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {updRes}");
 
@@ -603,11 +702,13 @@ namespace Datalayer.Implementations
                         Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PaymentTable),
                         Amount = amount,
                         Provider = provider,
-                        Reference = $"{invoiceId}||{paymentIntentId}" ,
+                        Reference = $"{invoiceId}||{paymentIntentId}",
                         SubscriptionId = resi.Id,
                         DateCreated = DateTime.UtcNow,
                         OrganizationId = resi.OrganizationId,
-                        CreatedBy = resi.OrganizationId
+                        // CHANGE 3: OrganizationId is not a CIUser.Id. Use 0 = system,
+                        // otherwise the FK to CIUser is invalid.
+                        CreatedBy = 0
                     };
 
                     var payRes = await _repository.InsertAsync(dbConnection, pay, dbTransaction);
@@ -619,7 +720,8 @@ namespace Datalayer.Implementations
 
                     _logger.LogInformation($"Organization's ({org.SingleResult.Name}) update Result is. Result: {await _repository.UpdateAsync(dbConnection, org.SingleResult, dbTransaction)}");
 
-                    var audit2 = ModelBuilder.BuildAuditLog("Payment Made", $"{org.SingleResult.Name} made a subscription payment.", org.SingleResult.AdminEmailAddress);
+                    // CHANGE 4: Audit message now reflects the actual amount paid.
+                    var audit2 = ModelBuilder.BuildAuditLog("Payment Made", $"{org.SingleResult.Name} made a subscription payment of {amount:C}.", org.SingleResult.AdminEmailAddress);
                     audit2.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                     var audit2Res = await _repository.InsertAsync(dbConnection, audit2, dbTransaction);
 
@@ -635,7 +737,7 @@ namespace Datalayer.Implementations
                     return await Task.FromResult(new ResponseHandler<Organization>
                     {
                         StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                        Message = "Couldn't fetch Subscription information for SubscriptionId {subscriptionId}."
+                        Message = $"Couldn't fetch Subscription information for SubscriptionId {subscriptionId}."
                     });
                 }
             }
@@ -835,6 +937,14 @@ namespace Datalayer.Implementations
             await _repository.ExecuteAsync(db, "UPDATE PendingSubscription SET Status='Linked', OrganizationId=@oid WHERE PendingId=@id", new { oid = organizationId, id = pendingId }, CommandType.Text);
         }
 
+        public async Task<PendingSubscription?> GetPendingSubscriptionByStripeCustomer(string stripeCustomerId)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            return await _repository.GetAsync<PendingSubscription>(db,
+                "SELECT TOP 1 * FROM PendingSubscription WHERE ProviderCustomerId = @cid",
+                new { cid = stripeCustomerId }, CommandType.Text);
+        }
+
         public async Task<bool> MarkWebhookEventProcessedAsync(string provider, string eventId)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
@@ -906,5 +1016,6 @@ namespace Datalayer.Implementations
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             await _repository.ExecuteAsync(db, @"UPDATE Subscription SET SeatsPurchased = @s, LastUpdatedDate = GETUTCDATE() WHERE PaymentSubscriptionId = @id", new { s = newSeats, id = subscriptionId }, CommandType.Text);
         }
+
     }
 }

@@ -17,15 +17,17 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub);
         Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string subStatus, long adminUser);
         Task UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus);
-        Task UpdateOrganizationSubscriptionFromUpdatedEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string priceId, string subscriptionStatus);
+        Task UpdateOrganizationSubscriptionFromUpdatedEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string priceId, string subscriptionStatus, DateTime? trialStart, DateTime? trialEnd, long quantity, bool cancelAtPeriodEnd);
         Task UpdateOrganizationSubscriptionFromDeletedEvent(string subscriptionId, string subscriptionStatus);
-        Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId);
+        Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, DateTime? trialStartDate, DateTime? trialEndDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId);
         Task UpdateOrganizationSubscriptionFromMPEvent(CIMarketplaceSubscription subscription);
         Task MPDeactivateOrganizationSubscription(CIMarketplaceSubscription subscription);
 
         // Pending subscription
         Task<ResponseHandler<PendingSubscription>> CreatePendingSubscription(PendingSubscription pending);
         Task<PendingSubscription> GetPendingSubscription(long pendingId);
+        Task<PendingSubscription?> GetPendingSubscriptionByStripeCustomer(string stripeCustomerId);
+
         Task<PendingSubscription> GetPendingSubscriptionByStripeSession(string sessionId);
         Task UpdatePendingSubscription(PendingSubscription pending);
         Task MarkPendingSubscriptionLinked(long pendingId, int organizationId);

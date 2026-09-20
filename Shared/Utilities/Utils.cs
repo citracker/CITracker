@@ -214,5 +214,18 @@ namespace Shared.Utilities
                 RegexOptions.IgnoreCase);
         }
 
+        public static string MapStripeStatus(string stripeStatus) => stripeStatus switch
+        {
+            "trialing" => "TRIALING",
+            "active" => "ACTIVE",
+            "past_due" => "PAST_DUE",
+            "unpaid" => "PAST_DUE",
+            "incomplete" => "PENDING_CONFIRMATION",
+            "incomplete_expired" => "CANCELLED",
+            "canceled" => "CANCELLED",
+            "paused" => "SUSPENDED",
+            _ => "ACTIVE"
+        };
+
     }
 }
