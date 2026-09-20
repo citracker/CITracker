@@ -78,6 +78,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Templates\trialending.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Templates\paymentfailed.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Templates\projectupdate.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

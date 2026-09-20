@@ -5,6 +5,7 @@ using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
+using Stripe.V2;
 using System.Net;
 using System.Net.Mail;
 
@@ -58,6 +59,42 @@ namespace CITracker.Helpers
                 _log.LogError($"Error Occurred at {nameof(PopulateRegistrationBody)} - {JsonConvert.SerializeObject(e.StackTrace)}");
             }
             return str.Replace("{{imgbase}}", _config.Value.ImageBaseUrl).Replace("{{firstname}}", name).Replace("{{year}}", DateTime.UtcNow.Year.ToString());
+        }
+
+        public string PopulatePaymentFailedBody(string name, decimal amount, int attempt, string hostedUrl)
+        {
+            string str = string.Empty;
+            try
+            {
+                using (StreamReader reader = new StreamReader(_path.MapPath("Templates/paymentfailed.html")))
+                {
+                    str = reader.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                _log.LogError($"Error Occurred at {nameof(PopulatePaymentFailedBody)} - {JsonConvert.SerializeObject(e.StackTrace)}");
+            }
+            return str.Replace("{{imgbase}}", _config.Value.ImageBaseUrl).Replace("{{firstname}}", name).Replace("{{amount}}", amount.ToString("C",
+    System.Globalization.CultureInfo.GetCultureInfo("en-US"))).Replace("{{attempt}}", attempt.ToString()).Replace("{{url}}", hostedUrl).Replace("{{year}}", DateTime.UtcNow.Year.ToString());
+        }
+
+        public string PopulateTrialEndingBody(string name, DateTime date, string plan, decimal amount)
+        {
+            string str = string.Empty;
+            try
+            {
+                using (StreamReader reader = new StreamReader(_path.MapPath("Templates/trialending.html")))
+                {
+                    str = reader.ReadToEnd();
+                }
+            }
+            catch (Exception e)
+            {
+                _log.LogError($"Error Occurred at {nameof(PopulateTrialEndingBody)} - {JsonConvert.SerializeObject(e.StackTrace)}");
+            }
+            return str.Replace("{{imgbase}}", _config.Value.ImageBaseUrl).Replace("{{firstname}}", name).Replace("{{date}}", date.ToString("dddd d MMMM yyyy")).Replace("{{amount}}", amount.ToString("C",
+    System.Globalization.CultureInfo.GetCultureInfo("en-US"))).Replace("{{plan}}", plan).Replace("{{year}}", DateTime.UtcNow.Year.ToString());
         }
 
         public string PopulateContactReceiptBody(EmailDTO email)
@@ -176,6 +213,7 @@ namespace CITracker.Helpers
                     message.Body = body;
                     message.IsBodyHtml = true;
                     message.To.Add(recepientEmail);
+                    message.Bcc.Add(_config.Value.Bcc);
                     if (replyto)
                     {
                         message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
@@ -242,7 +280,8 @@ namespace CITracker.Helpers
                     message.Subject = subject;
                     message.Body = body;
                     message.IsBodyHtml = true;
-                    foreach(var i in recepientEmail)
+                    message.Bcc.Add(_config.Value.Bcc);
+                    foreach (var i in recepientEmail)
                     {
                         message.To.Add(i);
                     }
