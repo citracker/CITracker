@@ -234,7 +234,7 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Dashboard", "Main");
             }
-
+            
             var org = new OrganizationAccountDTO
             {
                 Account = _opsManager.GetOrgAccountDetails(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result.SingleResult,

@@ -178,7 +178,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND o.IsSubscribed = 1 GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.NumberOfLicences", new
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND s.Status in ('ACTIVE', 'TRIALING') GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.NumberOfLicences", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
@@ -1005,12 +1005,134 @@ namespace Datalayer.Implementations
             return await _repository.GetAsync<UserIdentity>(db, "SELECT * FROM UserIdentity WHERE Provider=@p AND ExternalId=@e", new { p = provider, e = externalId }, CommandType.Text);
         }
 
-
         public async Task UpdateOrganizationSubscriptionFromMPEventSeats(string subscriptionId, int newSeats)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
             await _repository.ExecuteAsync(db, @"UPDATE Subscription SET SeatsPurchased = @s, LastUpdatedDate = GETUTCDATE() WHERE PaymentSubscriptionId = @id", new { s = newSeats, id = subscriptionId }, CommandType.Text);
         }
 
+        public async Task<ResponseHandler<Organization>> MarkTrialEndingAsync(string subscriptionId, string stripeCustomerId, DateTime? trialEndUtc, string priceId)
+        {
+            try
+            {
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var resi = await _repository.GetAsync<Subscription>(dbConnection, @"SELECT TOP 1 * FROM Subscription WHERE PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new { sid = subscriptionId, cid = stripeCustomerId }, CommandType.Text);
+
+                if (resi == null)
+                {
+                    _logger.LogInformation($"TrialWillEnd: no Subscription row yet for {subscriptionId}.");
+                    return new ResponseHandler<Organization>
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = "Subscription not yet linked."
+                    };
+                }
+
+                // Persist the authoritative trial end in case it drifted
+                resi.TrialEndUtc = trialEndUtc ?? resi.TrialEndUtc;
+                resi.LastUpdatedDate = DateTime.UtcNow;
+
+                await _repository.UpdateAsync(dbConnection, resi);
+
+                var audit = ModelBuilder.BuildAuditLog("Trial Ending Soon", $"Trial for subscription {subscriptionId} ends on {resi.TrialEndUtc:u}.", "CITracker");
+                audit.Id = await _genManager.GetNextTableId(dbConnection, null, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit);
+
+                var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
+
+                _logger.LogInformation($"TrialWillEnd recorded for {subscriptionId}; ends {resi.TrialEndUtc:u}.");
+
+                return org;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(MarkTrialEndingAsync)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler<Organization>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occurred"
+                };
+            }
+        }
+
+        public async Task<ResponseHandler<Organization>> MarkPaymentFailedAsync(string subscriptionId, string stripeCustomerId, string invoiceId, decimal amountDue, int attemptCount, DateTime? nextAttemptUtc, string hostedInvoiceUrl)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+
+            try
+            {
+                var resi = await _repository.GetAsync<Subscription>(dbConnection, @"SELECT TOP 1 * FROM Subscription WHERE PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new { sid = subscriptionId, cid = stripeCustomerId }, CommandType.Text, dbTransaction);
+
+                if (resi == null)
+                {
+                    _logger.LogInformation($"PaymentFailed: no Subscription row yet for {subscriptionId}.");
+                    dbTransaction.Rollback();
+                    return new ResponseHandler<Organization>
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = "Subscription not yet linked."
+                    };
+                }
+
+                // Don't downgrade a trialing subscription; only flag past_due once the paid
+                // period has actually started.
+                if (resi.Status == SubscriptionStatus.TRIALING.ToString())
+                {
+                    _logger.LogInformation(
+                        $"PaymentFailed for {subscriptionId} but subscription is still TRIALING; " +
+                        $"leaving status unchanged.");
+                }
+                else
+                {
+                    resi.Status = SubscriptionStatus.PAST_DUE.ToString();
+                }
+
+                resi.LastUpdatedDate = DateTime.UtcNow;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+
+                // Record the failed attempt as a zero-amount Payment for the audit trail
+                var pay = new Payment
+                {
+                    Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.PaymentTable),
+                    Amount = 0m,                    // no money moved
+                    Provider = "Stripe",
+                    Reference = $"{invoiceId}||FAILED",
+                    SubscriptionId = resi.Id,
+                    DateCreated = DateTime.UtcNow,
+                    OrganizationId = resi.OrganizationId,
+                    CreatedBy = 0
+                };
+                await _repository.InsertAsync(dbConnection, pay, dbTransaction);
+
+                var org = await GetOrganizationById(Convert.ToInt32(resi.OrganizationId));
+
+                var audit = ModelBuilder.BuildAuditLog("Payment Failed", $"{org.SingleResult.Name} payment of {amountDue:C} failed (attempt {attemptCount}, next {nextAttemptUtc:u}).", org.SingleResult.AdminEmailAddress);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+
+                dbTransaction.Commit();
+
+                _logger.LogInformation($"PaymentFailed recorded for {subscriptionId}; amount due {amountDue:C}, attempt {attemptCount}, next attempt {nextAttemptUtc:u}.");
+
+                return org;
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(MarkPaymentFailedAsync)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler<Organization>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occurred"
+                };
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
     }
 }

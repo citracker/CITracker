@@ -8,9 +8,9 @@
         ACTIVE, 
         PendingPayment, 
         PendingTenantLink, 
-        Trialing, 
+        TRIALING, 
         Active, 
-        PastDue, 
+        PAST_DUE, 
         Cancelling, 
         Cancelled, 
         Suspended

@@ -14,6 +14,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<SubscriptionPlan>> GetSubscriptionPlanByMarketPlaceId(string id);
         Task<ResponseHandler<Organization>> GetOrganizationByTenantId(string tenantId);
         Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscription(string tenantId);
+        //Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscriptionById(int id);
         Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub);
         Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string subStatus, long adminUser);
         Task UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus);
@@ -39,5 +40,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> UpsertUserIdentity(UserIdentity identity);
         Task<UserIdentity> GetUserIdentity(string provider, string externalId);
         Task UpdateOrganizationSubscriptionFromMPEventSeats(string subscriptionId, int newSeats);
+        Task<ResponseHandler<Organization>> MarkTrialEndingAsync(string subscriptionId, string stripeCustomerId, DateTime? trialEndUtc, string priceId);
+        Task<ResponseHandler<Organization>> MarkPaymentFailedAsync(string subscriptionId, string stripeCustomerId, string invoiceId, decimal amountDue, int attemptCount, DateTime? nextAttemptUtc, string hostedInvoiceUrl);
     }
 }
