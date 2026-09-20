@@ -234,11 +234,11 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Dashboard", "Main");
             }
-
+            
             var org = new OrganizationAccountDTO
             {
                 Account = _opsManager.GetOrgAccountDetails(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result.SingleResult,
-                Subscription = _subManager.GetOrganizationSubscriptionById(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result.SingleResult
+                Subscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result.SingleResult
             };
 
             return View(org);
