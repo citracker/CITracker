@@ -284,8 +284,7 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    "SELECT * from Subscription where PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new
+                var resi = await _repository.GetAsync<Subscription>(dbConnection, "SELECT * from Subscription where PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new
                     {
                         sid = subscriptionId,
                         cid = stripeCustomerId
@@ -329,13 +328,13 @@ namespace Datalayer.Implementations
                                 _logger.LogInformation($"Couldn't fetch subscription plan with priceId {priceId}. Subscription plan update for subscriptionId {subscriptionId} will be skipped.");
                             }
                         }
+
+                        resi.SeatsPurchased = subPlan.NumberOfLicences;
                     }
                     else
                     {
                         _logger.LogInformation($"Couldn't fetch subscription plan with Id {resi.SubscriptionPlanId} for Organization Id {resi.OrganizationId}.");
                     }
-
-                    resi.SeatsPurchased = subPlan.NumberOfLicences;
 
                     var updRes = await _repository.UpdateAsync(dbConnection, resi);
                     _logger.LogInformation($"Subscription update for SubscriptionId {subscriptionId} is now {subscriptionStatus}. Result: {updRes}");
@@ -672,10 +671,7 @@ namespace Datalayer.Implementations
                 // CHANGE 1: Lookup by subscription first, fall back to customer.
                 // The old "AND" version misses rows when PaymentSubscriptionId is still null
                 // (trial invoices can fire before checkout.session.completed links the row).
-                var resi = await _repository.GetAsync<Subscription>(dbConnection,
-                    @"SELECT TOP 1 * FROM Subscription 
-              WHERE PaymentSubscriptionId = @psid 
-                 OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @pid)",
+                var resi = await _repository.GetAsync<Subscription>(dbConnection, @"SELECT TOP 1 * FROM Subscription WHERE PaymentSubscriptionId = @psid  OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @pid)",
                     new
                     {
                         psid = subscriptionId,
@@ -916,7 +912,7 @@ namespace Datalayer.Implementations
         public async Task<PendingSubscription> GetPendingSubscription(long pendingId)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE PendingId = @id", new { id = pendingId }, CommandType.Text);
+            return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE Id = @id", new { id = pendingId }, CommandType.Text);
         }
 
         public async Task<PendingSubscription> GetPendingSubscriptionByStripeSession(string sessionId)
@@ -934,14 +930,13 @@ namespace Datalayer.Implementations
         public async Task MarkPendingSubscriptionLinked(long pendingId, int organizationId)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            await _repository.ExecuteAsync(db, "UPDATE PendingSubscription SET Status='Linked', OrganizationId=@oid WHERE PendingId=@id", new { oid = organizationId, id = pendingId }, CommandType.Text);
+            await _repository.ExecuteAsync(db, "UPDATE PendingSubscription SET Status='Linked', OrganizationId=@oid WHERE Id=@id", new { oid = organizationId, id = pendingId }, CommandType.Text);
         }
 
         public async Task<PendingSubscription?> GetPendingSubscriptionByStripeCustomer(string stripeCustomerId)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            return await _repository.GetAsync<PendingSubscription>(db,
-                "SELECT TOP 1 * FROM PendingSubscription WHERE ProviderCustomerId = @cid",
+            return await _repository.GetAsync<PendingSubscription>(db, "SELECT TOP 1 * FROM PendingSubscription WHERE ProviderCustomerId = @cid",
                 new { cid = stripeCustomerId }, CommandType.Text);
         }
 
