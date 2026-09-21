@@ -2,12 +2,11 @@
 using Microsoft.Extensions.Options;
 using Microsoft.Graph;
 using Microsoft.Graph.Models;
+using Microsoft.Graph.Users.Item.SendMail;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
-using Stripe.V2;
 using System.Net;
-using System.Net.Mail;
 
 namespace CITracker.Helpers
 {
@@ -153,101 +152,28 @@ namespace CITracker.Helpers
         {
             try
             {
-                //var credential = new ClientSecretCredential(
-                //    _adconfig.Value.SMTPTenantID,
-                //    _adconfig.Value.SMTPClientID,
-                //    _adconfig.Value.SMTPClientSecret
-                //);
+                var credential = new ClientSecretCredential(_adconfig.Value.MailerTenantID, _adconfig.Value.MailerClientID, _adconfig.Value.MailerClientSecret);
+                var graphClient = new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" });
 
-                //var graphClient = new GraphServiceClient(
-                //    credential,
-                //    new[] { "https://graph.microsoft.com/.default" }
-                //);
-
-                //var message = new Message
-                //{
-                //    Subject = subject,
-                //    Body = new ItemBody
-                //    {
-                //        ContentType = BodyType.Html,
-                //        Content = body
-                //    },
-                //    ToRecipients = new List<Recipient>
-                //    {
-                //        new Recipient
-                //        {
-                //            EmailAddress = new EmailAddress
-                //            {
-                //                Address = recepientEmail
-                //            }
-                //        }
-                //    }
-                //};
-
-                //var requestBody = new Microsoft.Graph.Users.Item.SendMail.SendMailPostRequestBody
-                //{
-                //    Message = message,
-                //    SaveToSentItems = true
-                //};
-
-                //await graphClient.Users[_config.Value.From]
-                //    .SendMail
-                //    .PostAsync(requestBody);
-
-                //_resp = new Shared.DTO.ResponseHandler<EmailDTO>
-                //{
-                //    StatusCode = (int)HttpStatusCode.OK,
-                //    Message = "Email sent successfully. Kindly verify your email",
-                //    SingleResult = new EmailDTO
-                //    {
-                //        Email = recepientEmail,
-                //        Subject = subject,
-                //        Name = displayName
-                //    }
-                //};
-
-                using (MailMessage message = new MailMessage())
+                var message = new Message
                 {
-                    message.From = new MailAddress(_config.Value.From, displayName);
-                    message.Subject = subject;
-                    message.Body = body;
-                    message.IsBodyHtml = true;
-                    message.To.Add(recepientEmail);
-                    message.Bcc.Add(_config.Value.Bcc);
-                    if (replyto)
+                    Subject = subject,
+                    Body = new ItemBody { ContentType = BodyType.Html, Content = body },
+                    ToRecipients = new List<Recipient>
                     {
-                        message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
+                        new Recipient { EmailAddress = new EmailAddress { Address = recepientEmail } }
+                    },
+                    BccRecipients = new List<Recipient>
+                    {
+                        new Recipient { EmailAddress = new EmailAddress { Address = _config.Value.Bcc } }
                     }
-                    SmtpClient client1 = new SmtpClient
-                    {
-                        Host = _config.Value.Host,
-                        EnableSsl = Convert.ToBoolean(_config.Value.EnableSsl)
-                    };
-                    client1.UseDefaultCredentials = false;
-                    //client1.Timeout = 10000;
-                    NetworkCredential credential = new NetworkCredential
-                    {
-                        UserName = _config.Value.From,
-                        Password = _config.Value.Password
-                    };
-                    client1.Credentials = credential;
-                    client1.Port = _config.Value.Port;
-                    client1.Send(message);
-                    client1.Dispose();
+                };
 
-                    _resp = new Shared.DTO.ResponseHandler<EmailDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Email sent successfully. Kindly verify your email",
-                        SingleResult = new EmailDTO
-                        {
-                            Email = recepientEmail,
-                            Subject = subject,
-                            Name = displayName
-                        }
-                    };
-                    _log.LogInformation($"Response{nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
-                }
+                await graphClient.Users[_config.Value.AutoSender].SendMail.PostAsync(new SendMailPostRequestBody
+                {
+                    Message = message,
+                    SaveToSentItems = true
+                });
             }
             catch (Exception e)
             {
@@ -270,54 +196,35 @@ namespace CITracker.Helpers
         }
 
 
-        public Shared.DTO.ResponseHandler<EmailDTO> sendEmail(List<string> recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
+        public async Task<Shared.DTO.ResponseHandler<EmailDTO>> sendEmail(List<string> recepientEmail, string subject, string displayName, string body, List<ReplyTo> replies = null, bool replyto = false)
         {
             try
             {
-                using (MailMessage message = new MailMessage())
-                {
-                    message.From = new MailAddress(_config.Value.From, displayName);
-                    message.Subject = subject;
-                    message.Body = body;
-                    message.IsBodyHtml = true;
-                    message.Bcc.Add(_config.Value.Bcc);
-                    foreach (var i in recepientEmail)
-                    {
-                        message.To.Add(i);
-                    }
-                    if (replyto)
-                    {
-                        message.ReplyToList.Add(new MailAddress(replies.ElementAt(0).EmailAddress, replies.ElementAt(0).Name));
-                    }
-                    SmtpClient client1 = new SmtpClient
-                    {
-                        Host = _config.Value.Host,
-                        EnableSsl = Convert.ToBoolean(_config.Value.EnableSsl)
-                    };
-                    client1.UseDefaultCredentials = false;
-                    //client1.Timeout = 10000;
-                    NetworkCredential credential = new NetworkCredential
-                    {
-                        UserName = _config.Value.From,
-                        Password = _config.Value.Password
-                    };
-                    client1.Credentials = credential;
-                    client1.Port = _config.Value.Port;
-                    client1.Send(message);
-                    client1.Dispose();
+                var credential = new ClientSecretCredential(_adconfig.Value.MailerTenantID, _adconfig.Value.MailerClientID, _adconfig.Value.MailerClientSecret);
+                var graphClient = new GraphServiceClient(credential, new[] { "https://graph.microsoft.com/.default" });
 
-                    _resp = new Shared.DTO.ResponseHandler<EmailDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Email sent successfully. Kindly verify your email",
-                        SingleResult = new EmailDTO
-                        {
-                            Subject = subject,
-                            Name = displayName
-                        }
-                    };
-                    _log.LogInformation($"Response{nameof(sendEmail)} - {JsonConvert.SerializeObject(_resp)}");
+                var reci = new List<Recipient>();
+                foreach (var i in recepientEmail)
+                {
+                    reci.Add(new Recipient { EmailAddress = new EmailAddress { Address = i } });
                 }
+
+                var message = new Message
+                {
+                    Subject = subject,
+                    Body = new ItemBody { ContentType = BodyType.Html, Content = body },
+                    ToRecipients = reci,
+                    BccRecipients = new List<Recipient>
+                    {
+                        new Recipient { EmailAddress = new EmailAddress { Address = _config.Value.Bcc } }
+                    }
+                };
+
+                await graphClient.Users[_config.Value.AutoSender].SendMail.PostAsync(new SendMailPostRequestBody
+                {
+                    Message = message,
+                    SaveToSentItems = true
+                });
             }
             catch (Exception e)
             {

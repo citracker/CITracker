@@ -10,9 +10,9 @@
         public string? ClientSecret { get; set; }
         public string? MarketplaceResource { get; set; }
         public string? CallbackPath { get; set; }
-        public string SMTPClientID { get; set; }
-        public string SMTPTenantID { get; set; }
-        public string SMTPClientSecret { get; set; }
+        public string MailerClientID { get; set; }
+        public string MailerTenantID { get; set; }
+        public string MailerClientSecret { get; set; }
 
     }
 }
