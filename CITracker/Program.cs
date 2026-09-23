@@ -6,8 +6,10 @@ using DataRepository;
 using FluentValidation;
 using Infastructure.Implementation;
 using Infastructure.Interface;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -17,6 +19,7 @@ using Shared;
 using Shared.Implementations;
 using Shared.Interfaces;
 using Stripe;
+using System;
 using System.Globalization;
 
 namespace CITracker
@@ -53,7 +56,7 @@ namespace CITracker
 
                 builder.Services.AddControllers().AddJsonOptions(options =>
                 {
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null; // Case-sensitive matching
+                    options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
                 });
 
                 builder.Services.AddSession(options =>
@@ -78,15 +81,92 @@ namespace CITracker
 
                 builder.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-                builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                //builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                //    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+                //    .EnableTokenAcquisitionToCallDownstreamApi(new[] { "Organization.Read.All" })
+                //    .AddInMemoryTokenCaches();
+
+                var authBuilder = builder.Services
+                    .AddAuthentication(options =>
+                    {
+                        options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme; ;   // fallback provider
+                    });
+
+                //// 1. Cookies (required — every sign-in ends in a cookie)
+                //authBuilder.AddCookie(options =>
+                //{
+                //    options.LoginPath = "/Home/SignIn";
+                //    options.LogoutPath = "/Home/SignOut";
+                //    options.AccessDeniedPath = "/Home/AccessDenied";
+                //    options.ExpireTimeSpan = TimeSpan.FromMinutes(
+                //        Convert.ToInt32(builder.Configuration["AppSettings:SessionTimeout"]));
+                //    options.SlidingExpiration = true;
+                //});
+
+                // 2. Microsoft (multi-tenant) — note this DOES return the wrapper type
+                authBuilder
                     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
                     .EnableTokenAcquisitionToCallDownstreamApi(new[] { "Organization.Read.All" })
                     .AddInMemoryTokenCaches();
+
+                // 3. Google — chained on authBuilder (NOT on the Microsoft result)
+                authBuilder.AddOpenIdConnect("Google", options =>
+                {
+                    options.Authority = "https://accounts.google.com";
+                    options.ClientId = builder.Configuration["Google:ClientId"];
+                    options.ClientSecret = builder.Configuration["Google:ClientSecret"];
+                    options.CallbackPath = "/signin-google";
+                    options.ResponseType = "code";
+                    options.SaveTokens = true;
+                    options.Scope.Add("openid");
+                    options.Scope.Add("email");
+                    options.Scope.Add("profile");
+                });
+
+                //// 4. Corporate SSO (any OIDC-compliant IdP)
+                //authBuilder.AddOpenIdConnect("CorporateSso", options =>
+                //{
+                //    options.Authority = builder.Configuration["SAML:Authority"];
+                //    options.ClientId = builder.Configuration["SAML:ClientId"];
+                //    options.ClientSecret = builder.Configuration["SAML:ClientSecret"];
+                //    options.CallbackPath = "/signin-corporate";
+                //    options.ResponseType = "code";
+                //    options.SaveTokens = true;
+                //    options.Scope.Add("openid");
+                //    options.Scope.Add("email");
+                //    options.Scope.Add("profile");
+                //});
+
+                //// 5. Email/password (ASP.NET Core Identity)
+                //builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+                //{
+                //    options.SignIn.RequireConfirmedAccount = true;
+                //    options.Password.RequiredLength = 10;
+                //    options.User.RequireUniqueEmail = true;
+                //})
+                //.AddDefaultTokenProviders();
+
+                //// Also needed by Identity if you want the UI endpoints:
+                //builder.Services.AddRazorPages();
+
+
                 builder.Services.AddAuthorization();
 
                 builder.Services.Configure<ForwardedHeadersOptions>(options =>
                 {
                     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                });
+
+                builder.Services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.LoginPath = "/Home/SignIn";
+                    options.LogoutPath = "/Home/SignOut";
+                    options.AccessDeniedPath = "/Home/AccessDenied";
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(
+                        Convert.ToInt32(builder.Configuration["AppSettings:SessionTimeout"]));
+                    options.SlidingExpiration = true;
                 });
 
                 builder.Services.AddControllersWithViews()
@@ -118,7 +198,7 @@ namespace CITracker
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
                 builder.Services.Configure<ADKeyValues>(builder.Configuration.GetSection("AzureAd"));
                 builder.Services.Configure<StripeKeyValues>(builder.Configuration.GetSection("Stripe"));
-                builder.Services.AddTransient<HttpClient>();
+                builder.Services.AddHttpClient();
                 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
                 builder.Services.AddSingleton<IMemoryCacheManager, MemoryCacheManager>();
                 builder.Services.AddTransient<IPathProvider, PathProvider>();
@@ -132,6 +212,7 @@ namespace CITracker
                 builder.Services.AddTransient<IRepository, Repository>();
                 builder.Services.AddTransient<IMicrosoftOperations, MicrosoftOperations>();
                 builder.Services.AddTransient<IStripePayment, StripePayment>();
+                builder.Services.AddTransient<ISeatService, SeatService>();
                 builder.Services.AddValidatorsFromAssemblyContaining<CIRequestValidator>();
 
                 StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
@@ -143,15 +224,15 @@ namespace CITracker
 
                 // Configure the HTTP request pipeline
                 app.UseForwardedHeaders();
-                if (!app.Environment.IsDevelopment())
-                {
-                    app.UseExceptionHandler("/Error");
+                ////if (!app.Environment.IsDevelopment())
+                ////{
+                ////    app.UseExceptionHandler("/Error");
                     app.UseHsts();
-                }
-                else
-                {
+                ////}
+                ////else
+                ////{
                     app.UseDeveloperExceptionPage();
-                }
+                ////}
 
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();

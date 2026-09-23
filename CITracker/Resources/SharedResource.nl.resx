@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>Instellingen</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>Aanmelden met SSO</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>Aanmelden met Microsoft</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>Categorie voor zachte besparingen</value>
@@ -2117,5 +2117,14 @@
   </data>
   <data name="SelectTeamMember" xml:space="preserve">
     <value>Teamlid kiezen</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registreren</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>Opmerking: U wordt niet doorgestuurd om een betaling te doen.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Inloggen met Google</value>
   </data>
 </root>

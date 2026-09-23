@@ -1,0 +1,93 @@
+﻿@using System.Text.Json 
+@using CITracker.Resources
+@inject IHttpContextAccessor hca
+@model Shared.ViewModels.CheckoutVM
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@SharedResource.CITrackerCheckout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800">
+    <header class="max-w-6xl mx-auto p-6">
+        <a href="@Url.Action("Index", "Home")" class="header-logo" style="width:5%">
+            <img src="~/assets/images/brand-logos/toggle-white.png" alt="logo" class="toggle-logo">
+        </a>
+    </header>
+
+    @using (Html.BeginForm("RegisterPayment", "Home", FormMethod.Post))
+    {
+        <main class="max-w-6xl mx-auto p-6 grid md:grid-cols-3 gap-6">
+            <!-- Left: plan summary + duration -->
+            @Html.AntiForgeryToken()
+            <section class="md:col-span-1 bg-white p-6 rounded-lg shadow">
+                <h2 class="font-bold">Welcome to CITracker</h2>
+                <h3 class="font-semibold">Your continuous improvement operating system</h3><br> <br>
+                <div id="planName" class="mt-2 text-lg"> Your subscription to the <span class="font-bold">@Model.SubscriptionPlan.Name</span> Plan is active. Please go ahead with adding your organizations details to get started with your first initiative.</div>
+
+            </section>
+
+            <!-- Right: form and payment -->
+            <section class="md:col-span-2 bg-white p-6 rounded-lg shadow">
+                @if (Model.StatusCode > 0 && Model.StatusCode != 200)
+                {
+                    <div role="alert" class="p-1 rounded-lg" style="background-color:mistyrose">
+                        <ul class="mb-2">
+                            <li style="color: red"> @Model.Message</li>
+                        </ul>
+                    </div>
+                }
+                <div id="orgForm" class="space-y-4" onsubmit="return false;">
+                    <h3 class="text-lg font-semibold">@SharedResource.OrganizationDetails</h3>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm">@SharedResource.CompanyName <span style="color:red">*</span></label>
+                            <input name="companyName" id="companyName" class="mt-1 block w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">@SharedResource.Country <span style="color:red">*</span></label>
+                            <select name="country" id="country" class="mt-1 block w-full border rounded p-2" required>
+                                <option value="" selected disabled>@SharedResource.SelectCountry</option>
+                                @foreach (var i in Model.Country)
+                                {
+                                    <option value="@i.Id">@i.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-sm">@SharedResource.Address <span style="color:red">*</span></label>
+                            <input name="address" id="address" class="mt-1 block w-full border rounded p-2" required>
+                        </div>
+                        <div>
+                            <label class="text-sm">@SharedResource.AdminEmailAddress <span style="color:red">*</span></label>
+                            <input name="adminEmail" id="adminEmail" type="email" class="mt-1 block w-full border rounded p-2" value="@hca?.HttpContext?.Session?.GetString(" UserEmail")?.ToString()" readonly required>
+                        </div>
+                        <div>
+                            <label class="text-sm">@SharedResource.AdminName <span style="color:red">*</span></label>
+                            <input name="firstName" id="firstName" class="mt-1 block w-full border rounded p-2" value="@hca?.HttpContext?.Session?.GetString("UserName")?.ToString()" readonly required>
+                        </div>
+                        <div>
+                            <label class="text-sm">@SharedResource.PhoneNumber <span style="color:red">*</span></label>
+                            <input name="phone" id="phone" type="text" class="mt-1 block w-full border rounded p-2" onkeydown="return ((event.keyCode >= 48 && event.keyCode <= 57) || (event.keyCode >= 96 && event.keyCode <= 105) || event.keyCode == 8 || event.keyCode == 190);" required>
+                        </div>
+                    </div>
+
+
+                    <div class="mt-6">
+                        <button id="payBtn" type="submit" class="w-full bg-indigo-600 text-white px-4 py-2 rounded">@SharedResource.Register</button>
+                    </div>
+
+                    <div id="result" class="mt-4"></div>
+                </div>
+            </section>
+        </main>
+    }
+
+ 
+</body>
+</html>

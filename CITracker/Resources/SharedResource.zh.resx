@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>设置</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>使用SSO登录</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>使用 Microsoft 登录</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>软节约类别</value>
@@ -2117,5 +2117,14 @@
   </data>
   <data name="SelectTeamMember" xml:space="preserve">
     <value>请选择团队成员</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>注册</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>注意：您不会被引导进行付款。</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>使用 Google 登录</value>
   </data>
 </root>
