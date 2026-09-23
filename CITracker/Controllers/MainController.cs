@@ -277,7 +277,7 @@ namespace CITracker.Controllers
             {
                 var newCIProjectTeam = new List<CIProjectTeamMember>();
 
-                foreach(var i in model.Team)
+                foreach (var i in model.Team)
                 {
                     newCIProjectTeam.Add(new CIProjectTeamMember
                     {
@@ -458,7 +458,7 @@ namespace CITracker.Controllers
             {
                 var CIProjectSaving = new List<CIProjectSaving>();
 
-                if(model.Hard != null)
+                if (model.Hard != null)
                 {
                     foreach (var i in model.Hard)
                     {
@@ -477,7 +477,7 @@ namespace CITracker.Controllers
                 }
 
 
-                if(model.Soft != null)
+                if (model.Soft != null)
                 {
                     foreach (var i in model.Soft)
                     {
@@ -753,7 +753,7 @@ namespace CITracker.Controllers
                     {
                         ProjectUpdateNotification("CI", $"An update was made to the team members list of the Continuous Initiative project titled {proj.SingleResult.Title}", proj.SingleResult.Title, usr.Name, emails);
                     }
-                    
+
                     return Ok(res);
                 }
                 else
@@ -1272,7 +1272,7 @@ namespace CITracker.Controllers
                     DateCreated = DateTime.UtcNow
                 };
 
-                if(String.IsNullOrEmpty(newOEProjectMS.MonthYear)){
+                if (String.IsNullOrEmpty(newOEProjectMS.MonthYear)) {
                     TempData["Message"] = "Kindly select a Month and Year.";
                     return RedirectToAction("OEProjectDetail", "Main", new { id = id });
                 }
@@ -1372,7 +1372,7 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            if(val <= 0)
+            if (val <= 0)
             {
                 return NotFound("Incorrect Parameter");
             }
@@ -2189,7 +2189,7 @@ namespace CITracker.Controllers
                 EndDate = enddate,
                 Priority = priority,
                 StartDate = startdate,
-                Status  = status
+                Status = status
             };
 
             //List<NameValueDTO>
@@ -2250,7 +2250,7 @@ namespace CITracker.Controllers
             };
 
             var data = _opsManager.GetStatusCountByMonth(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
-            
+
             return Ok(data?.Result?.ToArray());
         }
 
@@ -2446,7 +2446,7 @@ namespace CITracker.Controllers
             };
 
             var data = _opsManager.GetMonthlyProjectsByPhase(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), filt).Result;
-            
+
             return Json(data?.SingleResult);
         }
 
@@ -2531,6 +2531,239 @@ namespace CITracker.Controllers
             return Ok(data?.Result?.ToArray());
         }
 
+
+        [HttpGet("OEProjectStatusCount")]
+        public async Task<IActionResult> OEProjectStatusCount(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOEStatusCountAsync(orgId, filters);
+
+            // Seed all statuses so the legend always shows
+            var all = Enum.GetNames<Shared.Enumerations.Status>();
+            var result = all.Select(s => new {
+                name = s,
+                value = data.TryGetValue(s, out var v) ? v : 0
+            });
+            return Json(result);
+        }
+
+        [HttpGet("OECarryOverClassification")]
+        public async Task<IActionResult> OECarryOverClassification(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOECarryOverClassificationAsync(orgId, filters);
+
+            var classifications = new[] { "Cost Savings", "Revenue", "Cost Avoidance", "Cost Out" };
+            var result = classifications.Select(c => new {
+                name = c,
+                value = data.TryGetValue(c, out var v) ? v.total : 0,
+                carryOver = data.TryGetValue(c, out var v2) ? v2.carryOver : 0,
+                nonCarryOver = data.TryGetValue(c, out var v3) ? v3.nonCarryOver : 0
+            });
+            return Json(result);
+        }
+
+        [HttpGet("OETopProjects")]
+        public async Task<IActionResult> OETopProjects(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOETopProjectsAsync(orgId, filters, 10);
+            return Json(data);
+        }
+
+        [HttpGet("OEWorkload")]
+        public async Task<IActionResult> OEWorkload(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOEWorkloadAsync(orgId, filters);
+            return Json(data);
+        }
+
+        [HttpGet("OESavingsForecast")]
+        public async Task<IActionResult> OESavingsForecast(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOESavingsForecastAsync(orgId, filters);
+            return Json(data);
+        }
+
+        [HttpGet("OECumulativeSavings")]
+        public async Task<IActionResult> OECumulativeSavings(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOECumulativeSavingsAsync(orgId, filters);
+            return Json(data);
+        }
+
+        [HttpGet("OESavingsByDeptFacility")]
+        public async Task<IActionResult> OESavingsByDeptFacility(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOESavingsByDeptFacilityAsync(orgId, filters);
+            return Json(data);
+        }
+
+        [HttpGet("OECycleTime")]
+        public async Task<IActionResult> OECycleTime(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOECycleTimeAsync(orgId, filters, 15);
+            return Json(data);
+        }
+
+        [HttpGet("OEHealthScorecard")]
+        public async Task<IActionResult> OEHealthScorecard(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId();
+            if (orgId == 0) return Unauthorized();
+
+            var filters = BuildOEFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetOEHealthScorecardAsync(orgId, filters);
+            return Json(data);
+        }
+
+        [HttpGet("SIStatusCount")]
+        public async Task<IActionResult> SIStatusCount(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            var data = await _opsManager.GetSIStatusCountAsync(orgId, f);
+
+            var all = new[] { "PROPOSED", "INITIATED", "COMPLETED", "CLOSED", "CANCELLED" };
+            return Json(all.Select(s => new { name = s, value = data.TryGetValue(s, out var v) ? v : 0 }));
+        }
+
+        [HttpGet("SITopInitiatives")]
+        public async Task<IActionResult> SITopInitiatives(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSITopInitiativesAsync(orgId, f, 10));
+        }
+
+        [HttpGet("SIWorkload")]
+        public async Task<IActionResult> SIWorkload(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIWorkloadAsync(orgId, f));
+        }
+
+        [HttpGet("SIRoiForecast")]
+        public async Task<IActionResult> SIRoiForecast(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIRoiForecastAsync(orgId, f));
+        }
+
+        [HttpGet("SIRoiWaterfall")]
+        public async Task<IActionResult> SIRoiWaterfall(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIRoiWaterfallAsync(orgId, f));
+        }
+
+        [HttpGet("SIRoiByTeamDept")]
+        public async Task<IActionResult> SIRoiByTeamDept(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIRoiByTeamDeptAsync(orgId, f));
+        }
+
+        [HttpGet("SICycleTime")]
+        public async Task<IActionResult> SICycleTime(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSICycleTimeAsync(orgId, f, 15));
+        }
+
+        [HttpGet("SIHealthScorecard")]
+        public async Task<IActionResult> SIHealthScorecard(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIHealthScorecardAsync(orgId, f));
+        }
+
+        [HttpGet("SIStatusBreakdown")]
+        public async Task<IActionResult> SIStatusBreakdown(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            var orgId = GetOrgId(); if (orgId == 0) return Unauthorized();
+            var f = BuildSIFilter(startdate, enddate, priority, users, country, department, status);
+            return Json(await _opsManager.GetSIStatusBreakdownAsync(orgId, f));
+        }
+
+        // ── filter helper for SI ────────────────────────────────────────────
+        private static SIFilter BuildSIFilter(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            return new SIFilter
+            {
+                StartDate = DateTime.TryParse(startdate, out var sd) ? sd : (DateTime?)null,
+                EndDate = DateTime.TryParse(enddate, out var ed) ? ed : (DateTime?)null,
+                Priority = string.IsNullOrEmpty(priority) || priority == "All" ? null : priority,
+                UserId = long.TryParse(users, out var u) ? u : (long?)null,
+                CountryId = long.TryParse(country, out var c) ? c : (long?)null,
+                DepartmentId = long.TryParse(department, out var d) ? d : (long?)null,
+                Status = string.IsNullOrEmpty(status) || status == "All" ? null : status
+            };
+        }
+
+        // ── helpers ──────────────────────────────────────────────────────────
+        private int GetOrgId()
+        {
+            var s = HttpContext.Session.GetString("OrganizationId");
+            return int.TryParse(s, out var id) ? id : 0;
+        }
+
+        private static OEFilter BuildOEFilter(string startdate, string enddate, string priority, string users, string country, string department, string status)
+        {
+            DateTime? start = DateTime.TryParse(startdate, out var sd) ? sd : (DateTime?)null;
+            DateTime? end = DateTime.TryParse(enddate, out var ed) ? ed : (DateTime?)null;
+            long? user = long.TryParse(users, out var u) ? u : (long?)null;
+            long? ctry = long.TryParse(country, out var c) ? c : (long?)null;
+            long? dept = long.TryParse(department, out var d) ? d : (long?)null;
+            long? stat = null;   // status is a string, not an id
+
+            return new OEFilter
+            {
+                StartDate = start,
+                EndDate = end,
+                Priority = string.IsNullOrEmpty(priority) || priority == "All" ? null : priority,
+                UserId = user,
+                CountryId = ctry,
+                DepartmentId = dept,
+                Status = string.IsNullOrEmpty(status) || status == "All" ? null : status
+            };
+        }
+
         private async Task ProjectUpdateNotification(string type, string update, string projectName, string updaterName, List<string> emails)
         {
             try
@@ -2566,10 +2799,10 @@ namespace CITracker.Controllers
                 };
 
             var org = _opsManager.GetOrganizationSoftSaving(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")))?.Result?.Result?.ToList();
-            
+
             if (org == null || !org.Any())
                 return defaultMap;
-            
+
             return org.ToDictionary(x => x.Category, x => x.Unit);
         }
 
@@ -2594,7 +2827,7 @@ namespace CITracker.Controllers
         {
             try
             {
-                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))){
+                if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserRole"))) {
                     return false;
                 }
                 return true;

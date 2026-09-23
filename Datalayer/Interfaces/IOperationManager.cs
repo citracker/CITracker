@@ -1,6 +1,8 @@
-﻿using Shared.DTO;
+﻿using Datalayer.Implementations;
+using Shared.DTO;
 using Shared.Models;
 using Shared.Request;
+using Shared.ViewModels;
 
 namespace Datalayer.Interfaces
 {
@@ -101,5 +103,23 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataOE(int orgId, DashFilter filt);
         Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataSI(int orgId, DashFilter filt);
         Task<ResponseHandler<AccountDetails>> GetOrgAccountDetails(int orgId);
+        Task<Dictionary<string, int>> GetOEStatusCountAsync(int orgId, OEFilter f);
+        Task<Dictionary<string, (int total, int carryOver, int nonCarryOver)>> GetOECarryOverClassificationAsync(int orgId, OEFilter f);
+        Task<List<TopProjectRow>> GetOETopProjectsAsync(int orgId, OEFilter f, int take);
+        Task<List<Shared.ViewModels.WorkloadRow>> GetOEWorkloadAsync(int orgId, OEFilter f);
+        Task<ForecastResult> GetOESavingsForecastAsync(int orgId, OEFilter f);
+        Task<CumulativeResult> GetOECumulativeSavingsAsync(int orgId, OEFilter f);
+        Task<StackedResult> GetOESavingsByDeptFacilityAsync(int orgId, OEFilter f);
+        Task<CycleTimeResult> GetOECycleTimeAsync(int orgId, OEFilter f, int take);
+        Task<List<HealthRow>> GetOEHealthScorecardAsync(int orgId, OEFilter f);
+        Task<Dictionary<string, int>> GetSIStatusCountAsync(int orgId, SIFilter f);
+        Task<List<SITopRow>> GetSITopInitiativesAsync(int orgId, SIFilter f, int take);
+        Task<List<SIWorkloadRow>> GetSIWorkloadAsync(int orgId, SIFilter f);
+        Task<SIForecastResult> GetSIRoiForecastAsync(int orgId, SIFilter f);
+        Task<SIWaterfallResult> GetSIRoiWaterfallAsync(int orgId, SIFilter f);
+        Task<SIStackedResult> GetSIRoiByTeamDeptAsync(int orgId, SIFilter f);
+        Task<SICycleTimeResult> GetSICycleTimeAsync(int orgId, SIFilter f, int take);
+        Task<List<SIHealthRow>> GetSIHealthScorecardAsync(int orgId, SIFilter f);
+        Task<List<SIStatusBreakdownRow>> GetSIStatusBreakdownAsync(int orgId, SIFilter f);
     }
 }

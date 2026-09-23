@@ -4283,6 +4283,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Project Health.
+        /// </summary>
+        public static string ProjectHealth {
+            get {
+                return ResourceManager.GetString("ProjectHealth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project ID cannot be negative.
         /// </summary>
         public static string ProjectIDCannotBeNegative {
