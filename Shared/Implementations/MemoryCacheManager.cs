@@ -17,8 +17,8 @@ namespace Shared.Implementations
                 await Task.Run(() =>
                 {
                     var memoryCacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(30))
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(30))
+                    .SetSlidingExpiration(TimeSpan.FromMinutes(60))
+                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(60))
                     .SetPriority(CacheItemPriority.Normal);
 
                     _memoryCache.Set(cacheKey, value, memoryCacheEntryOptions);

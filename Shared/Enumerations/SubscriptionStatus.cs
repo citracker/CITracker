@@ -1,16 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Shared.Enumerations
+﻿namespace Shared.Enumerations
 {
     public enum SubscriptionStatus
     {
         INITIATED,
         PENDING_CONFIRMATION,
         CANCELLED,
-        ACTIVE
+        ACTIVE, 
+        PendingPayment, 
+        PendingTenantLink, 
+        TRIALING, 
+        Active, 
+        PAST_DUE, 
+        Cancelling, 
+        Cancelled, 
+        Suspended
     }
 }

@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>Configuración</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>Iniciar sesión con SSO</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>Iniciar sesión con Microsoft</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>Categoría de ahorro blando</value>
@@ -2117,5 +2117,14 @@
   </data>
   <data name="SelectTeamMember" xml:space="preserve">
     <value>Seleccione un Miembro del Equipo</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registrarse</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>Nota: No se le redirigirá para realizar un pago.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Iniciar sesión con Google</value>
   </data>
 </root>

@@ -19,5 +19,13 @@ namespace Shared.Models
         public long CreatedBy { get; set; }
         public DateTime? LastUpdatedDate { get; set; }
         public long LastUpdatedBy { get; set; }
+        public int SeatsPurchased { get; set; }
+        public int SeatsAllocated { get; set; }
+        public string Provider { get; set; }
+        public DateTime? TrialStartUtc { get; set; }
+        public DateTime? TrialEndUtc { get; set; }
+        public bool CancelAtPeriodEnd { get; set; }
+        public int? PendingSeatsAtRenewal { get; set; }
+        public int? PendingPlanAtRenewalId { get; set; }
     }
 }

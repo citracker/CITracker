@@ -1,20 +1,14 @@
 ﻿using Datalayer.Interfaces;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Infastructure.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Graph.Models;
 using Newtonsoft.Json;
 using Shared;
 using Shared.DTO;
 using Stripe;
 using Stripe.Checkout;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Infastructure.Implementation
 {
@@ -138,6 +132,42 @@ namespace Infastructure.Implementation
                 _logger.LogError($"Exception at {nameof(CreateStripeCustomer)} ||| {JsonConvert.SerializeObject(ex)}");
                 return null;
             }
+        }
+
+        public string BuildPaymentLinkUrl(string paymentLinkUrl, long pendingId, string email, int seats)
+        {
+            // Stripe Payment Links accept client_reference_id + prefilled_email.
+            // Seat count is user-selected on the Stripe-hosted page (Adjustable Quantity).
+            var sb = new StringBuilder(paymentLinkUrl);
+            sb.Append(paymentLinkUrl.Contains('?') ? '&' : '?');
+            sb.Append($"client_reference_id={Uri.EscapeDataString(pendingId.ToString())}");
+            if (!string.IsNullOrWhiteSpace(email))
+                sb.Append($"&prefilled_email={Uri.EscapeDataString(email)}");
+            return sb.ToString();
+        }
+
+        public async Task<Session> GetCheckoutSession(string sessionId)
+        {
+            var svc = new SessionService();
+            return await svc.GetAsync(sessionId);
+        }
+
+        public async Task<string> CreateSeatUpgradeCheckout(string customerId, string priceId, int quantity, string successUrl)
+        {
+            var options = new SessionCreateOptions
+            {
+                Mode = "subscription",
+                Customer = customerId,
+                LineItems = new List<SessionLineItemOptions> { new() { Price = priceId, Quantity = quantity } },
+                SubscriptionData = new SessionSubscriptionDataOptions
+                {
+                    // One-time addition, prorated
+                },
+                SuccessUrl = _config.Value.SuccessCallBack + successUrl,
+                CancelUrl = _config.Value.FailedCallBack
+            };
+            var svc = new SessionService();
+            return (await svc.CreateAsync(options)).Url;
         }
     }
 }

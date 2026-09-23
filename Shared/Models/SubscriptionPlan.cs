@@ -16,5 +16,10 @@ namespace Shared.Models
         public string PriceId { get; set; }
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
+        public int MinSeats { get; set; }
+        public decimal? PricePerSeatPerYear { get; set; }
+        public bool AllowTrial { get; set; }
+        public bool IsEnterprise { get; set; }
+        public string StripePaymentLinkUrl { get; set; }
     }
 }

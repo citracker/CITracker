@@ -17,6 +17,10 @@ namespace Shared.Utilities
 
         public const string OrganizationTable = "Organization";
 
+        public const string PendingSubscriptionTable = "PendingSubscription";
+
+        public const string ProcessedWebhookEventTable = "ProcessedWebhookEvent";
+
         public const string CIUserTable = "CIUser";
 
         public const string SubscriptionTable = "Subscription";

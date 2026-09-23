@@ -1581,8 +1581,8 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
-  <data name="SignInWithSSO" xml:space="preserve">
-    <value>Sign in with SSO</value>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>Sign in with Microsoft</value>
   </data>
   <data name="SoftSavingCategory" xml:space="preserve">
     <value>Soft Saving Category</value>
@@ -2117,5 +2117,14 @@
   </data>
   <data name="SelectTeamMember" xml:space="preserve">
     <value>Select Team Member</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>Note: You will not be directed to make payment.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>Sign in with Google</value>
   </data>
 </root>
