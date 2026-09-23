@@ -378,7 +378,9 @@ namespace CITracker.Controllers
         {
             ClearSessionIdentity();
 
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, GoogleDefaults.AuthenticationScheme);   // = "Google"
+            return Challenge(
+                new AuthenticationProperties { RedirectUri = "/" },
+                OpenIdConnectDefaults.AuthenticationScheme);
         }
 
 
@@ -1068,7 +1070,7 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if(User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
             {
                 //set user Email first if user email is null
                 if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
