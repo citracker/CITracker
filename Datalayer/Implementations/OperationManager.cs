@@ -13,7 +13,9 @@ using Shared.Interfaces;
 using Shared.Models;
 using Shared.Request;
 using Shared.Utilities;
+using Shared.ViewModels;
 using System.Data;
+using System.Globalization;
 using System.Net;
 using System.Text;
 
@@ -26,6 +28,8 @@ namespace Datalayer.Implementations
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
         private readonly IGenericManager _genManager;
+        private static readonly string[] AllPriorities = { "Low", "Medium", "High" };
+        private static readonly string[] AllClassifications = { "Cost Savings", "Revenue", "Cost Avoidance", "Cost Out" };
 
         public OperationManager(ILogger<OperationManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
         {
@@ -5637,7 +5641,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationData(int orgId, DashFilter filt)
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataCI(int orgId, DashFilter filt)
         {
             try
             {
@@ -5648,17 +5652,9 @@ namespace Datalayer.Implementations
 
                 var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
 
-                //var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
-
-                //var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
-
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
                     cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-
-                    //var oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
-
-                    //var sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
                 else
                 {
@@ -5738,8 +5734,6 @@ namespace Datalayer.Implementations
                 }
 
                 Merge(cire);
-                //Merge(oere);
-                //Merge(sire);
 
                 if (dict.Any())
                 {
@@ -5762,7 +5756,247 @@ namespace Datalayer.Implementations
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(GetOrganizationData)} - {JsonConvert.SerializeObject(ex)}");
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataCI)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+            }
+        }
+
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataOE(int orgId, DashFilter filt)
+        {
+            try
+            {
+                IEnumerable<DashboardAnalytics> oere = null;
+                List<DashboardAnalytics> resi = null;
+                var dict = new Dictionary<string, DashboardAnalytics>();
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
+
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
+                    }
+
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
+
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
+
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
+
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
+
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
+
+                    var finalQuery = oequery.Replace("@where", where.ToString());
+
+                    parameters.Add("@oid", orgId);
+
+                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
+
+                void Merge(IEnumerable<DashboardAnalytics> items)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!dict.TryGetValue(item.Currency, out var existing))
+                        {
+                            dict[item.Currency] = new DashboardAnalytics
+                            {
+                                Currency = item.Currency,
+                                ProjectCount = item.ProjectCount,
+                                TotalExpectedRevenue = item.TotalExpectedRevenue,
+                                TotalHardSavings = item.TotalHardSavings
+                            };
+                        }
+                        else
+                        {
+                            existing.ProjectCount += item.ProjectCount;
+                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
+                            existing.TotalHardSavings += item.TotalHardSavings;
+                        }
+                    }
+                }
+
+                Merge(oere);
+
+                if (dict.Any())
+                {
+                    resi = dict.Values.ToList();
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataOE)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+            }
+        }
+
+        public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataSI(int orgId, DashFilter filt)
+        {
+            try
+            {
+                IEnumerable<DashboardAnalytics> sire = null;
+                List<DashboardAnalytics> resi = null;
+                var dict = new Dictionary<string, DashboardAnalytics>();
+                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+
+                if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
+                {
+                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
+                }
+                else
+                {
+                    var where = new StringBuilder();
+                    var parameters = new DynamicParameters();
+
+                    if (!string.IsNullOrWhiteSpace(filt.Priority))
+                    {
+                        where.Append(" AND ci.Priority = @Priority");
+                        parameters.Add("@Priority", filt.Priority.Trim());
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(filt.Status))
+                    {
+                        where.Append(" AND ci.Status = @Stat");
+                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
+                    }
+
+                    //if (filt.UserId > 0)
+                    //{
+                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
+                    //    parameters.Add("@UserId", filt.UserId);
+                    //}
+
+                    if (filt.CountryId > 0)
+                    {
+                        where.Append(" AND ci.CountryId = @CountryId");
+                        parameters.Add("@CountryId", filt.CountryId);
+                    }
+
+                    if (filt.DepartmentId > 0)
+                    {
+                        where.Append(" AND ci.DepartmentId = @DepartmentId");
+                        parameters.Add("@DepartmentId", filt.DepartmentId);
+                    }
+
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
+                    {
+                        where.Append(" AND ci.StartDate >= @StartDate");
+                        parameters.Add("@StartDate", filt.StartDate);
+                    }
+
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
+                    {
+                        where.Append(" AND ci.EndDate <= @EndDate");
+                        parameters.Add("@EndDate", filt.EndDate);
+                    }
+
+                    var finalQuery = siquery.Replace("@where", where.ToString());
+
+                    parameters.Add("@oid", orgId);
+
+                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                }
+
+                void Merge(IEnumerable<DashboardAnalytics> items)
+                {
+                    foreach (var item in items)
+                    {
+                        if (!dict.TryGetValue(item.Currency, out var existing))
+                        {
+                            dict[item.Currency] = new DashboardAnalytics
+                            {
+                                Currency = item.Currency,
+                                ProjectCount = item.ProjectCount,
+                                TotalExpectedRevenue = item.TotalExpectedRevenue,
+                                TotalHardSavings = item.TotalHardSavings
+                            };
+                        }
+                        else
+                        {
+                            existing.ProjectCount += item.ProjectCount;
+                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
+                            existing.TotalHardSavings += item.TotalHardSavings;
+                        }
+                    }
+                }
+
+                Merge(sire);
+
+                if (dict.Any())
+                {
+                    resi = dict.Values.ToList();
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        Result = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationDataSI)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
             }
         }
@@ -5798,6 +6032,378 @@ namespace Datalayer.Implementations
                 _logger.LogError($"Exception at {nameof(GetOrgAccountDetails)} - {JsonConvert.SerializeObject(ex)}");
                 return await Task.FromResult(new ResponseHandler<AccountDetails>());
             }
+        }
+
+        public async Task<Dictionary<string, int>> GetOEStatusCountAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT oe.Status, COUNT(*) AS Cnt FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY oe.Status";
+
+            var rows = await _repository.GetListAsync<StatusRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<StatusRow>();
+            return rows.ToDictionary(r => r.Status?.ToUpper() ?? "", r => r.Cnt);
+        }
+
+        public async Task<Dictionary<string, (int total, int carryOver, int nonCarryOver)>> GetOECarryOverClassificationAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT oe.SavingsClassification AS Classification, SUM(CASE WHEN oe.CarryOverProject = 'Yes' THEN 1 ELSE 0 END) AS CarryOver, SUM(CASE WHEN oe.CarryOverProject <> 'Yes' THEN 1 ELSE 0 END) AS NonCarryOver, COUNT(*) AS Total FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY oe.SavingsClassification";
+
+            var rows = await _repository.GetListAsync<CarryRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<CarryRow>();
+
+            return rows.ToDictionary(r => r.Classification ?? "Unknown", r => (r.Total, r.CarryOver, r.NonCarryOver));
+        }
+
+        public async Task<List<TopProjectRow>> GetOETopProjectsAsync(int orgId, OEFilter f, int take)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@" SELECT TOP {take} oe.Title AS Title, oe.TargetSavings AS TargetSavings, ISNULL(oe.Currency,'$') AS Currency, oe.Priority AS Priority, oe.Status AS Status FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY oe.TargetSavings DESC";
+
+            var re = await _repository.GetListAsync<TopProjectRow>(db, sql, f.Params(orgId), CommandType.Text)
+                   ?? new List<TopProjectRow>();
+            return re.ToList();
+        }
+
+        public async Task<List<WorkloadRow>> GetOEWorkloadAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT u.Name AS Name, SUM(CASE WHEN oe.FacilitatorId = u.Id THEN 1 ELSE 0 END) AS Facilitator, SUM(CASE WHEN oe.SponsorId = u.Id THEN 1 ELSE 0 END) AS Sponsor FROM CIUser u LEFT JOIN OperationalExcellence oe ON oe.OrganizationId = @OrgId AND (oe.FacilitatorId = u.Id OR oe.SponsorId = u.Id) {f.WhereSql("oe")} WHERE u.OrganizationId = @OrgId AND u.IsActive = 1 GROUP BY u.Name HAVING SUM(CASE WHEN oe.FacilitatorId = u.Id THEN 1 ELSE 0 END) + SUM(CASE WHEN oe.SponsorId = u.Id THEN 1 ELSE 0 END) > 0 ORDER BY 2 DESC, 3 DESC";
+
+            var re = await _repository.GetListAsync<WorkloadRow>(db, sql, f.Params(orgId), CommandType.Text)
+                   ?? new List<WorkloadRow>();
+
+            return re.ToList();
+        }
+
+        public async Task<ForecastResult> GetOESavingsForecastAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+            var totalTarget = await _repository.GetSumOrCountAsync<int>(db, $@"SELECT ISNULL(SUM(oe.TargetSavings),0) FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text);
+
+            var monthly = await GetMonthlyMapAsync(db, orgId, f);
+
+            var labels = monthly.Keys.OrderBy(k => k).ToList();
+            if (labels.Count == 0)
+            {
+                labels = Enumerable.Range(0, 12)
+                    .Select(i => new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(i - 11))
+                    .Select(d => d.ToString("MMM yyyy"))
+                    .ToList();
+            }
+
+            var perMonth = labels.Count > 0 ? totalTarget / labels.Count : 0m;
+            var targetCumul = new List<decimal>();
+            var actualCumul = new List<decimal>();
+            decimal t = 0, a = 0;
+            foreach (var l in labels)
+            {
+                t += perMonth;
+                a += monthly.TryGetValue(l, out var v) ? v : 0m;
+                targetCumul.Add(decimal.Round(t, 2));
+                actualCumul.Add(decimal.Round(a, 2));
+            }
+
+            return new ForecastResult
+            {
+                Labels = labels,
+                TargetCumulative = targetCumul,
+                ActualCumulative = actualCumul
+            };
+        }
+
+        public async Task<CumulativeResult> GetOECumulativeSavingsAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var monthly = await GetMonthlyMapAsync(db, orgId, f);
+
+            var labels = new List<string>();
+            var monthlyV = new List<decimal>();
+            var cumulative = new List<decimal>();
+            decimal running = 0;
+
+            foreach (var kv in monthly.OrderBy(k => k.Key))
+            {
+                labels.Add(kv.Key);
+                monthlyV.Add(decimal.Round(kv.Value, 2));
+                running += kv.Value;
+                cumulative.Add(decimal.Round(running, 2));
+            }
+
+            if (labels.Count == 0)
+            {
+                for (int i = 5; i >= 0; i--)
+                {
+                    labels.Add(DateTime.UtcNow.AddMonths(-i).ToString("MMM yyyy"));
+                    monthlyV.Add(0);
+                    cumulative.Add(0);
+                }
+            }
+
+            return new CumulativeResult { Labels = labels, Monthly = monthlyV, Cumulative = cumulative };
+        }
+
+        public async Task<StackedResult> GetOESavingsByDeptFacilityAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(fc.Facility,'—')  AS Facility, ISNULL(SUM(ms.Savings),0) AS Savings FROM OperationalExcellence oe LEFT JOIN OrganizationDepartment d  ON d.Id  = oe.OrganizationDepartmentId LEFT JOIN OrganizationFacility fc ON fc.Id = oe.OrganizationFacilityId LEFT JOIN OperationalExcellenceMonthlySaving ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, fc.Facility";
+
+            var rows = await _repository.GetListAsync<DeptFacilityRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<DeptFacilityRow>();
+
+            var depts = rows.Select(r => r.Department).Distinct().OrderBy(x => x).ToList();
+            var facs = rows.Select(r => r.Facility).Distinct().OrderBy(x => x).ToList();
+
+            var datasets = facs.Select(fac => new StackedDataset
+            {
+                Label = fac,
+                Data = depts.Select(d => rows.FirstOrDefault(r => r.Department == d && r.Facility == fac)?.Savings ?? 0m).ToList()
+            }).ToList();
+
+            return new StackedResult { Labels = depts, Datasets = datasets };
+        }
+
+        public async Task<CycleTimeResult> GetOECycleTimeAsync(int orgId, OEFilter f, int take)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT TOP {take} oe.Title AS Title, oe.StartDate AS StartDate, oe.EndDate AS EndDate, oe.Status AS Status, DATEDIFF(DAY, oe.StartDate, oe.EndDate) AS PlannedDays FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY oe.StartDate DESC";
+
+            var rows = await _repository.GetListAsync<CycleTimeRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<CycleTimeRow>();
+
+            var today = DateTime.UtcNow.Date;
+            return new CycleTimeResult
+            {
+                Labels = rows.Select(r => r.Title).ToList(),
+                Planned = rows.Select(r => r.PlannedDays).ToList(),
+                Elapsed = rows.Select(r => {
+                    var end = (r.Status == "COMPLETED" || r.Status == "CLOSED") ? r.EndDate.Date : today;
+                    return Math.Max(0, (end - r.StartDate.Date).Days);
+                }).ToList()
+            };
+        }
+
+        public async Task<List<HealthRow>> GetOEHealthScorecardAsync(int orgId, OEFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT oe.Title AS Title, oe.Priority AS Priority, oe.Status AS Status, ISNULL(fa.Name,'—') AS Facilitator, ISNULL(sp.Name,'—') AS Sponsor, oe.EndDate AS EndDate, CASE WHEN oe.CarryOverProject = 'Yes' THEN 1 ELSE 0 END AS CarryOver FROM OperationalExcellence oe LEFT JOIN CIUser fa ON fa.Id = oe.FacilitatorId LEFT JOIN CIUser sp ON sp.Id = oe.SponsorId WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY CASE oe.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, oe.EndDate ASC";
+
+            var rows = await _repository.GetListAsync<HealthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<HealthRow>();
+
+            var today = DateTime.UtcNow.Date;
+            foreach (var r in rows)
+            {
+                r.DaysRemaining = (r.EndDate.Date - today).Days;
+                r.Health = ComputeHealth(r.Status, r.DaysRemaining);
+            }
+            return rows.ToList();
+        }
+
+        private async Task<Dictionary<string, decimal>> GetMonthlyMapAsync(IDbConnection db, int orgId, OEFilter f)
+        {
+            var sql = $@"SELECT ms.MonthYear AS MonthYear, SUM(ms.Savings) AS Savings FROM OperationalExcellenceMonthlySaving ms INNER JOIN OperationalExcellence oe ON oe.Id = ms.ProjectId WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY ms.MonthYear";
+
+            var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
+
+            var map = new Dictionary<string, (DateTime date, decimal val)>();
+            foreach (var r in rows)
+            {
+                if (DateTime.TryParseExact(r.MonthYear?.Trim() ?? "", "MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+                {
+                    var label = d.ToString("MMM yyyy");
+                    map[label] = map.TryGetValue(label, out var existing) ? (d, existing.val + r.Savings) : (d, r.Savings);
+                }
+            }
+            return map.OrderBy(k => k.Value.date).ToDictionary(k => k.Key, k => k.Value.val);
+        }
+
+        private static string ComputeHealth(string status, int daysRemaining)
+        {
+            if (status == "CANCELLED") return "Cancelled";
+            if (status == "COMPLETED" || status == "CLOSED") return "Done";
+            if (daysRemaining < 0) return "Overdue";
+            if (daysRemaining <= 30) return "AtRisk";
+            return "OnTrack";
+        }
+
+        public async Task<Dictionary<string, int>> GetSIStatusCountAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT si.Status, COUNT(*) AS Cnt FROM StrategicInitiative si WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Status";
+
+            var rows = await _repository.GetListAsync<StatusCountRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<StatusCountRow>();
+            return rows.ToDictionary(r => r.Status?.ToUpper() ?? "", r => r.Cnt);
+        }
+
+        public async Task<List<SITopRow>> GetSITopInitiativesAsync(int orgId, SIFilter f, int take)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT TOP {take} si.Id AS Id, si.Title AS Title, si.Priority AS Priority, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CIUser u  ON u.Id = si.OwnerId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, u.Name, d.Department ORDER BY Roi DESC";
+
+            var re = await _repository.GetListAsync<SITopRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SITopRow>();
+
+            return re.ToList();
+        }
+
+        public async Task<List<SIWorkloadRow>> GetSIWorkloadAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT u.Name AS Name, SUM(CASE WHEN si.OwnerId = u.Id THEN 1 ELSE 0 END) AS AsOwner, SUM(CASE WHEN si.ExecutiveSponsorId = u.Id THEN 1 ELSE 0 END) AS AsSponsor FROM CIUser u LEFT JOIN StrategicInitiative si ON si.OrganizationId = @OrgId AND (si.OwnerId = u.Id OR si.ExecutiveSponsorId = u.Id) {f.WhereSql("si")} WHERE u.OrganizationId = @OrgId AND u.IsActive = 1 GROUP BY u.Name HAVING SUM(CASE WHEN si.OwnerId = u.Id THEN 1 ELSE 0 END)  + SUM(CASE WHEN si.ExecutiveSponsorId = u.Id THEN 1 ELSE 0 END) > 0 ORDER BY 2 DESC, 3 DESC";
+
+            var re = await _repository.GetListAsync<SIWorkloadRow>(db, sql, f.Params(orgId), CommandType.Text)
+                   ?? new List<SIWorkloadRow>();
+
+            return re.ToList();
+        }
+
+        public async Task<SIForecastResult> GetSIRoiForecastAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+
+            // Total target = sum of all expected savings across sub-projects (acts as ceiling)
+            var target = await _repository.GetSumOrCountAsync<decimal?>(db, $@"SELECT ISNULL(SUM(sp.Savings),0) FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId WHERE si.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text) ?? 0m;
+
+            var monthly = await GetMonthlyRoiMapAsync(db, orgId, f);
+
+            // If no monthly data, project an even spread across the initiative window
+            var labels = monthly.Keys.ToList();
+            if (labels.Count == 0)
+            {
+                labels = Enumerable.Range(0, 12)
+                    .Select(i => new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(i - 11))
+                    .Select(d => d.ToString("MMM yyyy"))
+                    .ToList();
+            }
+
+            decimal perMonth = labels.Count > 0 ? target / labels.Count : 0m;
+            var targetCum = new List<decimal>();
+            var actualCum = new List<decimal>();
+            decimal tc = 0, ac = 0;
+            foreach (var l in labels)
+            {
+                tc += perMonth;
+                ac += monthly.TryGetValue(l, out var v) ? v : 0m;
+                targetCum.Add(decimal.Round(tc, 2));
+                actualCum.Add(decimal.Round(ac, 2));
+            }
+
+            return new SIForecastResult
+            {
+                Labels = labels,
+                TargetCumulative = targetCum,
+                ActualCumulative = actualCum
+            };
+        }
+
+        public async Task<SIWaterfallResult> GetSIRoiWaterfallAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var monthly = await GetMonthlyRoiMapAsync(db, orgId, f);
+
+            var labels = monthly.Keys.ToList();
+            if (labels.Count == 0)
+            {
+                labels = Enumerable.Range(0, 6)
+                    .Select(i => new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1).AddMonths(-i))
+                    .Reverse()
+                    .Select(d => d.ToString("MMM yyyy"))
+                    .ToList();
+            }
+
+            var deltas = labels.Select(l => monthly.TryGetValue(l, out var v) ? v : 0m).ToList();
+
+            // Build a running cumulative total (for the waterfall "start" baseline)
+            var cumulative = new List<decimal>();
+            decimal running = 0;
+            foreach (var d in deltas) { cumulative.Add(decimal.Round(running, 2)); running += d; }
+
+            return new SIWaterfallResult
+            {
+                Labels = labels,
+                Deltas = deltas,
+                Cumulative = cumulative
+            };
+        }
+
+        public async Task<SIStackedResult> GetSIRoiByTeamDeptAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(u.Name,'—') AS Owner, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, u.Name";
+
+            var rows = await _repository.GetListAsync<SIOwnerDeptRow>(db, sql, f.Params(orgId), CommandType.Text)
+                       ?? new List<SIOwnerDeptRow>();
+
+            var depts = rows.Select(r => r.Department).Distinct().OrderBy(x => x).ToList();
+            var owners = rows.Select(r => r.Owner).Distinct().OrderBy(x => x).ToList();
+
+            var datasets = owners.Select(o => new SIStackedDataset
+            {
+                Label = o,
+                Data = depts.Select(d => rows.FirstOrDefault(r => r.Department == d && r.Owner == o)?.Roi ?? 0m).ToList()
+            }).ToList();
+
+            return new SIStackedResult { Labels = depts, Datasets = datasets };
+        }
+
+        public async Task<SICycleTimeResult> GetSICycleTimeAsync(int orgId, SIFilter f, int take)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT TOP {take} si.Title AS Title, si.StartDate AS StartDate, si.EndDate AS EndDate, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, DATEDIFF(DAY, si.StartDate, si.EndDate) AS PlannedDays FROM StrategicInitiative si LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} ORDER BY si.StartDate DESC";
+
+            var rows = await _repository.GetListAsync<SICycleRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SICycleRow>();
+
+            var today = DateTime.UtcNow.Date;
+            return new SICycleTimeResult
+            {
+                Labels = rows.Select(r => r.Title).ToList(),
+                Planned = rows.Select(r => r.PlannedDays).ToList(),
+                Elapsed = rows.Select(r => {
+                    var end = (r.Status == "COMPLETED" || r.Status == "CLOSED") ? r.EndDate.Date : today;
+                    return Math.Max(0, (end - r.StartDate.Date).Days);
+                }).ToList(),
+                Status = rows.Select(r => r.Status).ToList()
+            };
+        }
+
+        public async Task<List<SIHealthRow>> GetSIHealthScorecardAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, ISNULL(u.Name,'—') AS Owner, ISNULL(s.Name,'—') AS Sponsor, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings),0) AS Roi, COUNT(sp.Id) AS SubProjectCount FROM StrategicInitiative si LEFT JOIN CIUser u  ON u.Id  = si.OwnerId LEFT JOIN CIUser s  ON s.Id  = si.ExecutiveSponsorId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, u.Name, s.Name, d.Department ORDER BY CASE si.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, si.EndDate ASC";
+
+            var rows = await _repository.GetListAsync<SIHealthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIHealthRow>();
+
+            var today = DateTime.UtcNow.Date;
+            foreach (var r in rows)
+            {
+                r.DaysRemaining = (r.EndDate.Date - today).Days;
+                r.Health = ComputeHealth(r.Status, r.DaysRemaining);
+            }
+            return rows.ToList();
+        }
+
+        public async Task<List<SIStatusBreakdownRow>> GetSIStatusBreakdownAsync(int orgId, SIFilter f)
+        {
+            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            var sql = $@"SELECT si.Status, COUNT(DISTINCT si.Id) AS InitiativeCount, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Status";
+
+            var re = await _repository.GetListAsync<SIStatusBreakdownRow>(db, sql, f.Params(orgId), CommandType.Text)
+                   ?? new List<SIStatusBreakdownRow>();
+
+            return re.ToList();
+        }
+
+        private async Task<Dictionary<string, decimal>> GetMonthlyRoiMapAsync(IDbConnection db, int orgId, SIFilter f)
+        {
+            // Monthly ROI = sum of sub-project savings, bucketed by the sub-project's StartDate.
+            // Sub-projects carry the actual contribution dates; the parent SI is only the grouping.
+            var sql = $@"SELECT YEAR(sp.StartDate)  AS Yr, MONTH(sp.StartDate) AS Mo, SUM(sp.Savings)     AS Savings FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY YEAR(sp.StartDate), MONTH(sp.StartDate) ORDER BY Yr, Mo";
+
+            var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
+
+            var map = new Dictionary<string, decimal>();
+            foreach (var r in rows)
+            {
+                var label = new DateTime(r.Yr, r.Mo, 1).ToString("MMM yyyy");
+                map[label] = r.Savings;
+            }
+            return map;
         }
     }
 }

@@ -8,8 +8,34 @@
     Layout = "~/Views/Shared/_MainDashboardLayout.cshtml";
 }
 
+
 <div class="main-content app-content">
-    <div class="container-fluid">
+    <div class="container-fluid px-3 px-md-4">
+
+
+        <!-- ============================================================ -->
+        <!--  FLOATING TABS  (fixed at top)                                -->
+        <!-- ============================================================ -->
+        <nav class="floating-tabs" id="floatingTabs">
+            <ul class="nav nav-tabs" id="floatingTabList" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" data-target="section-ci" type="button">
+                        <i class="ri-filter-3-line"></i> Continuous Improvement
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-target="section-oe" type="button">
+                        <i class="ri-dashboard-3-line"></i> Operational Excellence
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" data-target="section-si" type="button">
+                        <i class="ri-bar-chart-2-line"></i> Strategic Initiatives
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
         <div class="row row-sm">
             <div class="accordion accordion-primary mb-5" id="filterAccord">
                 <div class="accordion-item">
@@ -112,85 +138,90 @@
                     </div>
                 </div>
             </div>
-            <div class="col-sm-12 col-lg-12 col-xl-12">
-                <div class="row row-sm mt-4">
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+        </div>
+
+
+        <div id="section-ci" class="section-anchor tab-pane active">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
                                     </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
-                                   </div>
-                                    <div class="card-item-body" id="totalsavings" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
-                                       </div>
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalsavings" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
+                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
+                                    </div> *@
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
+                                        </div>
+                                        <div class="card-item-body" id="totalexpectedsavings" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8 0 1.82.62 3.49 1.64 4.83 1.43-1.74 4.9-2.33 6.36-2.33s4.93.59 6.36 2.33C19.38 15.49 20 13.82 20 12c0-4.41-3.59-8-8-8zm0 9c-1.94 0-3.5-1.56-3.5-3.5S10.06 6 12 6s3.5 1.56 3.5 3.5S13.94 13 12 13z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83zM12 6c-1.94 0-3.5 1.56-3.5 3.5S10.06 13 12 13s3.5-1.56 3.5-3.5S13.94 6 12 6zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 8 12 8s1.5.67 1.5 1.5S12.83 11 12 11z"></path> </svg>
                                     </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
-                                    </div>
-                                    <div class="card-item-body" id="projectcount" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">0</h4>
+                                        <div class="card-item-title mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label>
+                                        </div>
+                                        <div class="card-item-body" id="projectcount" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold">0</h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
+                        <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        @* <div class="card-item-icon card-icon">
                                         <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24"> <path d="M0 0h24v24H0V0z" fill="none"></path> <path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm1.23 13.33V19H10.9v-1.69c-1.5-.31-2.77-1.28-2.86-2.97h1.71c.09.92.72 1.64 2.32 1.64 1.71 0 2.1-.86 2.1-1.39 0-.73-.39-1.41-2.34-1.87-2.17-.53-3.66-1.42-3.66-3.21 0-1.51 1.22-2.48 2.72-2.81V5h2.34v1.71c1.63.39 2.44 1.63 2.49 2.97h-1.71c-.04-.97-.56-1.64-1.94-1.64-1.31 0-2.1.59-2.1 1.43 0 .73.57 1.22 2.34 1.67 1.77.46 3.66 1.22 3.66 3.42-.01 1.6-1.21 2.48-2.74 2.77z" opacity=".3"></path> <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"></path> </svg>
                                     </div> *@
-                                    <div class="card-item-title  mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
-                                    </div>
-                                    <div class="card-item-body" id="audited" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
+                                        <div class="card-item-title  mb-2">
+                                            <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label>
+                                        </div>
+                                        <div class="card-item-body" id="audited" style="display:inline-block !important;">
+                                            <div class="card-item-stat">
+                                                <h4 class="fw-bold"></h4>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    @* <div class="card-item-icon card-icon">
-                                        <svg class="text-primary" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24" viewBox="0 0 24 24" width="24"> <g> <rect height="14" opacity=".3" width="14" x="5" y="5"></rect> <g> <rect fill="none" height="24" width="24"></rect> <g> <path d="M19,3H5C3.9,3,3,3.9,3,5v14c0,1.1,0.9,2,2,2h14c1.1,0,2-0.9,2-2V5C21,3.9,20.1,3,19,3z M19,19H5V5h14V19z"></path> <rect height="5" width="2" x="7" y="12"></rect> <rect height="10" width="2" x="15" y="7"></rect> <rect height="3" width="2" x="11" y="14"></rect> <rect height="2" width="2" x="11" y="10"></rect> </g> </g> </g> </svg>
-                                    </div> *@
-                                    <div class="card-item-title mb-2">
-                                        <label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label>
-                                    </div>
-                                    <div class="card-item-body" id="totalexpectedsavings" style="display:inline-block !important;">
-                                        <div class="card-item-stat">
-                                            <h4 class="fw-bold">$0</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @* <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
+                        @* <div class="col-sm-12 col-md-3 col-lg-3 col-xl-3">
                         <div class="card custom-card">
                             <div class="card-body">
                                 <div class="card-item">
@@ -209,96 +240,417 @@
                             </div>
                         </div>
                     </div> *@
+                    </div>
+                    <div class="row row-sm mt-2">
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="projCountbyMethodology" class="chart-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="projCountbyStatus" class="chart-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <canvas id="projCountInCert" class="chart-container"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div id="savingsByCategory" class="chart-container"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row row-sm mt-2">
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyProjectsStatus"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlySavings"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="completedProjectsByUser"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyProjectsbyMeth"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyDeptChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper">
+                                        <canvas id="monthlyPhaseChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="projCountbyMethodology" class="chart-container"></div>
+            </div>
+        </div>
+
+        <div id="section-oe" class="section-anchor tab-pane">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+
+                    <!-- KPI TILES -->
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label></div>
+                                        <div class="card-item-body" id="totalsavings_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label></div>
+                                        <div class="card-item-body" id="totalexpectedsavings_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label></div>
+                                        <div class="card-item-body" id="projectcount_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold">0</h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label></div>
+                                        <div class="card-item-body" id="audited_oe" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="projCountbyStatus" class="chart-container"></div>
+
+                    <!-- ROW A: 4 charts -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeStatusPie"></canvas></div>
                                 </div>
                             </div>
                         </div>
-                    </div>                    
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <canvas id="projCountInCert" class="chart-container"></canvas>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeCarryOverPie"></canvas></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="card-item">
-                                    <div id="savingsByCategory" class="chart-container"></div>
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeTopProjects"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeWorkload"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW B: 2 wide charts -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeForecastChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeCumulativeChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW C: 2 wide charts -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeDeptFacilityChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="oeCycleTimeChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ROW D: Health Scorecard -->
+                    <div class="row row-sm mt-2 mb-4">
+                        <div class="col-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">@SharedResource.ProjectHealth</h6>
+                                    <div class="table-responsive" style="max-height:420px;overflow:auto">
+                                        <table class="table table-sm align-middle" id="oeHealthTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Priority</th>
+                                                    <th>Status</th>
+                                                    <th>Facilitator</th>
+                                                    <th>Sponsor</th>
+                                                    <th>End Date</th>
+                                                    <th>Days +/-</th>
+                                                    <th>Carry-Over</th>
+                                                    <th>Health</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row row-sm mt-2">
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyProjectsStatus"></canvas>
+            </div>
+        </div>
+
+        <div id="section-si" class="section-anchor tab-pane">
+            <div class="row row-sm">
+                <div class="col-sm-12 col-lg-12 col-xl-12">
+
+
+                    <!-- KPI TILES -->
+                    <div class="row row-sm mt-4">
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalSavings</label></div>
+                                        <div class="card-item-body" id="totalsavings_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.TotalExpectedSavings</label></div>
+                                        <div class="card-item-body" id="totalexpectedsavings_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.ProjectCount</label></div>
+                                        <div class="card-item-body" id="projectcount_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold">0</h4></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 col-md-3">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="card-item">
+                                        <div class="card-item-title mb-2"><label class="main-content-label fs-13 fw-bold mb-1">@SharedResource.Audits</label></div>
+                                        <div class="card-item-body" id="audited_si" style="display:inline-block !important;">
+                                            <div class="card-item-stat"><h4 class="fw-bold"></h4></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlySavings"></canvas>
+
+                    <!-- ROW A: 2 doughnuts -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siStatusPie"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siStatusBreakdownPie"></canvas></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="completedProjectsByUser"></canvas>
+
+                    <!-- ROW B: Top + Workload -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-7 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siTopInitiatives"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siWorkload"></canvas></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyProjectsbyMeth"></canvas>
+
+                    <!-- ROW C: Forecast + Waterfall -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siForecastChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siWaterfallChart"></canvas></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyDeptChart"></canvas>
+
+                    <!-- ROW D: ROI by Dept × Owner + Cycle Time -->
+                    <div class="row row-sm mt-2">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siRoiByDeptOwner"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <div class="chart-wrapper"><canvas id="siCycleTimeChart"></canvas></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6">
-                        <div class="card custom-card">
-                            <div class="card-body">
-                                <div class="chart-wrapper">
-                                    <canvas id="monthlyPhaseChart"></canvas>
+
+                    <!-- ROW E: Health table -->
+                    <div class="row row-sm mt-2 mb-4">
+                        <div class="col-12">
+                            <div class="card custom-card">
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-3">Initiative Health</h6>
+                                    <div class="table-responsive" style="max-height:420px;overflow:auto">
+                                        <table class="table table-sm align-middle" id="siHealthTable">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Title</th>
+                                                    <th>Priority</th>
+                                                    <th>Status</th>
+                                                    <th>Owner</th>
+                                                    <th>Sponsor</th>
+                                                    <th>Department</th>
+                                                    <th>ROI</th>
+                                                    <th>End Date</th>
+                                                    <th>Days +/-</th>
+                                                    <th>Health</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -308,6 +660,7 @@
         </div>
     </div>
 </div>
+
 <script>
     let currentFilters = {};
     const resources = {
@@ -384,7 +737,7 @@
         if (department) filters.department = department;
         if (status) filters.status = status;
 
-        console.log("Filters:", filters);
+        //console.log("Filters:", filters);
 
         return filters;
     }
@@ -440,7 +793,9 @@
             loadCompletedProjectsData(),
             loadBarChartData3(),
             loadDepartmentData(),
-            loadPhaseData()
+            loadPhaseData(),
+            loadAllOECharts(),
+            loadAllSICharts()
         ]);
 
         // Hide loading states
@@ -460,36 +815,124 @@
 
 
     async function loadData() {
+
+        let result = [];
+        const c = document.getElementById('totalsavings');
+        const c1 = document.getElementById('projectcount');
+        const c2 = document.getElementById('audited');
+        const c3 = document.getElementById('totalexpectedsavings');
+
         try {
             const queryString = buildQueryString(currentFilters);
-            const response = await fetch('/DashboardAnalytics' + queryString);
+            const response = await fetch('/DashboardAnalyticsCI' + queryString);
 
             if (!response.ok) {
-                prepUI();
+                prepUI(result, c, c1, c2, c3);
                 return;
             }
-
-            let result = [];
 
             try {
                 result = await response.json();
             } catch {
-                prepUI();
+                prepUI(result, c, c1, c2, c3);
                 return;
             }
 
             if (!result || result.length === 0) {
-                prepUI();
+                prepUI(result, c, c1, c2, c3);
                 return;
             }
 
-            prepUI(result);
+            prepUI(result, c, c1, c2, c3);
 
         } catch (error) {
-            prepUI();
+            console.log(error)
+            prepUI(result, c, c1, c2, c3);
         }
     }
     loadData();
+
+
+
+    async function loadDataOE() {
+
+        let result = [];
+        const c = document.getElementById('totalsavings_oe');
+        const c1 = document.getElementById('projectcount_oe');
+        const c2 = document.getElementById('audited_oe');
+        const c3 = document.getElementById('totalexpectedsavings_oe');
+
+        try {
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/DashboardAnalyticsOE' + queryString);
+
+
+            if (!response.ok) {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            try {
+                result = await response.json();
+            } catch {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            if (!result || result.length === 0) {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            prepUI(result, c, c1, c2, c3);
+
+        } catch (error) {
+            console.log(error)
+            prepUI(result, c, c1, c2, c3);
+        }
+    }
+    loadDataOE();
+
+
+
+    async function loadDataSI() {
+
+        let result = [];
+        const c = document.getElementById('totalsavings_si');
+        const c1 = document.getElementById('projectcount_si');
+        const c2 = document.getElementById('audited_si');
+        const c3 = document.getElementById('totalexpectedsavings_si');
+
+        try {
+            const queryString = buildQueryString(currentFilters);
+            const response = await fetch('/DashboardAnalyticsSI' + queryString);
+
+
+            if (!response.ok) {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            try {
+                result = await response.json();
+            } catch {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            if (!result || result.length === 0) {
+                prepUI(result, c, c1, c2, c3);
+                return;
+            }
+
+            prepUI(result, c, c1, c2, c3);
+
+        } catch (error) {
+            console.log(error)
+            prepUI(result, c, c1, c2, c3);
+        }
+    }
+    loadDataSI();
 
 
 
@@ -908,7 +1351,6 @@
             }
         }
     });
-
 
     async function loadBarChartData() {
         try {
@@ -1460,15 +1902,11 @@
     }, 60000);
 
 
-    function prepUI(list){
-        const container = document.getElementById('totalsavings');
-        const container1 = document.getElementById('projectcount');
-        const container2 = document.getElementById('audited');
-        const container3 = document.getElementById('totalexpectedsavings');
-        container.innerHTML = '';
-        container1.innerHTML = '';
-        container2.innerHTML = '';
-        container3.innerHTML = '';
+    function prepUI(list, c, c1, c2, c3){
+        c.innerHTML = '';
+        c1.innerHTML = '';
+        c2.innerHTML = '';
+        c3.innerHTML = '';
 
         if (!list || list.length === 0) {
             return;
@@ -1503,10 +1941,10 @@
                 maximumFractionDigits: 2
             })}</h4>`;
 
-            container.appendChild(div);
-            container1.appendChild(div1);
-            container2.appendChild(div2);
-            container3.appendChild(div3);
+            c.appendChild(div);
+            c1.appendChild(div1);
+            c2.appendChild(div2);
+            c3.appendChild(div3);
         });
     }
 
@@ -1553,6 +1991,642 @@
         chart.update();
     }
 
+
+
+        // ═══════════════════════════════════════════════════════════════════
+    //  OPERATIONAL EXCELLENCE  —  Chart.js
+    // ═══════════════════════════════════════════════════════════════════
+    const oePalette = ['#6366f1','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+
+    // -- helper for consistent "no data" overlay ------------------------
+    function oeNoData(chart, message) {
+        chart.data.labels = [];
+        chart.data.datasets.forEach(ds => ds.data = []);
+        chart.options.plugins.legend.display = false;
+        chart.options.plugins.title = { display: true, text: message, align: 'center', padding: 20,
+            font: { size: 15, weight: 'normal' }, color: '#94a3b8' };
+        chart.update();
+    }
+
+    // ── 1. Status doughnut ────────────────────────────────────────────
+    const oeStatusPie = new Chart(document.getElementById('oeStatusPie'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: oePalette }] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: resources.projStat, font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } } }
+    });
+
+    async function loadOEStatusPie() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OEProjectStatusCount' + qs);
+            if (!r.ok) return oeNoData(oeStatusPie, resources.projStat + ' - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return oeNoData(oeStatusPie, resources.projStat + ' - ' + resources.noData);
+
+            oeStatusPie.options.plugins.legend.display = true;
+            oeStatusPie.options.plugins.title.text = resources.projStat;
+            oeStatusPie.data.labels = data.map(x => x.name);
+            oeStatusPie.data.datasets[0].data = data.map(x => x.value);
+            oeStatusPie.update();
+        } catch (e) { oeNoData(oeStatusPie, resources.errorOccured); }
+    }
+
+    // ── 2. Carry-over doughnut ────────────────────────────────────────
+    const oeCarryOverPie = new Chart(document.getElementById('oeCarryOverPie'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: oePalette }] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Carry-Over & Classification',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } } }
+    });
+
+    async function loadOECarryOverPie() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OECarryOverClassification' + qs);
+            if (!r.ok) return oeNoData(oeCarryOverPie, 'Carry-Over - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return oeNoData(oeCarryOverPie, 'Carry-Over - ' + resources.noData);
+
+            oeCarryOverPie.options.plugins.legend.display = true;
+            oeCarryOverPie.options.plugins.title.text = 'Carry-Over & Classification';
+            oeCarryOverPie.data.labels = data.map(x => x.name);
+            oeCarryOverPie.data.datasets[0].data = data.map(x => x.value);
+            oeCarryOverPie.update();
+        } catch (e) { oeNoData(oeCarryOverPie, resources.errorOccured); }
+    }
+
+    // ── 3. Top projects (horizontal bar) ─────────────────────────────
+    const oeTopProjects = new Chart(document.getElementById('oeTopProjects'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'Target Savings', data: [], backgroundColor: '#6366f1' }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Top Projects by Target Savings',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { display: false } },
+            scales: { x: { beginAtZero: true } } }
+    });
+
+    async function loadOETopProjects() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OETopProjects' + qs);
+            if (!r.ok) return oeNoData(oeTopProjects, 'Top Projects - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return oeNoData(oeTopProjects, 'Top Projects - ' + resources.noData);
+
+            oeTopProjects.options.plugins.legend.display = false;
+            oeTopProjects.options.plugins.title.display = true;
+            oeTopProjects.options.plugins.title.text = 'Top Projects by Target Savings';
+            oeTopProjects.data.labels = data.map(x => x.Title);
+            oeTopProjects.data.datasets[0].data = data.map(x => x.TargetSavings);
+            oeTopProjects.update();
+        } catch (e) { oeNoData(oeTopProjects, resources.errorOccured); }
+    }
+
+    // ── 4. Workload (stacked bar) ────────────────────────────────────
+    const oeWorkload = new Chart(document.getElementById('oeWorkload'), {
+        type: 'bar',
+        data: { labels: [], datasets: [
+            { label: 'As Facilitator', data: [], backgroundColor: '#6366f1', stack: 's' },
+            { label: 'As Sponsor',     data: [], backgroundColor: '#22c55e', stack: 's' }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Facilitator & Sponsor Workload',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+    });
+
+    async function loadOEWorkload() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OEWorkload' + qs);
+            if (!r.ok) return oeNoData(oeWorkload, 'Workload - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return oeNoData(oeWorkload, 'Workload - ' + resources.noData);
+
+            oeWorkload.options.plugins.legend.display = true;
+            oeWorkload.options.plugins.title.display = true;
+            oeWorkload.options.plugins.title.text = 'Facilitator & Sponsor Workload';
+            oeWorkload.data.labels = data.map(x => x.Name);
+            oeWorkload.data.datasets[0].data = data.map(x => x.Facilitator);
+            oeWorkload.data.datasets[1].data = data.map(x => x.Sponsor);
+            oeWorkload.update();
+        } catch (e) { oeNoData(oeWorkload, resources.errorOccured); }
+    }
+
+    // ── 5. Forecast vs Target ────────────────────────────────────────
+    const oeForecastChart = new Chart(document.getElementById('oeForecastChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'Target (cumulative)', data: [], borderColor: '#94a3b8', borderDash: [6,4], fill: false, tension: .2 },
+            { label: 'Actual (cumulative)', data: [], borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79,70,229,.12)', fill: true, tension: .3 }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Savings Forecast vs Target',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } } }
+    });
+
+    async function loadOEForecast() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OESavingsForecast' + qs);
+            if (!r.ok) return oeNoData(oeForecastChart, 'Forecast - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return oeNoData(oeForecastChart, 'Forecast - ' + resources.noData);
+
+            oeForecastChart.options.plugins.legend.display = true;
+            oeForecastChart.options.plugins.title.display = true;
+            oeForecastChart.options.plugins.title.text = 'Savings Forecast vs Target';
+            oeForecastChart.data.labels = data.Labels;
+            oeForecastChart.data.datasets[0].data = data.TargetCumulative;
+            oeForecastChart.data.datasets[1].data = data.ActualCumulative;
+            oeForecastChart.update();
+        } catch (e) { oeNoData(oeForecastChart, resources.errorOccured); }
+    }
+
+    // ── 6. Cumulative savings ────────────────────────────────────────
+    const oeCumulativeChart = new Chart(document.getElementById('oeCumulativeChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'Monthly', data: [], borderColor: '#06b6d4',
+              backgroundColor: 'rgba(6,182,212,.15)', fill: true, tension: .3 },
+            { label: 'Cumulative', data: [], borderColor: '#22c55e',
+              backgroundColor: 'rgba(34,197,94,.15)', fill: true, tension: .3 }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Cumulative Monthly Savings Trend',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } } }
+    });
+
+    async function loadOECumulative() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OECumulativeSavings' + qs);
+            if (!r.ok) return oeNoData(oeCumulativeChart, 'Cumulative - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return oeNoData(oeCumulativeChart, 'Cumulative - ' + resources.noData);
+
+            oeCumulativeChart.options.plugins.legend.display = true;
+            oeCumulativeChart.options.plugins.title.display = true;
+            oeCumulativeChart.options.plugins.title.text = 'Cumulative Monthly Savings Trend';
+            oeCumulativeChart.data.labels = data.Labels;
+            oeCumulativeChart.data.datasets[0].data = data.Monthly;
+            oeCumulativeChart.data.datasets[1].data = data.Cumulative;
+            oeCumulativeChart.update();
+        } catch (e) { oeNoData(oeCumulativeChart, resources.errorOccured); }
+    }
+
+    // ── 7. Savings by Dept × Facility (stacked) ─────────────────────
+    const oeDeptFacilityChart = new Chart(document.getElementById('oeDeptFacilityChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Savings by Department & Facility',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+    });
+
+    async function loadOEDeptFacility() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OESavingsByDeptFacility' + qs);
+            if (!r.ok) return oeNoData(oeDeptFacilityChart, 'Dept/Facility - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return oeNoData(oeDeptFacilityChart, 'Dept/Facility - ' + resources.noData);
+
+            oeDeptFacilityChart.options.plugins.legend.display = true;
+            oeDeptFacilityChart.options.plugins.title.display = true;
+            oeDeptFacilityChart.options.plugins.title.text = 'Savings by Department & Facility';
+            oeDeptFacilityChart.data.labels = data.Labels;
+            oeDeptFacilityChart.data.datasets = data.Datasets.map((d, i) => ({
+                label: d.Label,
+                data: d.Data,
+                backgroundColor: oePalette[i % oePalette.length],
+                stack: 's'
+            }));
+            oeDeptFacilityChart.update();
+        } catch (e) { oeNoData(oeDeptFacilityChart, resources.errorOccured); }
+    }
+
+    // ── 8. Cycle Time ───────────────────────────────────────────────
+    const oeCycleTimeChart = new Chart(document.getElementById('oeCycleTimeChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [
+            { label: 'Planned Days', data: [], backgroundColor: '#94a3b8' },
+            { label: 'Elapsed Days', data: [], backgroundColor: '#f59e0b' }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Time to Completion and Cycle Time',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } } }
+    });
+
+    async function loadOECycleTime() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OECycleTime' + qs);
+            if (!r.ok) return oeNoData(oeCycleTimeChart, 'Cycle Time - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return oeNoData(oeCycleTimeChart, 'Cycle Time - ' + resources.noData);
+
+            oeCycleTimeChart.options.plugins.legend.display = true;
+            oeCycleTimeChart.options.plugins.title.display = true;
+            oeCycleTimeChart.options.plugins.title.text = 'Time to Completion and Cycle Time';
+            oeCycleTimeChart.data.labels = data.Labels;
+            oeCycleTimeChart.data.datasets[0].data = data.Planned;
+            oeCycleTimeChart.data.datasets[1].data = data.Elapsed;
+            oeCycleTimeChart.update();
+        } catch (e) { oeNoData(oeCycleTimeChart, resources.errorOccured); }
+    }
+
+    // ── 9. Health Scorecard (table) ─────────────────────────────────
+    async function loadOEHealth() {
+        const tbody = document.querySelector('#oeHealthTable tbody');
+        tbody.innerHTML = '';
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r  = await fetch('/OEHealthScorecard' + qs);
+            if (!r.ok) throw new Error();
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No data available</td></tr>';
+                return;
+            }
+            data.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${h.Title}</td>
+                    <td>${h.Priority ?? ''}</td>
+                    <td>${h.Status ?? ''}</td>
+                    <td>${h.Facilitator ?? '—'}</td>
+                    <td>${h.Sponsor ?? '—'}</td>
+                    <td>${formatDateToMMDDYYYY(h.EndDate)}</td>
+                    <td>${h.DaysRemaining}</td>
+                    <td>${h.CarryOver ? 'Yes' : 'No'}</td>
+                    <td><span class="health-pill health-${h.Health}">${h.Health}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        } catch {
+            tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">Failed to load data</td></tr>';
+        }
+    }
+
+    // ── Fire all OE loaders in parallel ─────────────────────────────
+    async function loadAllOECharts() {
+        await Promise.all([
+            loadDataOE(),            // KPI tiles (existing endpoint)
+            loadOEStatusPie(),
+            loadOECarryOverPie(),
+            loadOETopProjects(),
+            loadOEWorkload(),
+            loadOEForecast(),
+            loadOECumulative(),
+            loadOEDeptFacility(),
+            loadOECycleTime(),
+            loadOEHealth()
+        ]);
+    }
+
+    loadAllOECharts();
+
+
+
+
+        // ═══════════════════════════════════════════════════════════════════
+    //  STRATEGIC INITIATIVES  —  Chart.js
+    // ═══════════════════════════════════════════════════════════════════
+    const siPalette = ['#6366f1','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+
+    function siNoData(chart, message) {
+        chart.data.labels = [];
+        chart.data.datasets.forEach(ds => ds.data = []);
+        chart.options.plugins.legend.display = false;
+        chart.options.plugins.title = { display: true, text: message, align: 'center',
+            padding: 20, font: { size: 15, weight: 'normal' }, color: '#94a3b8' };
+        chart.update();
+    }
+
+    // ── 1. Status pie ─────────────────────────────────────────────────
+    const siStatusPie = new Chart(document.getElementById('siStatusPie'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: siPalette }] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Initiative Pipeline by Status',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } } }
+    });
+
+    async function loadSIStatusPie() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIStatusCount' + qs);
+            if (!r.ok) return siNoData(siStatusPie, 'Pipeline - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return siNoData(siStatusPie, 'Pipeline - ' + resources.noData);
+
+            siStatusPie.options.plugins.legend.display = true;
+            siStatusPie.options.plugins.title.text = 'Initiative Pipeline by Status';
+            siStatusPie.data.labels = data.map(x => x.name);
+            siStatusPie.data.datasets[0].data = data.map(x => x.value);
+            siStatusPie.update();
+        } catch { siNoData(siStatusPie, resources.errorOccured); }
+    }
+
+    // ── 2. Status breakdown (donut w/ ROI) ───────────────────────────
+    const siStatusBreakdownPie = new Chart(document.getElementById('siStatusBreakdownPie'), {
+        type: 'doughnut',
+        data: { labels: [], datasets: [{ data: [], backgroundColor: siPalette }] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Cumulative Status Breakdown (ROI)',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } } }
+    });
+
+    async function loadSIStatusBreakdown() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIStatusBreakdown' + qs);
+            if (!r.ok) return siNoData(siStatusBreakdownPie, 'Breakdown - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return siNoData(siStatusBreakdownPie, 'Breakdown - ' + resources.noData);
+
+            siStatusBreakdownPie.options.plugins.legend.display = true;
+            siStatusBreakdownPie.options.plugins.title.text = 'Cumulative Status Breakdown (ROI)';
+            siStatusBreakdownPie.data.labels = data.map(x => x.Status);
+            siStatusBreakdownPie.data.datasets[0].data = data.map(x => x.Roi);
+            siStatusBreakdownPie.update();
+        } catch { siNoData(siStatusBreakdownPie, resources.errorOccured); }
+    }
+
+    // ── 3. Top initiatives by ROI ────────────────────────────────────
+    const siTopInitiatives = new Chart(document.getElementById('siTopInitiatives'), {
+        type: 'bar',
+        data: { labels: [], datasets: [{ label: 'ROI', data: [], backgroundColor: '#6366f1' }] },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Top Initiatives by ROI',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { display: false } },
+            scales: { x: { beginAtZero: true } } }
+    });
+
+    async function loadSITopInitiatives() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SITopInitiatives' + qs);
+            if (!r.ok) return siNoData(siTopInitiatives, 'Top - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return siNoData(siTopInitiatives, 'Top - ' + resources.noData);
+
+            siTopInitiatives.options.plugins.legend.display = false;
+            siTopInitiatives.options.plugins.title.text = 'Top Initiatives by ROI';
+            siTopInitiatives.data.labels = data.map(x => x.Title);
+            siTopInitiatives.data.datasets[0].data = data.map(x => x.Roi);
+            siTopInitiatives.update();
+        } catch { siNoData(siTopInitiatives, resources.errorOccured); }
+    }
+
+    // ── 4. Workload ──────────────────────────────────────────────────
+    const siWorkload = new Chart(document.getElementById('siWorkload'), {
+        type: 'bar',
+        data: { labels: [], datasets: [
+            { label: 'As Owner',   data: [], backgroundColor: '#6366f1', stack: 's' },
+            { label: 'As Sponsor', data: [], backgroundColor: '#22c55e', stack: 's' }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Owner & Sponsor Workload',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+    });
+
+    async function loadSIWorkload() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIWorkload' + qs);
+            if (!r.ok) return siNoData(siWorkload, 'Workload - ' + resources.noData);
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0)
+                return siNoData(siWorkload, 'Workload - ' + resources.noData);
+
+            siWorkload.options.plugins.legend.display = true;
+            siWorkload.options.plugins.title.text = 'Owner & Sponsor Workload';
+            siWorkload.data.labels = data.map(x => x.Name);
+            siWorkload.data.datasets[0].data = data.map(x => x.AsOwner);
+            siWorkload.data.datasets[1].data = data.map(x => x.AsSponsor);
+            siWorkload.update();
+        } catch { siNoData(siWorkload, resources.errorOccured); }
+    }
+
+    // ── 5. Forecast vs Target ────────────────────────────────────────
+    const siForecastChart = new Chart(document.getElementById('siForecastChart'), {
+        type: 'line',
+        data: { labels: [], datasets: [
+            { label: 'Target (cumulative)', data: [], borderColor: '#94a3b8',
+              borderDash: [6,4], fill: false, tension: .2 },
+            { label: 'Actual (cumulative)', data: [], borderColor: '#4f46e5',
+              backgroundColor: 'rgba(79,70,229,.12)', fill: true, tension: .3 }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Cumulative ROI vs Target',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } } }
+    });
+
+    async function loadSIForecast() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIRoiForecast' + qs);
+            if (!r.ok) return siNoData(siForecastChart, 'Forecast - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return siNoData(siForecastChart, 'Forecast - ' + resources.noData);
+
+            siForecastChart.options.plugins.legend.display = true;
+            siForecastChart.options.plugins.title.text = 'Cumulative ROI vs Target';
+            siForecastChart.data.labels = data.Labels;
+            siForecastChart.data.datasets[0].data = data.TargetCumulative;
+            siForecastChart.data.datasets[1].data = data.ActualCumulative;
+            siForecastChart.update();
+        } catch { siNoData(siForecastChart, resources.errorOccured); }
+    }
+
+    // ── 6. Monthly ROI waterfall ─────────────────────────────────────
+    const siWaterfallChart = new Chart(document.getElementById('siWaterfallChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [
+            { label: 'Baseline', data: [], backgroundColor: 'rgba(0,0,0,0)', stack: 'w' },
+            { label: 'Monthly ROI', data: [], backgroundColor: [], stack: 'w' }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Monthly ROI Waterfall',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { display: false },
+                       tooltip: { callbacks: {
+                           label: (ctx) => {
+                               if (ctx.datasetIndex === 0) return '';
+                               const d = siWaterfallChart.data.datasets[1].data[ctx.dataIndex];
+                               return 'ROI: ' + Number(d).toLocaleString();
+                           }
+                       }} },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+    });
+
+    async function loadSIWaterfall() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIRoiWaterfall' + qs);
+            if (!r.ok) return siNoData(siWaterfallChart, 'Waterfall - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return siNoData(siWaterfallChart, 'Waterfall - ' + resources.noData);
+
+            siWaterfallChart.options.plugins.title.display = true;
+            siWaterfallChart.options.plugins.title.text = 'Monthly ROI Waterfall';
+            siWaterfallChart.data.labels = data.Labels;
+
+            // Baseline = cumulative prior to this month
+            siWaterfallChart.data.datasets[0].data = data.Cumulative;
+            siWaterfallChart.data.datasets[1].data = data.Deltas;
+
+            // Positive green, negative red
+            siWaterfallChart.data.datasets[1].backgroundColor = data.Deltas.map(d =>
+                d < 0 ? 'rgba(239,68,68,.85)' : 'rgba(34,197,94,.85)');
+
+            siWaterfallChart.update();
+        } catch { siNoData(siWaterfallChart, resources.errorOccured); }
+    }
+
+    // ── 7. ROI by Dept × Owner ──────────────────────────────────────
+    const siRoiByDeptOwner = new Chart(document.getElementById('siRoiByDeptOwner'), {
+        type: 'bar',
+        data: { labels: [], datasets: [] },
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'ROI by Department and Owner',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+    });
+
+    async function loadSIRoiByDeptOwner() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIRoiByTeamDept' + qs);
+            if (!r.ok) return siNoData(siRoiByDeptOwner, 'ROI - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return siNoData(siRoiByDeptOwner, 'ROI - ' + resources.noData);
+
+            siRoiByDeptOwner.options.plugins.legend.display = true;
+            siRoiByDeptOwner.options.plugins.title.text = 'ROI by Department and Owner';
+            siRoiByDeptOwner.data.labels = data.Labels;
+            siRoiByDeptOwner.data.datasets = data.Datasets.map((d, i) => ({
+                label: d.Label,
+                data: d.Data,
+                backgroundColor: siPalette[i % siPalette.length],
+                stack: 's'
+            }));
+            siRoiByDeptOwner.update();
+        } catch { siNoData(siRoiByDeptOwner, resources.errorOccured); }
+    }
+
+    // ── 8. Cycle time ────────────────────────────────────────────────
+    const siCycleTimeChart = new Chart(document.getElementById('siCycleTimeChart'), {
+        type: 'bar',
+        data: { labels: [], datasets: [
+            { label: 'Planned Days', data: [], backgroundColor: '#94a3b8' },
+            { label: 'Elapsed Days', data: [], backgroundColor: '#f59e0b' }]},
+        options: { responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: 'Time to Completion / Cycle Time',
+                                font: { size: 16, weight: 'bold' } },
+                       legend: { position: 'bottom' } },
+            scales: { y: { beginAtZero: true } } }
+    });
+
+    async function loadSICycleTime() {
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SICycleTime' + qs);
+            if (!r.ok) return siNoData(siCycleTimeChart, 'Cycle Time - ' + resources.noData);
+            const data = await r.json();
+            if (!data || !data.Labels || data.Labels.length === 0)
+                return siNoData(siCycleTimeChart, 'Cycle Time - ' + resources.noData);
+
+            siCycleTimeChart.options.plugins.legend.display = true;
+            siCycleTimeChart.options.plugins.title.text = 'Time to Completion / Cycle Time';
+            siCycleTimeChart.data.labels = data.Labels;
+            siCycleTimeChart.data.datasets[0].data = data.Planned;
+            siCycleTimeChart.data.datasets[1].data = data.Elapsed;
+            siCycleTimeChart.update();
+        } catch { siNoData(siCycleTimeChart, resources.errorOccured); }
+    }
+
+    // ── 9. Health table ─────────────────────────────────────────────
+    async function loadSIHealth() {
+        const tbody = document.querySelector('#siHealthTable tbody');
+        tbody.innerHTML = '';
+        try {
+            const qs = buildQueryString(currentFilters);
+            const r = await fetch('/SIHealthScorecard' + qs);
+            if (!r.ok) throw new Error();
+            const data = await r.json();
+            if (!Array.isArray(data) || data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">No data available</td></tr>';
+                return;
+            }
+            data.forEach(h => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${h.Title}</td>
+                    <td>${h.Priority ?? ''}</td>
+                    <td>${h.Status ?? ''}</td>
+                    <td>${h.Owner ?? '—'}</td>
+                    <td>${h.Sponsor ?? '—'}</td>
+                    <td>${h.Department ?? '—'}</td>
+                    <td>${Number(h.Roi).toLocaleString()}</td>
+                    <td>${formatDateToMMDDYYYY(h.EndDate)}</td>
+                    <td>${h.DaysRemaining}</td>
+                    <td><span class="health-pill health-${h.Health}">${h.Health}</span></td>`;
+                tbody.appendChild(tr);
+            });
+        } catch {
+            tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">Failed to load data</td></tr>';
+        }
+    }
+
+    // ── Aggregated loader ───────────────────────────────────────────
+    async function loadAllSICharts() {
+        await Promise.all([
+            loadDataSI(),                // KPI tiles (existing endpoint)
+            loadSIStatusPie(),
+            loadSIStatusBreakdown(),
+            loadSITopInitiatives(),
+            loadSIWorkload(),
+            loadSIForecast(),
+            loadSIWaterfall(),
+            loadSIRoiByDeptOwner(),
+            loadSICycleTime(),
+            loadSIHealth()
+        ]);
+    }
+
+    loadAllSICharts();
 
 </script>
 

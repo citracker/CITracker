@@ -4,6 +4,7 @@ using Infastructure.Interface;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -378,7 +379,9 @@ namespace CITracker.Controllers
         {
             ClearSessionIdentity();
 
-            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, GoogleDefaults.AuthenticationScheme);   // = "Google"
+            return Challenge(
+                new AuthenticationProperties { RedirectUri = "/" },
+                OpenIdConnectDefaults.AuthenticationScheme);
         }
 
 
@@ -1049,11 +1052,9 @@ namespace CITracker.Controllers
                     }
                 };
 
-                var resp = _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true).Result;
+                _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true);
 
-                var resp2 = _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org)).Result;
-
-                TempData["message"] = $"{resp.Message} ||| {resp2.Message}";
+                _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org));
 
                 return RedirectToAction("Index");
             }
@@ -1070,7 +1071,7 @@ namespace CITracker.Controllers
 
         private bool IsAuthenticated()
         {
-            if(User.Identity.IsAuthenticated)
+            if (User.Identity.IsAuthenticated)
             {
                 //set user Email first if user email is null
                 if (String.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail")))
