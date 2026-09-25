@@ -2130,4 +2130,7 @@
   <data name="ProjectHealth" xml:space="preserve">
     <value>Projectgezondheid</value>
   </data>
+  <data name="ProfileAdministrators" xml:space="preserve">
+    <value>Beheerders instellen</value>
+  </data>
 </root>

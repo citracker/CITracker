@@ -33,6 +33,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler> AddOrganizationUser(CIUser orgUsr, string adminEmail);
         Task<ResponseHandler> RenameOrganizationUser(long userId, CIUser usr, string adminEmail);
         Task<ResponseHandler> DeleteOrganizationUser(long userId, string adminEmail, int orgId);
+        Task<ResponseHandler> SetUpOrganizationAdmin(long userId, string adminIds, int orgId, string adminEmail);
         Task<ResponseHandler> CreateNewOEProject(OperationalExcellence opExel, string adminEmail);
         Task<ResponseHandler<OperationalExcellenceDTO>> GetPaginatedOEProjects(int orgId, int pageNumber, int pageSize, InitiativeFilter filt);
         Task<ResponseHandler<OperationalExcellenceDTO>> GetOEProject(int orgId, long projectId);
