@@ -968,6 +968,40 @@ namespace CITracker.Controllers
             }
         }
 
+        [HttpPost("SetUpAdmin")]
+        [ValidateAntiForgeryToken]
+        public IActionResult SetUpAdmin()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!IsUserAdmin())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                var adminIds = Request.Form["auser"];
+
+               var res = _opsManager.SetUpOrganizationAdmin(Convert.ToInt64(Request.Form["user"]), adminIds, Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")), HttpContext.Session.GetString("UserEmail")).Result;
+
+                TempData["Message"] = res.Message;
+                TempData["StatusCode"] = res.StatusCode;
+
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+            catch (Exception e)
+            {
+                TempData["Message"] = "An Error Occured";
+                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occurred at {nameof(SetUpAdmin)} - {JsonConvert.SerializeObject(e)}");
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+        }
+
         [HttpPost("AddSoftSavingCategory")]
         [ValidateAntiForgeryToken]
         public IActionResult AddSoftSavingCategory()

@@ -2130,4 +2130,7 @@
   <data name="ProjectHealth" xml:space="preserve">
     <value>项目健康状况</value>
   </data>
+  <data name="ProfileAdministrators" xml:space="preserve">
+    <value>设置管理员</value>
+  </data>
 </root>

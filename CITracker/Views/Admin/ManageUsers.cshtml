@@ -154,6 +154,48 @@
                     }
                 </div>
             </div>
+            <div class="col-lg-4 col-xl-4 col-md-6 col-sm-12">
+                <div class="card custom-card">
+                    <div class="card-header justify-content-between">
+                        <div class="card-title"> @SharedResource.ProfileAdministrators </div>
+                    </div>
+                    @using (Html.BeginForm("SetUpAdmin", "Admin", FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card-body">
+                            <div class="row gy-4">
+                                <div class="col-12">
+                                    <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
+                                    <select class="form-control" name="auser" id="auser" multiple required>
+                                        <option disabled>@SharedResource.SelectAUser</option>
+                                        @if (Model.Result != null)
+                                        {
+                                            if (Model.Result.Any())
+                                            {
+                                                foreach (var i in Model.Result)
+                                                {
+                                                    if(i.Role.ToLower().Equals("admin"))
+                                                    {
+                                                        <option value="@i.Id" selected>@i.Name</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@i.Id">@i.Name</option>
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top-card">
+                            <button type="submit" class="btn btn-success shadow-success">@SharedResource.Submit</button>
+                        </div>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>
