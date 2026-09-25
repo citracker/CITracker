@@ -57,6 +57,7 @@ namespace CITracker
                 builder.Services.AddControllers().AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = null;
                 });
 
                 builder.Services.AddSession(options =>
