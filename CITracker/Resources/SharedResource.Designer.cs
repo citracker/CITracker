@@ -4238,6 +4238,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Set Up Administrators.
+        /// </summary>
+        public static string ProfileAdministrators {
+            get {
+                return ResourceManager.GetString("ProfileAdministrators", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Project.
         /// </summary>
         public static string Project {

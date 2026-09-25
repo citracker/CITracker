@@ -960,6 +960,93 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler> SetUpOrganizationAdmin(long usrId, string adminIds, int orgId, string adminEmail)
+        {
+            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            dbConnection.Open();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                var resi = await _repository.GetListAsync<CIUser>(dbConnection,
+                    "Select * from CIUser where OrganizationId = @oid", new { oid = orgId }, CommandType.Text, dbTransaction);
+
+                if (resi != null)
+                {
+                    if (!resi.Any())
+                    {
+                        return await Task.FromResult(new ResponseHandler
+                        {
+                            StatusCode = (int)HttpStatusCode.NotFound,
+                            Message = "Record not found"
+                        });
+                    }
+
+                    foreach(var i in resi)
+                    {
+                        if (adminIds.Contains(i.Id.ToString()))
+                        {
+                            if (!i.Role.Equals("Admin"))
+                                i.Role = "Admin";
+                            else
+                                continue;
+                        }
+                        else
+                        {
+                            if (!i.Role.Equals("User"))
+                                i.Role = "User";
+                            else
+                                continue;
+                        }
+
+                        var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+
+                        var audit = ModelBuilder.BuildAuditLog("User Role Changed", $"Company Admin changed organization User Role '{i.Id}'.", adminEmail);
+                        audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                        var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    }
+
+                    dbTransaction.Commit();
+
+                    return await Task.FromResult(new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Record updated Sucessfully"
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                // Duplicate country insert detected
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "User Exists"
+                });
+            }
+            catch (Exception ex)
+            {
+                dbTransaction.Rollback();
+                _logger.LogError($"Exception at {nameof(SetUpOrganizationAdmin)} - {JsonConvert.SerializeObject(ex)}");
+                return await Task.FromResult(new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+            finally
+            {
+                dbConnection.Close();
+            }
+        }
+
         private async void UpdateCountryListInMemory(IDbConnection dbConnection, IDbTransaction dbTransaction, int orgId)
         {
 
@@ -5650,7 +5737,7 @@ namespace Datalayer.Implementations
                 var dict = new Dictionary<string, DashboardAnalytics>();
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var ciquery = "SELECT ci.Currency, COUNT(ci.Id) as ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue) AS TotalExpectedRevenue, SUM(ct.SavingValue) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' WHERE ci.OrganizationId = @oid @where GROUP BY ci.Currency ORDER BY ci.Currency";
+                var ciquery = "SELECT '$' AS Currency, COUNT(ci.Id) AS ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(ct.SavingValue  * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' LEFT JOIN CurrencyRates cr ON cr.Code = ci.Currency WHERE ci.OrganizationId = @oid @where";
 
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -5770,7 +5857,7 @@ namespace Datalayer.Implementations
                 var dict = new Dictionary<string, DashboardAnalytics>();
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var oequery = "SELECT oe.Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @oid @where GROUP BY oe.Currency ORDER BY oe.Currency";
+                var oequery = "SELECT '$' AS Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0) * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency WHERE oe.OrganizationId = @oid @where";
 
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -5890,7 +5977,7 @@ namespace Datalayer.Implementations
                 var dict = new Dictionary<string, DashboardAnalytics>();
                 using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-                var siquery = "SELECT sp.Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @oid @where GROUP BY sp.Currency ORDER BY sp.Currency";
+                var siquery = "SELECT '$' AS Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0) * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @oid @where";
 
                 if (filt == null || ((filt.StartDate == null || filt.StartDate == new DateTime()) && (filt.EndDate == null || filt.StartDate == new DateTime()) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
@@ -6078,7 +6165,7 @@ namespace Datalayer.Implementations
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
-            var totalTarget = await _repository.GetSumOrCountAsync<int>(db, $@"SELECT ISNULL(SUM(oe.TargetSavings),0) FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text);
+            var totalTarget = await _repository.GetSumOrCountAsync<int>(db, $@"SELECT ISNULL(SUM(oe.TargetSavings * ISNULL(cr.RateToUsd, 1)),0) FROM OperationalExcellence oe LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency WHERE oe.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text);
 
             var monthly = await GetMonthlyMapAsync(db, orgId, f);
 
@@ -6145,7 +6232,7 @@ namespace Datalayer.Implementations
         public async Task<StackedResult> GetOESavingsByDeptFacilityAsync(int orgId, OEFilter f)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(fc.Facility,'—')  AS Facility, ISNULL(SUM(ms.Savings),0) AS Savings FROM OperationalExcellence oe LEFT JOIN OrganizationDepartment d  ON d.Id  = oe.OrganizationDepartmentId LEFT JOIN OrganizationFacility fc ON fc.Id = oe.OrganizationFacilityId LEFT JOIN OperationalExcellenceMonthlySaving ms ON ms.ProjectId = oe.Id WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, fc.Facility";
+            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(fc.Facility,'—')  AS Facility, ISNULL(SUM(ms.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Savings FROM OperationalExcellence oe LEFT JOIN OrganizationDepartment d  ON d.Id  = oe.OrganizationDepartmentId LEFT JOIN OrganizationFacility fc ON fc.Id = oe.OrganizationFacilityId LEFT JOIN OperationalExcellenceMonthlySaving ms ON ms.ProjectId = oe.Id LEFT JOIN CurrencyRates cr ON cr.Code = ISNULL(ms.Currency, oe.Currency) WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, fc.Facility";
 
             var rows = await _repository.GetListAsync<DeptFacilityRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<DeptFacilityRow>();
 
@@ -6193,12 +6280,14 @@ namespace Datalayer.Implementations
                 r.DaysRemaining = (r.EndDate.Date - today).Days;
                 r.Health = ComputeHealth(r.Status, r.DaysRemaining);
             }
-            return rows.ToList();
+
+            var rews = rows.OrderBy(x => x.DaysRemaining).ToList();
+            return rews;
         }
 
         private async Task<Dictionary<string, decimal>> GetMonthlyMapAsync(IDbConnection db, int orgId, OEFilter f)
         {
-            var sql = $@"SELECT ms.MonthYear AS MonthYear, SUM(ms.Savings) AS Savings FROM OperationalExcellenceMonthlySaving ms INNER JOIN OperationalExcellence oe ON oe.Id = ms.ProjectId WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY ms.MonthYear";
+            var sql = $@"SELECT ms.MonthYear AS MonthYear, SUM(ms.Savings * ISNULL(cr.RateToUsd, 1)) AS Savings FROM OperationalExcellenceMonthlySaving ms INNER JOIN OperationalExcellence oe ON oe.Id = ms.ProjectId LEFT JOIN CurrencyRates cr ON cr.Code = ISNULL(ms.Currency, oe.Currency) WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY ms.MonthYear";
 
             var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
 
@@ -6235,7 +6324,7 @@ namespace Datalayer.Implementations
         public async Task<List<SITopRow>> GetSITopInitiativesAsync(int orgId, SIFilter f, int take)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT TOP {take} si.Id AS Id, si.Title AS Title, si.Priority AS Priority, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CIUser u  ON u.Id = si.OwnerId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, u.Name, d.Department ORDER BY Roi DESC";
+            var sql = $@"SELECT TOP {take} si.Id AS Id, si.Title AS Title, si.Priority AS Priority, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency LEFT JOIN CIUser u  ON u.Id = si.OwnerId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, u.Name, d.Department ORDER BY Roi DESC";
 
             var re = await _repository.GetListAsync<SITopRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SITopRow>();
 
@@ -6258,7 +6347,7 @@ namespace Datalayer.Implementations
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
 
             // Total target = sum of all expected savings across sub-projects (acts as ceiling)
-            var target = await _repository.GetSumOrCountAsync<decimal?>(db, $@"SELECT ISNULL(SUM(sp.Savings),0) FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId WHERE si.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text) ?? 0m;
+            var target = await _repository.GetSumOrCountAsync<decimal?>(db, $@"SELECT ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text) ?? 0m;
 
             var monthly = await GetMonthlyRoiMapAsync(db, orgId, f);
 
@@ -6325,7 +6414,7 @@ namespace Datalayer.Implementations
         public async Task<SIStackedResult> GetSIRoiByTeamDeptAsync(int orgId, SIFilter f)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(u.Name,'—') AS Owner, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, u.Name";
+            var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(u.Name,'—') AS Owner, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, u.Name";
 
             var rows = await _repository.GetListAsync<SIOwnerDeptRow>(db, sql, f.Params(orgId), CommandType.Text)
                        ?? new List<SIOwnerDeptRow>();
@@ -6365,7 +6454,7 @@ namespace Datalayer.Implementations
         public async Task<List<SIHealthRow>> GetSIHealthScorecardAsync(int orgId, SIFilter f)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, ISNULL(u.Name,'—') AS Owner, ISNULL(s.Name,'—') AS Sponsor, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings),0) AS Roi, COUNT(sp.Id) AS SubProjectCount FROM StrategicInitiative si LEFT JOIN CIUser u  ON u.Id  = si.OwnerId LEFT JOIN CIUser s  ON s.Id  = si.ExecutiveSponsorId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, u.Name, s.Name, d.Department ORDER BY CASE si.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, si.EndDate ASC";
+            var sql = $@"SELECT si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, ISNULL(u.Name,'—') AS Owner, ISNULL(s.Name,'—') AS Sponsor, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi, COUNT(sp.Id) AS SubProjectCount FROM StrategicInitiative si LEFT JOIN CIUser u  ON u.Id  = si.OwnerId LEFT JOIN CIUser s  ON s.Id  = si.ExecutiveSponsorId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, u.Name, s.Name, d.Department ORDER BY CASE si.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, si.EndDate ASC";
 
             var rows = await _repository.GetListAsync<SIHealthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIHealthRow>();
 
@@ -6375,7 +6464,9 @@ namespace Datalayer.Implementations
                 r.DaysRemaining = (r.EndDate.Date - today).Days;
                 r.Health = ComputeHealth(r.Status, r.DaysRemaining);
             }
-            return rows.ToList();
+
+            var rews = rows.OrderBy(x => x.DaysRemaining).ToList();
+            return rews;
         }
 
         public async Task<List<SIStatusBreakdownRow>> GetSIStatusBreakdownAsync(int orgId, SIFilter f)
@@ -6393,7 +6484,7 @@ namespace Datalayer.Implementations
         {
             // Monthly ROI = sum of sub-project savings, bucketed by the sub-project's StartDate.
             // Sub-projects carry the actual contribution dates; the parent SI is only the grouping.
-            var sql = $@"SELECT YEAR(sp.StartDate)  AS Yr, MONTH(sp.StartDate) AS Mo, SUM(sp.Savings)     AS Savings FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY YEAR(sp.StartDate), MONTH(sp.StartDate) ORDER BY Yr, Mo";
+            var sql = $@"SELECT YEAR(sp.StartDate)  AS Yr, MONTH(sp.StartDate) AS Mo, SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)) AS Savings FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY YEAR(sp.StartDate), MONTH(sp.StartDate) ORDER BY Yr, Mo";
 
             var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
 
