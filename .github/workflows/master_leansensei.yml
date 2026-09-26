@@ -37,6 +37,8 @@ jobs:
           AppSettings.Password: ${{ secrets.EMAIL_PASSWORD }}
           Stripe.SecretKey: ${{ secrets.SECRET_KEY }}
           Stripe.WebhookSecret: ${{ secrets.WEBHOOK_SECRET }}
+          AzureAd.MailerClientSecret: ${{ secrets.MAILER_CLIENT_SECRET }}
+          Google.ClientSecret: ${{ secrets.GOOGLE_CLIENT_SECRET }}
 
       - name: dotnet publish
         run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
