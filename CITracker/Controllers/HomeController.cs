@@ -874,7 +874,7 @@ namespace CITracker.Controllers
                             Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
                             SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
                             PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
-                            Country = _ops0Manager.FetchOperationalCountry().Result.Result.ToList()
+                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
                         });
                     }
                 }
