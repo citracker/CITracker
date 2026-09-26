@@ -1,33 +1,23 @@
 ﻿using Datalayer.Interfaces;
 using DataRepository;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.DTO;
 using Shared.Enumerations;
-using Shared.Implementations;
 using Shared.Interfaces;
 using Shared.Models;
 using Shared.Utilities;
-using System;
-using System.ClientModel.Primitives;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace Datalayer.Implementations
 {
     public class UserManager : BaseManager, IUserManager
     {
         private readonly ILogger<UserManager> _logger;
-        private readonly IAppSettingsManager _connection;
         private readonly IGenericManager _genManager;
 
-        public UserManager(ILogger<UserManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IGenericManager genManager)
+        public UserManager(ILogger<UserManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IGenericManager genManager) : base (AppSettingsManager)
         {
             _logger = logger;
             _repository = repository;
@@ -37,11 +27,11 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<CIUserDTO>> GetUserByEmail(string email)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var dbConnection = await OpenConnectionAsync();
                 
             try
             {
-                dbConnection.Open();
+                
                 using var dbTransaction = dbConnection.BeginTransaction();
                 var resi = await _repository.GetAsync<CIUserDTO>(dbConnection,
                     "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, b.TenantId as OrganizationTenantId, b.Domain as OrganizationDomain, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where a.EmailAddress = @em", new
@@ -93,7 +83,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<Organization>> GetOrganizationByTenant(string tenantId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var dbConnection = await OpenConnectionAsync();
 
             try
             {

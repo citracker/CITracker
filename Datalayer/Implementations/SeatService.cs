@@ -14,11 +14,9 @@ namespace Datalayer.Implementations
     {
         private readonly ILogger<SeatService> _logger;
         private readonly IRepository _repo;
-        private readonly IAppSettingsManager _connection;
         private readonly IGenericManager _genManager;
 
-        public SeatService(ILogger<SeatService> logger, IRepository repository,
-            IAppSettingsManager AppSettingsManager, IGenericManager genManager)
+        public SeatService(ILogger<SeatService> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IGenericManager genManager) : base (AppSettingsManager)
         {
             _logger = logger;
             _repo = repository;
@@ -28,7 +26,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CanInviteAsync(int organizationId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
 
             var sub = await _repo.GetAsync<Subscription>(db, @"SELECT TOP 1 * FROM Subscription WHERE OrganizationId = @oid AND Status IN ('ACTIVE','TRIALING','PENDING_CONFIRMATION') ORDER BY Id DESC", new { oid = organizationId }, CommandType.Text);
 
@@ -48,9 +46,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> ReserveSeatAsync(int organizationId, long newUserId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer,
-                await _connection.SQLDBConnection());
-            db.Open();
+            using var db = await OpenConnectionAsync();
             using var tx = db.BeginTransaction();
             try
             {
@@ -82,9 +78,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> ReleaseSeatAsync(int organizationId, long userId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer,
-                await _connection.SQLDBConnection());
-            db.Open();
+            using var db = await OpenConnectionAsync();
             using var tx = db.BeginTransaction();
             try
             {
@@ -110,8 +104,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> SetSeatsPurchasedAsync(int organizationId, int seatsPurchased)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer,
-                await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
 
             var sub = await _repo.GetAsync<Subscription>(db, "SELECT TOP 1 * FROM Subscription WHERE OrganizationId = @oid ORDER BY Id DESC", new { oid = organizationId }, CommandType.Text);
 
@@ -142,8 +135,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> ScheduleSeatChangeAtRenewalAsync(int organizationId, int? seats, int? newPlanId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer,
-                await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
 
             var sub = await _repo.GetAsync<Subscription>(db, "SELECT TOP 1 * FROM Subscription WHERE OrganizationId = @oid ORDER BY Id DESC", new { oid = organizationId }, CommandType.Text);
 

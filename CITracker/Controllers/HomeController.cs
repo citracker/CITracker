@@ -127,8 +127,7 @@ namespace CITracker.Controllers
         }
 
 
-        private static readonly HashSet<string> FreeEmailProviders =
-    new(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> FreeEmailProviders = new(StringComparer.OrdinalIgnoreCase)
     {
         "gmail.com", "googlemail.com",
         "outlook.com", "hotmail.com", "live.com", "msn.com",

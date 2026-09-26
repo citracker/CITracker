@@ -26,12 +26,11 @@ namespace Datalayer.Implementations
     public class SubscriptionManager : BaseManager, ISubscriptionManager
     {
         private readonly ILogger<SubscriptionManager> _logger;
-        private readonly IAppSettingsManager _connection;
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
         private readonly IGenericManager _genManager;
 
-        public SubscriptionManager(ILogger<SubscriptionManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
+        public SubscriptionManager(ILogger<SubscriptionManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager) : base (AppSettingsManager)
         {
             _logger = logger;
             _repository = repository;
@@ -47,7 +46,7 @@ namespace Datalayer.Implementations
             {
                 if (!_memoryCache.TryGetValue("SubscriptionPlans", out ResponseHandler<SubscriptionPlan> subsPlan))
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                    using var dbConnection = await OpenConnectionAsync();
                     var resi = await _repository.GetListAsync<SubscriptionPlan>(dbConnection,
                         "Select * from SubscriptionPlan", CommandType.Text);
 
@@ -56,9 +55,9 @@ namespace Datalayer.Implementations
 
                         subsPlan = await Task.FromResult(new ResponseHandler<SubscriptionPlan>
                         {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful",
-                            Result = resi
+                StatusCode = (int)HttpStatusCode.OK,
+                Message = "Successful",
+                Result = resi
                         });                    
 
                         await _memoryCacheManager.SetCache("SubscriptionPlans", subsPlan);
@@ -67,8 +66,8 @@ namespace Datalayer.Implementations
                     {
                         return await Task.FromResult(new ResponseHandler<SubscriptionPlan>
                         {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
+                StatusCode = (int)HttpStatusCode.NotFound,
+                Message = "Record not found"
                         });
                     }
                 }
@@ -92,7 +91,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Organization>(dbConnection,
                     "Select * from Organization where tenantId = @tId", new
                     {
@@ -134,7 +133,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Organization>(dbConnection,
                     "Select * from Organization where Id = @id", new
                     {
@@ -176,7 +175,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
                     "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, sp.NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND s.Status in ('ACTIVE', 'TRIALING') GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.NumberOfLicences", new
                     {
@@ -217,7 +216,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
                     "SELECT * from Subscription where OrganizationId = @oid", new
                     {
@@ -249,7 +248,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
                     "SELECT * from Subscription where OrganizationId = @oid and PaymentCustomerId = @pid", new
                     {
@@ -283,7 +282,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Subscription>(dbConnection, "SELECT * from Subscription where PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new
                     {
                         sid = subscriptionId,
@@ -305,28 +304,28 @@ namespace Datalayer.Implementations
                     var subPlan = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                         "SELECT * from SubscriptionPlan where Id = @subId", new
                         {
-                            subId = resi.SubscriptionPlanId
+                subId = resi.SubscriptionPlanId
                         }, CommandType.Text);
 
                     if (subPlan != null)
                     {
                         if(subPlan.PriceId != priceId)
                         {
-                            _logger.LogInformation($"Subscription plan priceId {priceId} does not match with the one on record for subscriptionId {subscriptionId}. Fetching subscription plan with priceId {priceId}.");
-                            var subPlanWithPrice = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
-                                "SELECT * from SubscriptionPlan where PriceId = @pId", new
-                                {
-                                    pId = priceId
-                                }, CommandType.Text);
-                            if(subPlanWithPrice != null)
-                            {
-                                resi.SubscriptionPlanId = subPlanWithPrice.Id;
-                                _logger.LogInformation($"Subscription plan with priceId {priceId} has Id {subPlanWithPrice.Id}. Updating subscription plan for subscriptionId {subscriptionId} to {subPlanWithPrice.Id}.");
-                            }
-                            else
-                            {
-                                _logger.LogInformation($"Couldn't fetch subscription plan with priceId {priceId}. Subscription plan update for subscriptionId {subscriptionId} will be skipped.");
-                            }
+                _logger.LogInformation($"Subscription plan priceId {priceId} does not match with the one on record for subscriptionId {subscriptionId}. Fetching subscription plan with priceId {priceId}.");
+                var subPlanWithPrice = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
+                    "SELECT * from SubscriptionPlan where PriceId = @pId", new
+                    {
+                        pId = priceId
+                    }, CommandType.Text);
+                if(subPlanWithPrice != null)
+                {
+                    resi.SubscriptionPlanId = subPlanWithPrice.Id;
+                    _logger.LogInformation($"Subscription plan with priceId {priceId} has Id {subPlanWithPrice.Id}. Updating subscription plan for subscriptionId {subscriptionId} to {subPlanWithPrice.Id}.");
+                }
+                else
+                {
+                    _logger.LogInformation($"Couldn't fetch subscription plan with priceId {priceId}. Subscription plan update for subscriptionId {subscriptionId} will be skipped.");
+                }
                         }
 
                         resi.SeatsPurchased = subPlan.NumberOfLicences;
@@ -355,7 +354,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Subscription>(dbConnection,
                     "SELECT * from Subscription where PaymentSubscriptionId = @psid", new {psid = subscriptionId}, CommandType.Text);
 
@@ -383,7 +382,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                     "Select * from SubscriptionPlan where Id = @subId", new
                     {
@@ -425,7 +424,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                     "Select top(1) * from SubscriptionPlan where NumberOfLicences > 10 and NumberOfLicences < 250", CommandType.Text);
 
@@ -464,7 +463,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                     "Select * from SubscriptionPlan where PlanId = @subId", new
                     {
@@ -504,8 +503,8 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             using var dbTransaction = dbConnection.BeginTransaction();
 
             //TODO. Check for duplicate
@@ -580,8 +579,8 @@ namespace Datalayer.Implementations
 
         //public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
         //{
-        //    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-        //    dbConnection.Open();
+        //                using var dbConnection = await OpenConnectionAsync();
+        //    
         //    using var dbTransaction = dbConnection.BeginTransaction();
         //    try
         //    {
@@ -663,8 +662,8 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<Organization>> UpdateOrganizationSubscriptionFromPaymentSuceededEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, DateTime? trialStartDate, DateTime? trialEndDate, string subscriptionStatus, decimal amount, string provider, string invoiceId, string paymentIntentId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
@@ -756,8 +755,8 @@ namespace Datalayer.Implementations
         public async Task UpdateOrganizationSubscriptionFromMPEvent(CIMarketplaceSubscription subscription)
         {
 
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
@@ -813,8 +812,8 @@ namespace Datalayer.Implementations
 
         public async Task MPDeactivateOrganizationSubscription(CIMarketplaceSubscription subscription)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
@@ -868,8 +867,8 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<PendingSubscription>> CreatePendingSubscription(PendingSubscription pending)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             try
             {
                 using var dbTransaction = dbConnection.BeginTransaction();
@@ -887,7 +886,7 @@ namespace Datalayer.Implementations
                         Message = "Created", 
                         SingleResult = new PendingSubscription
                         { 
-                            Id = pending.Id 
+                Id = pending.Id 
                         } 
                     };
                 }
@@ -943,7 +942,6 @@ namespace Datalayer.Implementations
         public async Task<bool> MarkWebhookEventProcessedAsync(string provider, string eventId)
         {
             using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            db.Open();
             var dbTransaction = db.BeginTransaction();
             try
             {
@@ -1015,7 +1013,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var resi = await _repository.GetAsync<Subscription>(dbConnection, @"SELECT TOP 1 * FROM Subscription WHERE PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new { sid = subscriptionId, cid = stripeCustomerId }, CommandType.Text);
 
@@ -1058,8 +1056,8 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<Organization>> MarkPaymentFailedAsync(string subscriptionId, string stripeCustomerId, string invoiceId, decimal amountDue, int attemptCount, DateTime? nextAttemptUtc, string hostedInvoiceUrl)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+                        using var dbConnection = await OpenConnectionAsync();
+            
             using var dbTransaction = dbConnection.BeginTransaction();
 
             try
