@@ -3,6 +3,7 @@ using Datalayer.Implementations;
 using Datalayer.Interfaces;
 using FluentValidation;
 using Infastructure.Interface;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -238,7 +239,7 @@ namespace CITracker.Controllers
             var org = new OrganizationAccountDTO
             {
                 Account = _opsManager.GetOrgAccountDetails(Convert.ToInt32(HttpContext.Session.GetString("OrganizationId"))).Result.SingleResult,
-                Subscription = _subManager.GetOrganizationSubscription(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result.SingleResult
+                Subscription = _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId").ToString()).Result.SingleResult
             };
 
             return View(org);
