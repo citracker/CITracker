@@ -368,9 +368,7 @@ namespace CITracker.Controllers
                 "Corporate" => "CorporateSso",
                 _ => "OpenIdConnect"
             };
-            return Challenge(
-                new AuthenticationProperties { RedirectUri = returnUrl ?? "/" },
-                scheme);
+            return Challenge(new AuthenticationProperties { RedirectUri = returnUrl ?? "/" }, scheme);
         }
 
 
@@ -379,9 +377,7 @@ namespace CITracker.Controllers
         {
             ClearSessionIdentity();
 
-            return Challenge(
-                new AuthenticationProperties { RedirectUri = "/" },
-                OpenIdConnectDefaults.AuthenticationScheme);
+            return Challenge(new AuthenticationProperties { RedirectUri = "/" }, "Google");
         }
 
 
