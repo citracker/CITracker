@@ -15,11 +15,10 @@ namespace Datalayer.Implementations
     public class PaymentManager : BaseManager, IPaymentManager
     {
         private readonly ILogger<PaymentManager> _logger;
-        private readonly IAppSettingsManager _connection;
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
 
-        public PaymentManager(ILogger<PaymentManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager)
+        public PaymentManager(ILogger<PaymentManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager) : base(AppSettingsManager)
         {
             _logger = logger;
             _repository = repository;
@@ -34,7 +33,7 @@ namespace Datalayer.Implementations
             {
                 if (!_memoryCache.TryGetValue("PaymentProviders", out ResponseHandler<PaymentProvider> repsMan))
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                    using var dbConnection = await OpenConnectionAsync();
                     var resi = await _repository.GetListAsync<PaymentProvider>(dbConnection,
                         "Select * from PaymentProvider where IsActive = 1", CommandType.Text);
 

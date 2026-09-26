@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Shared.DTO;
 using Shared.Enumerations;
+using Shared.Implementations;
 using Shared.Interfaces;
 using Shared.Models;
 using Shared.Request;
@@ -24,21 +25,55 @@ namespace Datalayer.Implementations
     public class OperationManager : BaseManager, IOperationManager
     {
         private readonly ILogger<OperationManager> _logger;
-        private readonly IAppSettingsManager _connection;
         private readonly IMemoryCache _memoryCache;
         private readonly IMemoryCacheManager _memoryCacheManager;
         private readonly IGenericManager _genManager;
         private static readonly string[] AllPriorities = { "Low", "Medium", "High" };
         private static readonly string[] AllClassifications = { "Cost Savings", "Revenue", "Cost Avoidance", "Cost Out" };
 
-        public OperationManager(ILogger<OperationManager> logger, IRepository repository, IAppSettingsManager AppSettingsManager, IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager)
+
+        public OperationManager(ILogger<OperationManager> logger, IRepository repository, IAppSettingsManager connection,
+            IMemoryCache memoryCache, IMemoryCacheManager memoryCacheManager, IGenericManager genManager) : base(connection)
         {
             _logger = logger;
             _repository = repository;
-            _connection = AppSettingsManager;
             _memoryCache = memoryCache;
             _memoryCacheManager = memoryCacheManager;
             _genManager = genManager;
+            _connection = connection;
+        }
+
+        
+
+        private static List<DashboardAnalytics> MergeByCurrency(IEnumerable<DashboardAnalytics> items)
+        {
+            if (items == null) return new List<DashboardAnalytics>();
+
+            return items
+                .GroupBy(x => string.IsNullOrEmpty(x.Currency) ? "$" : x.Currency)
+                .Select(g => new DashboardAnalytics
+                {
+                    Currency = g.Key,
+                    ProjectCount = g.Sum(x => x.ProjectCount),
+                    TotalExpectedRevenue = g.Sum(x => x.TotalExpectedRevenue),
+                    TotalHardSavings = g.Sum(x => x.TotalHardSavings)
+                })
+                .ToList();
+        }
+
+        /// <summary>
+        /// Parses a comma-separated string of numeric IDs into a HashSet of longs.
+        /// </summary>
+        private static HashSet<long> ParseIdSet(string csv)
+        {
+            if (string.IsNullOrWhiteSpace(csv)) return new HashSet<long>();
+
+            return csv
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(s => long.TryParse(s, out var v) ? v : (long?)null)
+                .Where(v => v.HasValue)
+                .Select(v => v!.Value)
+                .ToHashSet();
         }
 
         public async Task<ResponseHandler<Country>> FetchOperationalCountry()
@@ -47,43 +82,40 @@ namespace Datalayer.Implementations
             {
                 if (!_memoryCache.TryGetValue("Country", out ResponseHandler<Country> country))
                 {
-                    using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                    var resi = await _repository.GetListAsync<Country>(dbConnection,"Select * from Country", CommandType.Text);
+                    using var dbConnection = await OpenConnectionAsync();
+                    var resi = await _repository.GetListAsync<Country>(dbConnection, "Select * from Country", CommandType.Text);
 
                     if (resi.Any())
                     {
-
-                        country = await Task.FromResult(new ResponseHandler<Country>
+                        country = new ResponseHandler<Country>
                         {
                             StatusCode = (int)HttpStatusCode.OK,
                             Message = "Successful",
                             Result = resi
-                        });
+                        };
 
                         await _memoryCacheManager.SetCache("Country", country);
                     }
                     else
                     {
-                        return await Task.FromResult(new ResponseHandler<Country>
+                        return new ResponseHandler<Country>
                         {
                             StatusCode = (int)HttpStatusCode.NotFound,
                             Message = "Record not found"
-                        });
+                        };
                     }
                 }
 
-                return await Task.FromResult(country);
-
+                return country;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(FetchOperationalCountry)} - {JsonConvert.SerializeObject(ex)}");
-
-                return await Task.FromResult(new ResponseHandler<Country>
+                return new ResponseHandler<Country>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
 
@@ -91,44 +123,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                //if (!_memoryCache.TryGetValue($"OrganizationCountry-{orgId}", out ResponseHandler<OrganizationCountry> country))
-                //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
-                    "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1 order by Country", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1 order by Country",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-
-                    return await Task.FromResult(new ResponseHandler<OrganizationCountry>
+                    return new ResponseHandler<OrganizationCountry>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = resi
-                    });
-
-                    //await _memoryCacheManager.SetCache($"OrganizationCountry-{orgId}", country);
+                    };
                 }
-                else
+
+                return new ResponseHandler<OrganizationCountry>
                 {
-                    return await Task.FromResult(new ResponseHandler<OrganizationCountry>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
-                //}
-
-                //return await Task.FromResult(country);
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationCountries)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationCountry>
+                return new ResponseHandler<OrganizationCountry>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
 
@@ -136,44 +159,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                //if (!_memoryCache.TryGetValue($"OrganizationFacility-{orgId}", out ResponseHandler<OrganizationFacility> facility))
-                //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
-                    "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1 order by Facility", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1 order by Facility",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-
-                    return await Task.FromResult(new ResponseHandler<OrganizationFacility>
+                    return new ResponseHandler<OrganizationFacility>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = resi
-                    });
-
-                    //await _memoryCacheManager.SetCache($"OrganizationFacility-{orgId}", facility);
+                    };
                 }
-                else
+
+                return new ResponseHandler<OrganizationFacility>
                 {
-                    return await Task.FromResult(new ResponseHandler<OrganizationFacility>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
-                //}
-
-                //return await Task.FromResult(facility);
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationFacilities)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationFacility>
+                return new ResponseHandler<OrganizationFacility>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
 
@@ -181,37 +195,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationSoftSaving>(dbConnection,
-                    "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1 order by Category", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1 order by Category",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-
-                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
+                    return new ResponseHandler<OrganizationSoftSaving>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = resi
-                    });
+                    };
                 }
-                else
+
+                return new ResponseHandler<OrganizationSoftSaving>
                 {
-                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationSoftSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
+                return new ResponseHandler<OrganizationSoftSaving>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
 
@@ -219,44 +231,35 @@ namespace Datalayer.Implementations
         {
             try
             {
-                //if (!_memoryCache.TryGetValue($"OrganizationDepartment-{orgId}", out ResponseHandler<OrganizationDepartment> depart))
-                //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
-                    "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1 order by Department", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1 order by Department",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-
-                    return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
+                    return new ResponseHandler<OrganizationDepartment>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = resi
-                    });
-
-                    //await _memoryCacheManager.SetCache($"OrganizationDepartment-{orgId}", depart);
+                    };
                 }
-                else
+
+                return new ResponseHandler<OrganizationDepartment>
                 {
-                    return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
-                //}
-
-                //return await Task.FromResult(depart);
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationDepartments)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationDepartment>
+                return new ResponseHandler<OrganizationDepartment>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
 
@@ -264,907 +267,473 @@ namespace Datalayer.Implementations
         {
             try
             {
-                //if (!_memoryCache.TryGetValue($"CIUser-{orgId}", out ResponseHandler<CIUser> users))
-                //{
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
-                "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from CIUser where OrganizationId = @oid and IsActive = 1",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-
-                    return await Task.FromResult(new ResponseHandler<CIUser>
+                    return new ResponseHandler<CIUser>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = resi
-                    });
-
-                    //await _memoryCacheManager.SetCache($"CIUser-{orgId}", users);
+                    };
                 }
-                else
+
+                return new ResponseHandler<CIUser>
                 {
-                    return await Task.FromResult(new ResponseHandler<CIUser>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
-                //}
-
-                //return await Task.FromResult(users);
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found"
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationUsers)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CIUser>
+                return new ResponseHandler<CIUser>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured"
-                });
+                };
             }
         }
-
+                
         public async Task<ResponseHandler> AddOrganizationCountry(OrganizationCountry orgCountry, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgCountry.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationCountryTable);
-                var resp = await _repository.InsertAsync(dbConnection, orgCountry, dbTransaction);
-                
+                await _repository.InsertAsync(dbConnection, orgCountry, dbTransaction);
+
                 var audit = ModelBuilder.BuildAuditLog("Country Added", $"Company Admin added new Organization Country of operation.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-
-                //UpdateCountryListInMemory(dbConnection, dbTransaction, orgCountry.OrganizationId);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Country Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Country Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationCountry)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationCountry(long countryId, string countryName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<OrganizationCountry>(dbConnection,
                     "Select * from OrganizationCountry where Id = @cid", new { cid = countryId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.Country = countryName;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
+                resi.Country = countryName;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    var audit = ModelBuilder.BuildAuditLog("Country Renamed", $"Company Admin renamed organization depart Id '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                var audit = ModelBuilder.BuildAuditLog("Country Renamed", $"Company Admin renamed organization depart Id '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    //UpdateCountryListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                dbTransaction.Commit();
 
-                    dbTransaction.Commit();
-
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Country Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Country Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationCountry)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationCountry(long countryId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update OrganizationCountry set IsActive = 0 where Id = @cid", new { cid = countryId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("Country Deleted", $"Company Admin deleted organization depart Id '{countryId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    //UpdateCountryListInMemory(dbConnection, dbTransaction, orgId);
+                var audit = ModelBuilder.BuildAuditLog("Country Deleted", $"Company Admin deleted organization depart Id '{countryId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationCountry)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler> AddOrganizationFacility(OrganizationFacility orgFacility, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgFacility.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationFacilityTable);
-                var resp = await _repository.InsertAsync(dbConnection, orgFacility, dbTransaction);
-                
+                await _repository.InsertAsync(dbConnection, orgFacility, dbTransaction);
+
                 var audit = ModelBuilder.BuildAuditLog("Facility Added", $"Company Admin added new Organization Facility of operation.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-
-                //UpdateFacilityListInMemory(dbConnection, dbTransaction, orgFacility.OrganizationId);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate facility insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Facility Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Facility Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationFacility)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationFacility(long facilityId, string facilityName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<OrganizationFacility>(dbConnection,
                     "Select * from OrganizationFacility where Id = @cid", new { cid = facilityId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.Facility = facilityName;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    var audit = ModelBuilder.BuildAuditLog("Facility Renamed", $"Company Admin renamed organization facility Id '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                resi.Facility = facilityName;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    //UpdateFacilityListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                var audit = ModelBuilder.BuildAuditLog("Facility Renamed", $"Company Admin renamed organization facility Id '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate facility insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Facility Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Facility Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationFacility)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationFacility(long facilityId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update OrganizationFacility set IsActive = 0 where Id = @cid", new { cid = facilityId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("Facility Deleted", $"Company Admin deleted organization facility Id '{facilityId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    //UpdateFacilityListInMemory(dbConnection, dbTransaction, orgId);
+                var audit = ModelBuilder.BuildAuditLog("Facility Deleted", $"Company Admin deleted organization facility Id '{facilityId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationFacility)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler> AddOrganizationDepartment(OrganizationDepartment orgDepartment, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgDepartment.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationDepartmentTable);
-                var resp = await _repository.InsertAsync(dbConnection, orgDepartment, dbTransaction);
+                await _repository.InsertAsync(dbConnection, orgDepartment, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Department Added", $"Company Admin added new Organization Department of operation.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-
-                //UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgDepartment.OrganizationId);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate department insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Department Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Department Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationDepartment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationDepartment(long departmentId, string departmentName, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<OrganizationDepartment>(dbConnection,
                     "Select * from OrganizationDepartment where Id = @cid", new { cid = departmentId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.Department = departmentName;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    var audit = ModelBuilder.BuildAuditLog("Department Renamed", $"Company Admin renamed organization department Id '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                resi.Department = departmentName;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    //UpdateDepartmentListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                var audit = ModelBuilder.BuildAuditLog("Department Renamed", $"Company Admin renamed organization department Id '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate department insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Department Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Department Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationDepartment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationDepartment(long departmentId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update OrganizationDepartment set IsActive = 0 where Id = @cid", new { cid = departmentId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("Department Deleted", $"Company Admin deleted organization department Id '{departmentId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    //UpdateDepartmentListInMemory(dbConnection, dbTransaction, orgId);
+                var audit = ModelBuilder.BuildAuditLog("Department Deleted", $"Company Admin deleted organization department Id '{departmentId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationDepartment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler> AddOrganizationUser(CIUser orgUsr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgUsr.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIUserTable);
-                var resp = await _repository.InsertAsync(dbConnection, orgUsr, dbTransaction);
+                await _repository.InsertAsync(dbConnection, orgUsr, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("User Added", $"Company Admin added new Organization User.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-
-                //UpdateUserListInMemory(dbConnection, dbTransaction, orgUsr.OrganizationId);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "User Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "User Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationUser)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationUser(long usrId, CIUser usr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<CIUser>(dbConnection,
                     "Select * from CIUser where Id = @cid", new { cid = usrId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.EmailAddress = usr.EmailAddress;
-                    resi.Name = usr.Name;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
+                resi.EmailAddress = usr.EmailAddress;
+                resi.Name = usr.Name;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    var audit = ModelBuilder.BuildAuditLog("User Renamed", $"Company Admin renamed organization User '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                var audit = ModelBuilder.BuildAuditLog("User Renamed", $"Company Admin renamed organization User '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    //UpdateUserListInMemory(dbConnection, dbTransaction, resi.OrganizationId);
+                dbTransaction.Commit();
 
-                    dbTransaction.Commit();
-
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "User Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "User Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationUser)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationUser(long usrId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update CIUser set IsActive = 0 where Id = @cid", new { cid = usrId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("User Deleted", $"Company Admin deleted organization User '{usrId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    //UpdateUserListInMemory(dbConnection, dbTransaction, orgId);
+                var audit = ModelBuilder.BuildAuditLog("User Deleted", $"Company Admin deleted organization User '{usrId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationUser)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> SetUpOrganizationAdmin(long usrId, string adminIds, int orgId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
                     "Select * from CIUser where OrganizationId = @oid", new { oid = orgId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
+                if (resi == null || !resi.Any())
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
+
+                var adminIdSet = ParseIdSet(adminIds);
+
+                foreach (var i in resi)
                 {
-                    if (!resi.Any())
-                    {
-                        return await Task.FromResult(new ResponseHandler
-                        {
-                            StatusCode = (int)HttpStatusCode.NotFound,
-                            Message = "Record not found"
-                        });
-                    }
+                    var targetRole = adminIdSet.Contains(i.Id) ? "Admin" : "User";
+                    if (i.Role == targetRole) continue;
 
-                    foreach(var i in resi)
-                    {
-                        if (adminIds.Contains(i.Id.ToString()))
-                        {
-                            if (!i.Role.Equals("Admin"))
-                                i.Role = "Admin";
-                            else
-                                continue;
-                        }
-                        else
-                        {
-                            if (!i.Role.Equals("User"))
-                                i.Role = "User";
-                            else
-                                continue;
-                        }
+                    i.Role = targetRole;
 
-                        var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                    await _repository.UpdateAsync(dbConnection, i, dbTransaction);
 
-                        var audit = ModelBuilder.BuildAuditLog("User Role Changed", $"Company Admin changed organization User Role '{i.Id}'.", adminEmail);
-                        audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                        var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-                    }
-
-                    dbTransaction.Commit();
-
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
+                    var audit = ModelBuilder.BuildAuditLog("User Role Changed", $"Company Admin changed organization User Role '{i.Id}'.", adminEmail);
+                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
-            }
-            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
-            {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "User Exists"
-                });
+
+                dbTransaction.Commit();
+
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(SetUpOrganizationAdmin)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
-        private async void UpdateCountryListInMemory(IDbConnection dbConnection, IDbTransaction dbTransaction, int orgId)
-        {
-
-            var re = await _repository.GetListAsync<OrganizationCountry>(dbConnection,
-                "Select * from OrganizationCountry where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
-
-            if (re.ToList().Any())
-            {
-                var ctry = await Task.FromResult(new ResponseHandler<OrganizationCountry>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    Result = re
-                });
-
-                await _memoryCacheManager.SetCache($"OrganizationCountry-{orgId}", ctry);
-            }
-        }
-
-        private async void UpdateFacilityListInMemory(IDbConnection dbConnection, IDbTransaction dbTransaction, int orgId)
-        {
-
-            var re = await _repository.GetListAsync<OrganizationFacility>(dbConnection,
-                "Select * from OrganizationFacility where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
-
-            if (re.ToList().Any())
-            {
-                var ctry = await Task.FromResult(new ResponseHandler<OrganizationFacility>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    Result = re
-                });
-
-                await _memoryCacheManager.SetCache($"OrganizationFacility-{orgId}", ctry);
-            }
-        }
-
-        private async void UpdateDepartmentListInMemory(IDbConnection dbConnection, IDbTransaction dbTransaction, int orgId)
-        {
-
-            var re = await _repository.GetListAsync<OrganizationDepartment>(dbConnection,
-                "Select * from OrganizationDepartment where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
-
-            if (re.ToList().Any())
-            {
-                var ctry = await Task.FromResult(new ResponseHandler<OrganizationDepartment>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    Result = re
-                });
-
-                await _memoryCacheManager.SetCache($"OrganizationDepartment-{orgId}", ctry);
-            }
-        }
-
-        private async void UpdateUserListInMemory(IDbConnection dbConnection, IDbTransaction dbTransaction, int orgId)
-        {
-            var re = await _repository.GetListAsync<CIUser>(dbConnection,
-                "Select * from CIUser where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text, dbTransaction);
-
-            if (re.ToList().Any())
-            {
-                var ctry = await Task.FromResult(new ResponseHandler<CIUser>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    Result = re
-                });
-
-                await _memoryCacheManager.SetCache($"CIUser-{orgId}", ctry);
-            }
-        }
-
+                
         public async Task<ResponseHandler> CreateNewOEProject(OperationalExcellence opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 opExel.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OperationalExcellenceTable);
-                var resp = await _repository.InsertAsync(dbConnection, opExel, dbTransaction);
+                await _repository.InsertAsync(dbConnection, opExel, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Operational Excellence Initiative Added", $"Company Admin added new Operational Excellence Initiative.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Duplicate Project. Project Name already exist for the selected Department" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewOEProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1173,16 +742,14 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<OperationalExcellenceDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
-
                 var countquery = "SELECT count(id) from OperationalExcellence where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
                     resi = await _repository.GetListAsync<OperationalExcellenceDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId, pageNumber, pageSize }, CommandType.Text);
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, countquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
                 else
@@ -1191,80 +758,29 @@ namespace Datalayer.Implementations
                     var where1 = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Title))
-                    {
-                        where.Append(" AND a.Title LIKE @Title");
-                        where1.Append(" AND Title LIKE @Title");
-                        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND a.Status = @Stat");
-                        where1.Append(" AND Status LIKE @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND a.Priority = @Priority");
-                        where1.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (filt.UserId > 0)
-                    {
-                        where.Append(" AND (a.FacilitatorId = @UserId OR a.SponsorId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                        where1.Append(" AND (FacilitatorId = @UserId OR SponsorId = @UserId OR ExecutiveSponsorId = @UserId)");
-                        parameters.Add("@UserId", filt.UserId);
-                    }
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                        where1.Append(" AND OrganizationCountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND a.StartDate >= @StartDate");
-                        where1.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate.Date);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND a.EndDate <= @EndDate");
-                        where1.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate.Date);
-                    }
+                    if (!string.IsNullOrWhiteSpace(filt.Title)) { where.Append(" AND a.Title LIKE @Title"); where1.Append(" AND Title LIKE @Title"); parameters.Add("@Title", $"%{filt.Title.Trim()}%"); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND a.Status = @Stat"); where1.Append(" AND Status LIKE @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND a.Priority = @Priority"); where1.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (filt.UserId > 0) { where.Append(" AND (a.FacilitatorId = @UserId OR a.SponsorId = @UserId OR a.ExecutiveSponsorId = @UserId)"); where1.Append(" AND (FacilitatorId = @UserId OR SponsorId = @UserId OR ExecutiveSponsorId = @UserId)"); parameters.Add("@UserId", filt.UserId); }
+                    if (filt.CountryId > 0) { where.Append(" AND a.OrganizationCountryId = @CountryId"); where1.Append(" AND OrganizationCountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND a.OrganizationDepartmentId = @DepartmentId"); where1.Append(" AND OrganizationDepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND a.StartDate >= @StartDate"); where1.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate.Date); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND a.EndDate <= @EndDate"); where1.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate.Date); }
 
                     var finalQuery = query.Replace("@where", where.ToString());
-
-
                     parameters.Add("@oid", orgId);
 
                     var finalcountquery = countquery.Replace("@where", where1.ToString());
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
 
                     parameters.Add("@pageNumber", pageNumber);
                     parameters.Add("@pageSize", pageSize);
-
                     resi = await _repository.GetListAsync<OperationalExcellenceDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
+                    return new ResponseHandler<OperationalExcellenceDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
@@ -1273,25 +789,15 @@ namespace Datalayer.Implementations
                         PageNumber = pageNumber,
                         PageSize = pageSize,
                         TotalPages = (int)Math.Ceiling(count / (double)pageSize)
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<OperationalExcellenceDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetPaginatedOEProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<OperationalExcellenceDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1299,37 +805,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<OperationalExcellenceDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
+                    "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Description, a.FacilitatorId, b.Name as Facilitator, a.SponsorId, b1.Name as Sponsor, a.ExecutiveSponsorId, b2.Name as ExecutiveSponsor, a.CarryOverProject, a.SavingsClassification, a.TargetSavings, a.Currency, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, a.Status, e.Department as OrganizationDepartment, a.CreatedBy, b3.Name as CreatedByStaff, (select SUM(Savings) from OperationalExcellenceMonthlySaving where ProjectId = a.Id) as ActualSavings FROM OperationalExcellence a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.SponsorId = b1.Id left join CIUser b2 on a.ExecutiveSponsorId = b2.Id left join CIUser b3 on a.CreatedBy = b3.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id where a.OrganizationId = @oid and a.Id = @pid",
+                    new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<OperationalExcellenceDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<OperationalExcellenceDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOEProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OperationalExcellenceDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<OperationalExcellenceDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1337,37 +826,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
-                "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT SponsorId AS UserId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT ExecutiveSponsorId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT FacilitatorId FROM OperationalExcellence where OrganizationId = @orgId ) x )", new { orgId }, CommandType.Text);
-
+                    "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT SponsorId AS UserId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT ExecutiveSponsorId FROM OperationalExcellence where OrganizationId = @orgId UNION ALL SELECT FacilitatorId FROM OperationalExcellence where OrganizationId = @orgId ) x )",
+                    new { orgId }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<CIUser>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<CIUser>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOperationalExcellenceUsers)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CIUser>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1375,49 +847,32 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CIUser>(dbConnection,
-                "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT ExecutiveSponsorId As UserId FROM StrategicInitiative where OrganizationId = @orgId UNION ALL SELECT OwnerId FROM StrategicInitiative where OrganizationId = @orgId ) x )", new { orgId }, CommandType.Text);
-
+                    "SELECT u.Id, u.Name FROM CIUser u WHERE u.Id IN (SELECT DISTINCT UserId FROM (SELECT ExecutiveSponsorId As UserId FROM StrategicInitiative where OrganizationId = @orgId UNION ALL SELECT OwnerId FROM StrategicInitiative where OrganizationId = @orgId ) x )",
+                    new { orgId }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<CIUser>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<CIUser>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllStrategicInitiativeUsers)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CIUser>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<CIUser> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateExistingOEProject(OperationalExcellence opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var re = await _repository.GetAsync<OperationalExcellenceDTO>(dbConnection,
-                "SELECT * FROM OperationalExcellence where OrganizationId = @oid and Id = @pid", new { oid = opExel.OrganizationId, pid = opExel.Id }, CommandType.Text, dbTransaction);
+                    "SELECT * FROM OperationalExcellence where OrganizationId = @oid and Id = @pid",
+                    new { oid = opExel.OrganizationId, pid = opExel.Id }, CommandType.Text, dbTransaction);
 
                 if (re != null)
                 {
@@ -1425,80 +880,50 @@ namespace Datalayer.Implementations
                     opExel.CreatedBy = re.CreatedBy;
                 }
 
-                var resp = await _repository.UpdateAsync(dbConnection, opExel, dbTransaction);
+                await _repository.UpdateAsync(dbConnection, opExel, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Operational Excellence Initiative Added", $"Company Admin updated Operational Excellence Initiative with Id {opExel.Id}.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateExistingOEProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> CreateNewOEProjectMonthlySavings(OperationalExcellenceMonthlySaving opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 opExel.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OperationalExcellenceMonthlySavingTable);
-                var resp = await _repository.InsertAsync(dbConnection, opExel, dbTransaction);
+                await _repository.InsertAsync(dbConnection, opExel, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Operational Excellence Monthly Saving", $"User with Id {opExel.CreatedBy} added new Operational Excellence Monthly Saving.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate OE Monthly Value insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = $"Saving already Exist for {opExel.MonthYear}"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = $"Saving already Exist for {opExel.MonthYear}" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewOEProjectMonthlySavings)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1506,36 +931,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OperationalExcellenceMonthlySavingDTO>(dbConnection,
-                "select a.Id, a.ProjectId, a.OrganizationId, a.MonthYear, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b.Name as CreatedByUser from OperationalExcellenceMonthlySaving a left join CIUser b on a.CreatedBy = b.Id where ProjectId = @pid order by a.DateCreated desc", new { pid = projectId }, CommandType.Text);
+                    "select a.Id, a.ProjectId, a.OrganizationId, a.MonthYear, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b.Name as CreatedByUser from OperationalExcellenceMonthlySaving a left join CIUser b on a.CreatedBy = b.Id where ProjectId = @pid order by a.DateCreated desc",
+                    new { pid = projectId }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi,
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOEProjectMonthlySavings)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1543,183 +952,114 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<OperationalExcellenceMonthlySavingDTO>(dbConnection,
-                "select * from OperationalExcellenceMonthlySaving where Id = @msid", new { msid = monthlySavingId }, CommandType.Text);
+                    "select * from OperationalExcellenceMonthlySaving where Id = @msid", new { msid = monthlySavingId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi,
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Exception at {nameof(OperationalExcellenceMonthlySavingDTO)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OperationalExcellenceMonthlySavingDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                _logger.LogError($"Exception at {nameof(GetOEProjectMonthlySaving)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler<OperationalExcellenceMonthlySavingDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateOEProjectMonthlySavings(OperationalExcellenceMonthlySaving opExel, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var re = await _repository.GetAsync<OperationalExcellenceMonthlySaving>(dbConnection,
-                "select * from OperationalExcellenceMonthlySaving where Id = @msid", new { msid = opExel.Id }, CommandType.Text, dbTransaction);
+                    "select * from OperationalExcellenceMonthlySaving where Id = @msid", new { msid = opExel.Id }, CommandType.Text, dbTransaction);
 
-                if(re != null)
+                if (re != null)
                 {
                     opExel.DateCreated = re.DateCreated;
                     opExel.CreatedBy = re.CreatedBy;
                 }
 
-                var resp = await _repository.UpdateAsync(dbConnection, opExel, dbTransaction);
+                await _repository.UpdateAsync(dbConnection, opExel, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Operational Excellence Monthly Saving", $"User with Id {opExel.CreatedBy} updated j Operational Excellence Monthly Saving.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate OE Monthly Value insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = $"Saving already Exist for {opExel.MonthYear}"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = $"Saving already Exist for {opExel.MonthYear}" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateOEProjectMonthlySavings)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler> CreateNewSIProject(StrategicInitiative si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 si.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.StrategicInitiativeTable);
-                var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+                await _repository.InsertAsync(dbConnection, si, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Strategic Initiative Added", $"Company Rep added new Strategic Initiative.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Duplicate Project. Project Name already exist for the selected Department" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewSIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> CreateNewSISubProject(SISubProject si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 si.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.SISubProjectTable);
-                var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+                await _repository.InsertAsync(dbConnection, si, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("SISubProject Added", $"Company Rep added new SI Sub Project.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Duplicate Project. Project Name already exist for the selected Department" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewSISubProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1727,36 +1067,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
-                var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, "SELECT a.Id, a.Title, b.Currency, COALESCE(AVG(b.Percentage), 0) AS CumulativePercent FROM StrategicInitiative a LEFT JOIN SISubProject b ON b.SIId = a.Id WHERE a.OrganizationId = @oid GROUP BY a.Id, a.Title, b.Currency HAVING COALESCE(AVG(b.Percentage), 0) < 100", new {oid = orgId}, CommandType.Text);
+                using var dbConnection = await OpenConnectionAsync();
+                var resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection,
+                    "SELECT a.Id, a.Title, b.Currency, COALESCE(AVG(b.Percentage), 0) AS CumulativePercent FROM StrategicInitiative a LEFT JOIN SISubProject b ON b.SIId = a.Id WHERE a.OrganizationId = @oid GROUP BY a.Id, a.Title, b.Currency HAVING COALESCE(AVG(b.Percentage), 0) < 100",
+                    new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllInProgressOrganizationSI)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1764,36 +1088,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<SISubProjectDTO>(dbConnection,
-                "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.SIId = @pid order by a.DateCreated desc", new { pid = projectId }, CommandType.Text);
+                    "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.SIId = @pid order by a.DateCreated desc",
+                    new { pid = projectId }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi,
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetSISubProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1802,16 +1110,14 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<StrategicInitiativeDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Status, a.Priority, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
-
                 var countquery = "SELECT count(id) from StrategicInitiative where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
                     resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId, pageNumber, pageSize }, CommandType.Text);
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, countquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
                 else
@@ -1820,80 +1126,29 @@ namespace Datalayer.Implementations
                     var where1 = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Title))
-                    {
-                        where.Append(" AND a.Title LIKE @Title");
-                        where1.Append(" AND Title LIKE @Title");
-                        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND a.Priority = @Priority");
-                        where1.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND a.Status = @Stat");
-                        where1.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    if (filt.UserId > 0)
-                    {
-                        where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                        where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)");
-                        parameters.Add("@UserId", filt.UserId);
-                    }
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                        where1.Append(" AND OrganizationCountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND a.StartDate >= @StartDate");
-                        where1.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate.Date);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND a.EndDate <= @EndDate");
-                        where1.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate.Date);
-                    }
+                    if (!string.IsNullOrWhiteSpace(filt.Title)) { where.Append(" AND a.Title LIKE @Title"); where1.Append(" AND Title LIKE @Title"); parameters.Add("@Title", $"%{filt.Title.Trim()}%"); }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND a.Priority = @Priority"); where1.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND a.Status = @Stat"); where1.Append(" AND Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.UserId > 0) { where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)"); where1.Append(" AND (OwnerId = @UserId OR ExecutiveSponsorId = @UserId)"); parameters.Add("@UserId", filt.UserId); }
+                    if (filt.CountryId > 0) { where.Append(" AND a.OrganizationCountryId = @CountryId"); where1.Append(" AND OrganizationCountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND a.OrganizationDepartmentId = @DepartmentId"); where1.Append(" AND OrganizationDepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND a.StartDate >= @StartDate"); where1.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate.Date); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND a.EndDate <= @EndDate"); where1.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate.Date); }
 
                     var finalQuery = query.Replace("@where", where.ToString());
-
-
                     parameters.Add("@oid", orgId);
 
                     var finalcountquery = countquery.Replace("@where", where1.ToString());
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
 
                     parameters.Add("@pageNumber", pageNumber);
                     parameters.Add("@pageSize", pageSize);
-
                     resi = await _repository.GetListAsync<StrategicInitiativeDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
+                    return new ResponseHandler<StrategicInitiativeDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
@@ -1902,25 +1157,15 @@ namespace Datalayer.Implementations
                         PageNumber = pageNumber,
                         PageSize = pageSize,
                         TotalPages = (int)Math.Ceiling(count / (double)pageSize)
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetPaginatedSIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1928,37 +1173,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<StrategicInitiativeDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Status, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
+                    "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.Status, a.Description, a.OwnerId, b.Name as Owner, a.ExecutiveSponsorId, b1.Name as ExecutiveSponsor, a.OrganizationCountryId, c.Country as OrganizationCountry, a.OrganizationFacilityId, d.Facility as OrganizationFacility, a.OrganizationDepartmentId, e.Department as OrganizationDepartment, a.CreatedBy, b2.Name as CreatedByStaff, sp.Currency, COALESCE(sp.CummulativeROI, 0) AS CummulativeROI, COALESCE(sp.PercentageProgress, 0) AS PercentageProgress, COALESCE(sp.Teams, '') AS Teams FROM StrategicInitiative a left join CIUser b on a.OwnerId = b.Id left join CIUser b1 on a.ExecutiveSponsorId = b1.Id left join CIUser b2 on a.CreatedBy = b2.Id left join OrganizationCountry c on a.OrganizationCountryId = c.Id left join OrganizationFacility d on a.OrganizationFacilityId = d.Id left join OrganizationDepartment e on a.OrganizationDepartmentId = e.Id LEFT JOIN (SELECT sp.SIId, MAX(sp.Currency) AS Currency, SUM(sp.Savings) AS CummulativeROI, AVG(sp.Percentage) AS PercentageProgress, STRING_AGG(u.Name, ', ') AS Teams FROM SISubProject sp LEFT JOIN CIUser u ON sp.FacilitatorId = u.Id GROUP BY sp.SIId) sp ON a.Id = sp.SIId where a.OrganizationId = @oid and a.Id = @pid",
+                    new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetSIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<StrategicInitiativeDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<StrategicInitiativeDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -1966,49 +1194,31 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<StrategicInitiative>(dbConnection,
-                "SELECT * FROM StrategicInitiative where Id = @pid", new { pid = projectId }, CommandType.Text);
+                    "SELECT * FROM StrategicInitiative where Id = @pid", new { pid = projectId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiative>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<StrategicInitiative>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<StrategicInitiative> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<StrategicInitiative> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetSIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<StrategicInitiative>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<StrategicInitiative> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateExistingSIProject(StrategicInitiative si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var re = await _repository.GetAsync<StrategicInitiative>(dbConnection,
-                "SELECT * FROM StrategicInitiative where OrganizationId = @oid and Id = @pid", new { oid = si.OrganizationId, pid = si.Id }, CommandType.Text, dbTransaction);
+                    "SELECT * FROM StrategicInitiative where OrganizationId = @oid and Id = @pid",
+                    new { oid = si.OrganizationId, pid = si.Id }, CommandType.Text, dbTransaction);
 
                 if (re != null)
                 {
@@ -2016,33 +1226,21 @@ namespace Datalayer.Implementations
                     si.CreatedBy = re.CreatedBy;
                 }
 
-                var resp = await _repository.UpdateAsync(dbConnection, si, dbTransaction);
+                await _repository.UpdateAsync(dbConnection, si, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Strategic Initiative Updated", $"Company Admin updated Strategic Initiative with Id {si.Id}.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateExistingSIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2050,48 +1248,31 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<SISubProjectDTO>(dbConnection,
-                "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.Id = @pid order by a.DateCreated desc", new { pid = Id }, CommandType.Text);
+                    "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.Id = @pid order by a.DateCreated desc",
+                    new { pid = Id }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi,
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetSISubProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<SISubProjectDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<SISubProjectDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateExistingSISubProject(SISubProject si, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var re = await _repository.GetAsync<SISubProject>(dbConnection,
-                "SELECT * FROM SISubProject where Id = @pid", new { pid = si.Id }, CommandType.Text, dbTransaction);
+                    "SELECT * FROM SISubProject where Id = @pid", new { pid = si.Id }, CommandType.Text, dbTransaction);
 
                 if (re != null)
                 {
@@ -2099,81 +1280,46 @@ namespace Datalayer.Implementations
                     si.CreatedBy = re.CreatedBy;
                 }
 
-                var resp = await _repository.UpdateAsync(dbConnection, si, dbTransaction);
+                await _repository.UpdateAsync(dbConnection, si, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("SISubProject Updated", $"Company Admin updated SISubProject with Id {si.Id}.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateExistingSISubProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
-        public async Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProject(int orgId, string type, long pid )
+        public async Task<ResponseHandler<SupportingValueSearchResultDTO>> GetMiniOESIProject(int orgId, string type, long pid)
         {
             try
             {
                 SupportingValueSearchResultDTO item = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 if (type == "OE")
-                {
-                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM OperationalExcellence WHERE Id = @id",
-                        new { id = pid }, CommandType.Text);
-                }
+                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM OperationalExcellence WHERE Id = @id", new { id = pid }, CommandType.Text);
 
                 if (type == "SI")
-                {
-                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM StrategicInitiative WHERE Id = @id",
-                        new { id = pid }, CommandType.Text);
-                }
+                    item = await _repository.GetAsync<SupportingValueSearchResultDTO>(dbConnection, "SELECT Id, Title FROM StrategicInitiative WHERE Id = @id", new { id = pid }, CommandType.Text);
 
                 if (item != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = item
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = item };
+
+                return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMiniOESIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2181,37 +1327,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<SupportingValueSearchResultDTO>(dbConnection,
-                "SELECT Id, Title, 'OE' AS Source FROM OperationalExcellence WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' UNION ALL SELECT Id, Title, 'SI' AS Source FROM StrategicInitiative WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' ORDER BY Title", new { orgId, search }, CommandType.Text);
+                    "SELECT Id, Title, 'OE' AS Source FROM OperationalExcellence WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' UNION ALL SELECT Id, Title, 'SI' AS Source FROM StrategicInitiative WHERE OrganizationId = @orgId AND Status NOT IN ('CLOSED', 'CANCELLED') AND Title LIKE '%'+@search+'%' ORDER BY Title",
+                    new { orgId, search }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMiniOESIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<SupportingValueSearchResultDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<SupportingValueSearchResultDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2219,39 +1348,22 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 method = !method.ToLower().Equals("project") ? "General" : "Project";
 
                 var resi = await _repository.GetListAsync<OrganizationToolDTO>(dbConnection,
-                "SELECT a.Id, d.Id as ProjectToolId, a.Url, b.Id as ToolId, b.Tool, c.Phase, CASE WHEN d.ToolId IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsChecked FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid LEFT JOIN CIProjectTool d ON d.ToolId = b.Id AND d.ProjectId = @pid WHERE c.Methodology = @mth", new { oid = orgId, mth = method, pid = pid }, CommandType.Text);
+                    "SELECT a.Id, d.Id as ProjectToolId, a.Url, b.Id as ToolId, b.Tool, c.Phase, CASE WHEN d.ToolId IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsChecked FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id AND a.OrganizationId = @oid LEFT JOIN CIProjectTool d ON d.ToolId = b.Id AND d.ProjectId = @pid WHERE c.Methodology = @mth",
+                    new { oid = orgId, mth = method, pid = pid }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationTools)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler<OrganizationToolDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2260,44 +1372,22 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MethodologyPhase> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 if (!String.IsNullOrEmpty(method))
-                {
                     resi = await _repository.GetListAsync<MethodologyPhase>(dbConnection, "SELECT Id, Methodology, Phase FROM MethodologyPhase WHERE Methodology = @mth", new { mth = method }, CommandType.Text);
-                }
                 else
-                {
                     resi = await _repository.GetListAsync<MethodologyPhase>(dbConnection, "SELECT Id, Methodology, Phase FROM MethodologyPhase", CommandType.Text);
-                }
-
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<MethodologyPhase>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MethodologyPhase>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<MethodologyPhase> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<MethodologyPhase> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMethodologyPhases)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler<MethodologyPhase>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler<MethodologyPhase> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2305,37 +1395,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationToolDTO>(dbConnection,
-                "SELECT a.Id, a.Url, b.Tool, c.Phase FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id WHERE c.Methodology = @mth", new { mth = method }, CommandType.Text);
+                    "SELECT a.Id, a.Url, b.Tool, c.Phase FROM MethodologyTool b INNER JOIN MethodologyPhase c ON c.Id = b.Phase LEFT JOIN OrganizationTool a ON a.MethodologyTool = b.Id WHERE c.Methodology = @mth",
+                    new { mth = method }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllMethodologyTools)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler<OrganizationToolDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler<OrganizationToolDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2343,38 +1416,19 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationSoftSaving>(dbConnection,
-                "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationSoftSaving where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
-                {
+                    return new ResponseHandler<OrganizationSoftSaving> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
 
-                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler<OrganizationSoftSaving> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationSavingCategory)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationSoftSaving>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<OrganizationSoftSaving> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2382,414 +1436,244 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<OrganizationBOA>(dbConnection,
-                "Select * from OrganizationBOA where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
+                    "Select * from OrganizationBOA where OrganizationId = @oid and IsActive = 1", new { oid = orgId }, CommandType.Text);
 
                 if (resi.Any())
-                {
+                    return new ResponseHandler<OrganizationBOA> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
 
-                    return await Task.FromResult(new ResponseHandler<OrganizationBOA>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<OrganizationBOA>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler<OrganizationBOA> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllOrganizationBOA)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationBOA>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<OrganizationBOA> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> AddOrganizationSoftSaving(OrganizationSoftSaving orgSs, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgSs.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationSoftSavingTable);
-                var resp = await _repository.InsertAsync(dbConnection, orgSs, dbTransaction);
+                await _repository.InsertAsync(dbConnection, orgSs, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("Soft Saving Added", $"Company Admin added new Organization Soft Saving.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Soft Saving Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Soft Saving Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationSoftSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationSoftSaving(long ssId, OrganizationSoftSaving oss, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<OrganizationSoftSaving>(dbConnection,
                     "Select * from OrganizationSoftSaving where Id = @cid", new { cid = ssId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.Category = oss.Category;
-                    resi.Unit = oss.Unit;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
+                resi.Category = oss.Category;
+                resi.Unit = oss.Unit;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    var audit = ModelBuilder.BuildAuditLog("Soft Saving Renamed", $"Company Admin renamed organization Soft Saving '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                var audit = ModelBuilder.BuildAuditLog("Soft Saving Renamed", $"Company Admin renamed organization Soft Saving '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Soft Saving Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Soft Saving Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationSoftSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationSoftSaving(long ssId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update OrganizationSoftSaving set IsActive = 0 where Id = @cid", new { cid = ssId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("Soft Saving Deleted", $"Company Admin deleted organization Soft Saving '{ssId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    dbTransaction.Commit();
+                var audit = ModelBuilder.BuildAuditLog("Soft Saving Deleted", $"Company Admin deleted organization Soft Saving '{ssId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                dbTransaction.Commit();
+
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationSoftSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> AddOrganizationBOA(OrganizationBOA orgSs, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 orgSs.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationBOATable);
-                var resp = await _repository.InsertAsync(dbConnection, orgSs, dbTransaction);
+                await _repository.InsertAsync(dbConnection, orgSs, dbTransaction);
 
                 var audit = ModelBuilder.BuildAuditLog("BOA Added", $"Company Admin added new Organization BOA.", adminEmail);
                 audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Soft Saving Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Soft Saving Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationBOA)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> RenameOrganizationBOA(long ssId, OrganizationBOA oss, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.GetAsync<OrganizationBOA>(dbConnection,
                     "Select * from OrganizationBOA where Id = @cid", new { cid = ssId }, CommandType.Text, dbTransaction);
 
-                if (resi != null)
-                {
-                    resi.BOA = oss.BOA;
-                    var res = await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
+                resi.BOA = oss.BOA;
+                await _repository.UpdateAsync(dbConnection, resi, dbTransaction);
 
-                    var audit = ModelBuilder.BuildAuditLog("BOA Renamed", $"Company Admin renamed organization BOA '{resi.Id}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                var audit = ModelBuilder.BuildAuditLog("BOA Renamed", $"Company Admin renamed organization BOA '{resi.Id}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    dbTransaction.Commit();
+                dbTransaction.Commit();
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record updated Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record updated Sucessfully" };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                // Duplicate country insert detected
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Soft Saving Exists"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Soft Saving Exists" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(RenameOrganizationBOA)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> DeleteOrganizationBOA(long ssId, string adminEmail, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 var resi = await _repository.ExecuteAsync(dbConnection,
                     "Update OrganizationBOA set IsActive = 0 where Id = @cid", new { cid = ssId }, CommandType.Text, dbTransaction);
 
-                if (resi > 0)
-                {
-                    var audit = ModelBuilder.BuildAuditLog("BOA Deleted", $"Company Admin deleted organization BOA '{ssId}'.", adminEmail);
-                    audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                if (resi <= 0)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    dbTransaction.Commit();
+                var audit = ModelBuilder.BuildAuditLog("BOA Deleted", $"Company Admin deleted organization BOA '{ssId}'.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
 
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Record deleted Sucessfully"
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                dbTransaction.Commit();
+
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Record deleted Sucessfully" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(DeleteOrganizationBOA)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler<ContinuousImprovement>> CreateNewCIProject(ContinuousImprovement ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                if(ci.Id == 0)
+                if (ci.Id == 0)
                 {
                     ci.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.ContinuousImprovementTable);
-                    var resp = await _repository.InsertAsync(dbConnection, ci, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, ci, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("Continuous Improvement Added", $"Company Rep added new Continuous Improvement Project.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
                 else
                 {
-                    var res = await _repository.UpdateAsync(dbConnection, ci, dbTransaction);
+                    await _repository.UpdateAsync(dbConnection, ci, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("Continuous Improvement Updated", $"Company Rep updated new Continuous Improvement Project.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    SingleResult = ci
-                });
+                return new ResponseHandler<ContinuousImprovement> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = ci };
             }
             catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
             {
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.ExpectationFailed  ,
-                    Message = "Duplicate Project. Project Name already exist for the selected Department",
-                    SingleResult = ci
-                });
+                return new ResponseHandler<ContinuousImprovement> { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Duplicate Project. Project Name already exist for the selected Department", SingleResult = ci };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewCIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovement>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler<ContinuousImprovement> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2797,18 +1681,11 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<Organization>(dbConnection,
-                "Select * from Organization where TenantId = @tid", new { tid = tenantId }, CommandType.Text);
+                    "Select * from Organization where TenantId = @tid", new { tid = tenantId }, CommandType.Text);
 
-                if (resi != null)
-                {
-                    return false; //!String.IsNullOrEmpty(resi.SiteId);
-                }
-                else
-                {
-                    return false;
-                }
+                return false;
             }
             catch (Exception ex)
             {
@@ -2819,59 +1696,42 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> CreateNewCIProjectTeam(List<CIProjectTeamMember> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //get count of all team members on this project
-
-                var count = await _repository.GetListAsync<CIProjectTeamMember>(dbConnection, "select * from CIProjectTeamMember WHERE ProjectId = @ProjectId", new { ci[0].ProjectId }, CommandType.Text, dbTransaction);
-
-                count = count.ToList();
+                var count = (await _repository.GetListAsync<CIProjectTeamMember>(dbConnection,
+                    "select * from CIProjectTeamMember WHERE ProjectId = @ProjectId",
+                    new { ci[0].ProjectId }, CommandType.Text, dbTransaction))?.ToList() ?? new List<CIProjectTeamMember>();
 
                 if (count.Any())
                 {
-                    //if(count.Count() > ci.Count)
-                    //{
-                        //an item was deleted on the UI
-                        // 2. Extract IDs
-                        var incomingIds = ci.Select(x => x.Id).ToHashSet();
+                    var incomingIds = ci.Select(x => x.Id).ToHashSet();
+                    var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
 
-                        // 3. Find deleted records
-                        var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
-
-                        foreach(var i in itemsToDelete)
-                        {
-                            if(i.Role != "Facilitator")
-                                await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectTeamMember where Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
-                        }
-                    //}
+                    foreach (var i in itemsToDelete)
+                    {
+                        if (i.Role != "Facilitator")
+                            await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectTeamMember where Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
+                    }
                 }
-
 
                 foreach (var teamMember in ci)
                 {
                     try
                     {
                         teamMember.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIProjectTeamMemberTable);
-
                         await _repository.InsertAsync(dbConnection, teamMember, dbTransaction);
 
-                        // Audit: only after successful insert
                         var audit = ModelBuilder.BuildAuditLog("Team Member Added", $"Added {teamMember.UserId} as {teamMember.Role} to project {teamMember.ProjectId}.", adminEmail);
-
                         audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                         await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                     }
                     catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                     {
-                        // Duplicate (ProjectId, UserId, Role)
-                        // Decide business behavior: ignore or update
-
                         var existing = await dbConnection.QuerySingleAsync<CIProjectTeamMember>(
-                            @"SELECT * FROM CIProjectTeamMember WHERE ProjectId = @ProjectId AND UserId = @UserId AND Role = @Role", new { teamMember.ProjectId, teamMember.UserId, teamMember.Role }, dbTransaction);
+                            @"SELECT * FROM CIProjectTeamMember WHERE ProjectId = @ProjectId AND UserId = @UserId AND Role = @Role",
+                            new { teamMember.ProjectId, teamMember.UserId, teamMember.Role }, dbTransaction);
 
                         if (existing.SendNotification != teamMember.SendNotification || existing.UserId != teamMember.UserId || existing.Role != teamMember.Role)
                         {
@@ -2881,18 +1741,8 @@ namespace Datalayer.Implementations
 
                             await _repository.UpdateAsync(dbConnection, existing, dbTransaction);
 
-                            var audit = ModelBuilder.BuildAuditLog(
-                                "Team Member Updated",
-                                $"Updated {teamMember.UserId}'s notification preference.",
-                                adminEmail
-                            );
-
-                            audit.Id = await _genManager.GetNextTableId(
-                                dbConnection,
-                                dbTransaction,
-                                DatabaseScripts.AuditLogTable
-                            );
-
+                            var audit = ModelBuilder.BuildAuditLog("Team Member Updated", $"Updated {teamMember.UserId}'s notification preference.", adminEmail);
+                            audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                             await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                         }
                     }
@@ -2900,36 +1750,22 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> CreateNewCIProjectTool(List<CIProjectToolDTO> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //get all phases
                 var phases = await _repository.GetListAsync<MethodologyPhase>(dbConnection, "SELECT Id, Methodology, Phase FROM MethodologyPhase", CommandType.Text, dbTransaction);
 
                 foreach (var i in ci)
@@ -2947,11 +1783,11 @@ namespace Datalayer.Implementations
 
                     try
                     {
-                        var resp = await _repository.InsertAsync(dbConnection, ce, dbTransaction);
+                        await _repository.InsertAsync(dbConnection, ce, dbTransaction);
 
                         var audit = ModelBuilder.BuildAuditLog("CI Project Tool Added", $"Company Rep added new CI Project tool.", adminEmail);
                         audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                        var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                        await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                     }
                     catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                     {
@@ -2961,25 +1797,13 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -2988,16 +1812,14 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<ContinuousImprovementDTO> resi = null; int count = 0;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid AND a.Status NOT IN ('CLOSED', 'CANCELLED') @where ORDER BY a.DateCreated DESC OFFSET (@pageNumber - 1) * @pageSize ROWS FETCH NEXT @pageSize ROWS ONLY";
-
                 var countquery = "SELECT count(id) from ContinuousImprovement where OrganizationId = @oid and Status NOT IN ('CLOSED', 'CANCELLED') @where";
 
                 if (filt == null || (filt.StartDate == new DateTime() && filt.EndDate == new DateTime() && String.IsNullOrEmpty(filt.Title) && filt.CountryId == 0 && filt.DepartmentId == 0 && String.IsNullOrEmpty(filt.Priority) && filt.UserId == 0))
                 {
                     resi = await _repository.GetListAsync<ContinuousImprovementDTO>(dbConnection, query.Replace("@where", ""), new { oid = orgId, pageNumber, pageSize }, CommandType.Text);
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, countquery.Replace("@where", ""), new { oid = orgId }, CommandType.Text);
                 }
                 else
@@ -3006,80 +1828,28 @@ namespace Datalayer.Implementations
                     var where1 = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Title))
-                    {
-                        where.Append(" AND a.Title LIKE @Title");
-                        where1.Append(" AND Title LIKE @Title");
-                        parameters.Add("@Title", $"%{filt.Title.Trim()}%");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND a.Status = @Stat");
-                        where1.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND a.Priority = @Priority");
-                        where1.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.FacilitatorId = @UserId OR a.SponsorId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    where1.Append(" AND (FacilitatorId = @UserId OR SponsorId = @UserId OR ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND a.OrganizationCountryId = @CountryId");
-                        where1.Append(" AND OrganizationCountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND a.OrganizationDepartmentId = @DepartmentId");
-                        where1.Append(" AND OrganizationDepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND a.StartDate >= @StartDate");
-                        where1.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate.Date);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND a.EndDate <= @EndDate");
-                        where1.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate.Date);
-                    }
+                    if (!string.IsNullOrWhiteSpace(filt.Title)) { where.Append(" AND a.Title LIKE @Title"); where1.Append(" AND Title LIKE @Title"); parameters.Add("@Title", $"%{filt.Title.Trim()}%"); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND a.Status = @Stat"); where1.Append(" AND Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND a.Priority = @Priority"); where1.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND a.CountryId = @CountryId"); where1.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND a.DepartmentId = @DepartmentId"); where1.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND a.StartDate >= @StartDate"); where1.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate.Date); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND a.EndDate <= @EndDate"); where1.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate.Date); }
 
                     var finalQuery = query.Replace("@where", where.ToString());
-
-
                     parameters.Add("@oid", orgId);
 
                     var finalcountquery = countquery.Replace("@where", where1.ToString());
-
                     count = await _repository.GetSumOrCountAsync<int>(dbConnection, finalcountquery, parameters, CommandType.Text);
 
                     parameters.Add("@pageNumber", pageNumber);
                     parameters.Add("@pageSize", pageSize);
-
                     resi = await _repository.GetListAsync<ContinuousImprovementDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
+                    return new ResponseHandler<ContinuousImprovementDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
@@ -3088,25 +1858,15 @@ namespace Datalayer.Implementations
                         PageNumber = pageNumber,
                         PageSize = pageSize,
                         TotalPages = (int)Math.Ceiling(count / (double)pageSize)
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetPaginatedCIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3114,37 +1874,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CIProjectToolDTO>(dbConnection,
-                "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where a.ProjectId = @pid", new { pid = pid }, CommandType.Text);
+                    "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where a.ProjectId = @pid",
+                    new { pid = pid }, CommandType.Text);
 
                 if (resi.Any())
-                {
-                    return await Task.FromResult(new ResponseHandler<CIProjectToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<CIProjectToolDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
+
+                return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetAllProjectSelectedTools)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler<CIProjectToolDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3152,163 +1895,96 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<CIProjectTool>(dbConnection,
-                "select * from CIProjectTool where Id = @pid", new { pid = toolId }, CommandType.Text);
+                    "select * from CIProjectTool where Id = @pid", new { pid = toolId }, CommandType.Text);
 
-                if (resi != null)
-                {
-                    resi.Url = fileUrl;
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    var res = await _repository.UpdateAsync(dbConnection, resi);
+                resi.Url = fileUrl;
+                var res = await _repository.UpdateAsync(dbConnection, resi);
 
-                    if (res)
-                    {
-                        return await Task.FromResult(new ResponseHandler<CIProjectToolDTO>
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful"
-                        });
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler<CIProjectToolDTO>
-                        {
-                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                            Message = "Tool Url update was unsucessful"
-                        });
-                    }  
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                if (res)
+                    return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
+
+                return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Tool Url update was unsucessful" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(UpdateToolId)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler<CIProjectToolDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler<CIProjectToolDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> CreateNewCIProjectComment(List<CIProjectComment> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 foreach (var comm in ci)
                 {
                     comm.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIProjectCommentTable);
-
                     await _repository.InsertAsync(dbConnection, comm, dbTransaction);
 
-                    // Audit: only after successful insert
                     var audit = ModelBuilder.BuildAuditLog("Comment Added", $"Added a comment to project {comm.ProjectId}.", adminEmail);
-
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                     await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> CreateNewCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
                 foreach (var comm in si)
                 {
                     comm.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIProjectSavingTable);
-
                     await _repository.InsertAsync(dbConnection, comm, dbTransaction);
 
-                    // Audit: only after successful insert
                     var audit = ModelBuilder.BuildAuditLog("Saving Added", $"Added a saving to project {comm.ProjectId}.", adminEmail);
-
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                     await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
-                //fetch project
                 var proj = await _repository.GetAsync<ContinuousImprovement>(dbConnection, "select * from ContinuousImprovement where Id = @pid", new { pid = ci.Id }, CommandType.Text, dbTransaction);
 
-                if(proj != null)
+                if (proj != null)
                 {
                     proj.IsOneTimeSavings = ci.IsOneTimeSavings;
                     proj.IsCarryOverSavings = ci.IsCarryOverSavings;
-
-                    if (String.IsNullOrEmpty(proj.FinancialReportComment))
-                        proj.FinancialVerificationDate = DateTime.UtcNow;
-                    else
-                        proj.FinancialVerificationDate = ci.FinancialVerificationDate;
+                    proj.FinancialVerificationDate = String.IsNullOrEmpty(proj.FinancialReportComment) ? DateTime.UtcNow : ci.FinancialVerificationDate;
 
                     await _repository.UpdateAsync(dbConnection, proj, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("CI Financial Info Updated", $"Updated the financial info of a CI Project {ci.Id}.", adminEmail);
-
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                     await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(CreateNewCIProjectSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3316,37 +1992,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-                
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
-                "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream, a.IsOneTimeSavings, a.IsCarryOverSavings, a.FinancialVerificationDate, a.FinancialReportUrl, a.FinancialReportComment, a.IsAudited, a.AuditedBy, b2.Name as AuditedByStaff, a.AuditedDate FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN CIUser b2 ON a.AuditedBy = b2.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
+                    "SELECT a.Id, a.OrganizationId, a.Title, a.StartDate, a.EndDate, a.Priority, a.BusinessObjectiveAlignment, a.ProblemStatement, a.Methodology, a.Certification, a.TotalExpectedRevenue, a.Currency, a.Status, a.CountryId, c.Country AS Country, a.FacilityId, d.Facility AS Facility, a.DepartmentId, e.Department AS Department, a.Phase AS PhaseId, f.Phase, tm.UserId AS FacilitatorId, u.Name AS FacilitatorName, a.CreatedBy, b1.Name AS CreatedByStaff, a.SupportingValueStream, a.IsOneTimeSavings, a.IsCarryOverSavings, a.FinancialVerificationDate, a.FinancialReportUrl, a.FinancialReportComment, a.IsAudited, a.AuditedBy, b2.Name as AuditedByStaff, a.AuditedDate FROM Continuousimprovement a LEFT JOIN CIProjectTeamMember tm ON tm.ProjectId = a.Id AND tm.Role = 'Facilitator' LEFT JOIN CIUser u ON u.Id = tm.UserId LEFT JOIN CIUser b1 ON a.CreatedBy = b1.Id LEFT JOIN CIUser b2 ON a.AuditedBy = b2.Id LEFT JOIN OrganizationCountry c ON a.CountryId = c.Id LEFT JOIN OrganizationFacility d ON a.FacilityId = d.Id LEFT JOIN OrganizationDepartment e ON a.DepartmentId = e.Id LEFT JOIN MethodologyPhase f ON a.Phase = f.Id WHERE a.OrganizationId = @oid and a.Id = @pid",
+                    new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProject)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3354,37 +2013,20 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<ContinuousImprovementDTO>(dbConnection,
-                "SELECT Id, FinalReportUrl, FinancialReportUrl FROM Continuousimprovement WHERE OrganizationId = @oid and a.Id = @pid", new { oid = orgId, pid = projectId }, CommandType.Text);
+                    "SELECT Id, FinalReportUrl, FinancialReportUrl FROM Continuousimprovement WHERE OrganizationId = @oid and Id = @pid",
+                    new { oid = orgId, pid = projectId }, CommandType.Text);
 
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectMini)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<ContinuousImprovementDTO>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
+                return new ResponseHandler<ContinuousImprovementDTO> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3392,49 +2034,37 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<TeamMembersDTO>(dbConnection,
-                "select a.Id, a.ProjectId, a.UserId, b.Name as [User], a.Role, a.SendNotification from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+                    "select a.Id, a.ProjectId, a.UserId, b.Name as [User], a.Role, a.SendNotification from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid",
+                    new { pid = projectId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<CITeamDTO>
+                    return new ResponseHandler<CITeamDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
-                        SingleResult = new CITeamDTO
-                        {
-                            ProjectId = projectId,
-                            Team = resi.ToList()
-                        }
-                    });
+                        SingleResult = new CITeamDTO { ProjectId = projectId, Team = resi.ToList() }
+                    };
                 }
-                else
+
+                return new ResponseHandler<CITeamDTO>
                 {
-                    return await Task.FromResult(new ResponseHandler<CITeamDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found",
-                        SingleResult = new CITeamDTO
-                        {
-                            ProjectId = projectId
-                        }
-                    });
-                }
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found",
+                    SingleResult = new CITeamDTO { ProjectId = projectId }
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectTeam)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CITeamDTO>
+                return new ResponseHandler<CITeamDTO>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occured",
-                    SingleResult = new CITeamDTO
-                    {
-                        ProjectId = projectId
-                    }
-                });
+                    SingleResult = new CITeamDTO { ProjectId = projectId }
+                };
             }
         }
 
@@ -3442,19 +2072,12 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<TeamMembersDTO>(dbConnection,
-                "select b.EmailAddress from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid and a.SendNotification = 1", new { pid = projectId }, CommandType.Text);
+                    "select b.EmailAddress from CIProjectTeamMember a left join CIUser b on b.Id = a.UserId where a.ProjectId = @pid and a.SendNotification = 1",
+                    new { pid = projectId }, CommandType.Text);
 
-                if (resi.Any())
-                {
-                    return resi.Select(t => t.EmailAddress).ToList();
-                }
-                else
-                {
-                    return null;
-                }
+                return resi.Any() ? resi.Select(t => t.EmailAddress).ToList() : null;
             }
             catch (Exception ex)
             {
@@ -3467,24 +2090,17 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CIProjectToolDTO>(dbConnection,
-                "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+                    "select a.Id, a.ProjectId, a.Methodology, a.PhaseId, b.Phase, a.ToolId, c.Tool, a.Url from CIProjectTool a left join MethodologyPhase b on b.Id = a.PhaseId left join MethodologyTool c on c.Id = a.ToolId where ProjectId = @pid",
+                    new { pid = projectId }, CommandType.Text);
 
-                if (resi.Any())
-                {
-                    return await Task.FromResult(resi.ToList());
-                }
-                else
-                {
-                    return await Task.FromResult(new List<CIProjectToolDTO>());
-                }
+                return resi.Any() ? resi.ToList() : new List<CIProjectToolDTO>();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new List<CIProjectToolDTO>());
+                return new List<CIProjectToolDTO>();
             }
         }
 
@@ -3492,51 +2108,36 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<CommentzDTO>(dbConnection,
-                "select Id, Comment, Date from CIProjectComment where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+                    "select Id, Comment, Date from CIProjectComment where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<CICommentDTO>
+                    return new ResponseHandler<CICommentDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
-                        SingleResult = new CICommentDTO
-                        {
-                            ProjectId = projectId,
-                            Comment = resi.ToList()
-                        }
-                    });
+                        SingleResult = new CICommentDTO { ProjectId = projectId, Comment = resi.ToList() }
+                    };
                 }
-                else
+
+                return new ResponseHandler<CICommentDTO>
                 {
-                    return await Task.FromResult(new ResponseHandler<CICommentDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found",
-                        SingleResult = new CICommentDTO
-                        {
-                            ProjectId = projectId,
-                            Comment = new List<CommentzDTO>()
-                        }
-                    });
-                }
+                    StatusCode = (int)HttpStatusCode.NotFound,
+                    Message = "Record not found",
+                    SingleResult = new CICommentDTO { ProjectId = projectId, Comment = new List<CommentzDTO>() }
+                };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CICommentDTO>
+                return new ResponseHandler<CICommentDTO>
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = ex.Message,
-                    SingleResult = new CICommentDTO
-                    {
-                        ProjectId = projectId,
-                        Comment = new List<CommentzDTO>()
-                    }
-                });
+                    SingleResult = new CICommentDTO { ProjectId = projectId, Comment = new List<CommentzDTO>() }
+                };
             }
         }
 
@@ -3544,14 +2145,14 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<SavingsDTO>(dbConnection,
-                "select Id, Category, SavingClassification, SavingType, SavingValue, SavingUnit, IsCurrency, [Date] from CIProjectSaving where ProjectId = @pid", new { pid = projectId }, CommandType.Text);
+                    "select Id, Category, SavingClassification, SavingType, SavingValue, SavingUnit, IsCurrency, [Date] from CIProjectSaving where ProjectId = @pid",
+                    new { pid = projectId }, CommandType.Text);
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<CIFinancialDTO>
+                    return new ResponseHandler<CIFinancialDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
@@ -3563,7 +2164,7 @@ namespace Datalayer.Implementations
                                 Id = h.Id,
                                 SavingType = h.SavingType,
                                 SavingValue = h.SavingValue,
-                                Date = h.Date                                
+                                Date = h.Date
                             }).ToList(),
                             Soft = resi.Where(e => e.SavingClassification == "Soft").Select(s => new SoftSavingsDTO
                             {
@@ -3573,52 +2174,37 @@ namespace Datalayer.Implementations
                                 SavingUnit = s.SavingUnit
                             }).ToList()
                         }
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<CIFinancialDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<CIFinancialDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCIProjectFinancial)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CIFinancialDTO>());
+                return new ResponseHandler<CIFinancialDTO>();
             }
         }
 
         public async Task<ResponseHandler> UpdateCIProjectTool(List<CIProjectToolDTO> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //get all project tools
-                var count = await _repository.GetListAsync<CIProjectTool>(dbConnection, "select * from CIProjectTool WHERE ProjectId = @ProjectId", new { ci[0].ProjectId }, CommandType.Text, dbTransaction);
-
-                count = count.ToList();
+                var count = (await _repository.GetListAsync<CIProjectTool>(dbConnection,
+                    "select * from CIProjectTool WHERE ProjectId = @ProjectId",
+                    new { ci[0].ProjectId }, CommandType.Text, dbTransaction))?.ToList() ?? new List<CIProjectTool>();
 
                 if (count.Any())
                 {
-                    //an item was deleted on the UI
-                    // 2. Extract IDs
                     var incomingIds = ci.Select(x => x.Id).ToHashSet();
-
-                    // 3. Find deleted records
                     var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
 
                     foreach (var i in itemsToDelete)
-                    {
                         await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectTool where Id = @id and Url Is NULL", new { id = i.Id }, CommandType.Text, dbTransaction);
-                    }
                 }
 
-                //get all phases
                 var phases = await _repository.GetListAsync<MethodologyPhase>(dbConnection, "SELECT Id, Methodology, Phase FROM MethodologyPhase", CommandType.Text, dbTransaction);
 
                 foreach (var i in ci)
@@ -3638,22 +2224,17 @@ namespace Datalayer.Implementations
                             DateCreated = i.DateCreated
                         };
 
-                        var resp = await _repository.InsertAsync(dbConnection, ce, dbTransaction);
+                        await _repository.InsertAsync(dbConnection, ce, dbTransaction);
 
                         var audit = ModelBuilder.BuildAuditLog("CI Project Tool Added", $"Company Rep added new CI Project tool.", adminEmail);
                         audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                         await _repository.InsertAsync(dbConnection, audit, dbTransaction);
-
                     }
                     catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                     {
-                        // Duplicate (Methodology, PhaseId, ToolId)
-                        // Decide business behavior: ignore or update
-
                         var j = await _repository.GetAsync<CIProjectTool>(dbConnection, @"SELECT * FROM CIProjectTool WHERE Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
 
-
-                        if (j.Methodology != i.Methodology || j.PhaseId != i.PhaseId || j.ToolId != i.ToolId)
+                        if (j != null && (j.Methodology != i.Methodology || j.PhaseId != i.PhaseId || j.ToolId != i.ToolId))
                         {
                             j.Methodology = i.Methodology;
                             j.PhaseId = i.PhaseId;
@@ -3661,18 +2242,8 @@ namespace Datalayer.Implementations
 
                             await _repository.UpdateAsync(dbConnection, j, dbTransaction);
 
-                            var audit = ModelBuilder.BuildAuditLog(
-                                "Project Tool Updated",
-                                $"Updated {i.Id}'s details.",
-                                adminEmail
-                            );
-
-                            audit.Id = await _genManager.GetNextTableId(
-                                dbConnection,
-                                dbTransaction,
-                                DatabaseScripts.AuditLogTable
-                            );
-
+                            var audit = ModelBuilder.BuildAuditLog("Project Tool Updated", $"Updated {i.Id}'s details.", adminEmail);
+                            audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                             await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                         }
                     }
@@ -3680,95 +2251,59 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateCIProjectTool)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateCIProjectComment(List<CIProjectComment> ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //get all project comments
-                var count = await _repository.GetListAsync<CIProjectTool>(dbConnection, "select * from CIProjectComment WHERE ProjectId = @ProjectId", new { ci[0].ProjectId }, CommandType.Text, dbTransaction);
-
-                count = count.ToList();
+                var count = (await _repository.GetListAsync<CIProjectTool>(dbConnection,
+                    "select * from CIProjectComment WHERE ProjectId = @ProjectId",
+                    new { ci[0].ProjectId }, CommandType.Text, dbTransaction))?.ToList() ?? new List<CIProjectTool>();
 
                 if (count.Any())
                 {
-                    //an item was deleted on the UI
-                    // 2. Extract IDs
                     var incomingIds = ci.Select(x => x.Id).ToHashSet();
-
-                    // 3. Find deleted records
                     var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
 
                     foreach (var i in itemsToDelete)
-                    {
                         await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectComment where Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
-                    }
                 }
-
 
                 foreach (var comm in ci)
                 {
                     try
                     {
                         comm.Id = comm.Id == 0 ? await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIProjectCommentTable) : comm.Id;
-
                         await _repository.InsertAsync(dbConnection, comm, dbTransaction);
 
-                        // Audit: only after successful insert
                         var audit = ModelBuilder.BuildAuditLog("Comment Added", $"Added a comment to project {comm.ProjectId}.", adminEmail);
-
                         audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                         await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                     }
                     catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                     {
                         var j = await _repository.GetAsync<CIProjectComment>(dbConnection, @"SELECT * FROM CIProjectComment WHERE Id = @id", new { id = comm.Id }, CommandType.Text, dbTransaction);
 
-
-                        if (j.Comment != comm.Comment || j.Date != comm.Date)
+                        if (j != null && (j.Comment != comm.Comment || j.Date != comm.Date))
                         {
                             j.Comment = comm.Comment;
                             j.Date = comm.Date;
 
                             await _repository.UpdateAsync(dbConnection, j, dbTransaction);
 
-                            var audit = ModelBuilder.BuildAuditLog(
-                                "Project Comment Updated",
-                                $"Updated {comm.Id}'s details.",
-                                adminEmail
-                            );
-
-                            audit.Id = await _genManager.GetNextTableId(
-                                dbConnection,
-                                dbTransaction,
-                                DatabaseScripts.AuditLogTable
-                            );
-
+                            var audit = ModelBuilder.BuildAuditLog("Project Comment Updated", $"Updated {comm.Id}'s details.", adminEmail);
+                            audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                             await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                         }
                     }
@@ -3776,25 +2311,13 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateCIProjectComment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3802,51 +2325,24 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<ContinuousImprovement>(dbConnection,
-                "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
+                    "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
 
-                if (resi != null)
-                {
-                    resi.FinalReportUrl = fileUrl;
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    var res = await _repository.UpdateAsync(dbConnection, resi);
+                resi.FinalReportUrl = fileUrl;
+                var res = await _repository.UpdateAsync(dbConnection, resi);
 
-                    if (res)
-                    {
-                        return await Task.FromResult(new ResponseHandler
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful"
-                        });
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler
-                        {
-                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                            Message = "Tool Url update was unsucessful"
-                        });
-                    }
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return res
+                    ? new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" }
+                    : new ResponseHandler { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Tool Url update was unsucessful" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(UpdateReportFile)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -3854,101 +2350,62 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<ContinuousImprovement>(dbConnection,
-                "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
+                    "select * from ContinuousImprovement where Id = @pid", new { pid = projectId }, CommandType.Text);
 
-                if (resi != null)
-                {
-                    resi.FinancialReportUrl = fileUrl;
+                if (resi == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
 
-                    var res = await _repository.UpdateAsync(dbConnection, resi);
+                resi.FinancialReportUrl = fileUrl;
+                var res = await _repository.UpdateAsync(dbConnection, resi);
 
-                    if (res)
-                    {
-                        return await Task.FromResult(new ResponseHandler
-                        {
-                            StatusCode = (int)HttpStatusCode.OK,
-                            Message = "Successful"
-                        });
-                    }
-                    else
-                    {
-                        return await Task.FromResult(new ResponseHandler
-                        {
-                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                            Message = "Tool Url update was unsucessful"
-                        });
-                    }
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return res
+                    ? new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" }
+                    : new ResponseHandler { StatusCode = (int)HttpStatusCode.ExpectationFailed, Message = "Tool Url update was unsucessful" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(UpdateFinancialReportFile)} - {JsonConvert.SerializeObject(ex)}");
-                return new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                };
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateCIProjectSaving(List<CIProjectSaving> si, ContinuousImprovementDTO ci, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //get all project savings
-                var count = await _repository.GetListAsync<CIProjectSaving>(dbConnection, "select * from CIProjectSaving WHERE ProjectId = @ProjectId", new { ProjectId = ci.Id }, CommandType.Text, dbTransaction);
-
-                count = count.ToList();
+                var count = (await _repository.GetListAsync<CIProjectSaving>(dbConnection,
+                    "select * from CIProjectSaving WHERE ProjectId = @ProjectId",
+                    new { ProjectId = ci.Id }, CommandType.Text, dbTransaction))?.ToList() ?? new List<CIProjectSaving>();
 
                 if (count.Any())
                 {
-                    //an item was deleted on the UI
-                    // 2. Extract IDs
                     var incomingIds = si.Select(x => x.Id).ToHashSet();
-
-                    // 3. Find deleted records
                     var itemsToDelete = count.Where(dbItem => !incomingIds.Contains(dbItem.Id)).ToList();
 
                     foreach (var i in itemsToDelete)
-                    {
                         await _repository.ExecuteAsync(dbConnection, "Delete from CIProjectSaving where Id = @id", new { id = i.Id }, CommandType.Text, dbTransaction);
-                    }
                 }
 
                 foreach (var comm in si)
                 {
-                    try{
+                    try
+                    {
                         comm.Id = comm.Id == 0 ? await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIProjectSavingTable) : comm.Id;
-
                         await _repository.InsertAsync(dbConnection, comm, dbTransaction);
 
-                        // Audit: only after successful insert
                         var audit = ModelBuilder.BuildAuditLog("Saving Added", $"Added a saving to project {comm.ProjectId}.", adminEmail);
-
                         audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                         await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                     }
                     catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
                     {
                         var j = await _repository.GetAsync<CIProjectSaving>(dbConnection, @"SELECT * FROM CIProjectSaving WHERE Id = @id", new { id = comm.Id }, CommandType.Text, dbTransaction);
 
-
-                        if (j.SavingValue != comm.SavingValue || j.Category != comm.Category || j.Date != comm.Date || j.MonthofYear != comm.MonthofYear || j.SavingClassification != comm.SavingClassification || j.SavingType != comm.SavingType || j.SavingUnit != comm.SavingUnit)
+                        if (j != null && (j.SavingValue != comm.SavingValue || j.Category != comm.Category || j.Date != comm.Date || j.MonthofYear != comm.MonthofYear || j.SavingClassification != comm.SavingClassification || j.SavingType != comm.SavingType || j.SavingUnit != comm.SavingUnit))
                         {
                             j.SavingUnit = comm.SavingUnit;
                             j.Date = comm.Date;
@@ -3960,34 +2417,20 @@ namespace Datalayer.Implementations
 
                             await _repository.UpdateAsync(dbConnection, j, dbTransaction);
 
-                            var audit = ModelBuilder.BuildAuditLog(
-                                "Project Saving Updated",
-                                $"Updated {comm.Id}'s details.",
-                                adminEmail
-                            );
-
-                            audit.Id = await _genManager.GetNextTableId(
-                                dbConnection,
-                                dbTransaction,
-                                DatabaseScripts.AuditLogTable
-                            );
-
+                            var audit = ModelBuilder.BuildAuditLog("Project Saving Updated", $"Updated {comm.Id}'s details.", adminEmail);
+                            audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
                             await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                         }
                     }
                 }
 
-                //fetch project
                 var proj = await _repository.GetAsync<ContinuousImprovement>(dbConnection, "select * from ContinuousImprovement where Id = @pid", new { pid = ci.Id }, CommandType.Text, dbTransaction);
 
                 if (proj != null)
                 {
                     proj.IsOneTimeSavings = ci.IsOneTimeSavings;
                     proj.IsCarryOverSavings = ci.IsCarryOverSavings;
-                    if (String.IsNullOrEmpty(proj.FinancialReportComment))
-                        proj.FinancialVerificationDate = DateTime.UtcNow;
-                    else
-                        proj.FinancialVerificationDate = ci.FinancialVerificationDate;
+                    proj.FinancialVerificationDate = String.IsNullOrEmpty(proj.FinancialReportComment) ? DateTime.UtcNow : ci.FinancialVerificationDate;
                     proj.IsAudited = ci.IsAudited;
                     proj.AuditedBy = ci.AuditedBy;
                     proj.AuditedDate = ci.AuditedDate;
@@ -3996,88 +2439,57 @@ namespace Datalayer.Implementations
                     await _repository.UpdateAsync(dbConnection, proj, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("CI Financial Info Updated", $"Updated the financial info of a CI Project {ci.Id}.", adminEmail);
-
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-
                     await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateCIProjectSaving)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler> AddOrganizationUsers(List<CIUser> orgUsr, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                foreach(var i in orgUsr)
+                foreach (var i in orgUsr)
                 {
                     var user = await _repository.GetAsync<CIUser>(dbConnection, "Select 1 from CIUser where EmailAddress = @em and OrganizationId = @orgId", new { em = i.EmailAddress, orgId = i.OrganizationId }, CommandType.Text, dbTransaction);
 
-                    if (user != null)
-                        continue;
+                    if (user != null) continue;
 
                     i.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.CIUserTable);
-                    var resp = await _repository.InsertAsync(dbConnection, i, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, i, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("User Added", $"Company Admin added new Organization User.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
-
-                //UpdateUserListInMemory(dbConnection, dbTransaction, orgUsr.OrganizationId);
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationUsers)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> AddOrganizationLocations(List<BulkLocation> orgLocs, int orgId, long uid, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
@@ -4092,10 +2504,8 @@ namespace Datalayer.Implementations
                         IsActive = true,
                         OrganizationId = orgId
                     };
-
                     var countryId = await GetOrCreateCountry(dbConnection, dbTransaction, cty, adminEmail);
 
-                    // 5. Facility (tied to Country)
                     var fac = new OrganizationFacility
                     {
                         Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationFacilityTable),
@@ -4108,7 +2518,6 @@ namespace Datalayer.Implementations
                     };
                     var facilityId = await GetOrCreateFacility(dbConnection, dbTransaction, fac, adminEmail);
 
-                    // 6. Department (tied to Facility + Country)
                     var dept = new OrganizationDepartment
                     {
                         Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationDepartmentTable),
@@ -4125,25 +2534,13 @@ namespace Datalayer.Implementations
 
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddOrganizationLocations)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
@@ -4152,15 +2549,13 @@ namespace Datalayer.Implementations
             try
             {
                 var ctry = await _repository.GetAsync<OrganizationCountry>(conn, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = cty.OrganizationId, cty = cty.Country }, CommandType.Text, tran);
+                if (ctry != null) return ctry.Id;
 
-                if (ctry != null)
-                    return ctry.Id;
-
-                var resp = await _repository.InsertAsync(conn, cty, tran);
+                await _repository.InsertAsync(conn, cty, tran);
 
                 var audit = ModelBuilder.BuildAuditLog("Country Added", $"Company Admin added new Organization Country of operation.", email);
                 audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+                await _repository.InsertAsync(conn, audit, tran);
 
                 return cty.Id;
             }
@@ -4175,15 +2570,13 @@ namespace Datalayer.Implementations
             try
             {
                 var facil = await _repository.GetAsync<OrganizationFacility>(conn, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = fac.OrganizationId, ocid = fac.OrganizationCountryId, fac = fac.Facility }, CommandType.Text, tran);
+                if (facil != null) return facil.Id;
 
-                if (facil != null)
-                    return facil.Id;
-
-                var resp = await _repository.InsertAsync(conn, fac, tran);
+                await _repository.InsertAsync(conn, fac, tran);
 
                 var audit = ModelBuilder.BuildAuditLog("Facility Added", $"Company Admin added new Organization Facility of operation.", email);
                 audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+                await _repository.InsertAsync(conn, audit, tran);
 
                 return fac.Id;
             }
@@ -4198,15 +2591,13 @@ namespace Datalayer.Implementations
             try
             {
                 var depart = await _repository.GetAsync<OrganizationDepartment>(conn, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = dept.OrganizationId, ocid = dept.OrganizationCountryId, orgfacId = dept.OrganizationFacilityId, dept = dept.Department }, CommandType.Text, tran);
+                if (depart != null) return depart.Id;
 
-                if (depart != null)
-                    return depart.Id;
-
-                var resp = await _repository.InsertAsync(conn, dept, tran);
+                await _repository.InsertAsync(conn, dept, tran);
 
                 var audit = ModelBuilder.BuildAuditLog("Department Added", $"Company Admin added new Organization Department of operation.", email);
                 audit.Id = await _genManager.GetNextTableId(conn, tran, DatabaseScripts.AuditLogTable);
-                var auditRes = await _repository.InsertAsync(conn, audit, tran);
+                await _repository.InsertAsync(conn, audit, tran);
 
                 return dept.Id;
             }
@@ -4232,8 +2623,7 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-
+                using var dbConnection = await OpenConnectionAsync();
                 return await _repository.GetAsync<CIUser>(dbConnection, "select * from CIUser where Id = @uid", new { uid = usrId }, CommandType.Text);
             }
             catch (Exception ex)
@@ -4244,94 +2634,33 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> AddBulkOEProjects(List<BulkOE> opExel, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
             try
             {
-                foreach(var i in opExel)
+                foreach (var i in opExel)
                 {
-                    //check if project exist
-                    var opProj = await _repository.GetAsync<OperationalExcellence>(dbConnection, "select 1 from OperationalExcellence where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId = orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
-
-                    if (opProj != null)
-                        continue;
+                    var opProj = await _repository.GetAsync<OperationalExcellence>(dbConnection, "select 1 from OperationalExcellence where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
+                    if (opProj != null) continue;
 
                     var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
-                    if (esid == null)
-                    {
-                        res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                        res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        continue;
-                    }
-
+                    if (esid == null) { res.StatusCode = (int)HttpStatusCode.ExpectationFailed; res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user..."; continue; }
 
                     var fid = await GetUser(dbConnection, dbTransaction, orgId, i.FacilitatorEmailAddress);
-                    if (fid == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Email '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nEmail '{i.FacilitatorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (fid == null) { AppendError(ref res, $"Email '{i.FacilitatorEmailAddress}' is not an existing user..."); continue; }
 
                     var sid = await GetUser(dbConnection, dbTransaction, orgId, i.SponsorEmailAddress);
-                    if (sid == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Email '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nEmail '{i.SponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (sid == null) { AppendError(ref res, $"Email '{i.SponsorEmailAddress}' is not an existing user..."); continue; }
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
-                    if (ctr == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (ctr == null) { AppendError(ref res, $"Country '{i.Country}' is not an active country..."); continue; }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
-                    if (facil == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (facil == null) { AppendError(ref res, $"Facility '{i.Facility}' is not an active facility..."); continue; }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
-                    if (depart == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        continue;
-                    }
-
+                    if (depart == null) { AppendError(ref res, $"Department '{i.Department}' is not an active department..."); continue; }
 
                     var op = new OperationalExcellence
                     {
@@ -4341,8 +2670,8 @@ namespace Datalayer.Implementations
                         DateCreated = DateTime.UtcNow,
                         Description = i.Description,
                         EndDate = Convert.ToDateTime(i.EndDate),
-                        ExecutiveSponsorId = esid != null ? esid.Id : uId,
-                        FacilitatorId = fid != null ? fid.Id : uId,
+                        ExecutiveSponsorId = esid.Id,
+                        FacilitatorId = fid.Id,
                         Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OperationalExcellenceTable),
                         OrganizationCountryId = ctr.Id,
                         OrganizationDepartmentId = depart.Id,
@@ -4350,122 +2679,58 @@ namespace Datalayer.Implementations
                         OrganizationId = orgId,
                         Priority = i.Priority,
                         SavingsClassification = i.SavingsClassification,
-                        SponsorId = sid != null ? sid.Id : uId,
+                        SponsorId = sid.Id,
                         StartDate = Convert.ToDateTime(i.StartDate),
                         Status = i.Status,
                         TargetSavings = i.TargetSavings,
                         Title = i.Title
                     };
-                    var resp = await _repository.InsertAsync(dbConnection, op, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, op, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("Operational Excellence Initiative Added", $"Company Admin added new Operational Excellence Initiative.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
-                if (!String.IsNullOrEmpty(res.Message))
-                    return await Task.FromResult(res);
-                else
-                {
-                    dbTransaction.Commit();
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful"
-                    });
-                }
+                if (!String.IsNullOrEmpty(res.Message)) return res;
+
+                dbTransaction.Commit();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddBulkOEProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> AddBulkSIProjects(List<BulkSI> sInit, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
             try
             {
                 foreach (var i in sInit)
                 {
-                    //check if project exist
-                    var opProj = await _repository.GetAsync<StrategicInitiative>(dbConnection, "select 1 from StrategicInitiative where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId = orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
-
-                    if (opProj != null)
-                        continue;
+                    var opProj = await _repository.GetAsync<StrategicInitiative>(dbConnection, "select 1 from StrategicInitiative where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
+                    if (opProj != null) continue;
 
                     var esid = await GetUser(dbConnection, dbTransaction, orgId, i.ExecutiveSponsorEmailAddress);
-                    if(esid == null)
-                    {
-                        res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                        res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (esid == null) { res.StatusCode = (int)HttpStatusCode.ExpectationFailed; res.Message = $"Email '{i.ExecutiveSponsorEmailAddress}' is not an existing user..."; continue; }
 
                     var fid = await GetUser(dbConnection, dbTransaction, orgId, i.OwnerEmailAddress);
-                    if (fid == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Email '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nEmail '{i.OwnerEmailAddress}' is not an existing user in your Organization. Kindly upload this User or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (fid == null) { AppendError(ref res, $"Email '{i.OwnerEmailAddress}' is not an existing user..."); continue; }
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
-                    if (ctr == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (ctr == null) { AppendError(ref res, $"Country '{i.Country}' is not an active country..."); continue; }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
-                    if (facil == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (facil == null) { AppendError(ref res, $"Facility '{i.Facility}' is not an active facility..."); continue; }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
-                    if (depart == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (depart == null) { AppendError(ref res, $"Department '{i.Department}' is not an active department..."); continue; }
 
                     var si = new StrategicInitiative
                     {
@@ -4473,8 +2738,8 @@ namespace Datalayer.Implementations
                         DateCreated = DateTime.UtcNow,
                         Description = i.Description,
                         EndDate = Convert.ToDateTime(i.EndDate),
-                        ExecutiveSponsorId = esid != null ? esid.Id : uId,
-                        OwnerId = fid != null ? fid.Id : uId,
+                        ExecutiveSponsorId = esid.Id,
+                        OwnerId = fid.Id,
                         Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.StrategicInitiativeTable),
                         OrganizationCountryId = ctr.Id,
                         OrganizationDepartmentId = depart.Id,
@@ -4485,147 +2750,87 @@ namespace Datalayer.Implementations
                         Status = i.Status,
                         Title = i.Title
                     };
-                    var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, si, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("Strategic Initiative Added", $"Company Admin added new Strategic Initiative.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
+                if (!String.IsNullOrEmpty(res.Message)) return res;
 
-                if (!String.IsNullOrEmpty(res.Message))
-                    return await Task.FromResult(res);
-                else
-                {
-                    dbTransaction.Commit();
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful"
-                    });
-                }
+                dbTransaction.Commit();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddBulkSIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> UpdateOrganizationTool(OrganizationTool orgTool, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //check if tool exist
                 var OrgT = await _repository.GetAsync<OrganizationTool>(dbConnection, "select * from OrganizationTool where MethodologyTool = @meth and OrganizationId = @orgId", new { meth = orgTool.MethodologyTool, orgId = orgTool.OrganizationId }, CommandType.Text, dbTransaction);
 
                 if (OrgT != null)
                 {
                     OrgT.Url = orgTool.Url;
                     await _repository.UpdateAsync(dbConnection, OrgT, dbTransaction);
+
                     var audit = ModelBuilder.BuildAuditLog("Methodology Tool template Updated", $"Company Admin updated existing methodology tool template.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
                 else
                 {
                     orgTool.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.OrganizationToolTable);
-                    var resp = await _repository.InsertAsync(dbConnection, orgTool, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, orgTool, dbTransaction);
+
                     var audit = ModelBuilder.BuildAuditLog("Methodology Tool template Added", $"Company Admin added new methodology tool template.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
-                    
+
                 dbTransaction.Commit();
 
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful"
-                });
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(UpdateOrganizationTool)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler> AddBulkCIProjects(List<BulkCI> ci, int orgId, long uId, string adminEmail)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
+            using var dbConnection = await OpenConnectionAsync();
             using var dbTransaction = dbConnection.BeginTransaction();
             var res = new ResponseHandler();
             try
             {
                 foreach (var i in ci)
                 {
-                    //check if project exist
                     var ciProj = await _repository.GetAsync<ContinuousImprovement>(dbConnection, "select 1 from ContinuousImprovement where Title = @tit and OrganizationId = @orgId and Priority = @pro and Status = @stat", new { tit = i.Title, orgId, pro = i.Priority, stat = i.Status }, CommandType.Text, dbTransaction);
-
-                    if (ciProj != null)
-                        continue;
+                    if (ciProj != null) continue;
 
                     var ctr = await _repository.GetAsync<OrganizationCountry>(dbConnection, "Select * from OrganizationCountry where OrganizationId = @oid and Country = @cty and IsActive = 1", new { oid = orgId, cty = i.Country }, CommandType.Text, dbTransaction);
-                    if (ctr == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Country '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nCountry '{i.Country}' is not an active country of operation for your Organization. Kindly upload this Country or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (ctr == null) { res.StatusCode = (int)HttpStatusCode.ExpectationFailed; res.Message = $"Country '{i.Country}' is not an active country..."; continue; }
 
                     var facil = await _repository.GetAsync<OrganizationFacility>(dbConnection, "Select * from OrganizationFacility where OrganizationId = @oid and OrganizationCountryId = @ocid and Facility = @fac and IsActive = 1", new { oid = orgId, ocid = ctr.Id, fac = i.Facility }, CommandType.Text, dbTransaction);
-                    if (facil == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Facility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nFacility '{i.Facility}' is not an active facility of operation in '{i.Country}' for your Organization. Kindly upload this facility or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (facil == null) { AppendError(ref res, $"Facility '{i.Facility}' is not an active facility..."); continue; }
 
                     var depart = await _repository.GetAsync<OrganizationDepartment>(dbConnection, "Select * from OrganizationDepartment where OrganizationId = @oid and OrganizationCountryId = @ocid and OrganizationFacilityId = @orgfacId and Department = @dept and IsActive = 1", new { oid = orgId, ocid = ctr.Id, orgfacId = facil.Id, dept = i.Department }, CommandType.Text, dbTransaction);
-                    if (depart == null)
-                    {
-                        if (String.IsNullOrEmpty(res.Message))
-                        {
-                            res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
-                            res.Message = $"Department '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        }
-                        else
-                            res.Message += $"\\nDepartment '{i.Department}' is not an active department in '{i.Facility}' facility in '{i.Country}' for your Organization. Kindly upload this department or correct the error in your sheet.";
-                        continue;
-                    }
+                    if (depart == null) { AppendError(ref res, $"Department '{i.Department}' is not an active department..."); continue; }
+
+                    var phase = await _repository.GetAsync<MethodologyPhase>(dbConnection, "select * from MethodologyPhase where Phase = @phs", new { phs = i.Phase }, CommandType.Text, dbTransaction);
 
                     var si = new ContinuousImprovement
                     {
@@ -4648,118 +2853,70 @@ namespace Datalayer.Implementations
                         IsCarryOverSavings = i.IsCarryOverSavings,
                         IsOneTimeSavings = i.IsOneTimeSavings,
                         Methodology = i.Methodology,
-                        Phase = _repository.GetAsync<MethodologyPhase>(dbConnection, "select * from MethodologyPhase where Phase = @phs", new { phs = i.Phase}, CommandType.Text, dbTransaction).Result.Id.ToString(),
+                        Phase = phase?.Id.ToString(),
                         TotalExpectedRevenue = (decimal)i.TotalExpectedRevenue
                     };
-                    var resp = await _repository.InsertAsync(dbConnection, si, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, si, dbTransaction);
 
                     var audit = ModelBuilder.BuildAuditLog("Continuous Improvement Added", $"Company Admin added new Continuous Improvement.", adminEmail);
                     audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
-                    var auditRes = await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+                    await _repository.InsertAsync(dbConnection, audit, dbTransaction);
                 }
 
+                if (!String.IsNullOrEmpty(res.Message)) return res;
 
-                if (!String.IsNullOrEmpty(res.Message))
-                    return await Task.FromResult(res);
-                else
-                {
-                    dbTransaction.Commit();
-                    return await Task.FromResult(new ResponseHandler
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful"
-                    });
-                }
+                dbTransaction.Commit();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.OK, Message = "Successful" };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
+                TryRollback(dbTransaction);
                 _logger.LogError($"Exception at {nameof(AddBulkCIProjects)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler<OrganizationTool>> GetToolFileName(long toolId, int orgId)
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
-            using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //check if tool exist
-                var OrgT = await _repository.GetAsync<OrganizationTool>(dbConnection, "select * from OrganizationTool where Id = @id and OrganizationId = @orgId", new { id = toolId, orgId }, CommandType.Text, dbTransaction);
+                using var dbConnection = await OpenConnectionAsync();
+                var OrgT = await _repository.GetAsync<OrganizationTool>(dbConnection,
+                    "select * from OrganizationTool where Id = @id and OrganizationId = @orgId",
+                    new { id = toolId, orgId }, CommandType.Text);
 
-                return await Task.FromResult(new ResponseHandler<OrganizationTool>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    SingleResult = OrgT
-                });
+                return new ResponseHandler<OrganizationTool> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = OrgT };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(GetToolFileName)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<OrganizationTool>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler<OrganizationTool> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
 
         public async Task<ResponseHandler<CIProjectTool>> GetProjectToolFileName(long projectToolId)
-
         {
-            using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            dbConnection.Open();
-            using var dbTransaction = dbConnection.BeginTransaction();
             try
             {
-                //check if tool exist
-                var OrgT = await _repository.GetAsync<CIProjectTool>(dbConnection, "select * from CIProjectTool where Id = @id", new { id = projectToolId }, CommandType.Text, dbTransaction);
+                using var dbConnection = await OpenConnectionAsync();
+                var OrgT = await _repository.GetAsync<CIProjectTool>(dbConnection,
+                    "select * from CIProjectTool where Id = @id", new { id = projectToolId }, CommandType.Text);
 
-                return await Task.FromResult(new ResponseHandler<CIProjectTool>
-                {
-                    StatusCode = (int)HttpStatusCode.OK,
-                    Message = "Successful",
-                    SingleResult = OrgT
-                });
+                return new ResponseHandler<CIProjectTool> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = OrgT };
             }
             catch (Exception ex)
             {
-                dbTransaction.Rollback();
                 _logger.LogError($"Exception at {nameof(GetProjectToolFileName)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<CIProjectTool>
-                {
-                    StatusCode = (int)HttpStatusCode.InternalServerError,
-                    Message = "An error occured"
-                });
-            }
-            finally
-            {
-                dbConnection.Close();
+                return new ResponseHandler<CIProjectTool> { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occured" };
             }
         }
-
+                
         public async Task<ResponseHandler<NameValueDTO>> GetProjectCountByMethodology(int orgId, DashFilter filt)
         {
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "select Methodology as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Methodology";
 
@@ -4772,77 +2929,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND Status = @Stat"); parameters.Add("@Stat", $"{filt.Status.Trim()}"); }
+                    if (filt.CountryId > 0) { where.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
+                    return new ResponseHandler<NameValueDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<NameValueDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<NameValueDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetProjectCountByMethodology)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+                return new ResponseHandler<NameValueDTO>();
             }
         }
 
@@ -4851,7 +2964,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "select Status as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Status";
 
@@ -4864,77 +2977,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND Status = @Stat"); parameters.Add("@Stat", $"{filt.Status.Trim()}"); }
+                    if (filt.CountryId > 0) { where.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
+                    return new ResponseHandler<NameValueDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<NameValueDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<NameValueDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetProjectCountByStatus)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+                return new ResponseHandler<NameValueDTO>();
             }
         }
 
@@ -4943,7 +3012,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MethodologyMonthlyStatusDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT DATENAME(MONTH, DateCreated) AS [Month], SUM(CASE WHEN Status = 'COMPLETED' THEN 1 ELSE 0 END) AS Completed, SUM(CASE WHEN Status = 'INITIATED' THEN 1 ELSE 0 END) AS Initiated, SUM(CASE WHEN Status = 'PROPOSED' THEN 1 ELSE 0 END) AS Proposed FROM ContinuousImprovement WHERE Status NOT IN ('CLOSED', 'CANCELLED') AND DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND DateCreated <= GETDATE() and OrganizationId = @oid @where GROUP BY YEAR(DateCreated), MONTH(DateCreated), DATENAME(MONTH, DateCreated) ORDER BY YEAR(DateCreated), MONTH(DateCreated)";
 
@@ -4956,77 +3025,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND Status = @Stat"); parameters.Add("@Stat", $"{filt.Status.Trim()}"); }
+                    if (filt.CountryId > 0) { where.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<MethodologyMonthlyStatusDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<MethodologyMonthlyStatusDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<MethodologyMonthlyStatusDTO>
+                    return new ResponseHandler<MethodologyMonthlyStatusDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).month == null) ? new List<MethodologyMonthlyStatusDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MethodologyMonthlyStatusDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<MethodologyMonthlyStatusDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetStatusCountByMonth)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<MethodologyMonthlyStatusDTO>());
+                return new ResponseHandler<MethodologyMonthlyStatusDTO>();
             }
         }
 
@@ -5035,7 +3060,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "select Certification as name, Count(Id) as value from ContinuousImprovement where Status not in ('CLOSED', 'CANCELLED') and DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid @where group by Certification";
 
@@ -5048,77 +3073,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
+                    return new ResponseHandler<NameValueDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<NameValueDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<NameValueDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetProjectCountByCertification)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+                return new ResponseHandler<NameValueDTO>();
             }
         }
 
@@ -5127,7 +3108,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<NameValueDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "select b.Category as Name, Count(b.Id) as Value from ContinuousImprovement a inner join CIProjectSaving b on b.ProjectId = a.Id where a.Status not in ('CLOSED', 'CANCELLED') and a.DateCreated >= DATEADD(DAY, -365, GETDATE()) and OrganizationId = @oid and b.Category is not null @where group by b.Category";
 
@@ -5140,77 +3121,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND a.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND a.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND a.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND a.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND a.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND a.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND a.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND a.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND a.CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND a.DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND a.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND a.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<NameValueDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
+                    return new ResponseHandler<NameValueDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
-                        Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<NameValueDTO>() : resi 
-                    });
+                        Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<NameValueDTO>() : resi
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<NameValueDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<NameValueDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetSavingsByCategory)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<NameValueDTO>());
+                return new ResponseHandler<NameValueDTO>();
             }
         }
 
@@ -5219,7 +3156,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MonthlySavingsDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT DATENAME(MONTH, s.DateCreated) AS [Month], YEAR(s.DateCreated) AS [Year], SUM(CASE WHEN s.SavingType = 'Cost Avoidance' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostAvoidance, SUM(CASE WHEN s.SavingType = 'Revenue' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS Revenue, SUM(CASE WHEN s.SavingType = 'Cost Reduction' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostReduction, SUM(CASE WHEN s.SavingType = 'Cost Containment' THEN ISNULL(s.SavingValue, 0) ELSE 0 END) AS CostContainment FROM CIProjectSaving s INNER JOIN ContinuousImprovement p ON s.ProjectId = p.Id WHERE s.SavingClassification = 'Hard' AND p.Status NOT IN ('CLOSED', 'CANCELLED') AND p.DateCreated >= DATEADD(DAY, -365, GETDATE()) AND s.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) AND s.DateCreated <= GETDATE() and p.OrganizationId = @oid @where GROUP BY YEAR(s.DateCreated), MONTH(s.DateCreated), DATENAME(MONTH, s.DateCreated) ORDER BY YEAR(s.DateCreated), MONTH(s.DateCreated)";
 
@@ -5232,77 +3169,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND p.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND p.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND p.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND p.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND p.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND p.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND p.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND p.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND p.CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND p.DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND p.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND p.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<MonthlySavingsDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<MonthlySavingsDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<MonthlySavingsDTO>
+                    return new ResponseHandler<MonthlySavingsDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).month == null) ? new List<MonthlySavingsDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MonthlySavingsDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<MonthlySavingsDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMonthlySavings)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<MonthlySavingsDTO>());
+                return new ResponseHandler<MonthlySavingsDTO>();
             }
         }
 
@@ -5311,7 +3204,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<UserCompletedProjectsDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT u.Name AS name, COUNT(ci.Id) AS completed FROM CIProjectTeamMember tm INNER JOIN ContinuousImprovement ci ON tm.ProjectId = ci.Id INNER JOIN CIUser u ON tm.UserId = u.Id WHERE tm.Role = 'Facilitator' AND ci.Status = 'COMPLETED' AND ci.DateCreated >= DATEADD(DAY, -365, GETDATE()) and ci.OrganizationId = @oid @where GROUP BY u.Name ORDER BY COUNT(ci.Id) DESC";
 
@@ -5324,77 +3217,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND ci.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND ci.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND ci.CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND ci.DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND ci.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND ci.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<UserCompletedProjectsDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<UserCompletedProjectsDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<UserCompletedProjectsDTO>
+                    return new ResponseHandler<UserCompletedProjectsDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).name == null) ? new List<UserCompletedProjectsDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<UserCompletedProjectsDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<UserCompletedProjectsDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetCompletedProjectsByUserCI)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<UserCompletedProjectsDTO>());
+                return new ResponseHandler<UserCompletedProjectsDTO>();
             }
         }
 
@@ -5403,7 +3252,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MonthlyProjectsByMethodologyDTO> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT DATENAME(MONTH, DateCreated) AS [month], YEAR(DateCreated) AS [year], SUM(CASE WHEN Methodology = 'DMAIC' THEN 1 ELSE 0 END) AS dmaic, SUM(CASE WHEN Methodology = 'Gemba Kaizen' THEN 1 ELSE 0 END) AS gemba, SUM(CASE WHEN Methodology = 'Project' THEN 1 ELSE 0 END) AS project, SUM(CASE WHEN Methodology = 'JDI' THEN 1 ELSE 0 END) AS jdi, SUM(CASE WHEN Methodology = 'Others' THEN 1 ELSE 0 END) AS others FROM ContinuousImprovement WHERE Status NOT IN ('CLOSED', 'CANCELLED') AND DateCreated >= DATEADD(DAY, -365, GETDATE()) AND OrganizationId = @oid @where GROUP BY YEAR(DateCreated), MONTH(DateCreated), DATENAME(MONTH, DateCreated) ORDER BY YEAR(DateCreated), MONTH(DateCreated)";
 
@@ -5416,77 +3265,33 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<MonthlyProjectsByMethodologyDTO>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<MonthlyProjectsByMethodologyDTO>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByMethodologyDTO>
+                    return new ResponseHandler<MonthlyProjectsByMethodologyDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         Result = (resi.Count() == 1 && resi.ElementAt(0).month == null) ? new List<MonthlyProjectsByMethodologyDTO>() : resi
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByMethodologyDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<MonthlyProjectsByMethodologyDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByMethodologies)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByMethodologyDTO>());
+                return new ResponseHandler<MonthlyProjectsByMethodologyDTO>();
             }
         }
 
@@ -5495,7 +3300,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MonthlyDepartmentRaw> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, YEAR(ci.DateCreated) AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, od.Department, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN OrganizationDepartment od ON ci.DepartmentId = od.Id WHERE ci.OrganizationId = @oid and ci.Status NOT IN ('CLOSED', 'CANCELLED') AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1)) GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), od.Department @where ORDER BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), od.Department";
 
@@ -5508,104 +3313,46 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND ci.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND ci.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND ci.CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND ci.DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND ci.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND ci.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<MonthlyDepartmentRaw>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
                     var result = new MonthlyProjectsByDepartmentDTO();
 
-                    // Labels (ordered months)
-                    result.labels = resi
-                        .OrderBy(x => x.MonthNumber)
-                        .Select(x => x.MonthLabel)
-                        .Distinct()
-                        .ToList();
+                    result.labels = resi.OrderBy(x => x.MonthNumber).Select(x => x.MonthLabel).Distinct().ToList();
 
-                    // Group by department
-                    var grouped = resi.GroupBy(x => x.Department);
-
-                    foreach (var group in grouped)
+                    foreach (var group in resi.GroupBy(x => x.Department))
                     {
-                        var dataset = new DepartmentDatasetDTO
+                        result.datasets.Add(new DepartmentDatasetDTO
                         {
                             department = group.Key,
-                            data = result.labels
-                                .Select(month =>
-                                    group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0
-                                )
-                                .ToList()
-                        };
-
-                        result.datasets.Add(dataset);
+                            data = result.labels.Select(month => group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0).ToList()
+                        });
                     }
 
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>
+                    return new ResponseHandler<MonthlyProjectsByDepartmentDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         SingleResult = (result.labels.Count() == 1 && String.IsNullOrEmpty(result.labels.ElementAt(0))) ? new MonthlyProjectsByDepartmentDTO() : result
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<MonthlyProjectsByDepartmentDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByDepartment)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByDepartmentDTO>());
+                return new ResponseHandler<MonthlyProjectsByDepartmentDTO>();
             }
         }
 
@@ -5614,7 +3361,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<MonthlyPhaseRaw> resi = null;
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var query = "SELECT YEAR(ci.DateCreated)  AS YearNumber, MONTH(ci.DateCreated) AS MonthNumber, FORMAT(ci.DateCreated, 'MMM') AS MonthLabel, mp.Phase, COUNT(ci.Id) AS TotalProjects FROM ContinuousImprovement ci INNER JOIN MethodologyPhase mp ON ci.Phase = mp.Id WHERE ci.Status NOT IN ('CLOSED', 'CANCELLED')  AND ci.OrganizationId = @oid AND ci.DateCreated >= DATEADD(MONTH, -11, DATEFROMPARTS(YEAR(GETDATE()), MONTH(GETDATE()), 1) ) @where GROUP BY YEAR(ci.DateCreated), MONTH(ci.DateCreated), FORMAT(ci.DateCreated, 'MMM'), mp.Phase ORDER BY YearNumber, MonthNumber, mp.Phase";
 
@@ -5627,115 +3374,55 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.OrganizationCountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.OrganizationDepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = query.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND ci.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND ci.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND ci.OrganizationCountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND ci.OrganizationDepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND ci.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND ci.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    resi = await _repository.GetListAsync<MonthlyPhaseRaw>(dbConnection, query.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
                 if (resi.Any())
                 {
                     var result = new MonthlyProjectsByPhaseDTO();
 
-                    // Labels (ordered months)
-                    result.labels = resi
-                        .OrderBy(x => x.MonthNumber)
-                        .Select(x => x.MonthLabel)
-                        .Distinct()
-                        .ToList();
+                    result.labels = resi.OrderBy(x => x.MonthNumber).Select(x => x.MonthLabel).Distinct().ToList();
 
-                   // Group by Phase
-                   var grouped = resi.GroupBy(x => x.Phase);
-
-                    foreach (var group in grouped)
+                    foreach (var group in resi.GroupBy(x => x.Phase))
                     {
-                        var dataset = new PhaseDatasetDTO
+                        result.datasets.Add(new PhaseDatasetDTO
                         {
                             phase = group.Key,
-                            data = result.labels
-                                .Select(month =>
-                                    group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0
-                                )
-                                .ToList()
-                        };
-
-                        result.datasets.Add(dataset);
+                            data = result.labels.Select(month => group.FirstOrDefault(x => x.MonthLabel == month)?.TotalProjects ?? 0).ToList()
+                        });
                     }
 
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>
+                    return new ResponseHandler<MonthlyProjectsByPhaseDTO>
                     {
                         StatusCode = (int)HttpStatusCode.OK,
                         Message = "Successful",
                         SingleResult = (result.labels.Count() == 1 && String.IsNullOrEmpty(result.labels.ElementAt(0))) ? new MonthlyProjectsByPhaseDTO() : result
-                    });
+                    };
                 }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+
+                return new ResponseHandler<MonthlyProjectsByPhaseDTO> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetMonthlyProjectsByPhase)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<MonthlyProjectsByPhaseDTO>());
+                return new ResponseHandler<MonthlyProjectsByPhaseDTO>();
             }
         }
-
+        
         public async Task<ResponseHandler<DashboardAnalytics>> GetOrganizationDataCI(int orgId, DashFilter filt)
         {
             try
             {
                 IEnumerable<DashboardAnalytics> cire = null;
-                List<DashboardAnalytics> resi = null;
-                var dict = new Dictionary<string, DashboardAnalytics>();
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var ciquery = "SELECT '$' AS Currency, COUNT(ci.Id) AS ProjectCount, SUM(CASE WHEN ci.IsAudited > 0 THEN 1 ELSE 0 END) AS Audited, SUM(ci.TotalExpectedRevenue * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(ct.SavingValue  * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM ContinuousImprovement ci LEFT JOIN CIProjectSaving ct ON ct.ProjectId = ci.Id AND ct.SavingClassification = 'Hard' LEFT JOIN CurrencyRates cr ON cr.Code = ci.Currency WHERE ci.OrganizationId = @oid @where";
 
@@ -5748,103 +3435,30 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = ciquery.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND ci.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND ci.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND ci.CountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND ci.DepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND ci.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND ci.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    cire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, ciquery.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
-                void Merge(IEnumerable<DashboardAnalytics> items)
+                var resi = MergeByCurrency(cire);
+
+                if (resi.Any())
                 {
-                    foreach (var item in items)
-                    {
-                        if (!dict.TryGetValue(item.Currency, out var existing))
-                        {
-                            dict[item.Currency] = new DashboardAnalytics
-                            {
-                                Currency = item.Currency,
-                                ProjectCount = item.ProjectCount,
-                                TotalExpectedRevenue = item.TotalExpectedRevenue,
-                                TotalHardSavings = item.TotalHardSavings
-                            };
-                        }
-                        else
-                        {
-                            existing.ProjectCount += item.ProjectCount;
-                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
-                            existing.TotalHardSavings += item.TotalHardSavings;
-                        }
-                    }
+                    return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
                 }
 
-                Merge(cire);
-
-                if (dict.Any())
-                {
-                    resi = dict.Values.ToList();
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationDataCI)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+                return new ResponseHandler<DashboardAnalytics>();
             }
         }
 
@@ -5853,9 +3467,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<DashboardAnalytics> oere = null;
-                List<DashboardAnalytics> resi = null;
-                var dict = new Dictionary<string, DashboardAnalytics>();
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var oequery = "SELECT '$' AS Currency, COUNT(oe.Id) AS ProjectCount, SUM(oe.TargetSavings * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(ISNULL(ms.TotalHardSavings, 0) * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM OperationalExcellence oe LEFT JOIN (SELECT ProjectId, SUM(Savings) AS TotalHardSavings FROM OperationalExcellenceMonthlySaving GROUP BY ProjectId) ms ON ms.ProjectId = oe.Id LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency WHERE oe.OrganizationId = @oid @where";
 
@@ -5868,103 +3480,30 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = oequery.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND oe.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND oe.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND oe.OrganizationCountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND oe.OrganizationDepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND oe.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND oe.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    oere = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, oequery.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
-                void Merge(IEnumerable<DashboardAnalytics> items)
+                var resi = MergeByCurrency(oere);
+
+                if (resi.Any())
                 {
-                    foreach (var item in items)
-                    {
-                        if (!dict.TryGetValue(item.Currency, out var existing))
-                        {
-                            dict[item.Currency] = new DashboardAnalytics
-                            {
-                                Currency = item.Currency,
-                                ProjectCount = item.ProjectCount,
-                                TotalExpectedRevenue = item.TotalExpectedRevenue,
-                                TotalHardSavings = item.TotalHardSavings
-                            };
-                        }
-                        else
-                        {
-                            existing.ProjectCount += item.ProjectCount;
-                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
-                            existing.TotalHardSavings += item.TotalHardSavings;
-                        }
-                    }
+                    return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
                 }
 
-                Merge(oere);
-
-                if (dict.Any())
-                {
-                    resi = dict.Values.ToList();
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationDataOE)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+                return new ResponseHandler<DashboardAnalytics>();
             }
         }
 
@@ -5973,9 +3512,7 @@ namespace Datalayer.Implementations
             try
             {
                 IEnumerable<DashboardAnalytics> sire = null;
-                List<DashboardAnalytics> resi = null;
-                var dict = new Dictionary<string, DashboardAnalytics>();
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
 
                 var siquery = "SELECT '$' AS Currency, COUNT(DISTINCT si.Id) AS ProjectCount, SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)) AS TotalExpectedRevenue, SUM(sp.Savings * (sp.Percentage / 100.0) * ISNULL(cr.RateToUsd, 1)) AS TotalHardSavings FROM StrategicInitiative si INNER JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @oid @where";
 
@@ -5988,103 +3525,30 @@ namespace Datalayer.Implementations
                     var where = new StringBuilder();
                     var parameters = new DynamicParameters();
 
-                    if (!string.IsNullOrWhiteSpace(filt.Priority))
-                    {
-                        where.Append(" AND ci.Priority = @Priority");
-                        parameters.Add("@Priority", filt.Priority.Trim());
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(filt.Status))
-                    {
-                        where.Append(" AND ci.Status = @Stat");
-                        parameters.Add("@Stat", $"{filt.Status.Trim()}");
-                    }
-
-                    //if (filt.UserId > 0)
-                    //{
-                    //    where.Append(" AND (a.OwnerId = @UserId OR a.ExecutiveSponsorId = @UserId)");
-                    //    parameters.Add("@UserId", filt.UserId);
-                    //}
-
-                    if (filt.CountryId > 0)
-                    {
-                        where.Append(" AND ci.CountryId = @CountryId");
-                        parameters.Add("@CountryId", filt.CountryId);
-                    }
-
-                    if (filt.DepartmentId > 0)
-                    {
-                        where.Append(" AND ci.DepartmentId = @DepartmentId");
-                        parameters.Add("@DepartmentId", filt.DepartmentId);
-                    }
-
-                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null)
-                    {
-                        where.Append(" AND ci.StartDate >= @StartDate");
-                        parameters.Add("@StartDate", filt.StartDate);
-                    }
-
-                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null)
-                    {
-                        where.Append(" AND ci.EndDate <= @EndDate");
-                        parameters.Add("@EndDate", filt.EndDate);
-                    }
-
-                    var finalQuery = siquery.Replace("@where", where.ToString());
+                    if (!string.IsNullOrWhiteSpace(filt.Priority)) { where.Append(" AND si.Priority = @Priority"); parameters.Add("@Priority", filt.Priority.Trim()); }
+                    if (!string.IsNullOrWhiteSpace(filt.Status)) { where.Append(" AND si.Status = @Stat"); parameters.Add("@Stat", filt.Status.Trim()); }
+                    if (filt.CountryId > 0) { where.Append(" AND si.OrganizationCountryId = @CountryId"); parameters.Add("@CountryId", filt.CountryId); }
+                    if (filt.DepartmentId > 0) { where.Append(" AND si.OrganizationDepartmentId = @DepartmentId"); parameters.Add("@DepartmentId", filt.DepartmentId); }
+                    if (filt.StartDate != DateTime.MinValue && filt.StartDate != null) { where.Append(" AND si.StartDate >= @StartDate"); parameters.Add("@StartDate", filt.StartDate); }
+                    if (filt.EndDate != DateTime.MinValue && filt.EndDate != null) { where.Append(" AND si.EndDate <= @EndDate"); parameters.Add("@EndDate", filt.EndDate); }
 
                     parameters.Add("@oid", orgId);
-
-                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, finalQuery, parameters, CommandType.Text);
+                    sire = await _repository.GetListAsync<DashboardAnalytics>(dbConnection, siquery.Replace("@where", where.ToString()), parameters, CommandType.Text);
                 }
 
-                void Merge(IEnumerable<DashboardAnalytics> items)
+                var resi = MergeByCurrency(sire);
+
+                if (resi.Any())
                 {
-                    foreach (var item in items)
-                    {
-                        if (!dict.TryGetValue(item.Currency, out var existing))
-                        {
-                            dict[item.Currency] = new DashboardAnalytics
-                            {
-                                Currency = item.Currency,
-                                ProjectCount = item.ProjectCount,
-                                TotalExpectedRevenue = item.TotalExpectedRevenue,
-                                TotalHardSavings = item.TotalHardSavings
-                            };
-                        }
-                        else
-                        {
-                            existing.ProjectCount += item.ProjectCount;
-                            existing.TotalExpectedRevenue += item.TotalExpectedRevenue;
-                            existing.TotalHardSavings += item.TotalHardSavings;
-                        }
-                    }
+                    return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", Result = resi };
                 }
 
-                Merge(sire);
-
-                if (dict.Any())
-                {
-                    resi = dict.Values.ToList();
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        Result = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<DashboardAnalytics>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                return new ResponseHandler<DashboardAnalytics> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrganizationDataSI)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<DashboardAnalytics>());
+                return new ResponseHandler<DashboardAnalytics>();
             }
         }
 
@@ -6092,38 +3556,26 @@ namespace Datalayer.Implementations
         {
             try
             {
-                using var dbConnection = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+                using var dbConnection = await OpenConnectionAsync();
+                var resi = await _repository.GetAsync<AccountDetails>(dbConnection,
+                    "SELECT org.Name, org.AdminName, org.AdminEmailAddress AS AdminEmail, org.AdminPhoneNumber AS AdminPhoneNumber, org.Address, SUM(CASE WHEN p.Status NOT IN ('CANCELLED', 'PROPOSED', 'CLOSED' ) THEN 1 ELSE 0 END) AS ActiveProjectCount, SUM(CASE WHEN p.Status = 'CLOSED' THEN 1 ELSE 0 END) AS ClosedProjectCount FROM Organization org LEFT JOIN (SELECT OrganizationId, Status FROM ContinuousImprovement UNION ALL SELECT OrganizationId, Status FROM OperationalExcellence UNION ALL SELECT OrganizationId, Status FROM StrategicInitiative) p ON p.OrganizationId = org.Id where org.Id = @oid GROUP BY org.Name, org.AdminName, org.AdminEmailAddress, org.AdminPhoneNumber, org.Address",
+                    new { oid = orgId }, CommandType.Text);
 
-                var resi = await _repository.GetAsync<AccountDetails>(dbConnection, "SELECT org.Name, org.AdminName, org.AdminEmailAddress AS AdminEmail, org.AdminPhoneNumber AS AdminPhoneNumber, org.Address, SUM(CASE WHEN p.Status NOT IN ('CANCELLED', 'PROPOSED', 'CLOSED' ) THEN 1 ELSE 0 END) AS ActiveProjectCount, SUM(CASE WHEN p.Status = 'CLOSED' THEN 1 ELSE 0 END) AS ClosedProjectCount FROM Organization org LEFT JOIN (SELECT OrganizationId, Status FROM ContinuousImprovement UNION ALL SELECT OrganizationId, Status FROM OperationalExcellence UNION ALL SELECT OrganizationId, Status FROM StrategicInitiative) p ON p.OrganizationId = org.Id where org.Id = @oid GROUP BY org.Name, org.AdminName, org.AdminEmailAddress, org.AdminPhoneNumber, org.Address", new { oid = orgId }, CommandType.Text);
-                
                 if (resi != null)
-                {
-                    return await Task.FromResult(new ResponseHandler<AccountDetails>
-                    {
-                        StatusCode = (int)HttpStatusCode.OK,
-                        Message = "Successful",
-                        SingleResult = resi
-                    });
-                }
-                else
-                {
-                    return await Task.FromResult(new ResponseHandler<AccountDetails>
-                    {
-                        StatusCode = (int)HttpStatusCode.NotFound,
-                        Message = "Record not found"
-                    });
-                }
+                    return new ResponseHandler<AccountDetails> { StatusCode = (int)HttpStatusCode.OK, Message = "Successful", SingleResult = resi };
+
+                return new ResponseHandler<AccountDetails> { StatusCode = (int)HttpStatusCode.NotFound, Message = "Record not found" };
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Exception at {nameof(GetOrgAccountDetails)} - {JsonConvert.SerializeObject(ex)}");
-                return await Task.FromResult(new ResponseHandler<AccountDetails>());
+                return new ResponseHandler<AccountDetails>();
             }
         }
-
+               
         public async Task<Dictionary<string, int>> GetOEStatusCountAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT oe.Status, COUNT(*) AS Cnt FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY oe.Status";
 
             var rows = await _repository.GetListAsync<StatusRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<StatusRow>();
@@ -6132,44 +3584,54 @@ namespace Datalayer.Implementations
 
         public async Task<Dictionary<string, (int total, int carryOver, int nonCarryOver)>> GetOECarryOverClassificationAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT oe.SavingsClassification AS Classification, SUM(CASE WHEN oe.CarryOverProject = 'Yes' THEN 1 ELSE 0 END) AS CarryOver, SUM(CASE WHEN oe.CarryOverProject <> 'Yes' THEN 1 ELSE 0 END) AS NonCarryOver, COUNT(*) AS Total FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY oe.SavingsClassification";
 
             var rows = await _repository.GetListAsync<CarryRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<CarryRow>();
-
             return rows.ToDictionary(r => r.Classification ?? "Unknown", r => (r.Total, r.CarryOver, r.NonCarryOver));
         }
 
         public async Task<List<TopProjectRow>> GetOETopProjectsAsync(int orgId, OEFilter f, int take)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@" SELECT TOP {take} oe.Title AS Title, oe.TargetSavings AS TargetSavings, ISNULL(oe.Currency,'$') AS Currency, oe.Priority AS Priority, oe.Status AS Status FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY oe.TargetSavings DESC";
+            using var db = await OpenConnectionAsync();
+            var sql = $@"SELECT TOP {take}
+                                oe.Title AS Title,
+                                oe.TargetSavings * ISNULL(cr.RateToUsd, 1) AS TargetSavings,
+                                '$' AS Currency,
+                                oe.Priority AS Priority,
+                                oe.Status AS Status
+                         FROM OperationalExcellence oe
+                         LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency
+                         WHERE oe.OrganizationId = @OrgId {f.WhereSql()}
+                         ORDER BY oe.TargetSavings * ISNULL(cr.RateToUsd, 1) DESC";
 
-            var re = await _repository.GetListAsync<TopProjectRow>(db, sql, f.Params(orgId), CommandType.Text)
-                   ?? new List<TopProjectRow>();
+            var re = await _repository.GetListAsync<TopProjectRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<TopProjectRow>();
             return re.ToList();
         }
 
         public async Task<List<WorkloadRow>> GetOEWorkloadAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT u.Name AS Name, SUM(CASE WHEN oe.FacilitatorId = u.Id THEN 1 ELSE 0 END) AS Facilitator, SUM(CASE WHEN oe.SponsorId = u.Id THEN 1 ELSE 0 END) AS Sponsor FROM CIUser u LEFT JOIN OperationalExcellence oe ON oe.OrganizationId = @OrgId AND (oe.FacilitatorId = u.Id OR oe.SponsorId = u.Id) {f.WhereSql("oe")} WHERE u.OrganizationId = @OrgId AND u.IsActive = 1 GROUP BY u.Name HAVING SUM(CASE WHEN oe.FacilitatorId = u.Id THEN 1 ELSE 0 END) + SUM(CASE WHEN oe.SponsorId = u.Id THEN 1 ELSE 0 END) > 0 ORDER BY 2 DESC, 3 DESC";
 
-            var re = await _repository.GetListAsync<WorkloadRow>(db, sql, f.Params(orgId), CommandType.Text)
-                   ?? new List<WorkloadRow>();
-
+            var re = await _repository.GetListAsync<WorkloadRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<WorkloadRow>();
             return re.ToList();
         }
 
         public async Task<ForecastResult> GetOESavingsForecastAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
 
-            var totalTarget = await _repository.GetSumOrCountAsync<int>(db, $@"SELECT ISNULL(SUM(oe.TargetSavings * ISNULL(cr.RateToUsd, 1)),0) FROM OperationalExcellence oe LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency WHERE oe.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text);
+            var totalTarget = await _repository.GetSumOrCountAsync<decimal?>(db,
+                $@"SELECT ISNULL(SUM(oe.TargetSavings * ISNULL(cr.RateToUsd, 1)),0)
+                   FROM OperationalExcellence oe
+                   LEFT JOIN CurrencyRates cr ON cr.Code = oe.Currency
+                   WHERE oe.OrganizationId = @OrgId {f.WhereSql()}",
+                f.Params(orgId), CommandType.Text) ?? 0m;
 
             var monthly = await GetMonthlyMapAsync(db, orgId, f);
 
-            var labels = monthly.Keys.OrderBy(k => k).ToList();
+            var labels = monthly.Keys.ToList();
             if (labels.Count == 0)
             {
                 labels = Enumerable.Range(0, 12)
@@ -6179,6 +3641,7 @@ namespace Datalayer.Implementations
             }
 
             var perMonth = labels.Count > 0 ? totalTarget / labels.Count : 0m;
+
             var targetCumul = new List<decimal>();
             var actualCumul = new List<decimal>();
             decimal t = 0, a = 0;
@@ -6200,7 +3663,7 @@ namespace Datalayer.Implementations
 
         public async Task<CumulativeResult> GetOECumulativeSavingsAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var monthly = await GetMonthlyMapAsync(db, orgId, f);
 
             var labels = new List<string>();
@@ -6208,7 +3671,7 @@ namespace Datalayer.Implementations
             var cumulative = new List<decimal>();
             decimal running = 0;
 
-            foreach (var kv in monthly.OrderBy(k => k.Key))
+            foreach (var kv in monthly)
             {
                 labels.Add(kv.Key);
                 monthlyV.Add(decimal.Round(kv.Value, 2));
@@ -6231,7 +3694,7 @@ namespace Datalayer.Implementations
 
         public async Task<StackedResult> GetOESavingsByDeptFacilityAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(fc.Facility,'—')  AS Facility, ISNULL(SUM(ms.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Savings FROM OperationalExcellence oe LEFT JOIN OrganizationDepartment d  ON d.Id  = oe.OrganizationDepartmentId LEFT JOIN OrganizationFacility fc ON fc.Id = oe.OrganizationFacilityId LEFT JOIN OperationalExcellenceMonthlySaving ms ON ms.ProjectId = oe.Id LEFT JOIN CurrencyRates cr ON cr.Code = ISNULL(ms.Currency, oe.Currency) WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, fc.Facility";
 
             var rows = await _repository.GetListAsync<DeptFacilityRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<DeptFacilityRow>();
@@ -6250,7 +3713,7 @@ namespace Datalayer.Implementations
 
         public async Task<CycleTimeResult> GetOECycleTimeAsync(int orgId, OEFilter f, int take)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT TOP {take} oe.Title AS Title, oe.StartDate AS StartDate, oe.EndDate AS EndDate, oe.Status AS Status, DATEDIFF(DAY, oe.StartDate, oe.EndDate) AS PlannedDays FROM OperationalExcellence oe WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY oe.StartDate DESC";
 
             var rows = await _repository.GetListAsync<CycleTimeRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<CycleTimeRow>();
@@ -6260,7 +3723,8 @@ namespace Datalayer.Implementations
             {
                 Labels = rows.Select(r => r.Title).ToList(),
                 Planned = rows.Select(r => r.PlannedDays).ToList(),
-                Elapsed = rows.Select(r => {
+                Elapsed = rows.Select(r =>
+                {
                     var end = (r.Status == "COMPLETED" || r.Status == "CLOSED") ? r.EndDate.Date : today;
                     return Math.Max(0, (end - r.StartDate.Date).Days);
                 }).ToList()
@@ -6269,8 +3733,8 @@ namespace Datalayer.Implementations
 
         public async Task<List<HealthRow>> GetOEHealthScorecardAsync(int orgId, OEFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT oe.Title AS Title, oe.Priority AS Priority, oe.Status AS Status, ISNULL(fa.Name,'—') AS Facilitator, ISNULL(sp.Name,'—') AS Sponsor, oe.EndDate AS EndDate, CASE WHEN oe.CarryOverProject = 'Yes' THEN 1 ELSE 0 END AS CarryOver FROM OperationalExcellence oe LEFT JOIN CIUser fa ON fa.Id = oe.FacilitatorId LEFT JOIN CIUser sp ON sp.Id = oe.SponsorId WHERE oe.OrganizationId = @OrgId {f.WhereSql()} ORDER BY CASE oe.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, oe.EndDate ASC";
+            using var db = await OpenConnectionAsync();
+            var sql = $@"SELECT oe.Title AS Title, oe.Priority AS Priority, oe.Status AS Status, ISNULL(fa.Name,'—') AS Facilitator, ISNULL(sp.Name,'—') AS Sponsor, oe.EndDate AS EndDate, CASE WHEN oe.CarryOverProject = 'Yes' THEN 1 ELSE 0 END AS CarryOver FROM OperationalExcellence oe LEFT JOIN CIUser fa ON fa.Id = oe.FacilitatorId LEFT JOIN CIUser sp ON sp.Id = oe.SponsorId WHERE oe.OrganizationId = @OrgId {f.WhereSql()}";
 
             var rows = await _repository.GetListAsync<HealthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<HealthRow>();
 
@@ -6281,26 +3745,33 @@ namespace Datalayer.Implementations
                 r.Health = ComputeHealth(r.Status, r.DaysRemaining);
             }
 
-            var rews = rows.OrderBy(x => x.DaysRemaining).ToList();
-            return rews;
+            return rows.OrderBy(x => x.DaysRemaining)
+                       .ThenBy(x => x.Priority == "High" ? 0 : x.Priority == "Medium" ? 1 : 2)
+                       .ThenBy(x => x.Title)
+                       .ToList();
         }
 
         private async Task<Dictionary<string, decimal>> GetMonthlyMapAsync(IDbConnection db, int orgId, OEFilter f)
         {
-            var sql = $@"SELECT ms.MonthYear AS MonthYear, SUM(ms.Savings * ISNULL(cr.RateToUsd, 1)) AS Savings FROM OperationalExcellenceMonthlySaving ms INNER JOIN OperationalExcellence oe ON oe.Id = ms.ProjectId LEFT JOIN CurrencyRates cr ON cr.Code = ISNULL(ms.Currency, oe.Currency) WHERE oe.OrganizationId = @OrgId {f.WhereSql()} GROUP BY ms.MonthYear";
+            var sql = $@"
+                SELECT FORMAT(TRY_CONVERT(datetime, '01 ' + ms.MonthYear), 'MMM yyyy') AS MonthYear,
+                       SUM(ms.Savings * ISNULL(cr.RateToUsd, 1))                        AS Savings
+                FROM OperationalExcellenceMonthlySaving ms
+                INNER JOIN OperationalExcellence oe ON oe.Id = ms.ProjectId
+                LEFT JOIN CurrencyRates cr ON cr.Code = ISNULL(ms.Currency, oe.Currency)
+                WHERE oe.OrganizationId = @OrgId {f.WhereSql()}
+                GROUP BY FORMAT(TRY_CONVERT(datetime, '01 ' + ms.MonthYear), 'MMM yyyy')
+                ORDER BY MIN(TRY_CONVERT(datetime, '01 ' + ms.MonthYear))";
 
             var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
 
-            var map = new Dictionary<string, (DateTime date, decimal val)>();
+            var map = new Dictionary<string, decimal>();
             foreach (var r in rows)
             {
-                if (DateTime.TryParseExact(r.MonthYear?.Trim() ?? "", "MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
-                {
-                    var label = d.ToString("MMM yyyy");
-                    map[label] = map.TryGetValue(label, out var existing) ? (d, existing.val + r.Savings) : (d, r.Savings);
-                }
+                if (string.IsNullOrWhiteSpace(r.MonthYear)) continue;
+                map[r.MonthYear] = r.Savings;
             }
-            return map.OrderBy(k => k.Value.date).ToDictionary(k => k.Key, k => k.Value.val);
+            return map;
         }
 
         private static string ComputeHealth(string status, int daysRemaining)
@@ -6311,10 +3782,10 @@ namespace Datalayer.Implementations
             if (daysRemaining <= 30) return "AtRisk";
             return "OnTrack";
         }
-
+        
         public async Task<Dictionary<string, int>> GetSIStatusCountAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT si.Status, COUNT(*) AS Cnt FROM StrategicInitiative si WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Status";
 
             var rows = await _repository.GetListAsync<StatusCountRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<StatusCountRow>();
@@ -6323,35 +3794,36 @@ namespace Datalayer.Implementations
 
         public async Task<List<SITopRow>> GetSITopInitiativesAsync(int orgId, SIFilter f, int take)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT TOP {take} si.Id AS Id, si.Title AS Title, si.Priority AS Priority, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency LEFT JOIN CIUser u  ON u.Id = si.OwnerId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, u.Name, d.Department ORDER BY Roi DESC";
 
             var re = await _repository.GetListAsync<SITopRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SITopRow>();
-
             return re.ToList();
         }
 
         public async Task<List<SIWorkloadRow>> GetSIWorkloadAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT u.Name AS Name, SUM(CASE WHEN si.OwnerId = u.Id THEN 1 ELSE 0 END) AS AsOwner, SUM(CASE WHEN si.ExecutiveSponsorId = u.Id THEN 1 ELSE 0 END) AS AsSponsor FROM CIUser u LEFT JOIN StrategicInitiative si ON si.OrganizationId = @OrgId AND (si.OwnerId = u.Id OR si.ExecutiveSponsorId = u.Id) {f.WhereSql("si")} WHERE u.OrganizationId = @OrgId AND u.IsActive = 1 GROUP BY u.Name HAVING SUM(CASE WHEN si.OwnerId = u.Id THEN 1 ELSE 0 END)  + SUM(CASE WHEN si.ExecutiveSponsorId = u.Id THEN 1 ELSE 0 END) > 0 ORDER BY 2 DESC, 3 DESC";
 
-            var re = await _repository.GetListAsync<SIWorkloadRow>(db, sql, f.Params(orgId), CommandType.Text)
-                   ?? new List<SIWorkloadRow>();
-
+            var re = await _repository.GetListAsync<SIWorkloadRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIWorkloadRow>();
             return re.ToList();
         }
 
         public async Task<SIForecastResult> GetSIRoiForecastAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
 
-            // Total target = sum of all expected savings across sub-projects (acts as ceiling)
-            var target = await _repository.GetSumOrCountAsync<decimal?>(db, $@"SELECT ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()}", f.Params(orgId), CommandType.Text) ?? 0m;
+            var target = await _repository.GetSumOrCountAsync<decimal?>(db,
+                $@"SELECT ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0)
+                   FROM SISubProject sp
+                   INNER JOIN StrategicInitiative si ON si.Id = sp.SIId
+                   LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency
+                   WHERE si.OrganizationId = @OrgId {f.WhereSql()}",
+                f.Params(orgId), CommandType.Text) ?? 0m;
 
             var monthly = await GetMonthlyRoiMapAsync(db, orgId, f);
 
-            // If no monthly data, project an even spread across the initiative window
             var labels = monthly.Keys.ToList();
             if (labels.Count == 0)
             {
@@ -6383,7 +3855,7 @@ namespace Datalayer.Implementations
 
         public async Task<SIWaterfallResult> GetSIRoiWaterfallAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var monthly = await GetMonthlyRoiMapAsync(db, orgId, f);
 
             var labels = monthly.Keys.ToList();
@@ -6398,7 +3870,6 @@ namespace Datalayer.Implementations
 
             var deltas = labels.Select(l => monthly.TryGetValue(l, out var v) ? v : 0m).ToList();
 
-            // Build a running cumulative total (for the waterfall "start" baseline)
             var cumulative = new List<decimal>();
             decimal running = 0;
             foreach (var d in deltas) { cumulative.Add(decimal.Round(running, 2)); running += d; }
@@ -6413,11 +3884,10 @@ namespace Datalayer.Implementations
 
         public async Task<SIStackedResult> GetSIRoiByTeamDeptAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT ISNULL(d.Department,'—') AS Department, ISNULL(u.Name,'—') AS Owner, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY d.Department, u.Name";
 
-            var rows = await _repository.GetListAsync<SIOwnerDeptRow>(db, sql, f.Params(orgId), CommandType.Text)
-                       ?? new List<SIOwnerDeptRow>();
+            var rows = await _repository.GetListAsync<SIOwnerDeptRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIOwnerDeptRow>();
 
             var depts = rows.Select(r => r.Department).Distinct().OrderBy(x => x).ToList();
             var owners = rows.Select(r => r.Owner).Distinct().OrderBy(x => x).ToList();
@@ -6433,7 +3903,7 @@ namespace Datalayer.Implementations
 
         public async Task<SICycleTimeResult> GetSICycleTimeAsync(int orgId, SIFilter f, int take)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var sql = $@"SELECT TOP {take} si.Title AS Title, si.StartDate AS StartDate, si.EndDate AS EndDate, si.Status AS Status, ISNULL(u.Name,'—') AS OwnerName, DATEDIFF(DAY, si.StartDate, si.EndDate) AS PlannedDays FROM StrategicInitiative si LEFT JOIN CIUser u ON u.Id = si.OwnerId WHERE si.OrganizationId = @OrgId {f.WhereSql()} ORDER BY si.StartDate DESC";
 
             var rows = await _repository.GetListAsync<SICycleRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SICycleRow>();
@@ -6443,7 +3913,8 @@ namespace Datalayer.Implementations
             {
                 Labels = rows.Select(r => r.Title).ToList(),
                 Planned = rows.Select(r => r.PlannedDays).ToList(),
-                Elapsed = rows.Select(r => {
+                Elapsed = rows.Select(r =>
+                {
                     var end = (r.Status == "COMPLETED" || r.Status == "CLOSED") ? r.EndDate.Date : today;
                     return Math.Max(0, (end - r.StartDate.Date).Days);
                 }).ToList(),
@@ -6453,8 +3924,8 @@ namespace Datalayer.Implementations
 
         public async Task<List<SIHealthRow>> GetSIHealthScorecardAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, ISNULL(u.Name,'—') AS Owner, ISNULL(s.Name,'—') AS Sponsor, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi, COUNT(sp.Id) AS SubProjectCount FROM StrategicInitiative si LEFT JOIN CIUser u  ON u.Id  = si.OwnerId LEFT JOIN CIUser s  ON s.Id  = si.ExecutiveSponsorId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, u.Name, s.Name, d.Department ORDER BY CASE si.Priority WHEN 'High' THEN 1 WHEN 'Medium' THEN 2 ELSE 3 END, si.EndDate ASC";
+            using var db = await OpenConnectionAsync();
+            var sql = $@"SELECT si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, ISNULL(u.Name,'—') AS Owner, ISNULL(s.Name,'—') AS Sponsor, ISNULL(d.Department,'—') AS Department, ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)),0) AS Roi, COUNT(sp.Id) AS SubProjectCount FROM StrategicInitiative si LEFT JOIN CIUser u  ON u.Id  = si.OwnerId LEFT JOIN CIUser s  ON s.Id  = si.ExecutiveSponsorId LEFT JOIN OrganizationDepartment d ON d.Id = si.OrganizationDepartmentId LEFT JOIN SISubProject sp ON sp.SIId = si.Id LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Id, si.Title, si.Priority, si.Status, si.StartDate, si.EndDate, u.Name, s.Name, d.Department";
 
             var rows = await _repository.GetListAsync<SIHealthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIHealthRow>();
 
@@ -6465,26 +3936,31 @@ namespace Datalayer.Implementations
                 r.Health = ComputeHealth(r.Status, r.DaysRemaining);
             }
 
-            var rews = rows.OrderBy(x => x.DaysRemaining).ToList();
-            return rews;
+            return rows.OrderBy(x => x.DaysRemaining)
+                       .ThenBy(x => x.Priority == "High" ? 0 : x.Priority == "Medium" ? 1 : 2)
+                       .ThenBy(x => x.Title)
+                       .ToList();
         }
 
         public async Task<List<SIStatusBreakdownRow>> GetSIStatusBreakdownAsync(int orgId, SIFilter f)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
-            var sql = $@"SELECT si.Status, COUNT(DISTINCT si.Id) AS InitiativeCount, ISNULL(SUM(sp.Savings),0) AS Roi FROM StrategicInitiative si LEFT JOIN SISubProject sp ON sp.SIId = si.Id WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY si.Status";
+            using var db = await OpenConnectionAsync();
+            var sql = $@"SELECT si.Status,
+                                COUNT(DISTINCT si.Id) AS InitiativeCount,
+                                ISNULL(SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)), 0) AS Roi
+                         FROM StrategicInitiative si
+                         LEFT JOIN SISubProject sp ON sp.SIId = si.Id
+                         LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency
+                         WHERE si.OrganizationId = @OrgId {f.WhereSql()}
+                         GROUP BY si.Status";
 
-            var re = await _repository.GetListAsync<SIStatusBreakdownRow>(db, sql, f.Params(orgId), CommandType.Text)
-                   ?? new List<SIStatusBreakdownRow>();
-
+            var re = await _repository.GetListAsync<SIStatusBreakdownRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<SIStatusBreakdownRow>();
             return re.ToList();
         }
 
         private async Task<Dictionary<string, decimal>> GetMonthlyRoiMapAsync(IDbConnection db, int orgId, SIFilter f)
         {
-            // Monthly ROI = sum of sub-project savings, bucketed by the sub-project's StartDate.
-            // Sub-projects carry the actual contribution dates; the parent SI is only the grouping.
-            var sql = $@"SELECT YEAR(sp.StartDate)  AS Yr, MONTH(sp.StartDate) AS Mo, SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)) AS Savings FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY YEAR(sp.StartDate), MONTH(sp.StartDate) ORDER BY Yr, Mo";
+            var sql = $@"SELECT YEAR(sp.StartDate) AS Yr, MONTH(sp.StartDate) AS Mo, SUM(sp.Savings * ISNULL(cr.RateToUsd, 1)) AS Savings FROM SISubProject sp INNER JOIN StrategicInitiative si ON si.Id = sp.SIId LEFT JOIN CurrencyRates cr ON cr.Code = sp.Currency WHERE si.OrganizationId = @OrgId {f.WhereSql()} GROUP BY YEAR(sp.StartDate), MONTH(sp.StartDate) ORDER BY Yr, Mo";
 
             var rows = await _repository.GetListAsync<MonthRow>(db, sql, f.Params(orgId), CommandType.Text) ?? new List<MonthRow>();
 
@@ -6495,6 +3971,26 @@ namespace Datalayer.Implementations
                 map[label] = r.Savings;
             }
             return map;
+        }
+                
+        private static void TryRollback(IDbTransaction tran)
+        {
+            if (tran == null) return;
+            try { tran.Rollback(); }
+            catch { /* already committed or disposed — ignore */ }
+        }
+
+        private static void AppendError(ref ResponseHandler res, string message)
+        {
+            if (string.IsNullOrEmpty(res.Message))
+            {
+                res.StatusCode = (int)HttpStatusCode.ExpectationFailed;
+                res.Message = message;
+            }
+            else
+            {
+                res.Message += "\\n" + message;
+            }
         }
     }
 }
