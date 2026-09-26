@@ -392,7 +392,7 @@ namespace CITracker.Controllers
         [HttpGet("success")]
         public IActionResult Success(string session_id)
         {
-            _logger.LogInformation($"Payment request for Organization with tenantId {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} has been submitted successfully with Session Id {session_id}");
+            _logger.LogInformation($"Payment request for Organization with tenantId {HttpContext.Session.GetString("TenantId").ToString()} has been submitted successfully with Session Id {session_id}");
             return View();
         }
 
@@ -400,7 +400,7 @@ namespace CITracker.Controllers
         [HttpGet("failed")]
         public IActionResult Failed()
         {
-            _logger.LogInformation($"Payment request for Organization with tenantId {User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value} Failed.");
+            _logger.LogInformation($"Payment request for Organization with tenantId {HttpContext.Session.GetString("TenantId").ToString()} Failed.");
             return View();
         }
 
@@ -874,7 +874,7 @@ namespace CITracker.Controllers
                             Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
                             SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
                             PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
-                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                            Country = _ops0Manager.FetchOperationalCountry().Result.Result.ToList()
                         });
                     }
                 }
@@ -972,7 +972,7 @@ namespace CITracker.Controllers
                     else
                     {
                         //create organization as stripe customer and get customer id
-                        var orgi = _usrManager.GetOrganizationByTenant(User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value).Result;
+                        var orgi = _usrManager.GetOrganizationByTenant(HttpContext.Session.GetString("TenantId").ToString()).Result;
                         _logger.LogInformation($"About to CreateStripeCustomer for {orgi.SingleResult.Name} with {orgi.SingleResult.AdminEmailAddress} and Id {orgi.SingleResult.Id}");
                         var res = _strPay.CreateStripeCustomer(orgi.SingleResult.AdminEmailAddress, orgi.SingleResult.Id.ToString()).Result;
                         _logger.LogInformation($"CreateStripeCustomer response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(res)}");
@@ -1083,35 +1083,6 @@ namespace CITracker.Controllers
             return !string.IsNullOrEmpty(HttpContext.Session.GetString("UserEmail"));
         }
 
-
-        //private void SetSessionVariables(CIUserDTO user = null, bool IsMarketPlace = false)
-        //{
-        //    if (!IsMarketPlace)
-        //    {
-        //        HttpContext.Session.SetString("UserEmail", User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value ?? "");
-        //        HttpContext.Session.SetString("UserName", User.Claims.FirstOrDefault(c => c.Type == "name")?.Value ?? "");
-        //        HttpContext.Session.SetString("TenantId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value ?? "");
-        //        HttpContext.Session.SetString("ObjectId", User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value ?? "");
-        //    }
-
-        //    if (user != null)
-        //    {
-        //        HttpContext.Session.SetString("UserRole", user.Role);
-        //        HttpContext.Session.SetString("Domain", user.OrganizationDomain ?? "");
-        //        HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
-        //        HttpContext.Session.SetString("UserId", user.Id.ToString());
-        //    }
-        //    else
-        //    {
-        //        HttpContext.Session.SetString("UserRole", "");
-        //        HttpContext.Session.SetString("Domain", "");
-        //        HttpContext.Session.SetString("OrganizationId", "");
-        //        HttpContext.Session.SetString("UserId", "");
-
-        //        HttpContext.Session.SetString("OrganisationSubscriptionStatus", "false");
-        //    }
-        //}
-
         private void SetSessionVariables(CIUserDTO user = null, bool identityAlreadyResolved = false, string provider = null, string externalId = null, string tenantHint = null)
         {
             // -------------------------------------------------------------
@@ -1124,7 +1095,6 @@ namespace CITracker.Controllers
                 var sessionEmail = HttpContext.Session.GetString("UserEmail");
                 var sessionName = HttpContext.Session.GetString("UserName");
                 var sessionTenant = HttpContext.Session.GetString("TenantId");
-                var sessionObjectId = HttpContext.Session.GetString("ObjectId");
                 var sessionProvider = HttpContext.Session.GetString("IdentityProvider");
                 var sessionExtId = HttpContext.Session.GetString("ExternalId");
 
@@ -1134,15 +1104,13 @@ namespace CITracker.Controllers
 
                 var email = sessionEmail ?? (isMicrosoft ? User.Claims.FirstOrDefault(c => c.Type == "preferred_username")?.Value : null);
                 var name = sessionName ?? (isMicrosoft ? User.Claims.FirstOrDefault(c => c.Type == "name")?.Value : null);
-                var tenant = sessionTenant ?? (isMicrosoft ? User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/tenantid")?.Value : null);
-                var objectId = sessionObjectId ?? (isMicrosoft ? User.Claims.FirstOrDefault(c => c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier")?.Value : null);
+                var tenant = sessionTenant ?? (isMicrosoft ? HttpContext.Session.GetString("TenantId").ToString() : null);
 
                 HttpContext.Session.SetString("UserEmail", email ?? "");
                 HttpContext.Session.SetString("UserName", name ?? "");
                 HttpContext.Session.SetString("TenantId", tenant ?? "");
-                HttpContext.Session.SetString("ObjectId", objectId ?? "");
                 HttpContext.Session.SetString("IdentityProvider", provider ?? sessionProvider ?? (isMicrosoft ? "Microsoft" : ""));
-                HttpContext.Session.SetString("ExternalId", externalId ?? sessionExtId ?? objectId ?? "");
+                HttpContext.Session.SetString("ExternalId", externalId ?? sessionExtId ?? "");
             }
             else
             {
