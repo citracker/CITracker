@@ -13,5 +13,6 @@ namespace Infastructure.Interface
         Task<ResponseHandler> CancelSubscription(string subsId, string tenantId);
         Task<CIMarketplaceSubscription> GetSubscription(string subsId, string tenantId);
         Task<ResponseHandler> ChangeQuantity(string subscriptionId, int newQuantity, string tenantId);
+        Task<ResponseHandler> ChangePlan(string subscriptionId, string newPlanId, int newQuantity, string tenantId);
     }
 }

@@ -354,7 +354,7 @@ namespace CITracker.Controllers
                 return View("AwaitingStripeConfirmation");
             }
 
-            return await LinkPendingAndProvision(pending, "Stripe");
+            return await LinkPendingAndProvision(pending, "stripe");
         }
 
 
@@ -510,7 +510,7 @@ namespace CITracker.Controllers
             pending.SeatsRequested = seats;
             await _subManager.UpdatePendingSubscription(pending);
 
-            return await LinkPendingAndProvision(pending, "Microsoft");
+            return await LinkPendingAndProvision(pending, "microsoft");
         }
 
         private async Task<IActionResult> LinkPendingAndProvision(PendingSubscription pending, string provider)
@@ -724,7 +724,7 @@ namespace CITracker.Controllers
                 //    contains the seats the customer paid for on Marketplace.
 
                 // 5. Provision
-                return await LinkPendingAndProvision(pending, "Microsoft");
+                return await LinkPendingAndProvision(pending, "microsoft");
             }
             catch (Exception ex)
             {

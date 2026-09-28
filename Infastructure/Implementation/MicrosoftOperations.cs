@@ -181,78 +181,6 @@ namespace Infastructure.Implementation
             }
         }
 
-        //public async Task<ResolveTokenResponse> ResolveAsync(string token, string tenantId)
-        //{
-        //    try
-        //    {
-        //        var accessToken = await GetAccessToken(tenantId);
-
-        //        if(accessToken == null)
-        //        {
-        //            return null;
-        //        }
-
-        //        var client = _httpClientFactory.CreateClient();
-        //        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-        //        client.DefaultRequestHeaders.Add("x-ms-marketplace-token", Uri.UnescapeDataString(token));
-
-
-        //        var response = await client.PostAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/resolve?api-version=2018-08-31", null);
-
-        //        if (!response.IsSuccessStatusCode)
-        //        {
-        //            var err = await response.Content.ReadAsStringAsync();
-        //            _logger.LogError($"Marketplace API failed: {response.StatusCode} ||| {err}");
-        //            return null; // or throw
-        //        }
-
-        //        _logger.LogInformation($"Raw Response from ResolveAsync ||| {JsonConvert.SerializeObject(response)}");
-
-        //        var content = await response.Content.ReadAsStringAsync();
-
-        //        _logger.LogInformation($"Response from ResolveAsync ||| {content}");
-
-        //        return JsonConvert.DeserializeObject<ResolveTokenResponse>(content);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Exception at ResolveAsync ||| {JsonConvert.SerializeObject(ex)}");
-        //        return null;
-        //    }
-        //}
-
-        //public async Task ActivateAsync(string subscriptionId, string tenantId)
-        //{
-        //    try
-        //    {
-        //        var accessToken = await GetAccessToken(tenantId);
-
-        //        if (accessToken == null)
-        //        {
-        //            _logger.LogInformation($"Raw Response from GetAccessToken ||| {accessToken}");
-        //            return;
-        //        }
-
-        //        var client = _httpClientFactory.CreateClient();
-        //        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        //        var response = await client.PostAsync($"https://marketplaceapi.microsoft.com/api/saas/subscriptions/{subscriptionId}/activate?api-version=2018-08-31", null);
-
-        //        if (!response.IsSuccessStatusCode)
-        //        {
-        //            var err = await response.Content.ReadAsStringAsync();
-        //            _logger.LogError($"Marketplace API failed: {response.StatusCode} ||| {err}");
-        //            return; // or throw
-        //        }
-
-        //        _logger.LogInformation($"Raw Response from ActivateAsync ||| {JsonConvert.SerializeObject(response)}");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Exception at ActivateAsync ||| {JsonConvert.SerializeObject(ex)}");
-        //    }
-        //}
-
         public async Task<CIMarketplaceSubscription> ResolveAsync(string token, string tenantId)
         {
             var accessToken = await GetAccessToken(tenantId);
@@ -422,6 +350,40 @@ namespace Infastructure.Implementation
                     StatusCode = (int)HttpStatusCode.InternalServerError,
                     Message = "An error occurred"
                 };
+            }
+        }
+
+        public async Task<ResponseHandler> ChangePlan(string subscriptionId, string newPlanId, int newQuantity, string tenantId)
+        {
+            try
+            {
+                var accessToken = await GetAccessToken(tenantId);
+                if (accessToken == null)
+                    return new ResponseHandler { StatusCode = 401, Message = "Could not obtain access token" };
+
+                var client = _httpClientFactory.CreateClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+
+                var payload = new { planId = newPlanId, quantity = newQuantity };
+                var content = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, "application/json");
+
+                var response = await client.PatchAsync(
+                    $"https://marketplaceapi.microsoft.com/api/saas/subscriptions/{subscriptionId}?api-version=2018-08-31",
+                    content);
+
+                var body = await response.Content.ReadAsStringAsync();
+                _logger.LogInformation($"ChangePlan {response.StatusCode} ||| {body}");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)response.StatusCode,
+                    Message = response.IsSuccessStatusCode ? "Plan change submitted to Microsoft." : body
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at ChangePlan ||| {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler { StatusCode = 500, Message = "An error occurred" };
             }
         }
     }

@@ -244,6 +244,59 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler> UpdateOrganizationSubscriptionPlan(string paymentSubscriptionId, int newPlanId)
+        {
+            try
+            {
+                using var dbConnection = await OpenConnectionAsync();
+
+                var sub = await _repository.GetAsync<Subscription>(dbConnection,
+                    "SELECT TOP 1 * FROM Subscription WHERE PaymentSubscriptionId = @pid",
+                    new { pid = paymentSubscriptionId },
+                    CommandType.Text);
+
+                if (sub == null)
+                {
+                    return new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Subscription not found."
+                    };
+                }
+
+                sub.SubscriptionPlanId = newPlanId;
+                sub.LastUpdatedDate = DateTime.UtcNow;
+
+                var updated = await _repository.UpdateAsync(dbConnection, sub);
+                if (!updated)
+                {
+                    return new ResponseHandler
+                    {
+                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                        Message = "Could not update subscription plan."
+                    };
+                }
+
+                _logger.LogInformation($"Subscription {paymentSubscriptionId} plan updated locally to {newPlanId}. " +
+                                       $"Awaiting webhook confirmation.");
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "Plan updated locally."
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(UpdateOrganizationSubscriptionPlan)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occurred"
+                };
+            }
+        }
+
         public async Task UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus)
         {
             try
@@ -304,28 +357,28 @@ namespace Datalayer.Implementations
                     var subPlan = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
                         "SELECT * from SubscriptionPlan where Id = @subId", new
                         {
-                subId = resi.SubscriptionPlanId
+                            subId = resi.SubscriptionPlanId
                         }, CommandType.Text);
 
                     if (subPlan != null)
                     {
                         if(subPlan.PriceId != priceId)
                         {
-                _logger.LogInformation($"Subscription plan priceId {priceId} does not match with the one on record for subscriptionId {subscriptionId}. Fetching subscription plan with priceId {priceId}.");
-                var subPlanWithPrice = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
-                    "SELECT * from SubscriptionPlan where PriceId = @pId", new
-                    {
-                        pId = priceId
-                    }, CommandType.Text);
-                if(subPlanWithPrice != null)
-                {
-                    resi.SubscriptionPlanId = subPlanWithPrice.Id;
-                    _logger.LogInformation($"Subscription plan with priceId {priceId} has Id {subPlanWithPrice.Id}. Updating subscription plan for subscriptionId {subscriptionId} to {subPlanWithPrice.Id}.");
-                }
-                else
-                {
-                    _logger.LogInformation($"Couldn't fetch subscription plan with priceId {priceId}. Subscription plan update for subscriptionId {subscriptionId} will be skipped.");
-                }
+                            _logger.LogInformation($"Subscription plan priceId {priceId} does not match with the one on record for subscriptionId {subscriptionId}. Fetching subscription plan with priceId {priceId}.");
+                            var subPlanWithPrice = await _repository.GetAsync<SubscriptionPlan>(dbConnection,
+                                "SELECT * from SubscriptionPlan where PriceId = @pId", new
+                                {
+                                    pId = priceId
+                                }, CommandType.Text);
+                            if(subPlanWithPrice != null)
+                            {
+                                resi.SubscriptionPlanId = subPlanWithPrice.Id;
+                                _logger.LogInformation($"Subscription plan with priceId {priceId} has Id {subPlanWithPrice.Id}. Updating subscription plan for subscriptionId {subscriptionId} to {subPlanWithPrice.Id}.");
+                            }
+                            else
+                            {
+                                _logger.LogInformation($"Couldn't fetch subscription plan with priceId {priceId}. Subscription plan update for subscriptionId {subscriptionId} will be skipped.");
+                            }
                         }
 
                         resi.SeatsPurchased = subPlan.NumberOfLicences;
