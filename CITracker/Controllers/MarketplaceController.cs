@@ -30,45 +30,6 @@ namespace CITracker.Controllers
             _config = config;
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
-        //{
-        //    Request.EnableBuffering();
-        //    using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
-        //    var raw = await reader.ReadToEndAsync();
-        //    Request.Body.Position = 0;
-        //    _logger.LogInformation($"RAW WEBHOOK BODY: {raw}");
-
-
-        //    if (payload == null)
-        //    {
-        //        _logger.LogWarning("Webhook received but payload was null.");
-        //        return BadRequest();
-        //    }
-
-        //    _logger.LogInformation($"Received webhook. Action={payload.MarketplaceAction}, SubId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
-
-        //    var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
-
-        //    switch (payload.MarketplaceAction)
-        //    {
-        //        case "Unsubscribe":
-        //        case "Suspended":
-        //            await DeactivateOrDisable(subscription);
-        //            break;
-
-        //        case "Reinstate":
-        //            await Enable(subscription);
-        //            break;
-
-        //        case "ChangePlan":
-        //            await UpdatePlan(subscription);
-        //            break;
-        //    }
-
-        //    return Ok();
-        //}
-
         [HttpPost]
         public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
         {
@@ -91,10 +52,16 @@ namespace CITracker.Controllers
             switch (payload.MarketplaceAction)
             {
                 case "Unsubscribe":
-                case "Suspended": await _subManager.MPDeactivateOrganizationSubscription(subscription); break;
+                case "Suspended":
+                    await DeactivateOrDisable(subscription);
+                    break;
                 case "Reinstate":
+                    await Enable(subscription);
+                    break;
                 case "ChangePlan":
-                case "ChangeQuantity": await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(subscription.Id, payload.Quantity ?? subscription.Quantity); break;
+                case "ChangeQuantity":
+                    await UpdatePlan(subscription);
+                    break;
             }
             return Ok();
         }

@@ -18,5 +18,6 @@
         public int MaxSeats { get; set; }
         public int MinSeats { get; set; }
         public DateTime? TrialEndUtc { get; set; }
+        public bool CancelAtPeriodEnd { get; set; }
     }
 }

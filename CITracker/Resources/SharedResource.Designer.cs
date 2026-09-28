@@ -3104,6 +3104,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Licenses Used.
+        /// </summary>
+        public static string LicensesUsed {
+            get {
+                return ResourceManager.GetString("LicensesUsed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Listing: Microsoft AppSource —.
         /// </summary>
         public static string ListingMicrosoftAppSource {

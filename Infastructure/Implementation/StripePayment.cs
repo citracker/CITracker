@@ -152,22 +152,68 @@ namespace Infastructure.Implementation
             return await svc.GetAsync(sessionId);
         }
 
-        public async Task<string> CreateSeatUpgradeCheckout(string customerId, string priceId, int quantity, string successUrl)
+        public async Task<ResponseHandler> UpgradeToNextPlanAsync(string stripeSubscriptionId, string newPriceId, int fullLicenseCount)
         {
-            var options = new SessionCreateOptions
+            try
             {
-                Mode = "subscription",
-                Customer = customerId,
-                LineItems = new List<SessionLineItemOptions> { new() { Price = priceId, Quantity = quantity } },
-                SubscriptionData = new SessionSubscriptionDataOptions
+                var subService = new SubscriptionService();
+                var sub = await subService.GetAsync(stripeSubscriptionId);
+                if (sub == null)
+                    return new ResponseHandler { StatusCode = 404, Message = "Subscription not found." };
+
+                var item = sub.Items.Data.FirstOrDefault();
+                if (item == null)
+                    return new ResponseHandler { StatusCode = 500, Message = "Subscription has no items." };
+
+                await subService.UpdateAsync(stripeSubscriptionId, new SubscriptionUpdateOptions
                 {
-                    // One-time addition, prorated
-                },
-                SuccessUrl = _config.Value.SuccessCallBack + successUrl,
-                CancelUrl = _config.Value.FailedCallBack
-            };
-            var svc = new SessionService();
-            return (await svc.CreateAsync(options)).Url;
+                    Items = new List<SubscriptionItemOptions>
+            {
+                new SubscriptionItemOptions
+                {
+                    Id       = item.Id,
+                    Price    = newPriceId,
+                    Quantity = fullLicenseCount        // ⬅ always the full plan size
+                }
+            },
+                    ProrationBehavior = "create_prorations"
+                });
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = $"Upgraded to the new plan with {fullLicenseCount} licenses. Your card will be charged the prorated difference."
+                };
+            }
+            catch (StripeException ex)
+            {
+                _logger.LogError($"Stripe plan upgrade failed: {ex.Message}");
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.BadRequest, Message = ex.Message };
+            }
+        }
+
+        public async Task<ResponseHandler> CancelAtPeriodEndAsync(string stripeSubscriptionId, bool cancelAtPeriodEnd)
+        {
+            try
+            {
+                await new SubscriptionService().UpdateAsync(stripeSubscriptionId, new SubscriptionUpdateOptions
+                {
+                    CancelAtPeriodEnd = cancelAtPeriodEnd
+                });
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = cancelAtPeriodEnd
+                        ? "Subscription will be cancelled at the end of the current period."
+                        : "Cancellation reversed. Subscription will renew normally."
+                };
+            }
+            catch (StripeException ex)
+            {
+                _logger.LogError($"Stripe cancel-at-period-end failed: {ex.Message}");
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.BadRequest, Message = ex.Message };
+            }
         }
     }
 }

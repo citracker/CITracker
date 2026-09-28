@@ -12,7 +12,7 @@ namespace Infastructure.Interface
         Task<Customer> CreateStripeCustomer(string email, string uid);
         string BuildPaymentLinkUrl(string paymentLinkUrl, long pendingId, string email, int seats);
         Task<Session> GetCheckoutSession(string sessionId);
-        Task<string> CreateSeatUpgradeCheckout(string customerId, string priceId, int quantity, string successUrl);
-
+        Task<ResponseHandler> UpgradeToNextPlanAsync(string stripeSubscriptionId, string newPriceId, int fullLicenseCount);
+        Task<ResponseHandler> CancelAtPeriodEndAsync(string stripeSubscriptionId, bool cancelAtPeriodEnd);
     }
 }
