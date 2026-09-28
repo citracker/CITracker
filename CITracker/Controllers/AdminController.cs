@@ -1225,43 +1225,6 @@ namespace CITracker.Controllers
             }
         }
 
-        [HttpPost("Cancel")]
-        public async Task<IActionResult> CancelPaymentSubscription([FromBody] CancelSubscriptionRequest request)
-        {
-
-            if (!IsAuthenticated())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            if (!IsUserAdmin())
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            try
-            {
-                ResponseHandler res = null;
-
-                if (request.Provider.ToLower() == "stripe")
-                    res = await _strPay.CancelSubscription(request.StrId);
-                else
-                    res = await _micOps.CancelSubscription(request.StrId, HttpContext.Session.GetString("TenantId").ToString());
-
-                TempData["Message"] = res.Message;
-                TempData["StatusCode"] = res.StatusCode;
-
-                return RedirectToAction("Account", "Admin");
-            }
-            catch (Exception e)
-            {
-                TempData["Message"] = "An Error Occured";
-                TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
-                _logger.LogError($"Error Occurred at {nameof(CancelPaymentSubscription)} - {JsonConvert.SerializeObject(e)}");
-                return RedirectToAction("Account", "Admin");
-            }
-        }
-
         private async Task<ResponseHandler> HandleUserUpload(List<Dictionary<string, string>> rows)
         {
             try
@@ -1626,75 +1589,241 @@ namespace CITracker.Controllers
             }
         }
 
-        [HttpPost("api/subscription/upgrade-seats")]
-        public async Task<IActionResult> UpgradeSeats(int newSeats)
+        //[HttpPost("Cancel")]
+        //public async Task<IActionResult> CancelPaymentSubscription([FromBody] CancelSubscriptionRequest request)
+        //{
+        //    if (!IsAuthenticated()) return Unauthorized();
+        //    if (!IsUserAdmin()) return Unauthorized();
+
+        //    try
+        //    {
+        //        ResponseHandler res = request.Provider.ToLower() == "stripe"
+        //            ? await _strPay.CancelSubscription(request.StrId)
+        //            : await _micOps.CancelSubscription(request.StrId, HttpContext.Session.GetString("TenantId"));
+
+        //        return StatusCode(res.StatusCode, new { message = res.Message });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        _logger.LogError($"Error at {nameof(CancelPaymentSubscription)} - {JsonConvert.SerializeObject(e)}");
+        //        return StatusCode(500, new { message = "An error occurred" });
+        //    }
+        //}
+
+        [HttpPost("api/subscription/upgrade")]
+        public async Task<IActionResult> Upgrade()
         {
-            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
-            var sub = (await _subManager.GetOrganizationSubscription(HttpContext.Session.GetString("TenantId"))).SingleResult;
+            if (!IsAuthenticated() || !IsUserAdmin()) return Unauthorized();
 
-            if (sub.Provider == "Stripe")
-            {
-                // Mid-cycle: create a Stripe Checkout for the prorated difference
-                var plan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
-                var extraSeats = newSeats - sub.SeatsPurchased;
-                if (extraSeats <= 0) return BadRequest("Only increase through this endpoint.");
+            var tenantId = HttpContext.Session.GetString("TenantId");
 
-                // Reuse Payment Link with adjustable quantity OR create a Session
-                var sessionUrl = await _strPay.CreateSeatUpgradeCheckout(sub.PaymentCustomerId, plan.PriceId, extraSeats, successUrl: "/Account/SeatUpgradeSuccess");
-
-                return Ok(new { url = sessionUrl });
-            }
-            else // Microsoft
-            {
-                // Marketplace requires ChangeQuantity. This is only allowed at renewal in most cases;
-                // otherwise use ChangePlan if crossing a plan boundary.
-                return await ScheduleMicrosoftQuantityChange(newSeats);
-            }
-        }
-
-        [HttpPost("api/subscription/schedule-change")]
-        public async Task<IActionResult> ScheduleChange(int? seats, int? planId)
-        {
-            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
-            var res = await _seatService.ScheduleSeatChangeAtRenewalAsync(orgId, seats, planId);
-            return StatusCode(res.StatusCode, res);
-        }
-
-
-
-        private async Task<IActionResult> ScheduleMicrosoftQuantityChange(int newSeats)
-        {
-            var orgId = int.Parse(HttpContext.Session.GetString("OrganizationId"));
-
-            // Fetch the current subscription row so we know which plan and provider
-            var subResp = await _subManager.GetOrganizationSubscription(
-                HttpContext.Session.GetString("TenantId"));
-
+            var subResp = await _subManager.GetOrganizationSubscription(tenantId);
             if (subResp?.SingleResult == null)
-                return BadRequest(new { message = "No subscription for this organization." });
+                return NotFound(new { message = "No active subscription." });
+
+            var sub = subResp.SingleResult;
+            var currentPlan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
+
+            // ── Eligibility: must be using every purchased seat ─────────────
+            if (sub.NumberOfUsedLicences < sub.SeatsPurchased)
+                return BadRequest(new
+                {
+                    message = $"You are using {sub.NumberOfUsedLicences} of {sub.SeatsPurchased} seats. " +
+                              $"Use all purchased seats before upgrading."
+                });
+
+            // ── Microsoft path: fill the plan to its maximum ────────────────
+            if (sub.Provider.ToLower() == "microsoft")
+            {
+                if (sub.SeatsPurchased >= currentPlan.NumberOfLicences)
+                    return BadRequest(new
+                    {
+                        message = "You are already on the maximum seat count for your plan. " +
+                                  "Visit the Microsoft Marketplace to purchase a larger plan."
+                    });
+
+                var newSeats = currentPlan.NumberOfLicences;   // the plan's max
+
+                var result = await _micOps.ChangeQuantity(
+                    sub.PaymentSubscriptionId, newSeats, _config.Value.CITenantId);
+
+                if (result.StatusCode != (int)HttpStatusCode.OK)
+                    return StatusCode(result.StatusCode, new { message = result.Message });
+
+                await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(sub.PaymentSubscriptionId, newSeats);
+
+                return Ok(new
+                {
+                    message = $"Expanded to {newSeats} seats on the {currentPlan.Name} plan.",
+                    newSeats = newSeats,
+                    newPlanId = currentPlan.Id
+                });
+            }
+
+            // ── Stripe path: jump to the next plan tier with full licenses ──
+            if (sub.Provider.ToLower() == "stripe")
+            {
+                var allPlans = (await _subManager.GetAllSubscriptionPlans()).Result
+                                .OrderBy(p => p.NumberOfLicences)
+                                .ToList();
+
+                var nextPlan = allPlans.FirstOrDefault(p => p.NumberOfLicences > currentPlan.NumberOfLicences);
+
+                if (nextPlan == null)
+                    return BadRequest(new
+                    {
+                        message = "You are already on the highest plan. Contact sales for enterprise options."
+                    });
+
+                var fullLicenseCount = nextPlan.NumberOfLicences;
+
+                var result = await _strPay.UpgradeToNextPlanAsync(
+                    sub.PaymentSubscriptionId, nextPlan.PriceId, fullLicenseCount);
+
+                if (result.StatusCode != (int)HttpStatusCode.OK)
+                    return StatusCode(result.StatusCode, new { message = result.Message });
+
+                // Optimistic local updates; webhook will confirm within seconds
+                await _subManager.UpdateOrganizationSubscriptionPlan(sub.PaymentSubscriptionId, nextPlan.Id);
+                await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(sub.PaymentSubscriptionId, fullLicenseCount);
+
+                return Ok(new
+                {
+                    message = $"Upgraded to the {nextPlan.Name} plan with {fullLicenseCount} licenses.",
+                    newSeats = fullLicenseCount,
+                    newPlanId = nextPlan.Id
+                });
+            }
+
+            return BadRequest(new { message = "Unknown subscription provider." });
+        }
+
+        [HttpPost("api/subscription/cancel")]
+        public async Task<IActionResult> CancelAtPeriodEnd([FromBody] CancelRequest req)
+        {
+            if (!IsAuthenticated() || !IsUserAdmin()) return Unauthorized();
+
+            var tenantId = HttpContext.Session.GetString("TenantId");
+            var subResp = await _subManager.GetOrganizationSubscription(tenantId);
+            if (subResp?.SingleResult == null)
+                return NotFound(new { message = "No active subscription." });
 
             var sub = subResp.SingleResult;
 
-            if (sub.Provider != "Microsoft")
-                return BadRequest(new { message = "Not a Microsoft Marketplace subscription." });
+            var result = sub.Provider.ToLower() == "stripe"
+                ? await _strPay.CancelAtPeriodEndAsync(sub.PaymentSubscriptionId, req.AtPeriodEnd)
+                : await _micOps.CancelSubscription(sub.PaymentSubscriptionId, _config.Value.CITenantId);
 
-            // Validate against plan bounds
-            var plan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
-            if (newSeats < plan.MinSeats || newSeats > plan.NumberOfLicences)
-                return BadRequest(new { message = $"Choose between {plan.MinSeats} and {plan.NumberOfLicences} seats." });
+            if (result.StatusCode != (int)HttpStatusCode.OK)
+                return StatusCode(result.StatusCode, new { message = result.Message });
 
-            if (newSeats < sub.NumberOfUsedLicences)
-                return BadRequest(new { message = $"You have {sub.NumberOfUsedLicences} users active. Reduce users before decreasing seats." });
+            return Ok(new { message = result.Message });
+        }
 
-            // Call Microsoft
-            var res = await _micOps.ChangeQuantity(sub.PaymentSubscriptionId, newSeats, _config.Value.CITenantId);
-            if (res.StatusCode != (int)HttpStatusCode.OK)
-                return StatusCode(res.StatusCode, new { message = res.Message });
+        [HttpGet("api/subscription/eligibility")]
+        public async Task<IActionResult> Eligibility()
+        {
+            if (!IsAuthenticated() || !IsUserAdmin()) return Unauthorized();
 
-            // Optimistically update local rows; the ChangeQuantity webhook will confirm
-            await _subManager.UpdateOrganizationSubscriptionFromMPEventSeats(sub.PaymentSubscriptionId, newSeats);
+            var tenantId = HttpContext.Session.GetString("TenantId");
+            var subResp = await _subManager.GetOrganizationSubscription(tenantId);
+            if (subResp?.SingleResult == null)
+                return NotFound(new { message = "No active subscription." });
 
-            return Ok(new { message = "Seat change submitted to Microsoft. It will reflect shortly." });
+            var sub = subResp.SingleResult;
+            var currentPlan = (await _subManager.GetSubscriptionPlanById(sub.SubscriptionPlanId)).SingleResult;
+
+            // Can this subscription be upgraded from the app?
+            var allPlans = (await _subManager.GetAllSubscriptionPlans()).Result
+                            .OrderBy(p => p.NumberOfLicences)
+                            .ToList();
+
+            var canUpgrade = sub.NumberOfUsedLicences >= sub.SeatsPurchased;
+
+            string upgradeLabel = null;
+            string upgradeHint = null;
+            int? nextPlanId = null;
+
+            if (canUpgrade)
+            {
+                if (sub.Provider.ToLower() == "microsoft")
+                {
+                    if (sub.SeatsPurchased < currentPlan.NumberOfLicences)
+                    {
+                        var add = currentPlan.NumberOfLicences - sub.SeatsPurchased;
+                        upgradeLabel = $"Add {add} seats to fill the {currentPlan.Name} plan";
+                        upgradeHint = $"Go from {sub.SeatsPurchased} to {currentPlan.NumberOfLicences} seats.";
+                    }
+                    else
+                    {
+                        upgradeHint = "You are on the max for your plan. Visit the Microsoft Marketplace to purchase a larger plan.";
+                    }
+                }
+                else if (sub.Provider.ToLower() == "stripe")
+                {
+                    var nextPlan = allPlans.FirstOrDefault(p => p.NumberOfLicences > currentPlan.NumberOfLicences);
+                    if (nextPlan != null)
+                    {
+                        upgradeLabel = $"Upgrade to {nextPlan.Name} ({nextPlan.NumberOfLicences} licenses)";
+                        upgradeHint = $"You'll pay the prorated difference for the rest of this period.";
+                        nextPlanId = nextPlan.Id;
+                    }
+                    else
+                    {
+                        upgradeHint = "You are on the highest plan. Contact sales for enterprise.";
+                    }
+                }
+            }
+            else
+            {
+                upgradeHint = $"You have {sub.NumberOfUsedLicences} of {sub.SeatsPurchased} seats in use. " +
+                              $"Use all purchased seats before upgrading.";
+            }
+
+            return Ok(new
+            {
+                currentSeats = sub.SeatsPurchased,
+                usedSeats = sub.NumberOfUsedLicences,
+                provider = sub.Provider.ToLower(),
+                currentPlanId = sub.SubscriptionPlanId,
+                currentPlanName = currentPlan.Name,
+                maxSeatsOnPlan = currentPlan.NumberOfLicences,
+                cancelAtPeriodEnd = sub.CancelAtPeriodEnd,
+                canUpgrade,
+                upgradeLabel,
+                upgradeHint,
+                nextPlanId
+            });
+        }
+
+        [HttpPost("api/subscription/reactivate")]
+        public async Task<IActionResult> Reactivate()
+        {
+            if (!IsAuthenticated() || !IsUserAdmin()) return Unauthorized();
+
+            var tenantId = HttpContext.Session.GetString("TenantId");
+            var subResp = await _subManager.GetOrganizationSubscription(tenantId);
+            if (subResp?.SingleResult == null)
+                return NotFound(new { message = "No active subscription." });
+
+            var sub = subResp.SingleResult;
+
+            if (sub.Provider.ToLower() == "stripe")
+            {
+                var result = await _strPay.CancelAtPeriodEndAsync(sub.PaymentSubscriptionId, false);
+                if (result.StatusCode != (int)HttpStatusCode.OK)
+                    return StatusCode(result.StatusCode, new { message = result.Message });
+
+                return Ok(new { message = "Subscription reactivated. It will renew normally." });
+            }
+
+            // Microsoft: the Reinstate webhook reactivates a suspended subscription.
+            // A cancelled Microsoft subscription cannot be reactivated — it's terminal.
+            return BadRequest(new
+            {
+                message = "Microsoft subscriptions that have been cancelled cannot be reactivated. " +
+                          "Please purchase a new subscription from the Microsoft Marketplace."
+            });
         }
     }
 }

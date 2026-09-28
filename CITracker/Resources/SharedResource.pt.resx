@@ -2133,4 +2133,7 @@
   <data name="ProfileAdministrators" xml:space="preserve">
     <value>Configurar administradores</value>
   </data>
+  <data name="LicensesUsed" xml:space="preserve">
+    <value>Licenças utilizadas</value>
+  </data>
 </root>
