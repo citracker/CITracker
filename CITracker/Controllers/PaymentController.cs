@@ -34,6 +34,7 @@ namespace CITracker.Controllers
         [HttpPost]
         public async Task<IActionResult> Handle()
         {
+            _logger.LogInformation($"Handle hit");
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
             var sig = Request.Headers["Stripe-Signature"];
             Event stripeEvent;
