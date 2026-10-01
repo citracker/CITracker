@@ -38,8 +38,11 @@ namespace CITracker.Controllers
             var json = await new StreamReader(Request.Body).ReadToEndAsync();
             var sig = Request.Headers["Stripe-Signature"];
             Event stripeEvent;
-            try { stripeEvent = EventUtility.ConstructEvent(json, sig, _config.Value.WebhookSecret); }
-            catch (Exception ex) { _logger.LogWarning($"Stripe signature verification failed: {ex.Message}"); return BadRequest(); }
+            try { 
+                stripeEvent = EventUtility.ConstructEvent(json, sig, _config.Value.WebhookSecret); 
+                _logger.LogInformation($"Stripe event received: {stripeEvent.Type}, Event={JsonConvert.SerializeObject(stripeEvent)}");
+            }
+            catch (Exception ex) { _logger.LogError($"Stripe signature verification failed: {JsonConvert.SerializeObject(ex)}"); return BadRequest(); }
 
             // Idempotency
             if (!await _subManager.MarkWebhookEventProcessedAsync("Stripe", stripeEvent.Id))

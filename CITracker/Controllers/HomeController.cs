@@ -588,7 +588,7 @@ namespace CITracker.Controllers
             }
 
             await _subManager.MarkPendingSubscriptionLinked(pending.Id, orgId);
-            await _subManager.UpdateOrganizationSubscription(orgId, pending.ProviderCustomerId, pending.TrialDays > 0 ? "TRIALING" : "ACTIVE", 0);
+            await _subManager.UpdateOrganizationSubscription(orgId, pending.ProviderCustomerId, pending.ProviderSubscriptionId, pending.TrialDays > 0 ? "TRIALING" : "ACTIVE", 0);
 
             // Refresh session state
             var userResp = await _usrManager.GetUserByEmail(HttpContext.Session.GetString("UserEmail"));
