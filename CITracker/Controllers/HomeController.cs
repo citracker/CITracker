@@ -369,12 +369,6 @@ namespace CITracker.Controllers
             pending.ProviderSubscriptionId = session.SubscriptionId;
             pending.ProviderCustomerId = session.CustomerId;
 
-            if (pending.Status == "AwaitingPayment")
-            {
-                // Stripe webhook hasn't arrived yet. Show waiting page.
-                return View("AwaitingStripeConfirmation");
-            }
-
             return await LinkPendingAndProvision(pending, "stripe");
         }
 
