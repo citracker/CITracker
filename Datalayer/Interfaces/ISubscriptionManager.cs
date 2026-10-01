@@ -15,7 +15,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<Organization>> GetOrganizationByTenantId(string tenantId);
         Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscription(string tenantId);
         Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub);
-        Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string subStatus, long adminUser);
+        Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string stripeSubscriptionId, string subStatus, long adminUser);
         Task<ResponseHandler> UpdateOrganizationSubscriptionPlan(string paymentSubscriptionId, int newPlanId);
         Task UpdateOrganizationSubscriptionFromEvent(int clientReferenceId, string stripeCustomerId, string subscriptionId, string subscriptionStatus);
         Task UpdateOrganizationSubscriptionFromUpdatedEvent(string subscriptionId, string stripeCustomerId, DateTime? startDate, DateTime? endDate, string priceId, string subscriptionStatus, DateTime? trialStart, DateTime? trialEnd, long quantity, bool cancelAtPeriodEnd);
