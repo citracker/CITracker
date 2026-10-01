@@ -212,7 +212,7 @@ namespace Datalayer.Implementations
             }
         }
 
-        public async Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string subStatus, long adminUser)
+        public async Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string stripeSubscriptionId, string subStatus, long adminUser)
         {
             try
             {
@@ -227,6 +227,7 @@ namespace Datalayer.Implementations
                 {
                     resi.Status = subStatus;
                     resi.PaymentCustomerId = stripeCustomerId;
+                    resi.PaymentSubscriptionId = stripeSubscriptionId;
                     resi.LastUpdatedBy = adminUser;
                     resi.LastUpdatedDate = DateTime.UtcNow;
 
@@ -556,7 +557,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub)
         {
-                        using var dbConnection = await OpenConnectionAsync();
+            using var dbConnection = await OpenConnectionAsync();
             
             using var dbTransaction = dbConnection.BeginTransaction();
 
@@ -963,38 +964,38 @@ namespace Datalayer.Implementations
 
         public async Task<PendingSubscription> GetPendingSubscription(long pendingId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE Id = @id", new { id = pendingId }, CommandType.Text);
         }
 
         public async Task<PendingSubscription> GetPendingSubscriptionByStripeSession(string sessionId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             return await _repository.GetAsync<PendingSubscription>(db, "SELECT * FROM PendingSubscription WHERE StripeSessionId = @sid", new { sid = sessionId }, CommandType.Text);
         }
 
         public async Task UpdatePendingSubscription(PendingSubscription pending)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             await _repository.UpdateAsync(db, pending);
         }
 
         public async Task MarkPendingSubscriptionLinked(long pendingId, int organizationId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             await _repository.ExecuteAsync(db, "UPDATE PendingSubscription SET Status='Linked', OrganizationId=@oid WHERE Id=@id", new { oid = organizationId, id = pendingId }, CommandType.Text);
         }
 
         public async Task<PendingSubscription?> GetPendingSubscriptionByStripeCustomer(string stripeCustomerId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             return await _repository.GetAsync<PendingSubscription>(db, "SELECT TOP 1 * FROM PendingSubscription WHERE ProviderCustomerId = @cid",
                 new { cid = stripeCustomerId }, CommandType.Text);
         }
 
         public async Task<bool> MarkWebhookEventProcessedAsync(string provider, string eventId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var dbTransaction = db.BeginTransaction();
             try
             {
@@ -1034,7 +1035,7 @@ namespace Datalayer.Implementations
 
         public async Task<ResponseHandler> UpsertUserIdentity(UserIdentity identity)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             var existing = await _repository.GetAsync<UserIdentity>(db, "SELECT * FROM UserIdentity WHERE Provider=@p AND ExternalId=@e", new { p = identity.Provider, e = identity.ExternalId }, CommandType.Text);
 
             if (existing == null)
@@ -1052,13 +1053,13 @@ namespace Datalayer.Implementations
 
         public async Task<UserIdentity> GetUserIdentity(string provider, string externalId)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             return await _repository.GetAsync<UserIdentity>(db, "SELECT * FROM UserIdentity WHERE Provider=@p AND ExternalId=@e", new { p = provider, e = externalId }, CommandType.Text);
         }
 
         public async Task UpdateOrganizationSubscriptionFromMPEventSeats(string subscriptionId, int newSeats)
         {
-            using var db = CreateConnection(DatabaseConnectionType.MicrosoftSQLServer, await _connection.SQLDBConnection());
+            using var db = await OpenConnectionAsync();
             await _repository.ExecuteAsync(db, @"UPDATE Subscription SET SeatsPurchased = @s, LastUpdatedDate = GETUTCDATE() WHERE PaymentSubscriptionId = @id", new { s = newSeats, id = subscriptionId }, CommandType.Text);
         }
 
