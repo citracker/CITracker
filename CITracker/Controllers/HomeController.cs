@@ -880,68 +880,75 @@ namespace CITracker.Controllers
 
                 var provider = Request.Form["paymentMethod"].ToString().ToLower();
 
-                //build Organisation details
-                var org = new Organization
-                {
-                    Name = Request.Form["companyName"],
-                    TenantId = HttpContext.Session.GetString("TenantId").ToString(),
-                    Address = Request.Form["address"],
-                    AdminName = Request.Form["firstName"],
-                    AdminEmailAddress = Request.Form["adminEmail"],
-                    AdminPhoneNumber = Request.Form["phone"],
-                    CountryId = int.Parse(Request.Form["country"]),
-                    Provider = provider,
-                    Domain = domain,
-                    DateCreated = DateTime.UtcNow
-                };
+                //get org by tenenatId 
 
-                //build user details
-                var usr = new CIUser
-                {
-                    Name = Request.Form["firstName"],
-                    EmailAddress = Request.Form["adminEmail"],
-                    Role = Shared.Enumerations.Role.Admin.ToString(),
-                    DateCreated = DateTime.UtcNow,
-                    IdentityProvider = provider                    
-                };
+                var resp = await _subManager.GetOrganizationByTenantId(HttpContext.Session.GetString("TenantId").ToString());
 
                 //get mpSub Details
                 subscription = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result;
 
-                if (subscription == null || subscription?.SingleResult == null)
+                if(resp.SingleResult == null)
                 {
-                    return RedirectToAction("Index");
-                }
-
-                var selectedDuration = int.Parse(Request.Form["subscriptionDuration"]);
-
-                //build mpSub details
-                var sub = new Subscription
-                {
-                    SubscriptionPlanId = int.Parse(Request.Form["subscriptionId"]),
-                    PaymentSubscriptionId = provider == "microsoft" ? HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString() : null,
-                    StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
-                    EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
-                    DateCreated = DateTime.UtcNow,
-                    Provider = provider,
-                    SeatsPurchased = subscription.SingleResult.NumberOfLicences,
-                    Status = "PENDING"
-                };
-
-                var resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
-
-                if (resp.StatusCode != (int)HttpStatusCode.OK)
-                {
-                    _logger.LogInformation($"Unable to Register Organization {org.Name}");
-
-                    return View("Checkout", new CheckoutVM
+                    //build Organisation details
+                    var org = new Organization
                     {
-                        StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                        Message = $"Unable to Register Organisation  {org.Name} ||| {resp.Message}",
-                        SubscriptionPlan = subscription.SingleResult,
-                        PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
-                        Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
-                    });
+                        Name = Request.Form["companyName"],
+                        TenantId = HttpContext.Session.GetString("TenantId").ToString(),
+                        Address = Request.Form["address"],
+                        AdminName = Request.Form["firstName"],
+                        AdminEmailAddress = Request.Form["adminEmail"],
+                        AdminPhoneNumber = Request.Form["phone"],
+                        CountryId = int.Parse(Request.Form["country"]),
+                        Provider = provider,
+                        Domain = domain,
+                        DateCreated = DateTime.UtcNow
+                    };
+
+                    //build user details
+                    var usr = new CIUser
+                    {
+                        Name = Request.Form["firstName"],
+                        EmailAddress = Request.Form["adminEmail"],
+                        Role = Shared.Enumerations.Role.Admin.ToString(),
+                        DateCreated = DateTime.UtcNow,
+                        IdentityProvider = provider                    
+                    };
+
+                    if (subscription == null || subscription?.SingleResult == null)
+                    {
+                        return RedirectToAction("Index");
+                    }
+
+                    var selectedDuration = int.Parse(Request.Form["subscriptionDuration"]);
+
+                    //build mpSub details
+                    var sub = new Subscription
+                    {
+                        SubscriptionPlanId = int.Parse(Request.Form["subscriptionId"]),
+                        PaymentSubscriptionId = provider == "microsoft" ? HttpContext.Session.GetString("MarketplaceSubscriptionId").ToString() : null,
+                        StartDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration) : DateTime.UtcNow,
+                        EndDate = subscription.SingleResult.FreeTrialDuration > 0 ? DateTime.UtcNow.AddDays(subscription.SingleResult.FreeTrialDuration).AddYears(selectedDuration) : DateTime.UtcNow.AddYears(selectedDuration),
+                        DateCreated = DateTime.UtcNow,
+                        Provider = provider,
+                        SeatsPurchased = subscription.SingleResult.NumberOfLicences,
+                        Status = "PENDING"
+                    };
+
+                    resp = _subManager.RegisterOrganizationSubscription(org, usr, sub).Result;
+
+                    if (resp.StatusCode != (int)HttpStatusCode.OK)
+                    {
+                        _logger.LogInformation($"Unable to Register Organization {org.Name}");
+
+                        return View("Checkout", new CheckoutVM
+                        {
+                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                            Message = $"Unable to Register Organisation  {org.Name} ||| {resp.Message}",
+                            SubscriptionPlan = subscription.SingleResult,
+                            PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                        });
+                    }
                 }
 
                 //get user's detail
@@ -955,42 +962,52 @@ namespace CITracker.Controllers
                         var res = await _subManager.CreatePendingSubscription(new PendingSubscription
                         {
                             OrganizationId = resp.SingleResult.Id,
-                            PlanId = sub.SubscriptionPlanId,
+                            PlanId = int.Parse(Request.Form["subscriptionId"]),
                             SeatsRequested = subscription.SingleResult.NumberOfLicences,
                             Provider = "stripe",
-                            BillingEmail = usr.EmailAddress,
+                            BillingEmail = Request.Form["adminEmail"].ToString(),
                             TrialDays = subscription.SingleResult.FreeTrialDuration,
                             Status = "AwaitingPayment",
                             CreatedAt = DateTime.UtcNow,
                             ExpiresAtUtc = DateTime.UtcNow.AddHours(24)
                         });
 
-                        var url = _strPay.BuildPaymentLinkUrl(subscription.SingleResult.StripePaymentLinkUrl, res.SingleResult.Id, usr.EmailAddress, subscription.SingleResult.NumberOfLicences);
+                        var url = _strPay.BuildPaymentLinkUrl(subscription.SingleResult.StripePaymentLinkUrl, res.SingleResult.Id, Request.Form["adminEmail"].ToString(), subscription.SingleResult.NumberOfLicences);
                         return Redirect(url);
                     }
                     else
                     {
-                        //create organization as stripe customer and get customer id
-                        var orgi = _usrManager.GetOrganizationByTenant(HttpContext.Session.GetString("TenantId").ToString()).Result;
-                        _logger.LogInformation($"About to CreateStripeCustomer for {orgi.SingleResult.Name} with {orgi.SingleResult.AdminEmailAddress} and Id {orgi.SingleResult.Id}");
-                        var res = _strPay.CreateStripeCustomer(orgi.SingleResult.AdminEmailAddress, orgi.SingleResult.Id.ToString()).Result;
-                        _logger.LogInformation($"CreateStripeCustomer response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(res)}");
-                        if (!String.IsNullOrEmpty(res.Id))
+                        return View("Checkout", new CheckoutVM
                         {
-                            //update user's mpSub with their stripecustomerId as reference for future payments
-                            await _subManager.UpdateOrganizationSubscription(orgi.SingleResult.Id, res.Id, SubscriptionStatus.INITIATED.ToString(), user.SingleResult.Id);
-                        }
+                            StatusCode = (int)HttpStatusCode.ExpectationFailed,
+                            Message = $"Unable to Register Organisation  {resp.SingleResult.Name} ||| Invalid Subscription Url",
+                            SubscriptionPlan = subscription.SingleResult,
+                            PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
+                            Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
+                        });
 
-                        _logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
-                        var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration, subscription.SingleResult.FreeTrialDuration).Result;
-                        _logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
-                        if (!string.IsNullOrEmpty(chkres))
-                        {
-                            return Redirect(chkres);
-                        }
+                        ///////SessionId implementation
+                        //////create organization as stripe customer and get customer id
+                        ////var orgi = _usrManager.GetOrganizationByTenant(HttpContext.Session.GetString("TenantId").ToString()).Result;
+                        ////_logger.LogInformation($"About to CreateStripeCustomer for {orgi.SingleResult.Name} with {orgi.SingleResult.AdminEmailAddress} and Id {orgi.SingleResult.Id}");
+                        ////var res = _strPay.CreateStripeCustomer(orgi.SingleResult.AdminEmailAddress, orgi.SingleResult.Id.ToString()).Result;
+                        ////_logger.LogInformation($"CreateStripeCustomer response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(res)}");
+                        ////if (!String.IsNullOrEmpty(res.Id))
+                        ////{
+                        ////    //update user's mpSub with their stripecustomerId as reference for future payments
+                        ////    await _subManager.UpdateOrganizationSubscription(orgi.SingleResult.Id, res.Id, SubscriptionStatus.INITIATED.ToString(), user.SingleResult.Id);
+                        ////}
 
-                        //Redirect to failed mpSub page
-                        return RedirectToAction("Index", "Home");
+                        ////_logger.LogInformation($"About to checkout Organization {orgi.SingleResult.Name}");
+                        ////var chkres = _strPay.CreateCheckout(orgi.SingleResult.Id.ToString(), res.Id, subscription.SingleResult.PriceId, selectedDuration, subscription.SingleResult.FreeTrialDuration).Result;
+                        ////_logger.LogInformation($"CreateCheckout response for {orgi.SingleResult.Name} - {JsonConvert.SerializeObject(chkres)}");
+                        ////if (!string.IsNullOrEmpty(chkres))
+                        ////{
+                        ////    return Redirect(chkres);
+                        ////}
+
+                        //////Redirect to failed mpSub page
+                        ////return RedirectToAction("Index", "Home");
                     }                        
                 }
                 else
