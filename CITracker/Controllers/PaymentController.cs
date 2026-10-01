@@ -94,7 +94,7 @@ namespace CITracker.Controllers
             pending.ProviderSubscriptionId = session.SubscriptionId;
             pending.StripeSessionId = session.Id;
             pending.BillingEmail = session.CustomerDetails?.Email  ?? session.CustomerEmail ?? pending.BillingEmail;
-            pending.SeatsRequested = pending.SeatsRequested;   // ⬅ always positive
+            pending.SeatsRequested = pending.SeatsRequested; 
             pending.Status = "PaidAwaitingTenant";
 
             await _subManager.UpdatePendingSubscription(pending);
