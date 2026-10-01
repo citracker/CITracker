@@ -306,13 +306,16 @@
         location.reload();
     }
 
-    async function reactivate() {
+    async function reactivateSubscription() {
         if (!confirm('Reactivate your subscription? It will renew automatically on the end date.')) return;
 
-        const res = await fetch('/api/subscription/reactivate', { method: 'POST' });
+        const res = await fetch('/api/subscription/cancel', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ atPeriodEnd: false })
+        });
         const data = await res.json();
-        if (!res.ok) { alert(data.message || 'Reactivate failed.'); return; }
-        alert(data.message);
+        if (!res.ok) { alert(data.message || resources.someWentWrong); return; }
         location.reload();
     }
 
