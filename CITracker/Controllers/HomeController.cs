@@ -340,8 +340,26 @@ namespace CITracker.Controllers
             if (!IsAuthenticated())
                 return RedirectToAction("SignIn");   // returns to "/" then back here via session
 
+            // ── 1. Ask Stripe what's in this session ─────────────────────────
+            var session = await _strPay.GetCheckoutSession(session_id);
+            if (session == null)
+            {
+                TempData["Error"] = "We couldn't verify your payment.";
+                return RedirectToAction("Index");
+            }
+
+            _logger.LogInformation($"Stripe checkout completed. Session={JsonConvert.SerializeObject(session)}");
+
+
+            // ── 2. Read the client_reference_id — that's our PendingId ────────
+            if (!long.TryParse(session.ClientReferenceId, out var pendingId))
+            {
+                TempData["Error"] = "Missing subscription reference.";
+                return RedirectToAction("Index");
+            }
+
             // Signed in → link now
-            var pending = await _subManager.GetPendingSubscriptionByStripeSession(session_id);
+            var pending = await _subManager.GetPendingSubscription(pendingId);
             if (pending == null)
             {
                 TempData["Error"] = "We couldn't find your pending subscription.";
