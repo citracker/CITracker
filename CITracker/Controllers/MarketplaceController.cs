@@ -33,37 +33,58 @@ namespace CITracker.Controllers
         [HttpPost]
         public async Task<IActionResult> HandleWebhook([FromBody] Webhook payload)
         {
-            if (payload == null) return BadRequest();
-            _logger.LogInformation($"MS webhook: action={payload.MarketplaceAction} subId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+            // Log the raw body BEFORE any binding matters
+            Request.EnableBuffering();
+            using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
+            var raw = await reader.ReadToEndAsync();
+            Request.Body.Position = 0;
+            _logger.LogInformation($"RAW MS WEBHOOK ||| {raw}");
 
-            // Microsoft doesn't provide a stable event id we can rely on; use correlation + timestamp
-            var eventKey = $"{payload.SubscriptionId}|{payload.MarketplaceAction}|{payload.TimeStamp:O}";
-            if (!await _subManager.MarkWebhookEventProcessedAsync("MicrosoftMarketplace", eventKey))
+            if (payload == null)
             {
-                _logger.LogInformation($"Duplicate MS webhook {eventKey} ignored.");
+                _logger.LogWarning("MS webhook: payload could not be bound.");
+                return Ok();   // ⬅ return 200, never 400
+            }
+
+            try
+            {
+                if (payload == null) return BadRequest();
+                _logger.LogInformation($"MS webhook: action={payload.MarketplaceAction} subId={payload.SubscriptionId} ||| {JsonConvert.SerializeObject(payload)}");
+
+                // Microsoft doesn't provide a stable event id we can rely on; use correlation + timestamp
+                var eventKey = $"{payload.SubscriptionId}|{payload.MarketplaceAction}|{payload.TimeStamp:O}";
+                if (!await _subManager.MarkWebhookEventProcessedAsync("MicrosoftMarketplace", eventKey))
+                {
+                    _logger.LogInformation($"Duplicate MS webhook {eventKey} ignored.");
+                    return Ok();
+                }
+
+                if (string.IsNullOrEmpty(payload.SubscriptionId)) return Ok();
+
+                var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
+                if (subscription == null) { _logger.LogWarning("GetSubscription returned null."); return Ok(); }
+
+                switch (payload.MarketplaceAction)
+                {
+                    case "Unsubscribe":
+                    case "Suspended":
+                        await DeactivateOrDisable(subscription);
+                        break;
+                    case "Reinstate":
+                        await Enable(subscription);
+                        break;
+                    case "ChangePlan":
+                    case "ChangeQuantity":
+                        await UpdatePlan(subscription);
+                        break;
+                }
                 return Ok();
             }
-
-            if (string.IsNullOrEmpty(payload.SubscriptionId)) return Ok();
-
-            var subscription = await _msOps.GetSubscription(payload.SubscriptionId, _config.Value.CITenantId);
-            if (subscription == null) { _logger.LogWarning("GetSubscription returned null."); return Ok(); }
-
-            switch (payload.MarketplaceAction)
+            catch (Exception ex)
             {
-                case "Unsubscribe":
-                case "Suspended":
-                    await DeactivateOrDisable(subscription);
-                    break;
-                case "Reinstate":
-                    await Enable(subscription);
-                    break;
-                case "ChangePlan":
-                case "ChangeQuantity":
-                    await UpdatePlan(subscription);
-                    break;
+                _logger.LogError($"MS webhook handler error: {ex}");
+                return Ok();   // ⬅ even on error, return 200 so Microsoft doesn't disable the endpoint
             }
-            return Ok();
         }
 
 
