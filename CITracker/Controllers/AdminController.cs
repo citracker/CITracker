@@ -861,7 +861,10 @@ namespace CITracker.Controllers
                     Name = $"{Request.Form["fn"]} {Request.Form["ln"]}",
                     Role = Shared.Enumerations.Role.User.ToString(),
                     OrganizationId = Convert.ToInt32(HttpContext.Session.GetString("OrganizationId")),
-                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId"))
+                    CreatedBy = Convert.ToInt64(HttpContext.Session.GetString("UserId")),
+                    HasCIAccess = Request.Form["ci"].ToString() == "true",
+                    HasOEAccess = Request.Form["oe"].ToString() == "true",
+                    HasSIAccess = Request.Form["si"].ToString() == "true"
                 };
 
                 //check organization's license limit
@@ -916,12 +919,21 @@ namespace CITracker.Controllers
 
             try
             {
+                var userId = Convert.ToInt64(Request.Form["user"]);
+
                 var orgUsr = new CIUser
                 {
                     EmailAddress = Request.Form["emN"],
                     Name = $"{Request.Form["fnN"]} {Request.Form["lnN"]}"
                 };
-                var res = _opsManager.RenameOrganizationUser(Convert.ToInt64(Request.Form["user"]), orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+                var res = _opsManager.RenameOrganizationUser(userId, orgUsr, HttpContext.Session.GetString("UserEmail")).Result;
+
+                var accessRes = _opsManager.UpdateUserModuleAccess(
+                    userId,
+                    Request.Form["ciN"].ToString() == "true",
+                    Request.Form["oeN"].ToString() == "true",
+                    Request.Form["siN"].ToString() == "true",
+                    HttpContext.Session.GetString("UserEmail")).Result;
 
                 TempData["Message"] = res.Message;
                 TempData["StatusCode"] = res.StatusCode;

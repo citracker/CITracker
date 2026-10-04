@@ -64,6 +64,24 @@
                                 <input type="text" class="form-control mt-3 mb-3" id="fn" name="fn" placeholder="@SharedResource.FirstName" required>
                                 <input type="text" class="form-control mt-3 mb-3" id="ln" name="ln" placeholder="@SharedResource.LastName" required>
                                 <input type="email" class="form-control mt-3 mb-3" id="em" name="em" placeholder="@SharedResource.EmailAddress" required>
+                                    <div class="col-12">
+                                        <p class="mb-2 fw-medium">@SharedResource.ModuleAccess</p>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="ci" name="ci" value="true" checked>
+                                            <label class="form-check-label" for="ci">@SharedResource.ContinuousImprovement</label>
+                                        </div>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="oe" name="oe" value="true" checked>
+                                            <label class="form-check-label" for="oe">@SharedResource.OperationalExcellence</label>
+                                        </div>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="si" name="si" value="true" checked>
+                                            <label class="form-check-label" for="si">@SharedResource.StrategicInitiatives</label>
+                                        </div>
+                                    </div>
                                 @* <input type="text" class="form-control mt-3 mb-3" id="ph" name="ph" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
@@ -109,6 +127,24 @@
                                     <input type="text" class="form-control mt-3 mb-3 country-input" id="fnN" name="fnN" placeholder="@SharedResource.FirstName" required>
                                     <input type="text" class="form-control mt-3 mb-3 country-input" id="lnN" name="lnN" placeholder="@SharedResource.LastName" required>
                                     <input type="email" class="form-control mt-3 mb-3 country-input" id="emN" name="emN" placeholder="@SharedResource.EmailAddress" required>
+                                    <div class="col-12">
+                                        <p class="mb-2 fw-medium">@SharedResource.ModuleAccess</p>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="ciN" name="ciN" value="true">
+                                            <label class="form-check-label" for="ciN">@SharedResource.ContinuousImprovement</label>
+                                        </div>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="oeN" name="oeN" value="true">
+                                            <label class="form-check-label" for="oeN">@SharedResource.OperationalExcellence</label>
+                                        </div>
+
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="siN" name="siN" value="true">
+                                            <label class="form-check-label" for="siN">@SharedResource.StrategicInitiatives</label>
+                                        </div>
+                                    </div>
                                     @* <input type="text" class="form-control mt-3 mb-3" id="phN" name="phN" placeholder="Phone Number" onkeypress="return (event.charCode >= 48 && event.charCode <= 57) || event.charCode == 8 || event.charCode == 0 || event.charCode == 13" oninput="this.value = this.value.replace(/[^0-9]/g, '')" onpaste="return false"> *@
                                 </div>
                             </div>
@@ -239,12 +275,16 @@
 
         if (isNaN(userId)) return;
 
-        const filtered = users.filter(l => l.Id === userId);
+        const user = users.find(l => l.Id === userId);
+        if (!user) return;
 
-        filtered.forEach(item => {
-           fnInp.value = item.Name.split(' ')[0];
-           lnInp.value = item.Name.split(' ')[1];
-           emInp.value = item.EmailAddress;
-        });
+        fnInp.value = user.Name?.split(' ')[0] ?? '';
+        lnInp.value = user.Name?.split(' ')[1] ?? '';
+        emInp.value = user.EmailAddress ?? '';
+
+        // 🆕 Populate module access checkboxes
+        document.getElementById('ciN').checked = !!user.HasCIAccess;
+        document.getElementById('oeN').checked = !!user.HasOEAccess;
+        document.getElementById('siN').checked = !!user.HasSIAccess;
     }
 </script>

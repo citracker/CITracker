@@ -1165,6 +1165,9 @@ namespace CITracker.Controllers
                 HttpContext.Session.SetString("Domain", user.OrganizationDomain ?? "");
                 HttpContext.Session.SetString("OrganizationId", user.OrganizationId.ToString());
                 HttpContext.Session.SetString("UserId", user.Id.ToString());
+                HttpContext.Session.SetString("HasCIAccess", user.HasCIAccess ? "true" : "false");
+                HttpContext.Session.SetString("HasOEAccess", user.HasOEAccess ? "true" : "false");
+                HttpContext.Session.SetString("HasSIAccess", user.HasSIAccess ? "true" : "false");
                 // Do not touch OrganisationSubscriptionStatus here — Index() sets it
                 // based on the live subscription row.
             }

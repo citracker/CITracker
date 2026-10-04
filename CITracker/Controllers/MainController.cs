@@ -83,6 +83,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -194,6 +199,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -261,6 +271,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -316,6 +331,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -381,6 +401,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -437,6 +462,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -533,6 +563,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var coep = new ContinuousImprovementVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -564,6 +599,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return LoadPaginatedCI(page, filt);
         }
 
@@ -591,6 +631,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -630,6 +675,14 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
 
             if (!ModelState.IsValid)
@@ -709,6 +762,14 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("CI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
+            }
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
@@ -778,6 +839,14 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
 
             if (!ModelState.IsValid)
@@ -850,6 +919,14 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {   
+                    Message = "You are unauthorized to perform this action."
+                });
             }
 
             if (!ModelState.IsValid)
@@ -926,6 +1003,14 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("CI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
 
             ///TECHNICAL DEBT
@@ -1036,6 +1121,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("OE"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var coep = new OperationalExcellenceVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -1057,6 +1147,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("OE"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -1112,6 +1207,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("OE"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return LoadPaginatedOE(page, filt);
         }
 
@@ -1139,6 +1239,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!HasModuleAccess("OE"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -1178,6 +1283,13 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("OE"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
             var id = Convert.ToInt64(Request.Form["id"]);
             try
@@ -1232,6 +1344,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("OE"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var coep = new OperationalExcellenceVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -1257,6 +1374,13 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("OE"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
             var id = Convert.ToInt64(Request.Form["edid"]);
             try
@@ -1301,6 +1425,13 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("OE"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
 
             var coep = _opsManager.GetOEProjectMonthlySaving(Id)?.Result?.SingleResult;
@@ -1743,6 +1874,11 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            if (!HasModuleAccess("OE"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var coep = _opsManager.GetOEProjectMonthlySavings(pId)?.Result?.Result?.ToList();
 
             return Json(coep);
@@ -1759,6 +1895,13 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("OE"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
             var id = Convert.ToInt64(Request.Form["msid"]);
             var pjid = Convert.ToInt64(Request.Form["pjid"]);
@@ -1801,6 +1944,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var coep = new StrategicInitiativeVM
             {
@@ -1823,6 +1970,10 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("SI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -1872,6 +2023,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             return LoadPaginatedSI(page, filt);
         }
@@ -1900,6 +2055,10 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("SI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -1940,6 +2099,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var coep = new StrategicInitiativeVM
             {
@@ -1966,6 +2129,10 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("SI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -2024,7 +2191,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var coep = _opsManager.GetSISubProjects(pId)?.Result?.Result?.ToList();
 
             return Json(coep);
@@ -2042,7 +2212,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var coep = new StrategicInitiativeVM
             {
                 Message = TempData["Message"]?.ToString() ?? "",
@@ -2066,7 +2239,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-
+            if (!HasModuleAccess("SI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var coep = new StrategicInitiativeVM
             {
@@ -2138,6 +2314,13 @@ namespace CITracker.Controllers
             if (!UserHasValidRole())
             {
                 return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("SI"))
+            {
+                return StatusCode(StatusCodes.Status417ExpectationFailed, new ResponseHandler
+                {
+                    Message = "You are unauthorized to perform this action."
+                });
             }
             var id = Convert.ToInt64(Request.Form["id"]);
             try
@@ -2461,6 +2644,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!HasModuleAccess("CI"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var filt = new DashFilter
             {
@@ -2488,6 +2675,10 @@ namespace CITracker.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
+            if (!HasModuleAccess("OE"))
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var filt = new DashFilter
             {
@@ -2512,6 +2703,10 @@ namespace CITracker.Controllers
                 return RedirectToAction("Index", "Home");
             }
             if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            if (!HasModuleAccess("SI"))
             {
                 return RedirectToAction("Index", "Home");
             }
@@ -2836,6 +3031,18 @@ namespace CITracker.Controllers
             {
                 return false;
             }
+        }
+
+        private bool HasModuleAccess(string module)
+        {
+            var flag = module switch
+            {
+                "CI" => HttpContext.Session.GetString("HasCIAccess"),
+                "OE" => HttpContext.Session.GetString("HasOEAccess"),
+                "SI" => HttpContext.Session.GetString("HasSIAccess"),
+                _ => "false"
+            };
+            return flag == "true";
         }
     }
 }
