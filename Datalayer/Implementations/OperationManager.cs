@@ -3972,7 +3972,43 @@ namespace Datalayer.Implementations
             }
             return map;
         }
-                
+        public async Task<ResponseHandler> UpdateUserModuleAccess(long userId, bool ci, bool oe, bool si, string adminEmail)
+        {
+            using var dbConnection = await OpenConnectionAsync();
+            using var dbTransaction = dbConnection.BeginTransaction();
+            try
+            {
+                var usr = await _repository.GetAsync<CIUser>(dbConnection, "SELECT TOP 1 * FROM CIUser WHERE Id = @id", new { id = userId }, CommandType.Text, dbTransaction);
+
+                if (usr == null)
+                    return new ResponseHandler { StatusCode = (int)HttpStatusCode.NotFound, Message = "User not found" };
+
+                usr.HasCIAccess = ci;
+                usr.HasOEAccess = oe;
+                usr.HasSIAccess = si;
+
+                await _repository.UpdateAsync(dbConnection, usr, dbTransaction);
+
+                var audit = ModelBuilder.BuildAuditLog("User Module Access Updated", $"Admin updated module access for user {userId}: CI={ci}, OE={oe}, SI={si}.", adminEmail);
+                audit.Id = await _genManager.GetNextTableId(dbConnection, dbTransaction, DatabaseScripts.AuditLogTable);
+                await _repository.InsertAsync(dbConnection, audit, dbTransaction);
+
+                dbTransaction.Commit();
+
+                return new ResponseHandler
+                {
+                    StatusCode = (int)HttpStatusCode.OK,
+                    Message = "User module access updated."
+                };
+            }
+            catch (Exception ex)
+            {
+                TryRollback(dbTransaction);
+                _logger.LogError($"Exception at {nameof(UpdateUserModuleAccess)} - {JsonConvert.SerializeObject(ex)}");
+                return new ResponseHandler { StatusCode = (int)HttpStatusCode.InternalServerError, Message = "An error occurred" };
+            }
+        }
+
         private static void TryRollback(IDbTransaction tran)
         {
             if (tran == null) return;

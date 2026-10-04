@@ -122,5 +122,6 @@ namespace Datalayer.Interfaces
         Task<SICycleTimeResult> GetSICycleTimeAsync(int orgId, SIFilter f, int take);
         Task<List<SIHealthRow>> GetSIHealthScorecardAsync(int orgId, SIFilter f);
         Task<List<SIStatusBreakdownRow>> GetSIStatusBreakdownAsync(int orgId, SIFilter f);
+        Task<ResponseHandler> UpdateUserModuleAccess(long userId, bool ci, bool oe, bool si, string adminEmail);
     }
 }

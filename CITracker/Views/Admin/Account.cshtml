@@ -103,55 +103,68 @@
                                             </p>
                                         </div>
 
-                                        <div class="text-end">
-                                            @if (isActive)
-                                            {
-                                                <button class="btn rounded-10 btn-danger"
-                                                        onclick="cancelSubscription()">
-                                                    <i class="fa fa-ban"></i>
-                                                    <span>@SharedResource.CancelSubscription</span>
-                                                </button>
-                                            }
-                                            else if (isCancelling)
-                                            {
-                                                <button class="btn rounded-10 btn-success"
-                                                        onclick="reactivateSubscription()">
-                                                    <i class="fa fa-refresh"></i>
-                                                    <span>Reactivate subscription</span>
-                                                </button>
-                                            }
-                                            else if (isCancelled)
-                                            {
-                                                <a class="btn rounded-10 btn-primary"
-                                                   asp-controller="Home" asp-action="Index">
-                                                    <i class="fa fa-plus"></i>
-                                                    <span>Resubscribe</span>
-                                                </a>
-                                            }
-                                        </div>
+                                        @if (Model.Subscription.Provider.ToLower() == "stripe")
+                                        {                                            
+                                            <div class="text-end">
+                                                @if (isActive)
+                                                {
+                                                    <button class="btn rounded-10 btn-danger"
+                                                            onclick="cancelSubscription()">
+                                                        <i class="fa fa-ban"></i>
+                                                        <span>@SharedResource.CancelSubscription</span>
+                                                    </button>
+                                                }
+                                                else if (isCancelling)
+                                                {
+                                                    <button class="btn rounded-10 btn-success"
+                                                            onclick="reactivateSubscription()">
+                                                        <i class="fa fa-refresh"></i>
+                                                        <span>@SharedResource.ReactivateSubscription</span>
+                                                    </button>
+                                                }
+                                                else if (isCancelled)
+                                                {
+                                                    <a class="btn rounded-10 btn-primary"
+                                                       asp-controller="Home" asp-action="Index">
+                                                        <i class="fa fa-plus"></i>
+                                                        <span>@SharedResource.Resubscribe</span>
+                                                    </a>
+                                                }
+                                            </div>
+                                        }
                                     </div>
 
                                     @* Status banner *@
-                                    @if (isCancelling)
+                                    @if (Model.Subscription.Provider.ToLower() == "stripe")
                                     {
-                                        <p class="text-warning mt-2 mb-0">
-                                            <i class="fa fa-info-circle"></i>
-                                            Your subscription will end on <b>@endDateStr</b>.
-                                            You will not be charged again.
-                                        </p>
-                                    }
-                                    else if (isCancelled)
-                                    {
-                                        <p class="text-danger mt-2 mb-0">
-                                            <i class="fa fa-times-circle"></i>
-                                            Your subscription has ended.
-                                        </p>
+                                        if (isCancelling)
+                                        {
+                                            <p class="text-warning mt-2 mb-0">
+                                                <i class="fa fa-info-circle"></i>
+                                                Your subscription will end on <b>@endDateStr</b>.
+                                                You will not be charged again.
+                                            </p>
+                                        }
+                                        else if (isCancelled)
+                                        {
+                                            <p class="text-danger mt-2 mb-0">
+                                                <i class="fa fa-times-circle"></i>
+                                                Your subscription has ended.
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-muted mt-2 mb-0">
+                                                <i class="fa fa-check-circle"></i>
+                                                Renews automatically on <b>@endDateStr</b>.
+                                            </p>
+                                        }
                                     }
                                     else
                                     {
                                         <p class="text-muted mt-2 mb-0">
                                             <i class="fa fa-check-circle"></i>
-                                            Renews automatically on <b>@endDateStr</b>.
+                                            Please Manage your subscription on the Microsoft saas marketplace <b>@endDateStr</b>.
                                         </p>
                                     }
                                 </div>
