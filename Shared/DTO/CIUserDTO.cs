@@ -12,5 +12,8 @@
         public bool IsActive { get; set; }
         public bool IsOrganizationSubscribed { get; set; }
         public int SubscriptionId { get; set; }
+        public bool HasCIAccess { get; set; }
+        public bool HasOEAccess { get; set; }
+        public bool HasSIAccess { get; set; }
     }
 }

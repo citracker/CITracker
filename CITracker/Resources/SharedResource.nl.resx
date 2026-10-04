@@ -2136,4 +2136,13 @@
   <data name="LicensesUsed" xml:space="preserve">
     <value>Gebruikte licenties</value>
   </data>
+  <data name="ModuleAccess" xml:space="preserve">
+    <value>Toegang tot Modules</value>
+  </data>
+  <data name="ReactivateSubscription" xml:space="preserve">
+    <value>Abonnement Reactiveren</value>
+  </data>
+  <data name="Resubscribe" xml:space="preserve">
+    <value>Opnieuw Abonneren</value>
+  </data>
 </root>

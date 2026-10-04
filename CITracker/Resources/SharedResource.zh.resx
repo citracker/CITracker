@@ -2136,4 +2136,13 @@
   <data name="LicensesUsed" xml:space="preserve">
     <value>已使用许可证</value>
   </data>
+  <data name="ModuleAccess" xml:space="preserve">
+    <value>模块访问权限</value>
+  </data>
+  <data name="ReactivateSubscription" xml:space="preserve">
+    <value>重新激活订阅</value>
+  </data>
+  <data name="Resubscribe" xml:space="preserve">
+    <value>重新订阅</value>
+  </data>
 </root>

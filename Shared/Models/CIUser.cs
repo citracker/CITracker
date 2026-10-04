@@ -15,6 +15,8 @@ namespace Shared.Models
         public DateTime DateCreated { get; set; }
         public long CreatedBy { get; set; }
         public string IdentityProvider { get; set; }
-
+        public bool HasCIAccess { get; set; }
+        public bool HasOEAccess { get; set; }
+        public bool HasSIAccess { get; set; }
     }
 }

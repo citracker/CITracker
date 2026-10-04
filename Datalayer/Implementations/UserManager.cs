@@ -34,7 +34,7 @@ namespace Datalayer.Implementations
                 
                 using var dbTransaction = dbConnection.BeginTransaction();
                 var resi = await _repository.GetAsync<CIUserDTO>(dbConnection,
-                    "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, b.TenantId as OrganizationTenantId, b.Domain as OrganizationDomain, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where a.EmailAddress = @em", new
+                    "SELECT a.Id, a.OrganizationId, a.Name, a.EmailAddress, a.Role, a.IsActive, a.HasCIAccess, a.HasOEAccess, a.HasSIAccess, b.TenantId as OrganizationTenantId, b.Domain as OrganizationDomain, b.IsSubscribed as IsOrganizationSubscribed, b.SubscriptionId from CIUser a left join Organization b on a.OrganizationId = b.id where a.EmailAddress = @em", new
                     {
                         em = email
                     }, CommandType.Text, dbTransaction);

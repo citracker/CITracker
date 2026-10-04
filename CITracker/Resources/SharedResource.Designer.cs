@@ -3446,6 +3446,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Module Access.
+        /// </summary>
+        public static string ModuleAccess {
+            get {
+                return ResourceManager.GetString("ModuleAccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Money.
         /// </summary>
         public static string Money {
@@ -4446,6 +4455,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reactivate Subscription.
+        /// </summary>
+        public static string ReactivateSubscription {
+            get {
+                return ResourceManager.GetString("ReactivateSubscription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Real-time insights across all facilities and departments globally..
         /// </summary>
         public static string RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally {
@@ -4568,6 +4586,15 @@ namespace CITracker.Resources {
         public static string Reporting {
             get {
                 return ResourceManager.GetString("Reporting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Resubscribe.
+        /// </summary>
+        public static string Resubscribe {
+            get {
+                return ResourceManager.GetString("Resubscribe", resourceCulture);
             }
         }
         
