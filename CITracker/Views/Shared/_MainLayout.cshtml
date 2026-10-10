@@ -1,8 +1,12 @@
 ﻿@using CITracker.Resources
 @inject IHttpContextAccessor hca
+@{
+    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
+    var isRtl = currentCulture.TextInfo.IsRightToLeft;
+}
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
+<html lang="@currentCulture.Name" dir="@(isRtl ? "rtl" : "ltr")" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
    <head>
       <!-- Meta Data --> 
       <meta charset="UTF-8">
@@ -186,6 +190,13 @@
                                     <span class="avatar avatar-xs lh-1 me-2">
                                         <img src="~/assets/images/flags/cn.svg" alt="img">
                                     </span> Chinese
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="ar-SA" data-flag="sa.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/sa.svg" alt="img">
+                                    </span> العربية
                                 </a>
                             </li>
                         </ul>
@@ -446,7 +457,7 @@
                 const segments = currentPath.split('/').filter(s => s.length > 0);
 
                 // Check if first segment is a culture code and remove it
-                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh'];
+                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh', 'ar-SA'];
                 let pathWithoutCulture = currentPath;
 
                 if (segments.length > 0 && cultures.includes(segments[0])) {
@@ -528,7 +539,8 @@
                 'pt': 'pt.svg',
                 'nl': 'nl.svg',
                 'fr': 'mf.svg',
-                'zh': 'cn.svg'
+                'zh': 'cn.svg',
+                'ar-SA': 'sa.svg'
             };
 
             const flagFile = flagMap[culture] || 'us.svg';

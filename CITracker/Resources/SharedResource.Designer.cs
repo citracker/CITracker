@@ -2617,6 +2617,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Health.
+        /// </summary>
+        public static string Health {
+            get {
+                return ResourceManager.GetString("Health", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Home.
         /// </summary>
         public static string Home {
@@ -2776,6 +2785,15 @@ namespace CITracker.Resources {
         public static string InitiativeDetails {
             get {
                 return ResourceManager.GetString("InitiativeDetails", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initiative Health.
+        /// </summary>
+        public static string InitiativeHealth {
+            get {
+                return ResourceManager.GetString("InitiativeHealth", resourceCulture);
             }
         }
         
