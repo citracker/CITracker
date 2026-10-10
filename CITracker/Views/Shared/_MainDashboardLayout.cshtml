@@ -1,9 +1,13 @@
 ﻿@using CITracker.Resources
 @using Shared.Enumerations
 @inject IHttpContextAccessor hca
+@{
+    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
+    var isRtl = currentCulture.TextInfo.IsRightToLeft;
+}
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
+<html lang="@currentCulture.Name" dir="@(isRtl ? "rtl" : "ltr")" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
    <head>
       <!-- Meta Data --> 
       <meta charset="UTF-8">
@@ -17,7 +21,8 @@
       <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
       <!-- Choices JS --> 
 
-      <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script> <!-- Bootstrap Css --> 
+      <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+      <!-- Bootstrap Css --> 
       <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
       <!-- Main Theme Js --> 
       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -338,6 +343,13 @@
                                     </span> Chinese
                                 </a>
                             </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="ar-SA" data-flag="sa.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/sa.svg" alt="img">
+                                    </span> العربية
+                                </a>
+                            </li>
                         </ul>
                     </div>
                     <!-- Start::header-element -->
@@ -573,7 +585,7 @@
                 const segments = currentPath.split('/').filter(s => s.length > 0);
 
                 // Check if first segment is a culture code and remove it
-                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh'];
+                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh', 'ar-SA'];
                 let pathWithoutCulture = currentPath;
 
                 if (segments.length > 0 && cultures.includes(segments[0])) {
@@ -655,7 +667,8 @@
                 'pt': 'pt.svg',
                 'nl': 'nl.svg',
                 'fr': 'mf.svg',
-                'zh': 'cn.svg'
+                'zh': 'cn.svg',
+                'ar-SA': 'sa.svg'
             };
 
             const flagFile = flagMap[culture] || 'us.svg';

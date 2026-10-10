@@ -2145,4 +2145,10 @@
   <data name="Resubscribe" xml:space="preserve">
     <value>Volver a Suscribirse</value>
   </data>
+  <data name="InitiativeHealth" xml:space="preserve">
+    <value>Salud de la iniciativa</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Salud</value>
+  </data>
 </root>

@@ -35,7 +35,8 @@ namespace CITracker
                 new CultureInfo("pt"), // Portugese
                 new CultureInfo("nl"), // dutch
                 new CultureInfo("fr"), // french
-                new CultureInfo("zh") // chinese
+                new CultureInfo("zh"), // chinese,
+                new CultureInfo("ar-SA") //arabic
             };
 
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
