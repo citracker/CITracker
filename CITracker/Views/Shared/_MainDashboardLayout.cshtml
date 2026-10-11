@@ -8,229 +8,270 @@
 
 <!DOCTYPE html>
 <html lang="@currentCulture.Name" dir="@(isRtl ? "rtl" : "ltr")" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
-   <head>
-      <!-- Meta Data --> 
-      <meta charset="UTF-8">
-      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>@ViewBag.Title</title>
-      <meta name="Description" content="">
-      <meta name="Author" content="Ops Focus Inc">
-      <meta name="keywords" content="admin,admin dashboard,admin panel,admin template,bootstrap,clean,dashboard,flat,jquery,modern,responsive,premium admin templates,responsive admin,ui,ui kit.">
-      <!-- Favicon --> 
-      <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
-      <!-- Choices JS --> 
+    <head>
+        <!-- Meta Data -->
+        <meta charset="UTF-8">
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>@ViewBag.Title</title>
+        <meta name="Description" content="">
+        <meta name="Author" content="Ops Focus Inc">
+        <meta name="keywords" content="admin,admin dashboard,admin panel,admin template,bootstrap,clean,dashboard,flat,jquery,modern,responsive,premium admin templates,responsive admin,ui,ui kit.">
 
-      <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
-      <!-- Bootstrap Css --> 
-      <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <!-- Main Theme Js --> 
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script src="~/assets/js/main.js"></script> <!-- Style Css --> 
-      <link href="~/assets/css/styles.min.css" rel="stylesheet">
-      <link href="~/assets/css/partial.css" rel="stylesheet">
-      <!-- Icons Css -->
-      <link href="~/assets/css/icons.css" rel="stylesheet">
-      <!-- Node Waves Css --> 
-      <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
-      <!-- Simplebar Css --> 
-      <link href="~/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
-      <!-- Color Picker Css --> 
-      <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
-      <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
-      <!-- Choices Css --> 
-      <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
-      <link rel="stylesheet" href="~/assets/libs/jsvectormap/css/jsvectormap.min.css">
-      <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
-      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-      <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
-      <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Favicon -->
+        <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
 
-
-      <meta http-equiv="imagetoolbar" content="no" />    
-      <style>
-        a.details-control {
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+        <!-- ⬇ RTL: Arabic-friendly font, loaded only when needed -->
+        @if (isRtl)
+        {
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap">
         }
 
-        .child-table {
-            width: 95%;
+        <!-- Choices JS -->
+        <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+        <!-- ⬇ RTL: Bootstrap swaps to its official RTL build -->
+        @if (isRtl)
+        {
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.rtl.min.css" integrity="sha512-4W9f7EnJgM33kD11Ux2XNF9DSpJ7LoQXCvBNhzKTorRSyjPHmjXhHMZMafIYqYvTNWahUk2ulNsarMMLDEv4zA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        }
+        else
+        {
+            <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         }
 
-         .child-table1 {
-            table-layout: fixed;
-            width: 70%;
+        <!-- Main Theme Js -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="~/assets/js/main.js"></script>
+
+        <!-- Style Css -->
+        <link href="~/assets/css/styles.min.css" rel="stylesheet">
+        <link href="~/assets/css/partial.css" rel="stylesheet">
+
+        <!-- ⬇ RTL: your custom RTL override, loaded after the theme -->
+        @if (isRtl)
+        {
+            <link href="~/assets/css/rtl-override.css" rel="stylesheet" asp-append-version="true">
         }
 
-        /*.child-table1 th:nth-child(2),
-        .child-table1 td:nth-child(2) {
-            width: 100%;
-        } */
+        <!-- Icons Css -->
+        <link href="~/assets/css/icons.css" rel="stylesheet">
 
-        .child-table-wrapper {
-            display: flex;
-            justify-content: flex-end; /* align to the right */
+        <!-- Node Waves Css -->
+        <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+
+        <!-- Simplebar Css -->
+        <link href="~/assets/libs/simplebar/simplebar.min.css" rel="stylesheet">
+
+        <!-- Color Picker Css -->
+        <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
+        <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
+
+        <!-- Choices Css -->
+        <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+        <link rel="stylesheet" href="~/assets/libs/jsvectormap/css/jsvectormap.min.css">
+        <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+        <!-- ⬇ RTL: DataTables Arabic language pack -->
+        @if (isRtl)
+        {
+            <script src="https://cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json"></script>
         }
 
-        .child-table-wrapper1 {
-            display: flex;
-            justify-content: flex-start; /* align to the right */
-        }
-      </style>
-      <style>
-        .floating-tabs {
-            position: sticky;
-            top: 0;
-            z-index: 1040;
-            background: transparent !important;
-            padding: 12px 0 10px 0;
-            margin-bottom: 24px;
-            border-bottom: none !important;
-            box-shadow: none !important;
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <!-- ⬇ RTL: Flatpickr Arabic locale -->
+        @if (isRtl)
+        {
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
         }
 
-            .floating-tabs .nav-tabs {
-                border-bottom: none;
-                gap: 6px;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-                justify-content: center !important;
+        <meta http-equiv="imagetoolbar" content="no" />
+
+        <style>
+            a.details-control {
+                cursor: pointer;
+                color: blue;
+                text-decoration: underline;
             }
 
-                .floating-tabs .nav-tabs::-webkit-scrollbar {
-                    display: none;
+            .child-table {
+                width: 95%;
+            }
+
+            .child-table1 {
+                table-layout: fixed;
+                width: 70%;
+            }
+
+            /*.child-table1 th:nth-child(2),
+                 .child-table1 td:nth-child(2) {
+                     width: 100%;
+                 } */
+
+            /* ⬇ RTL: logical `start`/`end` respect dir="rtl" automatically */
+            .child-table-wrapper {
+                display: flex;
+                justify-content: end; /* was flex-end (physical right) */
+            }
+
+            .child-table-wrapper1 {
+                display: flex;
+                justify-content: start; /* was flex-start (physical left) */
+            }
+        </style>
+
+        <style>
+            .floating-tabs {
+                position: sticky;
+                top: 0;
+                z-index: 1040;
+                background: transparent !important;
+                padding: 12px 0 10px 0;
+                margin-bottom: 24px;
+                border-bottom: none !important;
+                box-shadow: none !important;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+                .floating-tabs .nav-tabs {
+                    border-bottom: none;
+                    gap: 6px;
+                    flex-wrap: nowrap;
+                    overflow-x: auto;
+                    -webkit-overflow-scrolling: touch;
+                    scrollbar-width: none;
+                    justify-content: center !important;
                 }
 
-            .floating-tabs .nav-link {
-                border: none;
-                border-radius: 30px;
-                padding: 8px 24px;
+                    .floating-tabs .nav-tabs::-webkit-scrollbar {
+                        display: none;
+                    }
+
+                .floating-tabs .nav-link {
+                    border: none;
+                    border-radius: 30px;
+                    padding: 8px 24px;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    color: #2c3e50;
+                    background: rgba(255, 255, 255, 0.55);
+                    backdrop-filter: blur(6px);
+                    -webkit-backdrop-filter: blur(6px);
+                    transition: all 0.25s ease;
+                    white-space: nowrap;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                }
+
+                    .floating-tabs .nav-link i {
+                        font-size: 1.15rem;
+                    }
+
+                    .floating-tabs .nav-link:hover {
+                        color: #0d6efd;
+                        background: rgba(255, 255, 255, 0.9);
+                    }
+
+                    .floating-tabs .nav-link.active {
+                        color: #fff;
+                        background: #0d6efd;
+                        box-shadow: 0 4px 16px rgba(13, 110, 253, 0.35);
+                    }
+
+            /* ----------------------------- */
+            /* TAB PANELS (show/hide)        */
+            /* ----------------------------- */
+            .tab-pane {
+                display: none;
+                animation: fadeIn 0.3s ease;
+            }
+
+                .tab-pane.active {
+                    display: block;
+                }
+
+            @@keyframes fadeIn {
+                0% {
+                    opacity: 0;
+                    transform: translateY(8px);
+                }
+
+                100% {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* ----------------------------- */
+            /* OFFSET FOR STICKY BAR         */
+            /* ----------------------------- */
+            .section-anchor {
+                scroll-margin-top: 90px;
+            }
+
+            /* ----------------------------- */
+            /* RESPONSIVE                    */
+            /* ----------------------------- */
+            @@media (max-width: 576px) {
+                .floating-tabs .nav-link {
+                    padding: 6px 14px;
+                    font-size: 0.78rem;
+                }
+
+                    .floating-tabs .nav-link i {
+                        font-size: 0.9rem;
+                    }
+
+                .section-anchor {
+                    scroll-margin-top: 75px;
+                }
+            }
+        </style>
+
+        <style>
+            .health-pill {
+                padding: 3px 10px;
+                border-radius: 20px;
+                font-size: .72rem;
                 font-weight: 600;
-                font-size: 0.9rem;
-                color: #2c3e50;
-                background: rgba(255, 255, 255, 0.55);
-                backdrop-filter: blur(6px);
-                -webkit-backdrop-filter: blur(6px);
-                transition: all 0.25s ease;
-                white-space: nowrap;
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
             }
 
-                .floating-tabs .nav-link i {
-                    font-size: 1.15rem;
-                }
-
-                .floating-tabs .nav-link:hover {
-                    color: #0d6efd;
-                    background: rgba(255, 255, 255, 0.9);
-                }
-
-                .floating-tabs .nav-link.active {
-                    color: #fff;
-                    background: #0d6efd;
-                    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.35);
-                }
-
-        /* ----------------------------- */
-        /* TAB PANELS (show/hide)        */
-        /* ----------------------------- */
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-            .tab-pane.active {
-                display: block;
+            .health-OnTrack {
+                background: #dcfce7;
+                color: #15803d;
             }
 
-        @@keyframes fadeIn {
-            0%
+            .health-AtRisk {
+                background: #fef3c7;
+                color: #b45309;
+            }
 
-        {
-            opacity: 0;
-            transform: translateY(8px);
-        }
+            .health-Overdue {
+                background: #fee2e2;
+                color: #b91c1c;
+            }
 
-        100% {
-            opacity: 1;
-            transform: translateY(0);
-        }
+            .health-Done {
+                background: #dbeafe;
+                color: #1d4ed8;
+            }
 
-        }
-
-        /* ----------------------------- */
-        /* OFFSET FOR STICKY BAR         */
-        /* ----------------------------- */
-        .section-anchor {
-            scroll-margin-top: 90px;
-        }
-
-        /* ----------------------------- */
-        /* RESPONSIVE                    */
-        /* ----------------------------- */
-        @@media (max-width: 576px) {
-            .floating-tabs .nav-link
-
-        {
-            padding: 6px 14px;
-            font-size: 0.78rem;
-        }
-
-        .floating-tabs .nav-link i {
-            font-size: 0.9rem;
-        }
-
-        .section-anchor {
-            scroll-margin-top: 75px;
-        }
-
-        }
-    </style>
-      <style>
-          .health-pill {
-              padding: 3px 10px;
-              border-radius: 20px;
-              font-size: .72rem;
-              font-weight: 600;
-          }
-      
-          .health-OnTrack {
-              background: #dcfce7;
-              color: #15803d;
-          }
-      
-          .health-AtRisk {
-              background: #fef3c7;
-              color: #b45309;
-          }
-      
-          .health-Overdue {
-              background: #fee2e2;
-              color: #b91c1c;
-          }
-      
-          .health-Done {
-              background: #dbeafe;
-              color: #1d4ed8;
-          }
-      
-          .health-Cancelled {
-              background: #e5e7eb;
-              color: #4b5563;
-          }
-      </style>
-   </head>
+            .health-Cancelled {
+                background: #e5e7eb;
+                color: #4b5563;
+            }
+        </style>
+    </head>
    <body>
    <!-- Loader --> 
    <div id="loader" class="d-none"> <img src="~/assets/images/media/media-79.svg" alt=""> </div>
