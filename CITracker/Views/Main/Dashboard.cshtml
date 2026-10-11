@@ -503,15 +503,15 @@
                                             <table class="table table-sm align-middle" id="oeHealthTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th>@SharedResource.Title</th>
-                                                        <th>@SharedResource.Priority</th>
-                                                        <th>@SharedResource.Status</th>
-                                                        <th>@SharedResource.Facilitator</th>
-                                                        <th>@SharedResource.Sponsor</th>
-                                                        <th>@SharedResource.EndDate</th>
-                                                        <th>@SharedResource.Days +/-</th>
-                                                        <th>@SharedResource.Carryover</th>
-                                                        <th>@SharedResource.Health</th>
+                                                        <th class="color_left">@SharedResource.Title</th>
+                                                        <th class="color_left">@SharedResource.Priority</th>
+                                                        <th class="color_left">@SharedResource.Status</th>
+                                                        <th class="color_mid">@SharedResource.Facilitator</th>
+                                                        <th class="color_mid">@SharedResource.Sponsor</th>
+                                                        <th class="color_mid">@SharedResource.EndDate</th>
+                                                        <th class="color_mid">@SharedResource.Days +/-</th>
+                                                        <th class="color_right">@SharedResource.Carryover</th>
+                                                        <th class="color_right">@SharedResource.Health</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -666,16 +666,16 @@
                                             <table class="table table-sm align-middle" id="siHealthTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th>@SharedResource.Title</th>
-                                                        <th>@SharedResource.Priority</th>
-                                                        <th>@SharedResource.Status</th>
-                                                        <th>@SharedResource.Owner</th>
-                                                        <th>@SharedResource.Sponsor</th>
-                                                        <th>@SharedResource.Department</th>
-                                                        <th>@SharedResource.ROI</th>
-                                                        <th>@SharedResource.EndDate</th>
-                                                        <th>@SharedResource.Days +/-</th>
-                                                        <th>@SharedResource.Health</th>
+                                                        <th class="color_left">@SharedResource.Title</th>
+                                                        <th class="color_left">@SharedResource.Priority</th>
+                                                        <th class="color_left">@SharedResource.Status</th>
+                                                        <th class="color_mid">@SharedResource.Owner</th>
+                                                        <th class="color_mid">@SharedResource.Sponsor</th>
+                                                        <th class="color_mid">@SharedResource.Department</th>
+                                                        <th class="color_mid">@SharedResource.ROI</th>
+                                                        <th class="color_mid">@SharedResource.EndDate</th>
+                                                        <th class="color_right">@SharedResource.Days +/-</th>
+                                                        <th class="color_right">@SharedResource.Health</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -999,11 +999,13 @@
             prepUI(result, c, c1, c2, c3);
         }
     }
+    const currentLang = document.documentElement.lang || 'en-US';
 
 
 
 
     if (window.moduleAccess.ci) {
+
 
         const chartDom = document.getElementById('projCountbyMethodology');
         const myChart = echarts.init(chartDom);
@@ -1243,6 +1245,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadPolarData() {
             try {
@@ -1437,6 +1440,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData() {
             try {
@@ -1531,6 +1535,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData2() {
             try {
@@ -1629,6 +1634,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadCompletedProjectsData() {
             try {
@@ -1725,6 +1731,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData3() {
             try {
@@ -1808,6 +1815,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadDepartmentData() {
             try {
@@ -1890,6 +1898,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadPhaseData() {
             try {
@@ -2041,7 +2050,6 @@
 
 
     if (window.moduleAccess.oe) {
-
         // ═══════════════════════════════════════════════════════════════════
         //  OPERATIONAL EXCELLENCE  —  Chart.js
         // ═══════════════════════════════════════════════════════════════════
@@ -2065,6 +2073,8 @@
                 plugins: { title: { display: true, text: resources.projStat, font: { size: 14, weight: 'bold' } },
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
         });
+        window.Chart.defaults.locale = currentLang;
+
 
         async function loadOEStatusPie() {
             try {
@@ -2092,6 +2102,8 @@
                                     font: { size: 14, weight: 'bold' } },
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
         });
+        window.Chart.defaults.locale = currentLang;
+
 
         async function loadOECarryOverPie() {
             try {
@@ -2137,6 +2149,7 @@
                 }
             } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOETopProjects() {
             try {
@@ -2168,6 +2181,7 @@
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEWorkload() {
             try {
@@ -2201,6 +2215,7 @@
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { y: { beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEForecast() {
             try {
@@ -2235,6 +2250,7 @@
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { y: { beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOECumulative() {
             try {
@@ -2265,6 +2281,7 @@
                            legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEDeptFacility() {
             try {
@@ -2318,6 +2335,7 @@
         padding: { left: 0, right: 8, top: 0, bottom: 0 }
     } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOECycleTime() {
             try {
@@ -2389,6 +2407,7 @@
 
 
     if (window.moduleAccess.si) {
+
     // ═══════════════════════════════════════════════════════════════════
     //  STRATEGIC INITIATIVES  —  Chart.js
     // ═══════════════════════════════════════════════════════════════════
@@ -2412,6 +2431,7 @@
                                 font: { size: 14, weight: 'bold' } },
                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIStatusPie() {
         try {
@@ -2439,6 +2459,7 @@
                                 font: { size: 14, weight: 'bold' } },
                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIStatusBreakdown() {
         try {
@@ -2512,6 +2533,7 @@
             layout: { padding: { left: 0, right: 8, top: 0, bottom: 0 } }
         }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSITopInitiatives() {
         try {
@@ -2542,6 +2564,7 @@
                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIWorkload() {
         try {
@@ -2575,6 +2598,7 @@
                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { y: { beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIForecast() {
         try {
@@ -2613,6 +2637,7 @@
                        }} },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIWaterfall() {
         try {
@@ -2648,6 +2673,7 @@
                        legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIRoiByDeptOwner() {
         try {
@@ -2744,6 +2770,7 @@
             layout: { padding: { left: 0, right: 8, top: 0, bottom: 0 } }
         }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSICycleTime() {
         try {

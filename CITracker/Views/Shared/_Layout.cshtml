@@ -1,8 +1,12 @@
 ﻿@using CITracker.Resources
 @inject IHttpContextAccessor hca
-<!DOCTYPE html>
+@{
+    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
+    var isRtl = currentCulture.TextInfo.IsRightToLeft;
+}
 
-<html lang="en" dir="ltr" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
+<!DOCTYPE html>
+<html lang="@currentCulture.Name" dir="@(isRtl ? "rtl" : "ltr")" data-nav-layout="horizontal" data-nav-style="menu-click" data-menu-position="fixed" data-theme-mode="light">
 <head>
     <!-- Meta Data -->
     <meta charset="UTF-8">
@@ -11,23 +15,59 @@
     <title>@ViewBag.Title</title>
     <meta name="Description" content="">
     <meta name="Author" content="Ops Focus Inc">
+
     <!-- Favicon -->
     <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+
+    <!-- ⬇ RTL: Arabic-friendly font, only when needed -->
+    @if (isRtl)
+    {
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap">
+    }
+
     <!-- Bootstrap Css -->
-    <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    @if (isRtl)
+    {
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.rtl.min.css" integrity="sha512-4W9f7EnJgM33kD11Ux2XNF9DSpJ7LoQXCvBNhzKTorRSyjPHmjXhHMZMafIYqYvTNWahUk2ulNsarMMLDEv4zA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    }
+    else
+    {
+        <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    }
+
     <!-- Style Css -->
     <link href="~/assets/css/styles.css" rel="stylesheet">
+
     <!-- Icons Css -->
     <link href="~/assets/css/icons.css" rel="stylesheet">
+
     <!-- Node Waves Css -->
     <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+
     <!-- SwiperJS Css -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
     <!-- Color Picker Css -->
     <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
     <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
+
     <!-- Choices Css -->
     <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+
+    <!-- ⬇ RTL: custom override, loaded after the theme -->
+    @if (isRtl)
+    {
+        <link href="~/assets/css/rtl-override.css" rel="stylesheet" asp-append-version="true">
+    }
+
+    <!-- ⬇ RTL: Flatpickr Arabic locale -->
+    @if (isRtl)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
+    }
+
     <style>
         #slider {
             padding: 80px 0;
@@ -38,7 +78,6 @@
             height: 420px;
         }
 
-        /* MAKE SLIDES BIGGER */
         .swiper-slide {
             width: 520px !important;
             display: flex;
@@ -46,7 +85,6 @@
             align-items: center;
         }
 
-            /* IMAGE SIZE */
             .swiper-slide img {
                 width: 100%;
                 height: auto;
@@ -55,7 +93,6 @@
                 box-shadow: 0 15px 40px rgba(0,0,0,0.5);
             }
 
-        /* optional: make center slide slightly bigger */
         .swiper-slide-active img {
             transform: scale(1.05);
         }

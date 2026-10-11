@@ -1,0 +1,118 @@
+﻿/* ═══════════════════════════════════════════════════════════════════
+   RTL OVERRIDES — loaded only when <html dir="rtl">
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Global */
+[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+    font-family: "Cairo", "Roboto", sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    letter-spacing: 0 !important; /* Arabic must not be letter-spaced */
+    text-transform: none !important; /* no uppercase in Arabic */
+}
+
+[dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3,
+[dir="rtl"] h4, [dir="rtl"] h5, [dir="rtl"] h6,
+[dir="rtl"] .fw-semibold, [dir="rtl"] .card-title {
+    font-family: "Cairo", "Roboto", sans-serif;
+    font-weight: 600;
+}
+
+/* Sidebar mirrors to the right */
+[dir="rtl"] .app-sidebar {
+    left: auto;
+    right: 0;
+    border-right: 0;
+    border-left: 1px solid var(--default-border);
+}
+
+[dir="rtl"] .app-content {
+    margin-left: 0;
+    margin-right: 240px;
+}
+
+/* Header */
+[dir="rtl"] .app-header {
+    padding-left: 1rem;
+    padding-right: 0;
+}
+
+/* Dropdowns and menus */
+[dir="rtl"] .dropdown-menu {
+    text-align: right;
+}
+
+/* Tables */
+[dir="rtl"] table th,
+[dir="rtl"] table td {
+    text-align: right;
+}
+
+/* Directional icons flip */
+[dir="rtl"] .fe-chevron-right,
+[dir="rtl"] .ri-arrow-right-s-line,
+[dir="rtl"] .bi-chevron-right,
+[dir="rtl"] .ri-arrow-right-line {
+    transform: scaleX(-1);
+}
+
+[dir="rtl"] .fe-chevron-left,
+[dir="rtl"] .ri-arrow-left-s-line,
+[dir="rtl"] .bi-chevron-left,
+[dir="rtl"] .ri-arrow-left-line {
+    transform: scaleX(-1);
+}
+
+/* Tabs */
+[dir="rtl"] .nav-tabs .nav-link {
+    text-align: right;
+}
+
+/* Forms */
+[dir="rtl"] .form-control,
+[dir="rtl"] .form-select {
+    text-align: right;
+    direction: rtl;
+}
+
+[dir="rtl"] .input-group > .form-control:not(:last-child) {
+    border-radius: 0 4px 4px 0;
+}
+
+[dir="rtl"] .input-group > .input-group-text:first-child {
+    border-radius: 0 4px 4px 0;
+}
+
+/* Choice.js (used in your head) */
+[dir="rtl"] .choices__list--dropdown,
+[dir="rtl"] .choices__list[aria-expanded] {
+    text-align: right;
+}
+
+/* Flatpickr */
+[dir="rtl"] .flatpickr-calendar {
+    direction: rtl;
+}
+
+/* DataTables */
+[dir="rtl"] table.dataTable thead th,
+[dir="rtl"] table.dataTable tbody td {
+    text-align: right;
+}
+
+/* Pagination in DataTables */
+[dir="rtl"] .dataTables_wrapper .dataTables_paginate .paginate_button.previous::before,
+[dir="rtl"] .dataTables_wrapper .dataTables_paginate .paginate_button.next::after {
+    transform: scaleX(-1);
+}
+
+/* Keep the child-table wrappers aligned with the new logical direction */
+[dir="rtl"] .child-table-wrapper {
+    justify-content: flex-start; /* physical flip: was flex-end in LTR */
+}
+
+[dir="rtl"] .child-table-wrapper1 {
+    justify-content: flex-end; /* physical flip: was flex-start in LTR */
+}
