@@ -1127,6 +1127,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Carry-Over &amp; Classification.
+        /// </summary>
+        public static string CarryOverClassification {
+            get {
+                return ResourceManager.GetString("CarryOverClassification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Carry Over Project?.
         /// </summary>
         public static string CarryOverProject {
@@ -1733,6 +1742,33 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cumulative Status Breakdown (ROI).
+        /// </summary>
+        public static string CummulativeStatusBreakdown {
+            get {
+                return ResourceManager.GetString("CummulativeStatusBreakdown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cumulative Monthly Savings Trend.
+        /// </summary>
+        public static string CumulativeMonthlySavingsTrend {
+            get {
+                return ResourceManager.GetString("CumulativeMonthlySavingsTrend", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cumulative ROI vs Target.
+        /// </summary>
+        public static string CumulativeROIvsTarget {
+            get {
+                return ResourceManager.GetString("CumulativeROIvsTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Currency is required..
         /// </summary>
         public static string CurrencyIsRequired {
@@ -1783,6 +1819,15 @@ namespace CITracker.Resources {
         public static string CustomizableTemplatesAndTools {
             get {
                 return ResourceManager.GetString("CustomizableTemplatesAndTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time to Completion / Cycle Time.
+        /// </summary>
+        public static string CycleTime {
+            get {
+                return ResourceManager.GetString("CycleTime", resourceCulture);
             }
         }
         
@@ -2355,6 +2400,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Facilitator &amp; Sponsor Workload.
+        /// </summary>
+        public static string FacilitatorSponsorWorkload {
+            get {
+                return ResourceManager.GetString("FacilitatorSponsorWorkload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Facilitators Projects.
         /// </summary>
         public static string FacilitatorsProjects {
@@ -2812,6 +2866,15 @@ namespace CITracker.Resources {
         public static string InitiativeManagement {
             get {
                 return ResourceManager.GetString("InitiativeManagement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Initiative Pipeline by Status.
+        /// </summary>
+        public static string InitiativePipelineByStatus {
+            get {
+                return ResourceManager.GetString("InitiativePipelineByStatus", resourceCulture);
             }
         }
         
@@ -3545,6 +3608,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Monthly ROI Waterfall.
+        /// </summary>
+        public static string MonthlyROIWaterfall {
+            get {
+                return ResourceManager.GetString("MonthlyROIWaterfall", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Monthly Savings.
         /// </summary>
         public static string MonthlySavings {
@@ -3964,6 +4036,15 @@ namespace CITracker.Resources {
         public static string OwnerActivateToSortColumnAscending {
             get {
                 return ResourceManager.GetString("OwnerActivateToSortColumnAscending", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Owner &amp; Sponsor Workload.
+        /// </summary>
+        public static string OwnerSponsorWorkload {
+            get {
+                return ResourceManager.GetString("OwnerSponsorWorkload", resourceCulture);
             }
         }
         
@@ -4635,6 +4716,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ROI by Department and Owner.
+        /// </summary>
+        public static string RoiByDeptOwner {
+            get {
+                return ResourceManager.GetString("RoiByDeptOwner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Role.
         /// </summary>
         public static string Role {
@@ -4707,6 +4797,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Savings by Department &amp; Facility.
+        /// </summary>
+        public static string SavingsByDeptFacility {
+            get {
+                return ResourceManager.GetString("SavingsByDeptFacility", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Savings Category.
         /// </summary>
         public static string SavingsCategory {
@@ -4739,6 +4838,15 @@ namespace CITracker.Resources {
         public static string SavingsClassificationMustBeOneOf {
             get {
                 return ResourceManager.GetString("SavingsClassificationMustBeOneOf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Savings Forecast vs Target.
+        /// </summary>
+        public static string SavingsForecastVsTarget {
+            get {
+                return ResourceManager.GetString("SavingsForecastVsTarget", resourceCulture);
             }
         }
         
@@ -5661,6 +5769,15 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Time to Completion and Cycle Time.
+        /// </summary>
+        public static string TimeToCompletion {
+            get {
+                return ResourceManager.GetString("TimeToCompletion", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Title.
         /// </summary>
         public static string Title {
@@ -5711,6 +5828,24 @@ namespace CITracker.Resources {
         public static string Tools {
             get {
                 return ResourceManager.GetString("Tools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Initiatives by ROI.
+        /// </summary>
+        public static string TopInitiativesByROI {
+            get {
+                return ResourceManager.GetString("TopInitiativesByROI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Top Projects by Target Savings.
+        /// </summary>
+        public static string TopProjects {
+            get {
+                return ResourceManager.GetString("TopProjects", resourceCulture);
             }
         }
         

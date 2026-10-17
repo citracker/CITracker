@@ -2151,4 +2151,49 @@
   <data name="Health" xml:space="preserve">
     <value>Saúde</value>
   </data>
+  <data name="CarryOverClassification" xml:space="preserve">
+    <value>Transferência e classificação</value>
+  </data>
+  <data name="TopProjects" xml:space="preserve">
+    <value>Principais projetos por economia alvo</value>
+  </data>
+  <data name="FacilitatorSponsorWorkload" xml:space="preserve">
+    <value>Carga de trabalho do facilitador e patrocinador</value>
+  </data>
+  <data name="SavingsForecastVsTarget" xml:space="preserve">
+    <value>Previsão de economias versus meta</value>
+  </data>
+  <data name="CumulativeMonthlySavingsTrend" xml:space="preserve">
+    <value>Tendência acumulada de economias mensais</value>
+  </data>
+  <data name="SavingsByDeptFacility" xml:space="preserve">
+    <value>Economias por departamento e unidade</value>
+  </data>
+  <data name="TimeToCompletion" xml:space="preserve">
+    <value>Tempo até a conclusão e tempo de ciclo</value>
+  </data>
+  <data name="InitiativePipelineByStatus" xml:space="preserve">
+    <value>Pipeline de iniciativas por status</value>
+  </data>
+  <data name="CummulativeStatusBreakdown" xml:space="preserve">
+    <value>Detalhamento acumulado de status (ROI)</value>
+  </data>
+  <data name="TopInitiativesByROI" xml:space="preserve">
+    <value>Principais iniciativas por ROI</value>
+  </data>
+  <data name="OwnerSponsorWorkload" xml:space="preserve">
+    <value> Carga de trabalho do proprietário e patrocinador</value>
+  </data>
+  <data name="CumulativeROIvsTarget" xml:space="preserve">
+    <value>ROI acumulado versus meta</value>
+  </data>
+  <data name="MonthlyROIWaterfall" xml:space="preserve">
+    <value>Cascata mensal de ROI</value>
+  </data>
+  <data name="RoiByDeptOwner" xml:space="preserve">
+    <value>ROI por departamento e proprietário</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Tempo até a conclusão / tempo de ciclo</value>
+  </data>
 </root>
