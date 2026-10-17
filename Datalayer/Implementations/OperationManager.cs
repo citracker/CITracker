@@ -83,7 +83,7 @@ namespace Datalayer.Implementations
                 if (!_memoryCache.TryGetValue("Country", out ResponseHandler<Country> country))
                 {
                     using var dbConnection = await OpenConnectionAsync();
-                    var resi = await _repository.GetListAsync<Country>(dbConnection, "Select * from Country", CommandType.Text);
+                    var resi = await _repository.GetListAsync<Country>(dbConnection, "Select * from Country order by Name", CommandType.Text);
 
                     if (resi.Any())
                     {
