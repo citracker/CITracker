@@ -2145,4 +2145,55 @@
   <data name="Resubscribe" xml:space="preserve">
     <value>Opnieuw Abonneren</value>
   </data>
+  <data name="InitiativeHealth" xml:space="preserve">
+    <value>Gezondheid van het initiatief</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Gezondheid</value>
+  </data>
+  <data name="CarryOverClassification" xml:space="preserve">
+    <value>Overdracht en classificatie</value>
+  </data>
+  <data name="TopProjects" xml:space="preserve">
+    <value>Top projecten op basis van doelbesparingen</value>
+  </data>
+  <data name="FacilitatorSponsorWorkload" xml:space="preserve">
+    <value>Werkbelasting van facilitator en sponsor</value>
+  </data>
+  <data name="SavingsForecastVsTarget" xml:space="preserve">
+    <value>Besparingsprognose versus doel</value>
+  </data>
+  <data name="CumulativeMonthlySavingsTrend" xml:space="preserve">
+    <value>Cumulatieve trend van maandelijkse besparingen</value>
+  </data>
+  <data name="SavingsByDeptFacility" xml:space="preserve">
+    <value>Besparingen per afdeling en vestiging</value>
+  </data>
+  <data name="TimeToCompletion" xml:space="preserve">
+    <value>Tijd tot voltooiing en cyclustijd</value>
+  </data>
+  <data name="InitiativePipelineByStatus" xml:space="preserve">
+    <value>Initiatievenpijplijn per status</value>
+  </data>
+  <data name="CummulativeStatusBreakdown" xml:space="preserve">
+    <value>Cumulatieve statusuitsplitsing (ROI)</value>
+  </data>
+  <data name="TopInitiativesByROI" xml:space="preserve">
+    <value>Top initiatieven op basis van ROI</value>
+  </data>
+  <data name="OwnerSponsorWorkload" xml:space="preserve">
+    <value>Werkbelasting van eigenaar en sponsor</value>
+  </data>
+  <data name="CumulativeROIvsTarget" xml:space="preserve">
+    <value>Cumulatieve ROI versus doel</value>
+  </data>
+  <data name="MonthlyROIWaterfall" xml:space="preserve">
+    <value>Maandelijkse ROI-waterval</value>
+  </data>
+  <data name="RoiByDeptOwner" xml:space="preserve">
+    <value>ROI per afdeling en eigenaar</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Tijd tot voltooiing / cyclustijd</value>
+  </data>
 </root>

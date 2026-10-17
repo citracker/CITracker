@@ -2145,4 +2145,55 @@
   <data name="Resubscribe" xml:space="preserve">
     <value>Volver a Suscribirse</value>
   </data>
+  <data name="InitiativeHealth" xml:space="preserve">
+    <value>Salud de la iniciativa</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>Salud</value>
+  </data>
+  <data name="CarryOverClassification" xml:space="preserve">
+    <value>Arrastre y clasificación</value>
+  </data>
+  <data name="TopProjects" xml:space="preserve">
+    <value>Principales proyectos por ahorro objetivo</value>
+  </data>
+  <data name="FacilitatorSponsorWorkload" xml:space="preserve">
+    <value>Carga de trabajo del facilitador y patrocinador</value>
+  </data>
+  <data name="SavingsForecastVsTarget" xml:space="preserve">
+    <value>Previsión de ahorros frente al objetivo</value>
+  </data>
+  <data name="CumulativeMonthlySavingsTrend" xml:space="preserve">
+    <value>Tendencia acumulada de ahorros mensuales</value>
+  </data>
+  <data name="SavingsByDeptFacility" xml:space="preserve">
+    <value>Ahorros por departamento e instalación</value>
+  </data>
+  <data name="TimeToCompletion" xml:space="preserve">
+    <value>Tiempo hasta la finalización y tiempo de ciclo</value>
+  </data>
+  <data name="InitiativePipelineByStatus" xml:space="preserve">
+    <value>Pipeline de iniciativas por estado</value>
+  </data>
+  <data name="CummulativeStatusBreakdown" xml:space="preserve">
+    <value>Desglose acumulado de estados (ROI)</value>
+  </data>
+  <data name="TopInitiativesByROI" xml:space="preserve">
+    <value>Principales iniciativas por ROI</value>
+  </data>
+  <data name="OwnerSponsorWorkload" xml:space="preserve">
+    <value>Carga de trabajo del propietario y patrocinador</value>
+  </data>
+  <data name="CumulativeROIvsTarget" xml:space="preserve">
+    <value>ROI acumulado frente al objetivo</value>
+  </data>
+  <data name="MonthlyROIWaterfall" xml:space="preserve">
+    <value>Cascada mensual de ROI</value>
+  </data>
+  <data name="RoiByDeptOwner" xml:space="preserve">
+    <value>ROI por departamento y propietario</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>Tiempo hasta la finalización / tiempo de ciclo</value>
+  </data>
 </root>

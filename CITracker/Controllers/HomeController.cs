@@ -558,7 +558,10 @@ namespace CITracker.Controllers
                     Role = "Admin",
                     IsActive = true,
                     DateCreated = DateTime.UtcNow,
-                    IdentityProvider = provider
+                    IdentityProvider = provider,
+                    HasCIAccess = true,
+                    HasSIAccess = true,
+                    HasOEAccess = true,
                 };
                 var trialStart = pending.TrialDays > 0 ? DateTime.UtcNow : (DateTime?)null;
                 var trialEnd = pending.TrialDays > 0 ? DateTime.UtcNow.AddDays(pending.TrialDays) : (DateTime?)null;
@@ -926,7 +929,10 @@ namespace CITracker.Controllers
                         EmailAddress = Request.Form["adminEmail"],
                         Role = Shared.Enumerations.Role.Admin.ToString(),
                         DateCreated = DateTime.UtcNow,
-                        IdentityProvider = provider                    
+                        IdentityProvider = provider,
+                        HasCIAccess = true, 
+                        HasOEAccess = true,
+                        HasSIAccess = true
                     };
 
                     if (subscription == null || subscription?.SingleResult == null)

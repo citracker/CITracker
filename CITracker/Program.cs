@@ -35,8 +35,16 @@ namespace CITracker
                 new CultureInfo("pt"), // Portugese
                 new CultureInfo("nl"), // dutch
                 new CultureInfo("fr"), // french
-                new CultureInfo("zh") // chinese
+                new CultureInfo("zh"), // chinese,
+                new CultureInfo("ar-SA") //arabic
             };
+
+            // Force Gregorian calendar for Arabic locales
+            var arCulture = new CultureInfo("ar-SA");
+            arCulture.DateTimeFormat.Calendar = new GregorianCalendar();
+            supportedCultures = supportedCultures
+                .Select(c => c.Name == "ar-SA" ? arCulture : c)
+                .ToArray();
 
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
 
@@ -82,11 +90,6 @@ namespace CITracker
 
                 builder.Services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest);
 
-                //builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                //    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
-                //    .EnableTokenAcquisitionToCallDownstreamApi(new[] { "Organization.Read.All" })
-                //    .AddInMemoryTokenCaches();
-
                 var authBuilder = builder.Services
                     .AddAuthentication(options =>
                     {
@@ -94,17 +97,6 @@ namespace CITracker
                         options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                         options.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme; ;   // fallback provider
                     });
-
-                //// 1. Cookies (required — every sign-in ends in a cookie)
-                //authBuilder.AddCookie(options =>
-                //{
-                //    options.LoginPath = "/Home/SignIn";
-                //    options.LogoutPath = "/Home/SignOut";
-                //    options.AccessDeniedPath = "/Home/AccessDenied";
-                //    options.ExpireTimeSpan = TimeSpan.FromMinutes(
-                //        Convert.ToInt32(builder.Configuration["AppSettings:SessionTimeout"]));
-                //    options.SlidingExpiration = true;
-                //});
 
                 // 2. Microsoft (multi-tenant) — note this DOES return the wrapper type
                 authBuilder
@@ -125,33 +117,6 @@ namespace CITracker
                     options.Scope.Add("email");
                     options.Scope.Add("profile");
                 });
-
-                //// 4. Corporate SSO (any OIDC-compliant IdP)
-                //authBuilder.AddOpenIdConnect("CorporateSso", options =>
-                //{
-                //    options.Authority = builder.Configuration["SAML:Authority"];
-                //    options.ClientId = builder.Configuration["SAML:ClientId"];
-                //    options.ClientSecret = builder.Configuration["SAML:ClientSecret"];
-                //    options.CallbackPath = "/signin-corporate";
-                //    options.ResponseType = "code";
-                //    options.SaveTokens = true;
-                //    options.Scope.Add("openid");
-                //    options.Scope.Add("email");
-                //    options.Scope.Add("profile");
-                //});
-
-                //// 5. Email/password (ASP.NET Core Identity)
-                //builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-                //{
-                //    options.SignIn.RequireConfirmedAccount = true;
-                //    options.Password.RequiredLength = 10;
-                //    options.User.RequireUniqueEmail = true;
-                //})
-                //.AddDefaultTokenProviders();
-
-                //// Also needed by Identity if you want the UI endpoints:
-                //builder.Services.AddRazorPages();
-
 
                 builder.Services.AddAuthorization();
 
@@ -187,13 +152,6 @@ namespace CITracker
 
                     // Add our custom route provider at the beginning (highest priority)
                     options.RequestCultureProviders.Insert(0, new RouteCultureProvider(Options.Create(options)));
-
-                    //options.RequestCultureProviders = new IRequestCultureProvider[]
-                    //{
-                    //    new CookieRequestCultureProvider(),
-                    //    new AcceptLanguageHeaderRequestCultureProvider(),
-                    //    new QueryStringRequestCultureProvider()
-                    //};
                 });
 
                 builder.Services.Configure<KeyValues>(builder.Configuration.GetSection("AppSettings"));
@@ -225,15 +183,15 @@ namespace CITracker
 
                 // Configure the HTTP request pipeline
                 app.UseForwardedHeaders();
-                ////if (!app.Environment.IsDevelopment())
-                ////{
-                ////    app.UseExceptionHandler("/Error");
+                if (!app.Environment.IsDevelopment())
+                {
+                    app.UseExceptionHandler("/Error");
                     app.UseHsts();
-                ////}
-                ////else
-                ////{
+                }
+                else
+                {
                     app.UseDeveloperExceptionPage();
-                ////}
+                }
 
                 app.UseHttpsRedirection();
                 app.UseStaticFiles();

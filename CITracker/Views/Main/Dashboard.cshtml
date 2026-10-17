@@ -498,20 +498,20 @@
                             <div class="col-12">
                                 <div class="card custom-card">
                                     <div class="card-body">
-                                        <h6 class="fw-bold mb-3">@SharedResource.ProjectHealth</h6>
+                                        <h6 class="fw-bold mb-3 fs-14">@SharedResource.ProjectHealth</h6>
                                         <div class="table-responsive" style="max-height:420px;overflow:auto">
                                             <table class="table table-sm align-middle" id="oeHealthTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th>Title</th>
-                                                        <th>Priority</th>
-                                                        <th>Status</th>
-                                                        <th>Facilitator</th>
-                                                        <th>Sponsor</th>
-                                                        <th>End Date</th>
-                                                        <th>Days +/-</th>
-                                                        <th>Carry-Over</th>
-                                                        <th>Health</th>
+                                                        <th class="color_left">@SharedResource.Title</th>
+                                                        <th class="color_left">@SharedResource.Priority</th>
+                                                        <th class="color_left">@SharedResource.Status</th>
+                                                        <th class="color_mid">@SharedResource.Facilitator</th>
+                                                        <th class="color_mid">@SharedResource.Sponsor</th>
+                                                        <th class="color_mid">@SharedResource.EndDate</th>
+                                                        <th class="color_mid">@SharedResource.Days +/-</th>
+                                                        <th class="color_right">@SharedResource.Carryover</th>
+                                                        <th class="color_right">@SharedResource.Health</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -661,21 +661,21 @@
                             <div class="col-12">
                                 <div class="card custom-card">
                                     <div class="card-body">
-                                        <h6 class="fw-bold mb-3">Initiative Health</h6>
+                                        <h6 class="fw-bold mb-3 fs-14">@SharedResource.InitiativeHealth</h6>
                                         <div class="table-responsive" style="max-height:420px;overflow:auto">
                                             <table class="table table-sm align-middle" id="siHealthTable">
                                                 <thead class="table-light">
                                                     <tr>
-                                                        <th>Title</th>
-                                                        <th>Priority</th>
-                                                        <th>Status</th>
-                                                        <th>Owner</th>
-                                                        <th>Sponsor</th>
-                                                        <th>Department</th>
-                                                        <th>ROI</th>
-                                                        <th>End Date</th>
-                                                        <th>Days +/-</th>
-                                                        <th>Health</th>
+                                                        <th class="color_left">@SharedResource.Title</th>
+                                                        <th class="color_left">@SharedResource.Priority</th>
+                                                        <th class="color_left">@SharedResource.Status</th>
+                                                        <th class="color_mid">@SharedResource.Owner</th>
+                                                        <th class="color_mid">@SharedResource.Sponsor</th>
+                                                        <th class="color_mid">@SharedResource.Department</th>
+                                                        <th class="color_mid">@SharedResource.ROI</th>
+                                                        <th class="color_mid">@SharedResource.EndDate</th>
+                                                        <th class="color_right">@SharedResource.Days +/-</th>
+                                                        <th class="color_right">@SharedResource.Health</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody></tbody>
@@ -703,18 +703,68 @@
 <script>
     let currentFilters = {};
     const resources = {
-        methodology: '@SharedResource.Methodology',
-        noData: '@SharedResource.NoDataAvailable',
-        projStat: '@SharedResource.ProjectStatus',
-        certification: '@SharedResource.Certification',
-        savingCat: '@SharedResource.SavingsCategory',
-        monthlyProj: '@SharedResource.MonthlyProjects',
-        monthlyProjStat: '@SharedResource.MonthlyProjectsStatus',
-        monthlyProjPerPhase: '@SharedResource.MonthlyProjectsPerPhase',
-        monthlyProjPerDept: '@SharedResource.MonthlyProjectsPerDepartment',
-        monthlySavings: '@SharedResource.MonthlySavings',
-        facProj: '@SharedResource.FacilitatorsProjects',
-        errorOccured: '@SharedResource.AnErrorOccurred'
+        methodology: "@Html.Raw(SharedResource.Methodology)",
+        noData: "@Html.Raw(SharedResource.NoDataAvailable)",
+        projStat: "@Html.Raw(SharedResource.ProjectStatus)",
+        certification: "@Html.Raw(SharedResource.Certification)",
+        savingCat: "@Html.Raw(SharedResource.SavingsCategory)",
+        monthlyProj: "@Html.Raw(SharedResource.MonthlyProjects)",
+        monthlyProjStat: "@Html.Raw(SharedResource.MonthlyProjectsStatus)",
+        monthlyProjPerPhase: "@Html.Raw(SharedResource.MonthlyProjectsPerPhase)",
+        monthlyProjPerDept: "@Html.Raw(SharedResource.MonthlyProjectsPerDepartment)",
+        monthlySavings: "@Html.Raw(SharedResource.MonthlySavings)",
+        facProj: "@Html.Raw(SharedResource.FacilitatorsProjects)",
+        carryOver: "@Html.Raw(SharedResource.CarryOverClassification)",
+        topProjects: "@Html.Raw(SharedResource.TopProjects)",
+        facilitatorSponsorWorkload: "@Html.Raw(SharedResource.FacilitatorSponsorWorkload)",
+        savingsForecastVsTarget: "@Html.Raw(SharedResource.SavingsForecastVsTarget)",
+        cumulativeMonthlySavingsTrend: "@Html.Raw(SharedResource.CumulativeMonthlySavingsTrend)",
+        savingsByDeptFacility: "@Html.Raw(SharedResource.SavingsByDeptFacility)",
+        timeToCompletion: "@Html.Raw(SharedResource.TimeToCompletion)",
+        initiativePipelineByStatus: "@Html.Raw(SharedResource.InitiativePipelineByStatus)",
+        cummulativeStatusBreakdown: "@Html.Raw(SharedResource.CummulativeStatusBreakdown)",
+        topInitiativesByROI: "@Html.Raw(SharedResource.TopInitiativesByROI)",
+        ownerSponsorWorkload: "@Html.Raw(SharedResource.OwnerSponsorWorkload)",
+        cumulativeROIvsTarget: "@Html.Raw(SharedResource.CumulativeROIvsTarget)",
+        monthlyROIWaterfall: "@Html.Raw(SharedResource.MonthlyROIWaterfall)",
+        roiByDeptOwner: "@Html.Raw(SharedResource.RoiByDeptOwner)",
+        cycleTime: "@Html.Raw(SharedResource.CycleTime)",
+        errorOccured: "@Html.Raw(SharedResource.AnErrorOccurred)"
+    }
+
+    console.log(resources)
+
+        /**
+     * Splits a string into lines of at most `maxChars` characters,
+     * breaking on word boundaries. Returns an array of strings,
+     * which Chart.js renders as multi-line tick labels.
+     */
+    function wrapLabel(text, maxChars) {
+        if (!text) return '';
+        const words = text.split(' ');
+        const lines = [];
+        let current = '';
+
+        for (const word of words) {
+            if ((current + ' ' + word).trim().length <= maxChars) {
+                current = (current + ' ' + word).trim();
+            } else {
+                if (current) lines.push(current);
+                current = word;
+            }
+        }
+        if (current) lines.push(current);
+        return lines;
+    }
+
+        /**
+     * Converts "PROPOSED" → "Proposed", "INITIATED" → "Initiated", etc.
+     * Handles already-mixed case gracefully.
+     */
+    function toSentenceCase(str) {
+        if (!str) return '';
+        const lower = str.toString().toLowerCase();
+        return lower.charAt(0).toUpperCase() + lower.slice(1);
     }
 
     $(document).ready(function () {
@@ -966,26 +1016,35 @@
             prepUI(result, c, c1, c2, c3);
         }
     }
+    const currentLang = document.documentElement.lang || 'en-US';
 
 
 
 
     if (window.moduleAccess.ci) {
 
+
         const chartDom = document.getElementById('projCountbyMethodology');
         const myChart = echarts.init(chartDom);
 
         const option = {
+            color: ['#306D64', '#B53F0D', '#D77428', '#8FA68F', '#4C1507', '#04332D', '#040606'],
             title: {
                 text: resources.methodology+' #',
-                top: 'top'
+                top: 'top',
+                textStyle: { fontSize: 13, fontWeight: 'bold' },
+                padding: [2, 0, 6, 0]
             },
             tooltip: {
                 trigger: 'item'
             },
             legend: {
                 orient: 'horizontal',
-                bottom: 'bottom'
+                bottom: 'bottom',
+                textStyle: { fontSize: 10 },
+                itemWidth: 10,
+                itemHeight: 10,
+                itemGap: 8
             },
             emphasis: {
                 itemStyle: {
@@ -997,12 +1056,12 @@
             },
             series: [
                 {
-                    //name: 'Access From',
                     type: 'pie',
                     radius: ['70%'],
                     label: {
                         show: true,
-                        formatter: '{b}'
+                        formatter: '{b}',
+                        fontSize: 11
                     },
                     labelLine: {
                         show: true
@@ -1066,25 +1125,32 @@
         const myChart1 = echarts.init(chartDom1);
 
         const option1 = {
+            color: ['#306D64', '#B53F0D', '#D77428', '#E07AA7', '#8FA68F', '#4C1507', '#04332D', '#040606'],
             title: {
                 text: resources.projStat,
-                top: 'top'
+                top: 'top',
+                textStyle: { fontSize: 13, fontWeight: 'bold' },
+                padding: [2, 0, 6, 0]
             },
             tooltip: {
                 trigger: 'item'
             },
             legend: {
                 orient: 'horizontal',
-                bottom: 'bottom'
+                bottom: 'bottom',
+                textStyle: { fontSize: 10 },
+                itemWidth: 10,
+                itemHeight: 10,
+                itemGap: 8
             },
             series: [
                 {
-                    //name: 'Access From',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     label: {
                         show: true,
-                        formatter: '{b}'
+                        formatter: '{b}',
+                        fontSize: 11
                     },
                     labelLine: {
                         show: true
@@ -1122,7 +1188,10 @@
 
                 myChart1.setOption({
                     series: [{
-                        data: result
+                        data: result.map(x => ({
+                            name: toSentenceCase(x.name),
+                            value: x.value
+                        }))
                     }]
                 });
 
@@ -1155,11 +1224,7 @@
                     //label: 'Distribution',
                     data: [],
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)'
+                        '#306D64', '#B53F0D', '#D77428', '#8FA68F', '#E07AA7'
                     ]
                 }]
             },
@@ -1176,15 +1241,18 @@
                         display: true,
                         text: resources.certification,
                         font: {
-                            size: 18
+                            size: 14, 
+                            weight: 'bold'
                         }
                     },
                     legend: {
                         position: 'bottom',
                         align: 'center',
                         labels: {
-                            boxWidth: 15,
-                            padding: 15
+                            font: { size: 10 },
+                            boxWidth: 10,
+                            boxHeight: 10,
+                            padding: 8
                         }
                     }
                 },
@@ -1194,6 +1262,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadPolarData() {
             try {
@@ -1244,25 +1313,32 @@
         const myChart2 = echarts.init(chartDom2);
 
         const option2 = {
+            color: ['#306D64', '#B53F0D', '#D77428', '#E07AA7', '#8FA68F', '#4C1507', '#04332D', '#040606'],
             title: {
                 text: resources.savingCat,
-                top: 'top'
+                top: 'top',
+                textStyle: { fontSize: 13, fontWeight: 'bold' },
+                padding: [2, 0, 6, 0]
             },
             tooltip: {
                 trigger: 'item'
             },
             legend: {
                 orient: 'horizontal',
-                bottom: 'bottom'
+                bottom: 'bottom',
+                textStyle: { fontSize: 10 },
+                itemWidth: 10,
+                itemHeight: 10,
+                itemGap: 8
             },
             series: [
                 {
-                    //name: 'Access From',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     label: {
                         show: true,
-                        formatter: '{b}'
+                        formatter: '{b}',
+                        fontSize: 11
                     },
                     labelLine: {
                         show: true
@@ -1332,17 +1408,17 @@
                     {
                         label: 'Completed',
                         data: [],
-                        backgroundColor: 'rgba(153, 102, 255, 0.85)'
+                        backgroundColor: '#306D64'
                     },
                     {
                         label: 'Proposed',
                         data: [],
-                        backgroundColor: 'rgba(75, 192, 192, 0.85)'
+                        backgroundColor: '#B53F0D'
                     },
                     {
                         label: 'Initiated',
                         data: [],
-                        backgroundColor: 'rgba(255, 159, 64, 0.85)'
+                        backgroundColor: '#D77428'
                     }
                 ]
             },
@@ -1355,15 +1431,15 @@
                         text: resources.monthlyProjStat,
                         top: 'top',
                         font: {
-                            size: 18,
+                            size: 14,
                             weight: 'bold'
                         },
                         padding: {
-                            top: 10,
-                            bottom: 20
+                            top: 6,
+                            bottom: 10
                         }
                     },
-                    legend: { position: 'bottom' },
+                    legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } },
                     tooltip: { enabled: true }
                 },
                 scales: {
@@ -1381,6 +1457,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData() {
             try {
@@ -1434,26 +1511,10 @@
             data: {
                 labels: [],
                 datasets: [
-                    {
-                        label: 'Cost Avoidance',
-                        data: [],
-                        backgroundColor: 'rgba(54, 162, 235, 0.85)'
-                    },
-                    {
-                        label: 'Revenue',
-                        data: [],
-                        backgroundColor: 'rgba(255, 99, 132, 0.85)'
-                    },
-                    {
-                        label: 'Cost Reduction',
-                        data: [],
-                        backgroundColor: 'rgba(255, 159, 64, 0.85)'
-                    },
-                    {
-                        label: 'Cost Containment',
-                        data: [],
-                        backgroundColor: 'rgba(75, 192, 192, 0.85)' // Teal    rgba(153, 102, 255, 0.85)  // Royal Purple
-                    }
+                        { label: 'Cost Avoidance',    data: [], backgroundColor: '#306D64' },
+                        { label: 'Revenue',           data: [], backgroundColor: '#B53F0D' },
+                        { label: 'Cost Reduction',    data: [], backgroundColor: '#D77428' },
+                        { label: 'Cost Containment',  data: [], backgroundColor: '#8FA68F' }
                 ]
             },
             options: {
@@ -1465,15 +1526,15 @@
                         text: resources.monthlySavings,
                         top: 'top',
                         font: {
-                            size: 18,
+                            size: 14,
                             weight: 'bold'
                         },
                         padding: {
-                            top: 10,
-                            bottom: 20
+                            top: 6,
+                            bottom: 10
                         }
                     },
-                    legend: { position: 'bottom' },
+                    legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } },
                     tooltip: { enabled: true }
                 },
                 scales: {
@@ -1491,6 +1552,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData2() {
             try {
@@ -1545,8 +1607,8 @@
                 datasets: [{
                     label: 'Completed Projects',
                     data: [],
-                    backgroundColor: 'rgba(41, 128, 185, 0.85)',
-                    borderColor: 'rgba(41, 128, 185, 1)',
+                    backgroundColor: '#306D64',
+                    borderColor:     '#04332D',
                     borderWidth: 1,
                     borderRadius: 6,          // rounded bars
                     barThickness: 40         // optional fixed width
@@ -1560,12 +1622,12 @@
                         display: true,
                         text: resources.facProj+'',
                         font: {
-                            size: 18,
+                            size: 14,
                             weight: 'bold'
                         },
                         padding: {
-                            top: 10,
-                            bottom: 20
+                            top: 6,
+                            bottom: 10
                         }
                     },
                     legend: {
@@ -1589,6 +1651,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadCompletedProjectsData() {
             try {
@@ -1643,31 +1706,11 @@
             data: {
                 labels: [],
                 datasets: [
-                    {
-                        label: 'DMAIC',
-                        data: [],
-                        backgroundColor: 'rgba(41, 128, 185, 0.9)'
-                    },
-                    {
-                        label: 'Gemba Kaizen',
-                        data: [],
-                        backgroundColor: 'rgba(231, 76, 60, 0.9)'
-                    },
-                    {
-                        label: 'Project',
-                        data: [],
-                        backgroundColor: 'rgba(39, 174, 96, 0.9)'
-                    },
-                    {
-                        label: 'JDI',
-                        data: [],
-                        backgroundColor: 'rgba(243, 156, 18, 0.9)'
-                    },
-                    {
-                        label: 'Others',
-                        data: [],
-                        backgroundColor: 'rgba(142, 68, 173, 0.9)'
-                    }
+                    { label: 'DMAIC',         data: [], backgroundColor: '#306D64' },
+                    { label: 'Gemba Kaizen',  data: [], backgroundColor: '#B53F0D' },
+                    { label: 'Project',       data: [], backgroundColor: '#D77428' },
+                    { label: 'JDI',           data: [], backgroundColor: '#E07AA7' },
+                    { label: 'Others',        data: [], backgroundColor: '#8FA68F' }
                 ]
             },
             options: {
@@ -1679,15 +1722,15 @@
                         text: resources.monthlyProj+' #',
                         top: 'top',
                         font: {
-                            size: 18,
+                            size: 14,
                             weight: 'bold'
                         },
                         padding: {
-                            top: 10,
-                            bottom: 20
+                            top: 6,
+                            bottom: 10
                         }
                     },
-                    legend: { position: 'bottom' },
+                    legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } },
                     tooltip: { enabled: true }
                 },
                 scales: {
@@ -1705,6 +1748,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadBarChartData3() {
             try {
@@ -1770,9 +1814,9 @@
                     title: {
                         display: true,
                         text: resources.monthlyProjPerDept,
-                        font: { size: 18, weight: 'bold' }
+                        font: { size: 14, weight: 'bold' }
                     },
-                    legend: { position: 'bottom' }
+                    legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } }
                 },
                 scales: {
                     x: {
@@ -1788,6 +1832,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadDepartmentData() {
             try {
@@ -1852,9 +1897,9 @@
                     title: {
                         display: true,
                         text: resources.monthlyProjPerPhase,
-                        font: { size: 18, weight: 'bold' }
+                        font: { size: 14, weight: 'bold' }
                     },
-                    legend: { position: 'bottom' }
+                    legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } }
                 },
                 scales: {
                     x: {
@@ -1870,6 +1915,7 @@
                 }
             }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadPhaseData() {
             try {
@@ -1996,8 +2042,8 @@
                 display: true,
                 text: message,
                 align: 'center',
-                padding: 20,
-                font: { size: 16, weight: 'normal' }
+                padding: 10,
+                font: { size: 14, weight: 'normal' }
             };
             chart.update();
         }
@@ -2021,11 +2067,10 @@
 
 
     if (window.moduleAccess.oe) {
-
         // ═══════════════════════════════════════════════════════════════════
         //  OPERATIONAL EXCELLENCE  —  Chart.js
         // ═══════════════════════════════════════════════════════════════════
-        const oePalette = ['#6366f1','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+        const oePalette = ['#306D64', '#04332D', '#040606', '#4C1507', '#B53F0D', '#D77428', '#E07AA7', '#8FA68F'];
 
         // -- helper for consistent "no data" overlay ------------------------
         function oeNoData(chart, message) {
@@ -2042,9 +2087,11 @@
             type: 'doughnut',
             data: { labels: [], datasets: [{ data: [], backgroundColor: oePalette }] },
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: resources.projStat, font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } } }
+                plugins: { title: { display: true, text: resources.projStat, font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
         });
+        window.Chart.defaults.locale = currentLang;
+
 
         async function loadOEStatusPie() {
             try {
@@ -2057,7 +2104,7 @@
 
                 oeStatusPie.options.plugins.legend.display = true;
                 oeStatusPie.options.plugins.title.text = resources.projStat;
-                oeStatusPie.data.labels = data.map(x => x.name);
+                oeStatusPie.data.labels = data.map(x => toSentenceCase(x.name));
                 oeStatusPie.data.datasets[0].data = data.map(x => x.value);
                 oeStatusPie.update();
             } catch (e) { oeNoData(oeStatusPie, resources.errorOccured); }
@@ -2068,10 +2115,12 @@
             type: 'doughnut',
             data: { labels: [], datasets: [{ data: [], backgroundColor: oePalette }] },
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Carry-Over & Classification',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } } }
+                plugins: { title: { display: true, text: resources.carryOver,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
         });
+        window.Chart.defaults.locale = currentLang;
+
 
         async function loadOECarryOverPie() {
             try {
@@ -2080,10 +2129,10 @@
                 if (!r.ok) return oeNoData(oeCarryOverPie, 'Carry-Over - ' + resources.noData);
                 const data = await r.json();
                 if (!Array.isArray(data) || data.length === 0)
-                    return oeNoData(oeCarryOverPie, 'Carry-Over - ' + resources.noData);
+                    return oeNoData(oeCarryOverPie, resources.carryOver + ' - ' + resources.noData);
 
                 oeCarryOverPie.options.plugins.legend.display = true;
-                oeCarryOverPie.options.plugins.title.text = 'Carry-Over & Classification';
+                oeCarryOverPie.options.plugins.title.text = resources.carryOver;
                 oeCarryOverPie.data.labels = data.map(x => x.name);
                 oeCarryOverPie.data.datasets[0].data = data.map(x => x.value);
                 oeCarryOverPie.update();
@@ -2093,26 +2142,44 @@
         // ── 3. Top projects (horizontal bar) ─────────────────────────────
         const oeTopProjects = new Chart(document.getElementById('oeTopProjects'), {
             type: 'bar',
-            data: { labels: [], datasets: [{ label: 'Target Savings', data: [], backgroundColor: '#6366f1' }] },
+            data: { labels: [], datasets: [{ label: 'Target Savings', data: [], backgroundColor: '#306D64' }] },
             options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Top Projects by Target Savings',
-                                    font: { size: 16, weight: 'bold' } },
+                plugins: { title: { display: true, text: resources.topProjects,
+                                    font: { size: 14, weight: 'bold' } },
                            legend: { display: false } },
-                scales: { x: { beginAtZero: true } } }
+                scales: { x: { beginAtZero: true },
+            y: {
+                ticks: {
+                    autoSkip: false,          // do not skip labels — show all
+                    font: { size: 12 },       // smaller font so two lines fit
+                    padding: 4,                              // ⬅ tighten gap between label and axis
+                    crossAlign: 'far',                       // ⬅ align labels to the far right (near the axis)
+                    callback: function(value) {
+                        // `this.getLabelForValue(value)` returns the actual label string
+                        return wrapLabel(this.getLabelForValue(value), 18);
+                    }
+                },
+                afterFit: function(scale) {
+                    // Give the y-axis enough room for two lines of text.
+                    // Adjust 160 up or down until it looks right.
+                    scale.width = 105;
+                }
+            } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOETopProjects() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OETopProjects' + qs);
-                if (!r.ok) return oeNoData(oeTopProjects, 'Top Projects - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeTopProjects, resources.topProjects + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!Array.isArray(data) || data.length === 0)
-                    return oeNoData(oeTopProjects, 'Top Projects - ' + resources.noData);
+                    return oeNoData(oeTopProjects, resources.topProjects + ' - ' + resources.noData);
 
                 oeTopProjects.options.plugins.legend.display = false;
                 oeTopProjects.options.plugins.title.display = true;
-                oeTopProjects.options.plugins.title.text = 'Top Projects by Target Savings';
+                oeTopProjects.options.plugins.title.text = resources.topProjects;
                 oeTopProjects.data.labels = data.map(x => x.Title);
                 oeTopProjects.data.datasets[0].data = data.map(x => x.TargetSavings);
                 oeTopProjects.update();
@@ -2123,27 +2190,28 @@
         const oeWorkload = new Chart(document.getElementById('oeWorkload'), {
             type: 'bar',
             data: { labels: [], datasets: [
-                { label: 'As Facilitator', data: [], backgroundColor: '#6366f1', stack: 's' },
-                { label: 'As Sponsor',     data: [], backgroundColor: '#22c55e', stack: 's' }]},
+                { label: 'As Facilitator', data: [], backgroundColor: '#04332D', stack: 's' },
+                { label: 'As Sponsor',     data: [], backgroundColor: '#040606', stack: 's' }]},
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Facilitator & Sponsor Workload',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } },
+                plugins: { title: { display: true, text: resources.facilitatorSponsorWorkload,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEWorkload() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OEWorkload' + qs);
-                if (!r.ok) return oeNoData(oeWorkload, 'Workload - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeWorkload, resources.facilitatorSponsorWorkload + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!Array.isArray(data) || data.length === 0)
-                    return oeNoData(oeWorkload, 'Workload - ' + resources.noData);
+                    return oeNoData(oeWorkload, resources.facilitatorSponsorWorkload + ' - ' + resources.noData);
 
                 oeWorkload.options.plugins.legend.display = true;
                 oeWorkload.options.plugins.title.display = true;
-                oeWorkload.options.plugins.title.text = 'Facilitator & Sponsor Workload';
+                oeWorkload.options.plugins.title.text = resources.facilitatorSponsorWorkload;
                 oeWorkload.data.labels = data.map(x => x.Name);
                 oeWorkload.data.datasets[0].data = data.map(x => x.Facilitator);
                 oeWorkload.data.datasets[1].data = data.map(x => x.Sponsor);
@@ -2155,28 +2223,29 @@
         const oeForecastChart = new Chart(document.getElementById('oeForecastChart'), {
             type: 'line',
             data: { labels: [], datasets: [
-                { label: 'Target (cumulative)', data: [], borderColor: '#94a3b8', borderDash: [6,4], fill: false, tension: .2 },
-                { label: 'Actual (cumulative)', data: [], borderColor: '#4f46e5',
-                  backgroundColor: 'rgba(79,70,229,.12)', fill: true, tension: .3 }]},
+                { label: 'Target (cumulative)', data: [], borderColor: '#B53F0D', borderDash: [6,4], fill: false, tension: .2 },
+                { label: 'Actual (cumulative)', data: [], borderColor: '#D77428',
+                  backgroundColor: 'rgba(48, 109, 100, .15)', fill: true, tension: .3 }]},
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Savings Forecast vs Target',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } },
+                plugins: { title: { display: true, text: resources.savingsForecastVsTarget,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { y: { beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEForecast() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OESavingsForecast' + qs);
-                if (!r.ok) return oeNoData(oeForecastChart, 'Forecast - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeForecastChart, resources.savingsForecastVsTarget + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!data || !data.Labels || data.Labels.length === 0)
-                    return oeNoData(oeForecastChart, 'Forecast - ' + resources.noData);
+                    return oeNoData(oeForecastChart, resources.savingsForecastVsTarget + ' - ' + resources.noData);
 
                 oeForecastChart.options.plugins.legend.display = true;
                 oeForecastChart.options.plugins.title.display = true;
-                oeForecastChart.options.plugins.title.text = 'Savings Forecast vs Target';
+                oeForecastChart.options.plugins.title.text = resources.savingsForecastVsTarget;
                 oeForecastChart.data.labels = data.Labels;
                 oeForecastChart.data.datasets[0].data = data.TargetCumulative;
                 oeForecastChart.data.datasets[1].data = data.ActualCumulative;
@@ -2188,29 +2257,30 @@
         const oeCumulativeChart = new Chart(document.getElementById('oeCumulativeChart'), {
             type: 'line',
             data: { labels: [], datasets: [
-                { label: 'Monthly', data: [], borderColor: '#06b6d4',
-                  backgroundColor: 'rgba(6,182,212,.15)', fill: true, tension: .3 },
-                { label: 'Cumulative', data: [], borderColor: '#22c55e',
-                  backgroundColor: 'rgba(34,197,94,.15)', fill: true, tension: .3 }]},
+                { label: 'Monthly', data: [], borderColor: '#8FA68F',
+                      backgroundColor: 'rgba(48, 109, 100, .15)', fill: true, tension: .3 },
+                { label: 'Cumulative', data: [], borderColor: '#8FA68F',
+                      backgroundColor: 'rgba(143, 166, 143, .2)', fill: true, tension: .3 }]},
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Cumulative Monthly Savings Trend',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } },
+                plugins: { title: { display: true, text: resources.cumulativeMonthlySavingsTrend,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { y: { beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOECumulative() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OECumulativeSavings' + qs);
-                if (!r.ok) return oeNoData(oeCumulativeChart, 'Cumulative - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeCumulativeChart, resources.cumulativeMonthlySavingsTrend + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!data || !data.Labels || data.Labels.length === 0)
-                    return oeNoData(oeCumulativeChart, 'Cumulative - ' + resources.noData);
+                    return oeNoData(oeCumulativeChart, resources.cumulativeMonthlySavingsTrend + ' - ' + resources.noData);
 
                 oeCumulativeChart.options.plugins.legend.display = true;
                 oeCumulativeChart.options.plugins.title.display = true;
-                oeCumulativeChart.options.plugins.title.text = 'Cumulative Monthly Savings Trend';
+                oeCumulativeChart.options.plugins.title.text = resources.cumulativeMonthlySavingsTrend;
                 oeCumulativeChart.data.labels = data.Labels;
                 oeCumulativeChart.data.datasets[0].data = data.Monthly;
                 oeCumulativeChart.data.datasets[1].data = data.Cumulative;
@@ -2223,24 +2293,25 @@
             type: 'bar',
             data: { labels: [], datasets: [] },
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Savings by Department & Facility',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } },
+                plugins: { title: { display: true, text: resources.savingsByDeptFacility,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
                 scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOEDeptFacility() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OESavingsByDeptFacility' + qs);
-                if (!r.ok) return oeNoData(oeDeptFacilityChart, 'Dept/Facility - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeDeptFacilityChart, resources.savingsByDeptFacility + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!data || !data.Labels || data.Labels.length === 0)
-                    return oeNoData(oeDeptFacilityChart, 'Dept/Facility - ' + resources.noData);
+                    return oeNoData(oeDeptFacilityChart, resources.savingsByDeptFacility + ' - ' + resources.noData);
 
                 oeDeptFacilityChart.options.plugins.legend.display = true;
                 oeDeptFacilityChart.options.plugins.title.display = true;
-                oeDeptFacilityChart.options.plugins.title.text = 'Savings by Department & Facility';
+                oeDeptFacilityChart.options.plugins.title.text = resources.savingsByDeptFacility;
                 oeDeptFacilityChart.data.labels = data.Labels;
                 oeDeptFacilityChart.data.datasets = data.Datasets.map((d, i) => ({
                     label: d.Label,
@@ -2256,27 +2327,45 @@
         const oeCycleTimeChart = new Chart(document.getElementById('oeCycleTimeChart'), {
             type: 'bar',
             data: { labels: [], datasets: [
-                { label: 'Planned Days', data: [], backgroundColor: '#94a3b8' },
-                { label: 'Elapsed Days', data: [], backgroundColor: '#f59e0b' }]},
+                { label: 'Planned Days', data: [], backgroundColor: '#8FA68F' },
+                { label: 'Elapsed Days', data: [], backgroundColor: '#D77428' }]},
             options: { responsive: true, maintainAspectRatio: false,
-                plugins: { title: { display: true, text: 'Time to Completion and Cycle Time',
-                                    font: { size: 16, weight: 'bold' } },
-                           legend: { position: 'bottom' } },
-                scales: { y: { beginAtZero: true } } }
+                plugins: { title: { display: true, text: resources.timeToCompletion,
+                                    font: { size: 14, weight: 'bold' } },
+                           legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
+                scales: { x: {
+        ticks: {
+            autoSkip: false,                  // show every label
+            maxRotation: 0,                   // ⬅ disable auto-rotation
+            minRotation: 0,                   // ⬅ disable auto-rotation
+            font: { size: 9 },                // smaller font fits two lines
+            padding: 4,
+            callback: function(value) {
+                return wrapLabel(this.getLabelForValue(value), 14);
+            }
+        },
+        afterFit: function(scale) {
+            scale.height = 60;                // ⬅ reserve room for two lines
+        }
+        },y: { beginAtZero: true } },
+    layout: {
+        padding: { left: 0, right: 8, top: 0, bottom: 0 }
+    } }
         });
+        window.Chart.defaults.locale = currentLang;
 
         async function loadOECycleTime() {
             try {
                 const qs = buildQueryString(currentFilters);
                 const r  = await fetch('/OECycleTime' + qs);
-                if (!r.ok) return oeNoData(oeCycleTimeChart, 'Cycle Time - ' + resources.noData);
+                if (!r.ok) return oeNoData(oeCycleTimeChart, resources.timeToCompletion + ' - ' + resources.noData);
                 const data = await r.json();
                 if (!data || !data.Labels || data.Labels.length === 0)
-                    return oeNoData(oeCycleTimeChart, 'Cycle Time - ' + resources.noData);
+                    return oeNoData(oeCycleTimeChart, resources.timeToCompletion + ' - ' + resources.noData);
 
                 oeCycleTimeChart.options.plugins.legend.display = true;
                 oeCycleTimeChart.options.plugins.title.display = true;
-                oeCycleTimeChart.options.plugins.title.text = 'Time to Completion and Cycle Time';
+                oeCycleTimeChart.options.plugins.title.text = resources.timeToCompletion;
                 oeCycleTimeChart.data.labels = data.Labels;
                 oeCycleTimeChart.data.datasets[0].data = data.Planned;
                 oeCycleTimeChart.data.datasets[1].data = data.Elapsed;
@@ -2294,7 +2383,7 @@
                 if (!r.ok) throw new Error();
                 const data = await r.json();
                 if (!Array.isArray(data) || data.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" class="text-center text-muted py-4">No data available</td></tr>';
+                    tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-4">${resources.noData}</td></tr>`;
                     return;
                 }
                 data.forEach(h => {
@@ -2335,10 +2424,11 @@
 
 
     if (window.moduleAccess.si) {
+
     // ═══════════════════════════════════════════════════════════════════
     //  STRATEGIC INITIATIVES  —  Chart.js
     // ═══════════════════════════════════════════════════════════════════
-    const siPalette = ['#6366f1','#06b6d4','#22c55e','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316'];
+    const siPalette = ['#306D64', '#04332D', '#040606', '#4C1507', '#B53F0D', '#D77428', '#E07AA7', '#8FA68F'];
 
     function siNoData(chart, message) {
         chart.data.labels = [];
@@ -2354,23 +2444,24 @@
         type: 'doughnut',
         data: { labels: [], datasets: [{ data: [], backgroundColor: siPalette }] },
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Initiative Pipeline by Status',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } } }
+            plugins: { title: { display: true, text: resources.initiativePipelineByStatus,
+                                font: { size: 14, weight: 'bold' } },
+                       legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIStatusPie() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIStatusCount' + qs);
-            if (!r.ok) return siNoData(siStatusPie, 'Pipeline - ' + resources.noData);
+            if (!r.ok) return siNoData(siStatusPie, resources.initiativePipelineByStatus + ' - ' + resources.noData);
             const data = await r.json();
             if (!Array.isArray(data) || data.length === 0)
-                return siNoData(siStatusPie, 'Pipeline - ' + resources.noData);
+                return siNoData(siStatusPie, resources.initiativePipelineByStatus + ' - ' + resources.noData);
 
             siStatusPie.options.plugins.legend.display = true;
-            siStatusPie.options.plugins.title.text = 'Initiative Pipeline by Status';
-            siStatusPie.data.labels = data.map(x => x.name);
+            siStatusPie.options.plugins.title.text = resources.initiativePipelineByStatus;
+            siStatusPie.data.labels = data.map(x => toSentenceCase(x.name));
             siStatusPie.data.datasets[0].data = data.map(x => x.value);
             siStatusPie.update();
         } catch { siNoData(siStatusPie, resources.errorOccured); }
@@ -2381,23 +2472,24 @@
         type: 'doughnut',
         data: { labels: [], datasets: [{ data: [], backgroundColor: siPalette }] },
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Cumulative Status Breakdown (ROI)',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } } }
+            plugins: { title: { display: true, text: resources.cummulativeStatusBreakdown,
+                                font: { size: 14, weight: 'bold' } },
+                       legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIStatusBreakdown() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIStatusBreakdown' + qs);
-            if (!r.ok) return siNoData(siStatusBreakdownPie, 'Breakdown - ' + resources.noData);
+            if (!r.ok) return siNoData(siStatusBreakdownPie, resources.cummulativeStatusBreakdown + ' - ' + resources.noData);
             const data = await r.json();
             if (!Array.isArray(data) || data.length === 0)
-                return siNoData(siStatusBreakdownPie, 'Breakdown - ' + resources.noData);
+                return siNoData(siStatusBreakdownPie, resources.cummulativeStatusBreakdown + ' - ' + resources.noData);
 
             siStatusBreakdownPie.options.plugins.legend.display = true;
-            siStatusBreakdownPie.options.plugins.title.text = 'Cumulative Status Breakdown (ROI)';
-            siStatusBreakdownPie.data.labels = data.map(x => x.Status);
+            siStatusBreakdownPie.options.plugins.title.text = resources.cummulativeStatusBreakdown;
+            siStatusBreakdownPie.data.labels = data.map(x => toSentenceCase(x.Status));
             siStatusBreakdownPie.data.datasets[0].data = data.map(x => x.Roi);
             siStatusBreakdownPie.update();
         } catch { siNoData(siStatusBreakdownPie, resources.errorOccured); }
@@ -2406,25 +2498,71 @@
     // ── 3. Top initiatives by ROI ────────────────────────────────────
     const siTopInitiatives = new Chart(document.getElementById('siTopInitiatives'), {
         type: 'bar',
-        data: { labels: [], datasets: [{ label: 'ROI', data: [], backgroundColor: '#6366f1' }] },
-        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Top Initiatives by ROI',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { display: false } },
-            scales: { x: { beginAtZero: true } } }
+        data: { labels: [], datasets: [{ label: 'ROI', data: [], backgroundColor: '#306D64' }] },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: resources.topInitiativesByROI,
+                         font: { size: 13, weight: 'bold' }, padding: { top: 4, bottom: 8 } },
+                legend: { display: false },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: 'rgba(4, 6, 6, 0.92)',      // near-black background from palette
+                    titleColor: '#8FA68F',
+                    bodyColor: '#FFFFFF',
+                    borderColor: '#306D64',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 4,
+                    displayColors: false,                         // hide the little color square (only one dataset)
+                    titleFont: { size: 12, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    callbacks: {
+                        // Title = full initiative name
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        // Body = "ROI: 6,000,000" with locale formatting
+                        label: function(context) {
+                            const value = context.parsed.x || 0;
+                            return 'ROI: ' + Number(value).toLocaleString('en-US');
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: { beginAtZero: true },
+                y: {
+                    ticks: {
+                        autoSkip: false,
+                        font: { size: 10 },
+                        padding: 2,
+                        crossAlign: 'far',
+                        callback: function(value) {
+                            return wrapLabel(this.getLabelForValue(value), 22);
+                        }
+                    },
+                    afterFit: function(scale) { scale.width = 150; }
+                }
+            },
+            layout: { padding: { left: 0, right: 8, top: 0, bottom: 0 } }
+        }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSITopInitiatives() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SITopInitiatives' + qs);
-            if (!r.ok) return siNoData(siTopInitiatives, 'Top - ' + resources.noData);
+            if (!r.ok) return siNoData(siTopInitiatives, resources.topInitiativesByROI + ' - ' + resources.noData);
             const data = await r.json();
             if (!Array.isArray(data) || data.length === 0)
-                return siNoData(siTopInitiatives, 'Top - ' + resources.noData);
+                return siNoData(siTopInitiatives, resources.topInitiativesByROI + ' - ' + resources.noData);
 
             siTopInitiatives.options.plugins.legend.display = false;
-            siTopInitiatives.options.plugins.title.text = 'Top Initiatives by ROI';
+            siTopInitiatives.options.plugins.title.text = resources.topInitiativesByROI;
             siTopInitiatives.data.labels = data.map(x => x.Title);
             siTopInitiatives.data.datasets[0].data = data.map(x => x.Roi);
             siTopInitiatives.update();
@@ -2435,26 +2573,27 @@
     const siWorkload = new Chart(document.getElementById('siWorkload'), {
         type: 'bar',
         data: { labels: [], datasets: [
-            { label: 'As Owner',   data: [], backgroundColor: '#6366f1', stack: 's' },
-            { label: 'As Sponsor', data: [], backgroundColor: '#22c55e', stack: 's' }]},
+            { label: 'As Owner',   data: [], backgroundColor: '#306D64', stack: 's' },
+            { label: 'As Sponsor', data: [], backgroundColor: '#8FA68F', stack: 's' }]},
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Owner & Sponsor Workload',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } },
+            plugins: { title: { display: true, text: resources.ownerSponsorWorkload,
+                                font: { size: 14, weight: 'bold' } },
+                       legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIWorkload() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIWorkload' + qs);
-            if (!r.ok) return siNoData(siWorkload, 'Workload - ' + resources.noData);
+            if (!r.ok) return siNoData(siWorkload, resources.ownerSponsorWorkload + ' - ' + resources.noData);
             const data = await r.json();
             if (!Array.isArray(data) || data.length === 0)
-                return siNoData(siWorkload, 'Workload - ' + resources.noData);
+                return siNoData(siWorkload, resources.ownerSponsorWorkload + ' - ' + resources.noData);
 
             siWorkload.options.plugins.legend.display = true;
-            siWorkload.options.plugins.title.text = 'Owner & Sponsor Workload';
+            siWorkload.options.plugins.title.text = resources.ownerSponsorWorkload;
             siWorkload.data.labels = data.map(x => x.Name);
             siWorkload.data.datasets[0].data = data.map(x => x.AsOwner);
             siWorkload.data.datasets[1].data = data.map(x => x.AsSponsor);
@@ -2466,28 +2605,29 @@
     const siForecastChart = new Chart(document.getElementById('siForecastChart'), {
         type: 'line',
         data: { labels: [], datasets: [
-            { label: 'Target (cumulative)', data: [], borderColor: '#94a3b8',
+            { label: 'Target (cumulative)', data: [], borderColor: '#8FA68F',
               borderDash: [6,4], fill: false, tension: .2 },
-            { label: 'Actual (cumulative)', data: [], borderColor: '#4f46e5',
-              backgroundColor: 'rgba(79,70,229,.12)', fill: true, tension: .3 }]},
+            { label: 'Actual (cumulative)', data: [], borderColor: '#B53F0D',
+              backgroundColor: 'rgba(181, 63, 13, .12)', fill: true, tension: .3 }]},
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Cumulative ROI vs Target',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } },
+            plugins: { title: { display: true, text: resources.cumulativeROIvsTarget,
+                                font: { size: 14, weight: 'bold' } },
+                       legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { y: { beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIForecast() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIRoiForecast' + qs);
-            if (!r.ok) return siNoData(siForecastChart, 'Forecast - ' + resources.noData);
+            if (!r.ok) return siNoData(siForecastChart, resources.cumulativeROIvsTarget + ' - ' + resources.noData);
             const data = await r.json();
             if (!data || !data.Labels || data.Labels.length === 0)
-                return siNoData(siForecastChart, 'Forecast - ' + resources.noData);
+                return siNoData(siForecastChart, resources.cumulativeROIvsTarget + ' - ' + resources.noData);
 
             siForecastChart.options.plugins.legend.display = true;
-            siForecastChart.options.plugins.title.text = 'Cumulative ROI vs Target';
+            siForecastChart.options.plugins.title.text = resources.cumulativeROIvsTarget;
             siForecastChart.data.labels = data.Labels;
             siForecastChart.data.datasets[0].data = data.TargetCumulative;
             siForecastChart.data.datasets[1].data = data.ActualCumulative;
@@ -2502,8 +2642,8 @@
             { label: 'Baseline', data: [], backgroundColor: 'rgba(0,0,0,0)', stack: 'w' },
             { label: 'Monthly ROI', data: [], backgroundColor: [], stack: 'w' }]},
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Monthly ROI Waterfall',
-                                font: { size: 16, weight: 'bold' } },
+            plugins: { title: { display: true, text: resources.monthlyROIWaterfall,
+                                font: { size: 14, weight: 'bold' } },
                        legend: { display: false },
                        tooltip: { callbacks: {
                            label: (ctx) => {
@@ -2514,18 +2654,19 @@
                        }} },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIWaterfall() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIRoiWaterfall' + qs);
-            if (!r.ok) return siNoData(siWaterfallChart, 'Waterfall - ' + resources.noData);
+            if (!r.ok) return siNoData(siWaterfallChart, resources.monthlyROIWaterfall + ' - ' + resources.noData);
             const data = await r.json();
             if (!data || !data.Labels || data.Labels.length === 0)
-                return siNoData(siWaterfallChart, 'Waterfall - ' + resources.noData);
+                return siNoData(siWaterfallChart, resources.monthlyROIWaterfall + ' - ' + resources.noData);
 
             siWaterfallChart.options.plugins.title.display = true;
-            siWaterfallChart.options.plugins.title.text = 'Monthly ROI Waterfall';
+            siWaterfallChart.options.plugins.title.text = resources.monthlyROIWaterfall;
             siWaterfallChart.data.labels = data.Labels;
 
             // Baseline = cumulative prior to this month
@@ -2533,8 +2674,7 @@
             siWaterfallChart.data.datasets[1].data = data.Deltas;
 
             // Positive green, negative red
-            siWaterfallChart.data.datasets[1].backgroundColor = data.Deltas.map(d =>
-                d < 0 ? 'rgba(239,68,68,.85)' : 'rgba(34,197,94,.85)');
+            siWaterfallChart.data.datasets[1].backgroundColor = data.Deltas.map(d => d < 0 ? '#B53F0D' : '#306D64');
 
             siWaterfallChart.update();
         } catch { siNoData(siWaterfallChart, resources.errorOccured); }
@@ -2545,23 +2685,24 @@
         type: 'bar',
         data: { labels: [], datasets: [] },
         options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'ROI by Department and Owner',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } },
+            plugins: { title: { display: true, text: resources.roiByDeptOwner,
+                                font: { size: 14, weight: 'bold' } },
+                       legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 } } },
             scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSIRoiByDeptOwner() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SIRoiByTeamDept' + qs);
-            if (!r.ok) return siNoData(siRoiByDeptOwner, 'ROI - ' + resources.noData);
+            if (!r.ok) return siNoData(siRoiByDeptOwner, resources.roiByDeptOwner + ' - ' + resources.noData);
             const data = await r.json();
             if (!data || !data.Labels || data.Labels.length === 0)
-                return siNoData(siRoiByDeptOwner, 'ROI - ' + resources.noData);
+                return siNoData(siRoiByDeptOwner, resources.roiByDeptOwner + ' - ' + resources.noData);
 
             siRoiByDeptOwner.options.plugins.legend.display = true;
-            siRoiByDeptOwner.options.plugins.title.text = 'ROI by Department and Owner';
+            siRoiByDeptOwner.options.plugins.title.text = resources.roiByDeptOwner;
             siRoiByDeptOwner.data.labels = data.Labels;
             siRoiByDeptOwner.data.datasets = data.Datasets.map((d, i) => ({
                 label: d.Label,
@@ -2577,26 +2718,88 @@
     const siCycleTimeChart = new Chart(document.getElementById('siCycleTimeChart'), {
         type: 'bar',
         data: { labels: [], datasets: [
-            { label: 'Planned Days', data: [], backgroundColor: '#94a3b8' },
-            { label: 'Elapsed Days', data: [], backgroundColor: '#f59e0b' }]},
-        options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Time to Completion / Cycle Time',
-                                font: { size: 16, weight: 'bold' } },
-                       legend: { position: 'bottom' } },
-            scales: { y: { beginAtZero: true } } }
+            { label: 'Planned Days', data: [], backgroundColor: '#8FA68F' },
+            { label: 'Elapsed Days', data: [], backgroundColor: '#D77428' }]},
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: { display: true, text: resources.cycleTime,
+                         font: { size: 13, weight: 'bold' }, padding: { top: 4, bottom: 8 } },
+                legend: {
+                    position: 'bottom',
+                    labels: { font: { size: 10 }, boxWidth: 10, boxHeight: 10, padding: 8 }
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index',                                // show both datasets at once
+                    intersect: false,                             // tooltip triggers anywhere over the column
+                    backgroundColor: 'rgba(4, 6, 6, 0.92)',
+                    titleColor: '#8FA68F',
+                    bodyColor: '#FFFFFF',
+                    borderColor: '#306D64',
+                    borderWidth: 1,
+                    padding: 10,
+                    cornerRadius: 4,
+                    titleFont: { size: 12, weight: 'bold' },
+                    bodyFont: { size: 12 },
+                    callbacks: {
+                        // Title = full project name (axis label may be rotated/truncated)
+                        title: function(context) {
+                            return context[0].label;
+                        },
+                        // Body = custom multi-line block
+                        label: function(context) {
+                            const planned = context.chart.data.datasets[0]?.data[context.dataIndex] ?? 0;
+                            const elapsed = context.chart.data.datasets[1]?.data[context.dataIndex] ?? 0;
+                            const delta = elapsed - planned;
+
+                            // First call, so we return the whole block. Suppress subsequent duplicates.
+                            if (context.datasetIndex === 0) {
+                                const sign = delta > 0 ? '+' : '';
+                                return [
+                                    'Planned:  ' + planned + ' days',
+                                    'Elapsed:  ' + elapsed + ' days',
+                                    'Slippage: ' + sign + delta + ' days'
+                                ];
+                            }
+                            return null;   // prevent duplicate rendering
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 0,
+                        minRotation: 0,
+                        font: { size: 9 },
+                        padding: 4,
+                        callback: function(value) {
+                            return wrapLabel(this.getLabelForValue(value), 12);
+                        }
+                    },
+                    afterFit: function(scale) { scale.height = 60; }
+                },
+                y: { beginAtZero: true }
+            },
+            layout: { padding: { left: 0, right: 8, top: 0, bottom: 0 } }
+        }
     });
+    window.Chart.defaults.locale = currentLang;
 
     async function loadSICycleTime() {
         try {
             const qs = buildQueryString(currentFilters);
             const r = await fetch('/SICycleTime' + qs);
-            if (!r.ok) return siNoData(siCycleTimeChart, 'Cycle Time - ' + resources.noData);
+            if (!r.ok) return siNoData(siCycleTimeChart, resources.cycleTime + ' - ' + resources.noData);
             const data = await r.json();
             if (!data || !data.Labels || data.Labels.length === 0)
-                return siNoData(siCycleTimeChart, 'Cycle Time - ' + resources.noData);
+                return siNoData(siCycleTimeChart, resources.cycleTime + ' - ' + resources.noData);
 
             siCycleTimeChart.options.plugins.legend.display = true;
-            siCycleTimeChart.options.plugins.title.text = 'Time to Completion / Cycle Time';
+            siCycleTimeChart.options.plugins.title.text = resources.cycleTime;
             siCycleTimeChart.data.labels = data.Labels;
             siCycleTimeChart.data.datasets[0].data = data.Planned;
             siCycleTimeChart.data.datasets[1].data = data.Elapsed;
@@ -2614,7 +2817,7 @@
             if (!r.ok) throw new Error();
             const data = await r.json();
             if (!Array.isArray(data) || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" class="text-center text-muted py-4">No data available</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center text-muted py-4">${resources.noData}</td></tr>`;
                 return;
             }
             data.forEach(h => {

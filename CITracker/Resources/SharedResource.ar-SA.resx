@@ -1,0 +1,2199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="About" xml:space="preserve">
+    <value>حول</value>
+  </data>
+  <data name="ABusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>مطلوب مواءمة هدف أعمال</value>
+  </data>
+  <data name="ACertificationIsRequired" xml:space="preserve">
+    <value>مطلوب شهادة</value>
+  </data>
+  <data name="ACommentCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>يمكن إضافة تعليق فقط إلى مشروع صالح.</value>
+  </data>
+  <data name="ACommentIsRequired" xml:space="preserve">
+    <value>التعليق مطلوب</value>
+  </data>
+  <data name="ACountryIsRequired" xml:space="preserve">
+    <value>البلد مطلوب</value>
+  </data>
+  <data name="ACurrencyIsRequired" xml:space="preserve">
+    <value>العملة مطلوبة</value>
+  </data>
+  <data name="ADepartmentIsRequired" xml:space="preserve">
+    <value>القسم مطلوب</value>
+  </data>
+  <data name="ADescriptionIsRequired" xml:space="preserve">
+    <value>الوصف مطلوب</value>
+  </data>
+  <data name="AFacilitatorEmailAddressIsRequired" xml:space="preserve">
+    <value>البريد الإلكتروني للميسّر مطلوب</value>
+  </data>
+  <data name="AFacilityIsRequired" xml:space="preserve">
+    <value>المنشأة مطلوبة</value>
+  </data>
+  <data name="AGoodProblemStatementShouldContainWhatWhereWhenAndImpactToTheBusiness" xml:space="preserve">
+    <value>يجب أن يتضمن بيان المشكلة الجيد: ماذا، وأين، ومتى، والأثر على الأعمال.</value>
+  </data>
+  <data name="AGoodTitleShouldBeShortAndContainSearchableWords" xml:space="preserve">
+    <value>يجب أن يكون العنوان الجيد قصيرًا ويحتوي على كلمات قابلة للبحث</value>
+  </data>
+  <data name="AMethodologyIsRequired" xml:space="preserve">
+    <value>المنهجية مطلوبة</value>
+  </data>
+  <data name="AnEmailAddressIsRequired" xml:space="preserve">
+    <value>عنوان البريد الإلكتروني مطلوب</value>
+  </data>
+  <data name="AnEndDateIsRequired" xml:space="preserve">
+    <value>تاريخ الانتهاء مطلوب</value>
+  </data>
+  <data name="AnErrorOccurred" xml:space="preserve">
+    <value>حدث خطأ</value>
+  </data>
+  <data name="AnErrorOccurredWhileCreatingTheCIProject" xml:space="preserve">
+    <value>حدث خطأ أثناء إنشاء مشروع التحسين المستمر</value>
+  </data>
+  <data name="AnErrorOccurredWhileUpdatingTheCIProject" xml:space="preserve">
+    <value>حدث خطأ أثناء تحديث مشروع التحسين المستمر</value>
+  </data>
+  <data name="AnExecutiveSponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>البريد الإلكتروني للراعي التنفيذي مطلوب</value>
+  </data>
+  <data name="AnOwnerEmailAddressIsRequired" xml:space="preserve">
+    <value>البريد الإلكتروني للمالك مطلوب</value>
+  </data>
+  <data name="APriorityIsRequired" xml:space="preserve">
+    <value>الأولوية مطلوبة</value>
+  </data>
+  <data name="AProblemStatementIsRequired" xml:space="preserve">
+    <value>بيان المشكلة مطلوب</value>
+  </data>
+  <data name="ASavingsClassificationIsRequired" xml:space="preserve">
+    <value>تصنيف التوفير مطلوب</value>
+  </data>
+  <data name="ASponsorEmailAddressIsRequired" xml:space="preserve">
+    <value>البريد الإلكتروني للراعي مطلوب</value>
+  </data>
+  <data name="AStartDateIsRequired" xml:space="preserve">
+    <value>تاريخ البدء مطلوب</value>
+  </data>
+  <data name="AStatusIsRequired" xml:space="preserve">
+    <value>الحالة مطلوبة</value>
+  </data>
+  <data name="ASupportingValueStreamIsRequired" xml:space="preserve">
+    <value>تدفق القيمة الداعم مطلوب</value>
+  </data>
+  <data name="ATeamMemberCanOnlyBeAddedToAValidProject" xml:space="preserve">
+    <value>يمكن إضافة عضو فريق فقط إلى مشروع صالح.</value>
+  </data>
+  <data name="ATitleIsRequired" xml:space="preserve">
+    <value>العنوان مطلوب</value>
+  </data>
+  <data name="AValidEmailAddressIsRequired" xml:space="preserve">
+    <value>عنوان بريد إلكتروني صالح مطلوب</value>
+  </data>
+  <data name="AWideSelectionOfTemplatesAndPowerfulToolsAtYourFingertips" xml:space="preserve">
+    <value>مجموعة واسعة من القوالب وأدوات قوية في متناول يدك.</value>
+  </data>
+  <data name="AboutToCheckoutOrganization" xml:space="preserve">
+    <value>على وشك إتمام الدفع للمؤسسة</value>
+  </data>
+  <data name="AboutYourself" xml:space="preserve">
+    <value>نبذة عنك</value>
+  </data>
+  <data name="AcceptToReceiveEmailSentToMultipleRecipients" xml:space="preserve">
+    <value>اقبل لتلقي البريد الإلكتروني المرسل إلى عدة مستلمين</value>
+  </data>
+  <data name="AcceptToReceivePostOrPageNotificationEmails" xml:space="preserve">
+    <value>اقبل لتلقي رسائل إشعار المنشورات أو الصفحات</value>
+  </data>
+  <data name="Account" xml:space="preserve">
+    <value>الحساب</value>
+  </data>
+  <data name="AccountSettings" xml:space="preserve">
+    <value>إعدادات الحساب</value>
+  </data>
+  <data name="Action" xml:space="preserve">
+    <value>إجراء</value>
+  </data>
+  <data name="ActionActivateToSortColumnAscending" xml:space="preserve">
+    <value>الإجراء: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="ActiveProjects" xml:space="preserve">
+    <value>المشاريع النشطة</value>
+  </data>
+  <data name="Activity" xml:space="preserve">
+    <value>النشاط</value>
+  </data>
+  <data name="ActualSavings" xml:space="preserve">
+    <value>التوفير الفعلي</value>
+  </data>
+  <data name="AddACountryOfOperation" xml:space="preserve">
+    <value>إضافة بلد تشغيل</value>
+  </data>
+  <data name="AddADepartment" xml:space="preserve">
+    <value>إضافة قسم</value>
+  </data>
+  <data name="AddAFacility" xml:space="preserve">
+    <value>إضافة منشأة</value>
+  </data>
+  <data name="AddAUser" xml:space="preserve">
+    <value>إضافة مستخدم</value>
+  </data>
+  <data name="AddBusinessObjectiveAlignment" xml:space="preserve">
+    <value>إضافة مواءمة هدف أعمال</value>
+  </data>
+  <data name="AddSoftSavingCategory" xml:space="preserve">
+    <value>إضافة فئة توفير غير ملموس</value>
+  </data>
+  <data name="AddRemove" xml:space="preserve">
+    <value>إضافة/إزالة</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>مسؤول</value>
+  </data>
+  <data name="AdminEmail" xml:space="preserve">
+    <value>البريد الإلكتروني للمسؤول</value>
+  </data>
+  <data name="AdminEmailAddress" xml:space="preserve">
+    <value>عنوان البريد الإلكتروني للمسؤول</value>
+  </data>
+  <data name="AdminFirstName" xml:space="preserve">
+    <value>الاسم الأول للمسؤول</value>
+  </data>
+  <data name="AdminLastName" xml:space="preserve">
+    <value>اسم العائلة للمسؤول</value>
+  </data>
+  <data name="AdminName" xml:space="preserve">
+    <value>اسم المسؤول</value>
+  </data>
+  <data name="Administration" xml:space="preserve">
+    <value>الإدارة</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>مسؤول النظام</value>
+  </data>
+  <data name="AlignInitiativesToStrategy" xml:space="preserve">
+    <value>مواءمة المبادرات مع الاستراتيجية</value>
+  </data>
+  <data name="AlignStrategyWithExecutionMeasureProgressInRealTimeAndEnsureEveryInitiativeDrivesOrganizationalGoalsForward" xml:space="preserve">
+    <value>وائم بين الاستراتيجية والتنفيذ، وقس التقدم في الوقت الفعلي، واضمن أن كل مبادرة تدفع أهداف المؤسسة إلى الأمام.</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>الكل</value>
+  </data>
+  <data name="AllColumnsMustHaveValues" xml:space="preserve">
+    <value>يجب أن تحتوي جميع الأعمدة على قيم</value>
+  </data>
+  <data name="AllCompletedProjects" xml:space="preserve">
+    <value>جميع المشاريع المكتملة</value>
+  </data>
+  <data name="AllContinuousImprovementInitiatives" xml:space="preserve">
+    <value>جميع مبادرات التحسين المستمر</value>
+  </data>
+  <data name="AllContinuousImprovementInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>جميع مبادرات التحسين المستمر إلى جانب أهدافها وحالاتها.</value>
+  </data>
+  <data name="AllInitiatives" xml:space="preserve">
+    <value>جميع المبادرات</value>
+  </data>
+  <data name="AllInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>جميع المبادرات إلى جانب أهدافها وحالاتها.</value>
+  </data>
+  <data name="AllMonthlySavings" xml:space="preserve">
+    <value>جميع التوفيرات الشهرية.</value>
+  </data>
+  <data name="AllMyInitiatives" xml:space="preserve">
+    <value>جميع مبادراتي</value>
+  </data>
+  <data name="AllMyInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>جميع مبادراتي إلى جانب أهدافها وحالاتها.</value>
+  </data>
+  <data name="AllMyOperationalExcellenceInitiatives" xml:space="preserve">
+    <value>جميع مبادرات التميز التشغيلي الخاصة بي</value>
+  </data>
+  <data name="AllMyStrategicInitiatives" xml:space="preserve">
+    <value>جميع مبادراتي الاستراتيجية</value>
+  </data>
+  <data name="AllMyStrategicInitiativesAlongsideTheirStatuses" xml:space="preserve">
+    <value>جميع مبادراتي الاستراتيجية إلى جانب حالاتها.</value>
+  </data>
+  <data name="AllOperationalExcellenceInitiativesAlongsideTheirObjectivesAndStatuses" xml:space="preserve">
+    <value>جميع مبادرات التميز التشغيلي إلى جانب أهدافها وحالاتها.</value>
+  </data>
+  <data name="AllProjects" xml:space="preserve">
+    <value>جميع المشاريع</value>
+  </data>
+  <data name="AllRightsReserved" xml:space="preserve">
+    <value>جميع الحقوق محفوظة.</value>
+  </data>
+  <data name="AllSubProjects" xml:space="preserve">
+    <value>جميع المشاريع الفرعية.</value>
+  </data>
+  <data name="AnalyseFinancialPerformanceWithDetailedReportingOnHardAndSoftSavingsROIAndProjectOutcomesExportDataConnectPowerBIAndGenerateManagementReadyDashboards" xml:space="preserve">
+    <value>حلل الأداء المالي مع تقارير مفصلة عن التوفيرات الملموسة وغير الملموسة، والعائد على الاستثمار، ونتائج المشاريع. صدّر البيانات، واتصل بـ Power BI، وأنشئ لوحات معلومات جاهزة للإدارة.</value>
+  </data>
+  <data name="Annual" xml:space="preserve">
+    <value>سنوي</value>
+  </data>
+  <data name="AnnualPrice" xml:space="preserve">
+    <value>السعر السنوي:</value>
+  </data>
+  <data name="AssociateEveryInitiativeWithCorporateStrategyToDriveValueCreationAndPLImpact" xml:space="preserve">
+    <value>اربط كل مبادرة باستراتيجية الشركة لدفع إنشاء القيمة والتأثير على الأرباح والخسائر.</value>
+  </data>
+  <data name="AtLeastOneBusinessObjectiveAlignmentIsRequired" xml:space="preserve">
+    <value>مطلوب مواءمة هدف أعمال واحدة على الأقل.</value>
+  </data>
+  <data name="AtLeastOneCommentIsRequired" xml:space="preserve">
+    <value>مطلوب تعليق واحد على الأقل</value>
+  </data>
+  <data name="AtLeastOneOfHardOrSoftSavingMustContainAValue" xml:space="preserve">
+    <value>يجب أن تحتوي واحدة على الأقل من التوفيرات الملموسة أو غير الملموسة على قيمة.</value>
+  </data>
+  <data name="AtLeastOneTeamMemberIsRequired" xml:space="preserve">
+    <value>مطلوب عضو فريق واحد على الأقل</value>
+  </data>
+  <data name="AtLeastOneToolIsRequired" xml:space="preserve">
+    <value>مطلوب أداة واحدة على الأقل</value>
+  </data>
+  <data name="AuditAndEvidence" xml:space="preserve">
+    <value>التدقيق والأدلة</value>
+  </data>
+  <data name="AuditProjectResultsValidateBenefitsAndMaintainFinancialGovernance" xml:space="preserve">
+    <value>دقق نتائج المشروع، وتحقق من الفوائد، وحافظ على الحوكمة المالية.</value>
+  </data>
+  <data name="AuditedDate" xml:space="preserve">
+    <value>تاريخ التدقيق</value>
+  </data>
+  <data name="AuditedDetailsAuditorOnly" xml:space="preserve">
+    <value>تفاصيل التدقيق (للمدقق فقط)</value>
+  </data>
+  <data name="Auditor" xml:space="preserve">
+    <value>مدقق</value>
+  </data>
+  <data name="Audits" xml:space="preserve">
+    <value>عمليات التدقيق</value>
+  </data>
+  <data name="BackGuarantee" xml:space="preserve">
+    <value>ضمان استرداد</value>
+  </data>
+  <data name="BackToHome" xml:space="preserve">
+    <value>العودة إلى الرئيسية</value>
+  </data>
+  <data name="BilledAnnually" xml:space="preserve">
+    <value>تُفوتَر سنويًا!!!</value>
+  </data>
+  <data name="BringYourContinuousImprovementIntoOnePlace" xml:space="preserve">
+    <value>اجمع تحسينك المستمر في مكان واحد</value>
+  </data>
+  <data name="BuildACultureOfContinuousImprovementWhereEveryTeamMemberIsEmpoweredToContributeIdeasAndTakeOwnership" xml:space="preserve">
+    <value>ابنِ ثقافة تحسين مستمر حيث يُمنح كل عضو في الفريق القدرة على المساهمة بالأفكار وتحمل المسؤولية. عزز المشاركة والمساءلة والتعاون لضمان استدامة التحسينات وتوسيع نطاقها على مستوى المؤسسة.</value>
+  </data>
+  <data name="BuildingOperationalBrillianceThatLast" xml:space="preserve">
+    <value>بناء تميز تشغيلي يدوم.</value>
+  </data>
+  <data name="BulkLocationUpload" xml:space="preserve">
+    <value>رفع المواقع بالجملة</value>
+  </data>
+  <data name="BulkManagement" xml:space="preserve">
+    <value>الإدارة بالجملة</value>
+  </data>
+  <data name="BulkUpload" xml:space="preserve">
+    <value>الرفع بالجملة</value>
+  </data>
+  <data name="BusinessObjectiveAlignment" xml:space="preserve">
+    <value>مواءمة هدف الأعمال</value>
+  </data>
+  <data name="BusinessObjectiveAlignmentDetails" xml:space="preserve">
+    <value>تفاصيل مواءمة هدف الأعمال</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>إلغاء</value>
+  </data>
+  <data name="CancelSubscription" xml:space="preserve">
+    <value>إلغاء الاشتراك</value>
+  </data>
+  <data name="Cancelled" xml:space="preserve">
+    <value>ملغى</value>
+  </data>
+  <data name="CarryOverProject" xml:space="preserve">
+    <value>مشروع مُرحّل؟</value>
+  </data>
+  <data name="CarryOverProjectActivateToSortColumnAscending" xml:space="preserve">
+    <value>مشروع مُرحّل؟: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="CarryOverSavings" xml:space="preserve">
+    <value>ترحيل التوفيرات</value>
+  </data>
+  <data name="Carryover" xml:space="preserve">
+    <value>ترحيل</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>الفئة</value>
+  </data>
+  <data name="CategoryEgTimeSpaceQuality" xml:space="preserve">
+    <value>الفئة (مثل الوقت، المساحة، الجودة)</value>
+  </data>
+  <data name="Certification" xml:space="preserve">
+    <value>الشهادة</value>
+  </data>
+  <data name="CertificationIsRequired" xml:space="preserve">
+    <value>الشهادة مطلوبة.</value>
+  </data>
+  <data name="CertificationMustBeOneOfDMAICGembaKaizenJDIProjectOthers" xml:space="preserve">
+    <value>يجب أن تكون الشهادة واحدة من: 'DMAIC'، 'Gemba Kaizen'، 'JDI'، 'Project'، 'Others'</value>
+  </data>
+  <data name="CertificationMustBeOneOfGreenBeltBlackBeltPMPNotApplicable" xml:space="preserve">
+    <value>يجب أن تكون الشهادة واحدة من: Green Belt، Black Belt، PMP، غير منطبق</value>
+  </data>
+  <data name="CertificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>الشهادة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="Champion" xml:space="preserve">
+    <value>الداعم</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>تغيير كلمة المرور</value>
+  </data>
+  <data name="Charts" xml:space="preserve">
+    <value>المخططات</value>
+  </data>
+  <data name="CheckTheBoxForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotificationWheneverAnyUpdateIsMade" xml:space="preserve">
+    <value>حدد المربع لأي عضو فريق تريد أن يتلقى إشعارًا بالبريد الإلكتروني عند إجراء أي تحديث</value>
+  </data>
+  <data name="Checkout" xml:space="preserve">
+    <value>الدفع</value>
+  </data>
+  <data name="CheckoutOptions" xml:space="preserve">
+    <value>خيارات الدفع</value>
+  </data>
+  <data name="ChooseAPlan" xml:space="preserve">
+    <value>اختر خطة</value>
+  </data>
+  <data name="ChooseMonthOfYear" xml:space="preserve">
+    <value>اختر شهر السنة</value>
+  </data>
+  <data name="CITracker" xml:space="preserve">
+    <value>متتبع التحسين المستمر</value>
+  </data>
+  <data name="CITrackerCheckout" xml:space="preserve">
+    <value>متتبع التحسين المستمر - الدفع</value>
+  </data>
+  <data name="CITrackerHelpsTeamsCaptureIdeasAuditProcessesAndMeasureFinancialBenefitsWithDocumentsStoredInYourTenantViaSharePointIntegration" xml:space="preserve">
+    <value>يساعد CI Tracker الفرق على التقاط الأفكار، وتدقيق العمليات، وقياس الفوائد المالية — مع تخزين المستندات في المستأجر الخاص بك عبر تكامل SharePoint.</value>
+  </data>
+  <data name="CITrackerStrivesToBridgeTheGapBetweenDataAndActionEmpoweringTeamsToImplementChangeEffectivelyAndExecutivesToSeeResultsImmediately" xml:space="preserve">
+    <value>يسعى CI Tracker إلى سد الفجوة بين البيانات والإجراء، وتمكين الفرق من تنفيذ التغيير بفعالية والمديرين التنفيذيين من رؤية النتائج فورًا.</value>
+  </data>
+  <data name="CITrackerContactForm" xml:space="preserve">
+    <value>نموذج الاتصال بـ CITracker</value>
+  </data>
+  <data name="CITrackerProjectUpdate" xml:space="preserve">
+    <value>تحديث مشروع CITracker</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>مسح</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>العملاء</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>إغلاق</value>
+  </data>
+  <data name="Closed" xml:space="preserve">
+    <value>مغلق</value>
+  </data>
+  <data name="ClosedProjects" xml:space="preserve">
+    <value>المشاريع المغلقة</value>
+  </data>
+  <data name="ClosedProjectsCanBeRandomlySelectedForAuditing" xml:space="preserve">
+    <value>يمكن اختيار المشاريع المغلقة عشوائيًا للتدقيق</value>
+  </data>
+  <data name="CollectReviewAndPrioritizeImprovementIdeasThroughAStructuredIntakeWorkflow" xml:space="preserve">
+    <value>اجمع أفكار التحسين وراجعها ورتبها حسب الأولوية من خلال سير عمل منظم لاستقبال الأفكار.</value>
+  </data>
+  <data name="CommentListCannotBeEmpty" xml:space="preserve">
+    <value>قائمة التعليقات لا يمكن أن تكون فارغة</value>
+  </data>
+  <data name="Comments" xml:space="preserve">
+    <value>التعليقات</value>
+  </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>اسم الشركة</value>
+  </data>
+  <data name="CompleteCheckout" xml:space="preserve">
+    <value>إتمام الدفع</value>
+  </data>
+  <data name="Completed" xml:space="preserve">
+    <value>مكتمل</value>
+  </data>
+  <data name="CompletedProjects" xml:space="preserve">
+    <value>المشاريع المكتملة</value>
+  </data>
+  <data name="CompletedProjectsByUser" xml:space="preserve">
+    <value>المشاريع المكتملة حسب المستخدم</value>
+  </data>
+  <data name="ConductProcessAuditsWithConfigurableChecklistsAndAttachSupportingEvidence" xml:space="preserve">
+    <value>أجرِ عمليات تدقيق للعمليات باستخدام قوائم تحقق قابلة للتكوين وأرفق الأدلة الداعمة. تُخزَّن جميع المستندات بأمان في مستأجر SharePoint الخاص بالعميل للحفاظ على ملكية البيانات الكاملة.</value>
+  </data>
+  <data name="Contact" xml:space="preserve">
+    <value>اتصال</value>
+  </data>
+  <data name="ContactInfo" xml:space="preserve">
+    <value>معلومات الاتصال</value>
+  </data>
+  <data name="ContinuousImprovement" xml:space="preserve">
+    <value>التحسين المستمر</value>
+  </data>
+  <data name="ContinuousImprovementInitiatives" xml:space="preserve">
+    <value>مبادرات التحسين المستمر</value>
+  </data>
+  <data name="ContinuousImprovementTemplate" xml:space="preserve">
+    <value>قالب التحسين المستمر</value>
+  </data>
+  <data name="Copyright" xml:space="preserve">
+    <value>حقوق النشر</value>
+  </data>
+  <data name="CostAvoidance" xml:space="preserve">
+    <value>تجنب التكلفة</value>
+  </data>
+  <data name="CostContainment" xml:space="preserve">
+    <value>احتواء التكلفة</value>
+  </data>
+  <data name="CostOut" xml:space="preserve">
+    <value>إخراج التكلفة</value>
+  </data>
+  <data name="CostReduction" xml:space="preserve">
+    <value>خفض التكلفة</value>
+  </data>
+  <data name="CostSavings" xml:space="preserve">
+    <value>توفير التكاليف</value>
+  </data>
+  <data name="CostRevenue" xml:space="preserve">
+    <value>التكلفة/الإيراد</value>
+  </data>
+  <data name="CouldNotSuccessfullyFetchData" xml:space="preserve">
+    <value>تعذر جلب البيانات بنجاح.</value>
+  </data>
+  <data name="CountryIsRequired" xml:space="preserve">
+    <value>البلد مطلوب.</value>
+  </data>
+  <data name="CountryOfOperation" xml:space="preserve">
+    <value>بلد التشغيل</value>
+  </data>
+  <data name="CreateCIProject" xml:space="preserve">
+    <value>إنشاء مشروع تحسين مستمر</value>
+  </data>
+  <data name="CreatedBy" xml:space="preserve">
+    <value>أنشئ بواسطة</value>
+  </data>
+  <data name="CreatedByActivateToSortColumnAscending" xml:space="preserve">
+    <value>أنشئ بواسطة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="CummulatedROI" xml:space="preserve">
+    <value>العائد التراكمي على الاستثمار</value>
+  </data>
+  <data name="CummulativeMonthlySavings" xml:space="preserve">
+    <value>التوفيرات الشهرية التراكمية</value>
+  </data>
+  <data name="CummulativeMonthlySavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>التوفيرات الشهرية التراكمية: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="CummulativeROI" xml:space="preserve">
+    <value>العائد التراكمي على الاستثمار</value>
+  </data>
+  <data name="CummulativeROIActivateToSortColumnAscending" xml:space="preserve">
+    <value>العائد التراكمي على الاستثمار: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="CummulativeSavings" xml:space="preserve">
+    <value>التوفيرات التراكمية</value>
+  </data>
+  <data name="CummulativeStatus" xml:space="preserve">
+    <value>الحالة التراكمية</value>
+  </data>
+  <data name="CummulativeStatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>الحالة التراكمية: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="CurrencyIsRequired" xml:space="preserve">
+    <value>العملة مطلوبة.</value>
+  </data>
+  <data name="CurrencyMustBeInTheISO4217Format" xml:space="preserve">
+    <value>يجب أن تكون العملة بتنسيق ISO 4217 (مثل USD، GBP، NGN إلخ..)</value>
+  </data>
+  <data name="CurrentAddress" xml:space="preserve">
+    <value>العنوان الحالي</value>
+  </data>
+  <data name="CustomerExperience" xml:space="preserve">
+    <value>تجربة العملاء</value>
+  </data>
+  <data name="CustomizableTemplatesAndTools" xml:space="preserve">
+    <value>قوالب وأدوات قابلة للتخصيص</value>
+  </data>
+  <data name="Dashboard" xml:space="preserve">
+    <value>لوحة المعلومات</value>
+  </data>
+  <data name="DashboardAnalytics" xml:space="preserve">
+    <value>تحليلات لوحة المعلومات</value>
+  </data>
+  <data name="DataRetrievalError" xml:space="preserve">
+    <value>خطأ في استرداد البيانات</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>التاريخ</value>
+  </data>
+  <data name="DateCreated" xml:space="preserve">
+    <value>تاريخ الإنشاء</value>
+  </data>
+  <data name="DateCreatedActivateToSortColumnAscending" xml:space="preserve">
+    <value>تاريخ الإنشاء: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="DateMustBeInYYYYMMDDFormat" xml:space="preserve">
+    <value>يجب أن يكون التاريخ بتنسيق yyyy-MM-dd</value>
+  </data>
+  <data name="DaysAgo" xml:space="preserve">
+    <value>منذ أيام</value>
+  </data>
+  <data name="DeactivateAccount" xml:space="preserve">
+    <value>إلغاء تنشيط الحساب</value>
+  </data>
+  <data name="DefectRate" xml:space="preserve">
+    <value>معدل العيوب</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="DeleteABusinessObjectiveAlignment" xml:space="preserve">
+    <value>حذف مواءمة هدف أعمال</value>
+  </data>
+  <data name="DeleteACountryOfOperation" xml:space="preserve">
+    <value>حذف بلد تشغيل</value>
+  </data>
+  <data name="DeleteADepartment" xml:space="preserve">
+    <value>حذف قسم</value>
+  </data>
+  <data name="DeleteAFacility" xml:space="preserve">
+    <value>حذف منشأة</value>
+  </data>
+  <data name="DeleteASoftSavingCategory" xml:space="preserve">
+    <value>حذف فئة توفير غير ملموس</value>
+  </data>
+  <data name="DeleteAUser" xml:space="preserve">
+    <value>حذف مستخدم</value>
+  </data>
+  <data name="DeletePost" xml:space="preserve">
+    <value>حذف منشور</value>
+  </data>
+  <data name="DepartmentIsRequired" xml:space="preserve">
+    <value>القسم مطلوب.</value>
+  </data>
+  <data name="DepartmentActivateToSortColumnAscending" xml:space="preserve">
+    <value>القسم: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="DescriptionActivateToSortColumnAscending" xml:space="preserve">
+    <value>الوصف: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="Designation" xml:space="preserve">
+    <value>المسمى الوظيفي</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>خصم (</value>
+  </data>
+  <data name="DMAIC" xml:space="preserve">
+    <value>DMAIC</value>
+  </data>
+  <data name="DownloadReport" xml:space="preserve">
+    <value>تنزيل التقرير</value>
+  </data>
+  <data name="DriveOperationalExcellenceByStandardizingProcessesReducingWasteAndImprovingEfficiency" xml:space="preserve">
+    <value>قُد التميز التشغيلي من خلال توحيد العمليات، وتقليل الهدر، وتحسين الكفاءة عبر مؤسستك. راقب الأداء، وحدد الاختناقات، ونفذ التحسينات التي تحقق نتائج قابلة للقياس كل يوم.</value>
+  </data>
+  <data name="DuplicateRowsDetectedInUpload" xml:space="preserve">
+    <value>تم اكتشاف صفوف مكررة في الرفع</value>
+  </data>
+  <data name="EachFileMustBeLessThan20MB" xml:space="preserve">
+    <value>يجب أن يكون كل ملف أقل من 20 ميجابايت!!!</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="EditPost" xml:space="preserve">
+    <value>تعديل منشور</value>
+  </data>
+  <data name="EditProfile" xml:space="preserve">
+    <value>تعديل الملف الشخصي</value>
+  </data>
+  <data name="Efficiency" xml:space="preserve">
+    <value>الكفاءة</value>
+  </data>
+  <data name="Elements" xml:space="preserve">
+    <value>العناصر</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="EmailAddress" xml:space="preserve">
+    <value>عنوان البريد الإلكتروني</value>
+  </data>
+  <data name="EmailPreferences" xml:space="preserve">
+    <value>تفضيلات البريد الإلكتروني</value>
+  </data>
+  <data name="EmailSentSuccessfullyKindlyVerifyYourEmail" xml:space="preserve">
+    <value>تم إرسال البريد الإلكتروني بنجاح. يرجى التحقق من بريدك الإلكتروني</value>
+  </data>
+  <data name="EmployeesJoinedThisMonth" xml:space="preserve">
+    <value>الموظفون المنضمون هذا الشهر</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>تاريخ الانتهاء</value>
+  </data>
+  <data name="EndDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>تاريخ الانتهاء: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="EndDateIsRequired" xml:space="preserve">
+    <value>تاريخ الانتهاء مطلوب.</value>
+  </data>
+  <data name="EndDateMustBeLaterThanStartDate" xml:space="preserve">
+    <value>يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء.</value>
+  </data>
+  <data name="EnterOTPCode" xml:space="preserve">
+    <value>أدخل رمز OTP</value>
+  </data>
+  <data name="EnterSavingAmount" xml:space="preserve">
+    <value>أدخل مبلغ التوفير</value>
+  </data>
+  <data name="EnterYourEmail" xml:space="preserve">
+    <value>أدخل بريدك الإلكتروني</value>
+  </data>
+  <data name="EnterYourName" xml:space="preserve">
+    <value>أدخل اسمك</value>
+  </data>
+  <data name="EnterYourSubject" xml:space="preserve">
+    <value>أدخل الموضوع</value>
+  </data>
+  <data name="Enterprise" xml:space="preserve">
+    <value>المؤسسة</value>
+  </data>
+  <data name="ExecutiveSponsor" xml:space="preserve">
+    <value>الراعي التنفيذي</value>
+  </data>
+  <data name="ExecutiveSponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>يجب أن يكون البريد الإلكتروني للراعي التنفيذي عنوان بريد إلكتروني صالحًا</value>
+  </data>
+  <data name="ExistingInitiative" xml:space="preserve">
+    <value>مبادرة موجودة</value>
+  </data>
+  <data name="ExistingSubProject" xml:space="preserve">
+    <value>مشروع فرعي موجود</value>
+  </data>
+  <data name="Facilitator" xml:space="preserve">
+    <value>الميسّر</value>
+  </data>
+  <data name="FacilitatorOwner" xml:space="preserve">
+    <value>الميسّر/المالك</value>
+  </data>
+  <data name="FacilitatorActivateToSortColumnAscending" xml:space="preserve">
+    <value>الميسّر: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="FacilitatorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>يجب أن يكون البريد الإلكتروني للميسّر عنوان بريد إلكتروني صالحًا</value>
+  </data>
+  <data name="Facility" xml:space="preserve">
+    <value>المنشأة</value>
+  </data>
+  <data name="FacilityIsRequired" xml:space="preserve">
+    <value>المنشأة مطلوبة.</value>
+  </data>
+  <data name="FacilityActivateToSortColumnAscending" xml:space="preserve">
+    <value>المنشأة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="FAQs" xml:space="preserve">
+    <value>الأسئلة الشائعة</value>
+  </data>
+  <data name="Features" xml:space="preserve">
+    <value>الميزات</value>
+  </data>
+  <data name="FileIsEmpty" xml:space="preserve">
+    <value>الملف فارغ.</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>تصفية</value>
+  </data>
+  <data name="FilterResults" xml:space="preserve">
+    <value>تصفية النتائج</value>
+  </data>
+  <data name="FilterSearch" xml:space="preserve">
+    <value>بحث بالتصفية</value>
+  </data>
+  <data name="FinalReportSupportedFormat" xml:space="preserve">
+    <value>التقرير النهائي (التنسيقات المدعومة: PPT، Excel، PDF، Word)</value>
+  </data>
+  <data name="FinanceAndReporting" xml:space="preserve">
+    <value>المالية والتقارير</value>
+  </data>
+  <data name="FinancialBenefits" xml:space="preserve">
+    <value>الفوائد المالية</value>
+  </data>
+  <data name="FinancialReportSupportedFormat" xml:space="preserve">
+    <value>التقرير المالي (التنسيقات المدعومة: PPT، Excel، PDF، Word)</value>
+  </data>
+  <data name="FinancialVerification" xml:space="preserve">
+    <value>التحقق المالي</value>
+  </data>
+  <data name="FindThe" xml:space="preserve">
+    <value>ابحث عن</value>
+  </data>
+  <data name="Finland" xml:space="preserve">
+    <value>فنلندا</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>الاسم الأول</value>
+  </data>
+  <data name="FreeTrial" xml:space="preserve">
+    <value>تجربة مجانية</value>
+  </data>
+  <data name="GembaKaizen" xml:space="preserve">
+    <value>Gemba Kaizen</value>
+  </data>
+  <data name="General" xml:space="preserve">
+    <value>عام</value>
+  </data>
+  <data name="GetInTouchWith" xml:space="preserve">
+    <value>تواصل معنا</value>
+  </data>
+  <data name="GreenBlackBeltCertificationTracking" xml:space="preserve">
+    <value>تتبع شهادات الحزام الأخضر والأسود</value>
+  </data>
+  <data name="Hard" xml:space="preserve">
+    <value>ملموس</value>
+  </data>
+  <data name="HardSavings" xml:space="preserve">
+    <value>توفيرات ملموسة</value>
+  </data>
+  <data name="Home" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="HrsAgo" xml:space="preserve">
+    <value>منذ ساعات</value>
+  </data>
+  <data name="IdActivateToSortColumnDescending" xml:space="preserve">
+    <value>المعرف: تفعيل لفرز العمود تنازليًا</value>
+  </data>
+  <data name="IdeaProposed" xml:space="preserve">
+    <value>فكرة/مقترح</value>
+  </data>
+  <data name="Import" xml:space="preserve">
+    <value>استيراد</value>
+  </data>
+  <data name="ImprovementIdeasCapture" xml:space="preserve">
+    <value>التقاط أفكار التحسين</value>
+  </data>
+  <data name="InProgress" xml:space="preserve">
+    <value>قيد التنفيذ</value>
+  </data>
+  <data name="Inbox" xml:space="preserve">
+    <value>صندوق الوارد</value>
+  </data>
+  <data name="IncorrectParameter" xml:space="preserve">
+    <value>معلمة غير صحيحة</value>
+  </data>
+  <data name="Increased" xml:space="preserve">
+    <value>متزايد</value>
+  </data>
+  <data name="Index" xml:space="preserve">
+    <value>الفهرس</value>
+  </data>
+  <data name="Initiated" xml:space="preserve">
+    <value>مُبدأ</value>
+  </data>
+  <data name="Initiative" xml:space="preserve">
+    <value>مبادرة</value>
+  </data>
+  <data name="InitiativeDetail" xml:space="preserve">
+    <value>تفاصيل المبادرة</value>
+  </data>
+  <data name="InitiativeDetails" xml:space="preserve">
+    <value>تفاصيل المبادرة</value>
+  </data>
+  <data name="InitiativeLibrary" xml:space="preserve">
+    <value>مكتبة المبادرات</value>
+  </data>
+  <data name="InitiativeManagement" xml:space="preserve">
+    <value>إدارة المبادرات</value>
+  </data>
+  <data name="InitiativeTracker" xml:space="preserve">
+    <value>متتبع المبادرات</value>
+  </data>
+  <data name="InitiativeActivateToSortColumnDescending" xml:space="preserve">
+    <value>المبادرة: تفعيل لفرز العمود تنازليًا</value>
+  </data>
+  <data name="Initiatives" xml:space="preserve">
+    <value>المبادرات</value>
+  </data>
+  <data name="InvalidEmailAddress" xml:space="preserve">
+    <value>عنوان بريد إلكتروني غير صالح</value>
+  </data>
+  <data name="InvalidFileType" xml:space="preserve">
+    <value>نوع ملف غير صالح.</value>
+  </data>
+  <data name="InvalidStatusValue" xml:space="preserve">
+    <value>قيمة حالة غير صالحة. القيم المسموح بها هي: PROPOSED، INITIATED، COMPLETED، CLOSED، CANCELLED</value>
+  </data>
+  <data name="InvalidUploadType" xml:space="preserve">
+    <value>نوع رفع غير صالح</value>
+  </data>
+  <data name="IsCarryOverProjectMustBeOneOfYesOrNo" xml:space="preserve">
+    <value>يجب أن يكون IsCarryOverProject واحدًا من: نعم أو لا</value>
+  </data>
+  <data name="IsCarryOverProject" xml:space="preserve">
+    <value>هل مشروع مُرحّل؟</value>
+  </data>
+  <data name="IsCarryOverSavings" xml:space="preserve">
+    <value>هل توفيرات مُرحّلة؟</value>
+  </data>
+  <data name="IsOneTimeSavings" xml:space="preserve">
+    <value>هل توفير لمرة واحدة؟</value>
+  </data>
+  <data name="Item" xml:space="preserve">
+    <value>عنصر</value>
+  </data>
+  <data name="JDI" xml:space="preserve">
+    <value>JDI</value>
+  </data>
+  <data name="KeyFeatures" xml:space="preserve">
+    <value>الميزات الرئيسية</value>
+  </data>
+  <data name="KindlyCreateAStrategicInitiativeProjectFirst" xml:space="preserve">
+    <value>يرجى إنشاء مشروع مبادرة استراتيجية أولاً</value>
+  </data>
+  <data name="KindlyProvideAValidEmailAddress" xml:space="preserve">
+    <value>يرجى تقديم عنوان بريد إلكتروني صالح</value>
+  </data>
+  <data name="KindlySelectACountry" xml:space="preserve">
+    <value>يرجى اختيار بلد</value>
+  </data>
+  <data name="KindlySelectADepartment" xml:space="preserve">
+    <value>يرجى اختيار قسم</value>
+  </data>
+  <data name="KindlySelectAFacilitator" xml:space="preserve">
+    <value>يرجى اختيار ميسّر</value>
+  </data>
+  <data name="KindlySelectAFacility" xml:space="preserve">
+    <value>يرجى اختيار منشأة</value>
+  </data>
+  <data name="KindlySelectAMonthAndYear" xml:space="preserve">
+    <value>يرجى اختيار شهر وسنة.</value>
+  </data>
+  <data name="KindlySelectAStrategicInitiativeProject" xml:space="preserve">
+    <value>يرجى اختيار مشروع مبادرة استراتيجية</value>
+  </data>
+  <data name="KindlySelectAValidDate" xml:space="preserve">
+    <value>يرجى اختيار تاريخ صالح</value>
+  </data>
+  <data name="KindlySelectAValidTeamMember" xml:space="preserve">
+    <value>يرجى اختيار عضو فريق صالح</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>اسم العائلة</value>
+  </data>
+  <data name="LicencesAvailableKindlyUpgradeYourSubscriptionPlanForMoreUserLicenses" xml:space="preserve">
+    <value>تراخيص متاحة. يرجى ترقية خطة اشتراكك للحصول على مزيد من تراخيص المستخدمين</value>
+  </data>
+  <data name="ListingMicrosoftAppSource" xml:space="preserve">
+    <value>قائمة: Microsoft AppSource —</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>الموقع</value>
+  </data>
+  <data name="LocationManagement" xml:space="preserve">
+    <value>إدارة المواقع</value>
+  </data>
+  <data name="LocationTemplate" xml:space="preserve">
+    <value>قالب الموقع</value>
+  </data>
+  <data name="LocationFacility" xml:space="preserve">
+    <value>الموقع/المنشأة</value>
+  </data>
+  <data name="LocationActivateToSortColumnAscending" xml:space="preserve">
+    <value>الموقع: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="LogOut" xml:space="preserve">
+    <value>تسجيل الخروج</value>
+  </data>
+  <data name="LoginVerification" xml:space="preserve">
+    <value>التحقق من تسجيل الدخول</value>
+  </data>
+  <data name="Mail" xml:space="preserve">
+    <value>البريد</value>
+  </data>
+  <data name="Main" xml:space="preserve">
+    <value>الرئيسي</value>
+  </data>
+  <data name="MainBranch" xml:space="preserve">
+    <value>الفرع الرئيسي</value>
+  </data>
+  <data name="MakeStrategyClearTrackableAndActionable" xml:space="preserve">
+    <value>اجعل الاستراتيجية واضحة وقابلة للتتبع وقابلة للتنفيذ، حتى تحقق كل مبادرة نتائج قابلة للقياس. وائم أهداف المؤسسة مع التنفيذ لتعظيم الأثر، وإعطاء الأولوية للمشاريع عالية القيمة، وتسريع نمو الأعمال.</value>
+  </data>
+  <data name="MakePayment" xml:space="preserve">
+    <value>إجراء الدفع</value>
+  </data>
+  <data name="MakingContinuousImprovementVisibleMeasurableAndScalable" xml:space="preserve">
+    <value>إن جعل التحسين المستمر مرئيًا وقابلًا للقياس وقابلًا للتوسع يسمح للمؤسسات بمواءمة الفرق، وتتبع الأثر الحقيقي، وتكرار النجاحات عبر العمليات، وتحقيق نتائج أعمال مستدامة.</value>
+  </data>
+  <data name="ManageBusinessObjectiveAlignment" xml:space="preserve">
+    <value>إدارة مواءمة هدف الأعمال</value>
+  </data>
+  <data name="ManageClassicSmallAndMediumSizedProjects" xml:space="preserve">
+    <value>إدارة المشاريع الكلاسيكية الصغيرة والمتوسطة باستخدام إطار دورة الحياة المكون من 5 مراحل.</value>
+  </data>
+  <data name="ManageCountries" xml:space="preserve">
+    <value>إدارة البلدان</value>
+  </data>
+  <data name="ManageCountryOfOperation" xml:space="preserve">
+    <value>إدارة بلد التشغيل</value>
+  </data>
+  <data name="ManageDepartments" xml:space="preserve">
+    <value>إدارة الأقسام</value>
+  </data>
+  <data name="ManageFacilities" xml:space="preserve">
+    <value>إدارة المنشآت</value>
+  </data>
+  <data name="ManageFacilityDepartments" xml:space="preserve">
+    <value>إدارة أقسام المنشآت</value>
+  </data>
+  <data name="ManageInitiatives" xml:space="preserve">
+    <value>إدارة المبادرات</value>
+  </data>
+  <data name="ManageInitiativesTrackAuditsRealiseBenefits" xml:space="preserve">
+    <value>إدارة المبادرات — تتبع التدقيق — تحقيق الفوائد</value>
+  </data>
+  <data name="ManageOperationalCountries" xml:space="preserve">
+    <value>إدارة بلدان التشغيل</value>
+  </data>
+  <data name="ManageOperationalFacilities" xml:space="preserve">
+    <value>إدارة المنشآت التشغيلية</value>
+  </data>
+  <data name="ManageSavingCategory" xml:space="preserve">
+    <value>إدارة فئة التوفير</value>
+  </data>
+  <data name="ManageTools" xml:space="preserve">
+    <value>إدارة الأدوات</value>
+  </data>
+  <data name="ManageUsers" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="Medium" xml:space="preserve">
+    <value>متوسط</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>الرسالة</value>
+  </data>
+  <data name="Methodology" xml:space="preserve">
+    <value>المنهجية</value>
+  </data>
+  <data name="MethodologyIsRequired" xml:space="preserve">
+    <value>المنهجية مطلوبة.</value>
+  </data>
+  <data name="MethodologyActivateToSortColumnAscending" xml:space="preserve">
+    <value>المنهجية: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="MiningOperations" xml:space="preserve">
+    <value>عمليات التعدين</value>
+  </data>
+  <data name="ModifyBOA" xml:space="preserve">
+    <value>تعديل مواءمة هدف الأعمال</value>
+  </data>
+  <data name="ModifySoftSavingCategory" xml:space="preserve">
+    <value>تعديل فئة التوفير غير الملموس</value>
+  </data>
+  <data name="Money" xml:space="preserve">
+    <value>المال</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>شهر</value>
+  </data>
+  <data name="MonthYear" xml:space="preserve">
+    <value>الشهر والسنة</value>
+  </data>
+  <data name="MonthYearActivateToSortColumnDescending" xml:space="preserve">
+    <value>الشهر والسنة: تفعيل لفرز العمود تنازليًا</value>
+  </data>
+  <data name="MonthAgo" xml:space="preserve">
+    <value>منذ شهر</value>
+  </data>
+  <data name="MonthlyPrice" xml:space="preserve">
+    <value>السعر الشهري:</value>
+  </data>
+  <data name="MonthlySavings" xml:space="preserve">
+    <value>التوفيرات الشهرية</value>
+  </data>
+  <data name="Months" xml:space="preserve">
+    <value>الأشهر</value>
+  </data>
+  <data name="MostPopular" xml:space="preserve">
+    <value>الأكثر شيوعًا</value>
+  </data>
+  <data name="MyAccount" xml:space="preserve">
+    <value>حسابي</value>
+  </data>
+  <data name="MyPortfolio" xml:space="preserve">
+    <value>محفظتي</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>الاسم</value>
+  </data>
+  <data name="NameOfCountry" xml:space="preserve">
+    <value>اسم البلد</value>
+  </data>
+  <data name="NameOfDepartment" xml:space="preserve">
+    <value>اسم القسم</value>
+  </data>
+  <data name="NameOfFacility" xml:space="preserve">
+    <value>اسم المنشأة</value>
+  </data>
+  <data name="NameActivateToSortColumnDescending" xml:space="preserve">
+    <value>الاسم: تفعيل لفرز العمود تنازليًا</value>
+  </data>
+  <data name="Navigation" xml:space="preserve">
+    <value>التنقل</value>
+  </data>
+  <data name="NewEmployees" xml:space="preserve">
+    <value>الموظفون الجدد</value>
+  </data>
+  <data name="NewInitiative" xml:space="preserve">
+    <value>مبادرة جديدة</value>
+  </data>
+  <data name="NewProject" xml:space="preserve">
+    <value>مشروع جديد</value>
+  </data>
+  <data name="Next" xml:space="preserve">
+    <value>التالي</value>
+  </data>
+  <data name="NoDataSubmitted" xml:space="preserve">
+    <value>لم يتم إرسال بيانات</value>
+  </data>
+  <data name="NoRowsSubmitted" xml:space="preserve">
+    <value>لم يتم إرسال صفوف</value>
+  </data>
+  <data name="Note" xml:space="preserve">
+    <value>ملاحظة:</value>
+  </data>
+  <data name="NotePaymentIntegrationRequiresServerSideEndpoints" xml:space="preserve">
+    <value>ملاحظة: يتطلب تكامل الدفع نقاط نهاية من جانب الخادم لإنشاء جلسات الدفع (Stripe/Square). سيستدعي هذا العرض التوضيحي نقاط نهاية مؤقتة.</value>
+  </data>
+  <data name="NoteToAttachTheFinancialReport" xml:space="preserve">
+    <value>ملاحظة: لإرفاق التقرير المالي، تأكد من إدخال التوفيرات الملموسة، ورفع التقرير النهائي ضمن حالة المرفقات، ونقل المشروع إلى حالة مكتمل ضمن تبويب تفاصيل المشروع.</value>
+  </data>
+  <data name="NoteYouCanDownloadTheSampleTemplates" xml:space="preserve">
+    <value>ملاحظة: يمكنك تنزيل القوالب النموذجية لكل منها من أيقونة التنزيل</value>
+  </data>
+  <data name="NoteYouWillBeDirectedToMakePayment" xml:space="preserve">
+    <value>ملاحظة: سيتم توجيهك لإجراء الدفع.</value>
+  </data>
+  <data name="Notification" xml:space="preserve">
+    <value>الإشعار</value>
+  </data>
+  <data name="OneTimeSavings" xml:space="preserve">
+    <value>توفير لمرة واحدة</value>
+  </data>
+  <data name="OnlyLettersAreAllowed" xml:space="preserve">
+    <value>يُسمح بالحروف فقط</value>
+  </data>
+  <data name="OopsThePageYouAreLookingForDoesntExist" xml:space="preserve">
+    <value>عذرًا. الصفحة التي تبحث عنها غير موجودة..</value>
+  </data>
+  <data name="OperationalExcellence" xml:space="preserve">
+    <value>التميز التشغيلي</value>
+  </data>
+  <data name="OperationalExcellenceInitiatives" xml:space="preserve">
+    <value>مبادرات التميز التشغيلي</value>
+  </data>
+  <data name="OperationalExcellenceTemplate" xml:space="preserve">
+    <value>قالب التميز التشغيلي</value>
+  </data>
+  <data name="OperationalLocation" xml:space="preserve">
+    <value>الموقع التشغيلي</value>
+  </data>
+  <data name="OpsFocusInc" xml:space="preserve">
+    <value>Ops Focus Inc</value>
+  </data>
+  <data name="OptionalNote" xml:space="preserve">
+    <value>ملاحظة اختيارية</value>
+  </data>
+  <data name="Options" xml:space="preserve">
+    <value>الخيارات</value>
+  </data>
+  <data name="OrganizationDetails" xml:space="preserve">
+    <value>تفاصيل المؤسسة</value>
+  </data>
+  <data name="OrganizationUser" xml:space="preserve">
+    <value>مستخدم المؤسسة</value>
+  </data>
+  <data name="OtherPages" xml:space="preserve">
+    <value>صفحات أخرى</value>
+  </data>
+  <data name="Others" xml:space="preserve">
+    <value>أخرى</value>
+  </data>
+  <data name="OurMission" xml:space="preserve">
+    <value>مهمتنا</value>
+  </data>
+  <data name="OurTeam" xml:space="preserve">
+    <value>فريقنا</value>
+  </data>
+  <data name="Outside" xml:space="preserve">
+    <value>خارج</value>
+  </data>
+  <data name="PasswordVerification" xml:space="preserve">
+    <value>التحقق من كلمة المرور</value>
+  </data>
+  <data name="PayNow" xml:space="preserve">
+    <value>ادفع الآن</value>
+  </data>
+  <data name="PaymentSubmissionFailed" xml:space="preserve">
+    <value>فشل إرسال الدفع</value>
+  </data>
+  <data name="PaymentSubmissionSuccessful" xml:space="preserve">
+    <value>تم إرسال الدفع بنجاح</value>
+  </data>
+  <data name="PercentageStatus" xml:space="preserve">
+    <value>حالة النسبة المئوية</value>
+  </data>
+  <data name="PerfectPlan" xml:space="preserve">
+    <value>الخطة المثالية</value>
+  </data>
+  <data name="PerformBulkUploads" xml:space="preserve">
+    <value>تنفيذ عمليات رفع بالجملة</value>
+  </data>
+  <data name="PersonalInformation" xml:space="preserve">
+    <value>المعلومات الشخصية</value>
+  </data>
+  <data name="PersonalSettings" xml:space="preserve">
+    <value>الإعدادات الشخصية</value>
+  </data>
+  <data name="Phase" xml:space="preserve">
+    <value>المرحلة</value>
+  </data>
+  <data name="PhaseContainsAnInvalidValueForTheSelectedMethodology" xml:space="preserve">
+    <value>تحتوي المرحلة على قيمة غير صالحة للمنهجية المحددة.</value>
+  </data>
+  <data name="PhaseActivateToSortColumnAscending" xml:space="preserve">
+    <value>المرحلة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="PhoneAndEmail" xml:space="preserve">
+    <value>الهاتف والبريد الإلكتروني</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>رقم الهاتف</value>
+  </data>
+  <data name="Plan" xml:space="preserve">
+    <value>الخطة</value>
+  </data>
+  <data name="PlanPrioritiseAndMonitorImprovementIdeas" xml:space="preserve">
+    <value>خطط لأفكار التحسين ورتب أولوياتها وراقبها من التقديم حتى الإكمال. حدد المعالم، وعيّن المالكين، وأدر المخاطر، وتتبع التقدم باستخدام سير عمل منظم.</value>
+  </data>
+  <data name="PressToSelect" xml:space="preserve">
+    <value>اضغط للاختيار</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>السابق</value>
+  </data>
+  <data name="PreviousMonthVsThisMonths" xml:space="preserve">
+    <value>الشهر السابق مقابل هذا الشهر</value>
+  </data>
+  <data name="Pricing" xml:space="preserve">
+    <value>التسعير</value>
+  </data>
+  <data name="PriorityIsRequired" xml:space="preserve">
+    <value>الأولوية مطلوبة.</value>
+  </data>
+  <data name="PriorityMustBeOneOfHighMediumOrLow" xml:space="preserve">
+    <value>يجب أن تكون الأولوية واحدة من: عالية، متوسطة أو منخفضة</value>
+  </data>
+  <data name="PriorityActivateToSortColumnAscending" xml:space="preserve">
+    <value>الأولوية: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="ProblemStatement" xml:space="preserve">
+    <value>بيان المشكلة</value>
+  </data>
+  <data name="ProblemStatementActivateToSortColumnAscending" xml:space="preserve">
+    <value>بيان المشكلة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="ProblemStatementIsRequired" xml:space="preserve">
+    <value>بيان المشكلة مطلوب.</value>
+  </data>
+  <data name="ProceedToCITracker" xml:space="preserve">
+    <value>المتابعة إلى CITracker</value>
+  </data>
+  <data name="Profile" xml:space="preserve">
+    <value>الملف الشخصي</value>
+  </data>
+  <data name="Project" xml:space="preserve">
+    <value>المشروع</value>
+  </data>
+  <data name="ProjectAuditingAndBenefitsCapture" xml:space="preserve">
+    <value>تدقيق المشروع والتقاط الفوائد</value>
+  </data>
+  <data name="ProjectCount" xml:space="preserve">
+    <value>عدد المشاريع</value>
+  </data>
+  <data name="ProjectDetails" xml:space="preserve">
+    <value>تفاصيل المشروع</value>
+  </data>
+  <data name="ProjectIDCannotBeNegative" xml:space="preserve">
+    <value>لا يمكن أن يكون معرف المشروع سالبًا</value>
+  </data>
+  <data name="ProjectManager" xml:space="preserve">
+    <value>مدير المشروع</value>
+  </data>
+  <data name="ProjectMustHaveAtLeastOneFacilitator" xml:space="preserve">
+    <value>يجب أن يكون للمشروع ميسّر واحد على الأقل.</value>
+  </data>
+  <data name="ProjectPhaseIsRequired" xml:space="preserve">
+    <value>مرحلة المشروع مطلوبة.</value>
+  </data>
+  <data name="ProjectStatusIsRequired" xml:space="preserve">
+    <value>حالة المشروع مطلوبة.</value>
+  </data>
+  <data name="ProjectTitle" xml:space="preserve">
+    <value>عنوان المشروع</value>
+  </data>
+  <data name="ProjectUpdates" xml:space="preserve">
+    <value>تحديث(ات) المشروع</value>
+  </data>
+  <data name="Projects" xml:space="preserve">
+    <value>المشاريع</value>
+  </data>
+  <data name="ProvideOrganisationDetails" xml:space="preserve">
+    <value>تقديم تفاصيل المؤسسة</value>
+  </data>
+  <data name="Quality" xml:space="preserve">
+    <value>الجودة</value>
+  </data>
+  <data name="Rating" xml:space="preserve">
+    <value>التقييم:</value>
+  </data>
+  <data name="RealTimeInsightsAcrossAllFacilitiesAndDepartmentsGlobally" xml:space="preserve">
+    <value>رؤى في الوقت الفعلي عبر جميع المنشآت والأقسام عالميًا.</value>
+  </data>
+  <data name="RecentSearches" xml:space="preserve">
+    <value>عمليات البحث الأخيرة</value>
+  </data>
+  <data name="RecyclingOperation" xml:space="preserve">
+    <value>عملية إعادة التدوير</value>
+  </data>
+  <data name="RegisterMonthlySavings" xml:space="preserve">
+    <value>تسجيل التوفيرات الشهرية</value>
+  </data>
+  <data name="Release" xml:space="preserve">
+    <value>الإصدار</value>
+  </data>
+  <data name="RelevantInformationToProvideRecentActivityAndUpdatesToTheInitiative" xml:space="preserve">
+    <value>معلومات ذات صلة لتقديم النشاط والتحديثات الأخيرة للمبادرة</value>
+  </data>
+  <data name="RenameABusinessObjectiveAlignment" xml:space="preserve">
+    <value>إعادة تسمية مواءمة هدف أعمال</value>
+  </data>
+  <data name="RenameACountryOfOperation" xml:space="preserve">
+    <value>إعادة تسمية بلد تشغيل</value>
+  </data>
+  <data name="RenameADepartment" xml:space="preserve">
+    <value>إعادة تسمية قسم</value>
+  </data>
+  <data name="RenameAFacility" xml:space="preserve">
+    <value>إعادة تسمية منشأة</value>
+  </data>
+  <data name="RenameASoftSavingCategory" xml:space="preserve">
+    <value>إعادة تسمية فئة توفير غير ملموس</value>
+  </data>
+  <data name="RenameAUser" xml:space="preserve">
+    <value>إعادة تسمية مستخدم</value>
+  </data>
+  <data name="Revenue" xml:space="preserve">
+    <value>الإيراد</value>
+  </data>
+  <data name="ROI" xml:space="preserve">
+    <value>ROI</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>الدور</value>
+  </data>
+  <data name="Safety" xml:space="preserve">
+    <value>السلامة</value>
+  </data>
+  <data name="SavingAmount" xml:space="preserve">
+    <value>مبلغ التوفير</value>
+  </data>
+  <data name="SavingAmountInSecSqftEtc" xml:space="preserve">
+    <value>مبلغ التوفير (بالثواني، القدم المربع، إلخ.)</value>
+  </data>
+  <data name="SavingType" xml:space="preserve">
+    <value>نوع التوفير</value>
+  </data>
+  <data name="SavingsClassification" xml:space="preserve">
+    <value>تصنيف التوفير</value>
+  </data>
+  <data name="SavingsClassificationActivateToSortColumnAscending" xml:space="preserve">
+    <value>تصنيف التوفير: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="SavingsClassificationMustBeOneOf" xml:space="preserve">
+    <value>يجب أن يكون تصنيف التوفير واحدًا من: إخراج التكلفة، توفير التكاليف، الإيراد أو تجنب التكلفة</value>
+  </data>
+  <data name="SavingsSpanningOverMoreThanAYear" xml:space="preserve">
+    <value>توفيرات تمتد لأكثر من سنة</value>
+  </data>
+  <data name="SavingsThatWillNotBeRecurringOvertime" xml:space="preserve">
+    <value>توفيرات لن تتكرر بمرور الوقت</value>
+  </data>
+  <data name="SavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>التوفيرات: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="SearchTrackAndFindProjectsInsightsAndLessonsInstantly" xml:space="preserve">
+    <value>ابحث وتتبع واعثر على المشاريع والرؤى والدروس فورًا.</value>
+  </data>
+  <data name="SelectABusinessObjectiveAlignment" xml:space="preserve">
+    <value>اختر مواءمة هدف أعمال</value>
+  </data>
+  <data name="SelectACategory" xml:space="preserve">
+    <value>اختر فئة</value>
+  </data>
+  <data name="SelectACountry" xml:space="preserve">
+    <value>اختر بلدًا</value>
+  </data>
+  <data name="SelectADateAfterTheProjectStartDate" xml:space="preserve">
+    <value>اختر تاريخًا بعد تاريخ بدء المشروع</value>
+  </data>
+  <data name="SelectADepartment" xml:space="preserve">
+    <value>اختر قسمًا</value>
+  </data>
+  <data name="SelectAFacility" xml:space="preserve">
+    <value>اختر منشأة</value>
+  </data>
+  <data name="SelectAMethodology" xml:space="preserve">
+    <value>اختر منهجية</value>
+  </data>
+  <data name="SelectASavingsType" xml:space="preserve">
+    <value>اختر نوع توفير</value>
+  </data>
+  <data name="SelectASoftSavingCategory" xml:space="preserve">
+    <value>اختر فئة توفير غير ملموس</value>
+  </data>
+  <data name="SelectAStatus" xml:space="preserve">
+    <value>اختر حالة</value>
+  </data>
+  <data name="SelectASubscriptionPlan" xml:space="preserve">
+    <value>اختر خطة اشتراك</value>
+  </data>
+  <data name="SelectAUser" xml:space="preserve">
+    <value>اختر مستخدمًا</value>
+  </data>
+  <data name="SelectAnUploadType" xml:space="preserve">
+    <value>اختر نوع رفع</value>
+  </data>
+  <data name="SelectAndModifyTheStatusAsTheInitiativeProjectProgress" xml:space="preserve">
+    <value>اختر الحالة وعدّلها مع تقدم المبادرة/المشروع</value>
+  </data>
+  <data name="SelectClassification" xml:space="preserve">
+    <value>اختر التصنيف</value>
+  </data>
+  <data name="SelectCountry" xml:space="preserve">
+    <value>اختر البلد</value>
+  </data>
+  <data name="SelectFacilitatorSponsor" xml:space="preserve">
+    <value>اختر الميسّر/الراعي</value>
+  </data>
+  <data name="SelectFunctionalGroupsThatOwnsTheProjectBeingImproved" xml:space="preserve">
+    <value>اختر المجموعات الوظيفية التي تملك المشروع الذي يتم تحسينه</value>
+  </data>
+  <data name="SelectGroupFunction" xml:space="preserve">
+    <value>اختر المجموعة/الوظيفة</value>
+  </data>
+  <data name="SelectMethodology" xml:space="preserve">
+    <value>اختر المنهجية</value>
+  </data>
+  <data name="SelectMoreYearsToSaveMore" xml:space="preserve">
+    <value>اختر المزيد من السنوات لتوفير أكثر (سنتان = خصم 10%؛ 3 سنوات = خصم 15%).</value>
+  </data>
+  <data name="SelectPriority" xml:space="preserve">
+    <value>اختر الأولوية</value>
+  </data>
+  <data name="SelectRole" xml:space="preserve">
+    <value>اختر الدور</value>
+  </data>
+  <data name="SelectRolesForTeamMembers" xml:space="preserve">
+    <value>اختر أدوار أعضاء الفريق، وتأكد من وجود ميسّر/مالك واحد على الأقل</value>
+  </data>
+  <data name="SelectStatus" xml:space="preserve">
+    <value>اختر الحالة</value>
+  </data>
+  <data name="SelectStrategicInitiativeProject" xml:space="preserve">
+    <value>اختر مشروع مبادرة استراتيجية</value>
+  </data>
+  <data name="SelectStrategicProject" xml:space="preserve">
+    <value>اختر مشروعًا استراتيجيًا</value>
+  </data>
+  <data name="SelectTheMostAppropriateApproachForExecutingTheInitiativeProject" xml:space="preserve">
+    <value>اختر الأنسب لتنفيذ المبادرة/المشروع.</value>
+  </data>
+  <data name="SelectTheMostAppropriateObjectivesBasedOnYourBusinessFocus" xml:space="preserve">
+    <value>اختر الأهداف الأنسب بناءً على تركيزك التجاري</value>
+  </data>
+  <data name="SelectUploadType" xml:space="preserve">
+    <value>اختر نوع الرفع</value>
+  </data>
+  <data name="SelectUser" xml:space="preserve">
+    <value>اختر المستخدم</value>
+  </data>
+  <data name="SelectedMethodologyIsRequired" xml:space="preserve">
+    <value>المنهجية المحددة مطلوبة</value>
+  </data>
+  <data name="SendMessage" xml:space="preserve">
+    <value>إرسال رسالة</value>
+  </data>
+  <data name="SendVerificationCodeToEmail" xml:space="preserve">
+    <value>إرسال رمز التحقق إلى البريد الإلكتروني</value>
+  </data>
+  <data name="Services" xml:space="preserve">
+    <value>الخدمات</value>
+  </data>
+  <data name="SetupVerification" xml:space="preserve">
+    <value>إعداد التحقق</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>الإعدادات</value>
+  </data>
+  <data name="SignInWithMicrosoft" xml:space="preserve">
+    <value>تسجيل الدخول باستخدام Microsoft</value>
+  </data>
+  <data name="SoftSavingCategory" xml:space="preserve">
+    <value>فئة التوفير غير الملموس</value>
+  </data>
+  <data name="SoftSavingCategoryDetails" xml:space="preserve">
+    <value>تفاصيل فئة التوفير غير الملموس</value>
+  </data>
+  <data name="SoftSavings" xml:space="preserve">
+    <value>توفيرات غير ملموسة</value>
+  </data>
+  <data name="Space" xml:space="preserve">
+    <value>المساحة</value>
+  </data>
+  <data name="Sponsor" xml:space="preserve">
+    <value>الراعي</value>
+  </data>
+  <data name="SponsorActivateToSortColumnAscending" xml:space="preserve">
+    <value>الراعي: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="SponsorEmailAddressMustBeAValidEmailAddress" xml:space="preserve">
+    <value>يجب أن يكون البريد الإلكتروني للراعي عنوان بريد إلكتروني صالحًا</value>
+  </data>
+  <data name="Stakeholders" xml:space="preserve">
+    <value>أصحاب المصلحة</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>تاريخ البدء</value>
+  </data>
+  <data name="StartDateIsRequired" xml:space="preserve">
+    <value>تاريخ البدء مطلوب.</value>
+  </data>
+  <data name="StartDateMustBeEarlierThanEndDate" xml:space="preserve">
+    <value>يجب أن يكون تاريخ البدء قبل تاريخ الانتهاء.</value>
+  </data>
+  <data name="StartingFrom" xml:space="preserve">
+    <value>ابتداءً من</value>
+  </data>
+  <data name="StatusPercentageCompletion" xml:space="preserve">
+    <value>الحالة/نسبة الإكمال</value>
+  </data>
+  <data name="StatusPercentageCompletionActivateToSortColumnAscending" xml:space="preserve">
+    <value>الحالة/نسبة الإكمال: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="StatusActivateToSortColumnAscending" xml:space="preserve">
+    <value>الحالة: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="StoppedProgramBecauseOfException" xml:space="preserve">
+    <value>تم إيقاف البرنامج بسبب استثناء</value>
+  </data>
+  <data name="StrategicInitiative" xml:space="preserve">
+    <value>مبادرة استراتيجية</value>
+  </data>
+  <data name="StrategicInitiativeTemplate" xml:space="preserve">
+    <value>قالب المبادرة الاستراتيجية</value>
+  </data>
+  <data name="StrategicInitiatives" xml:space="preserve">
+    <value>المبادرات الاستراتيجية</value>
+  </data>
+  <data name="StrategicProject" xml:space="preserve">
+    <value>مشروع استراتيجي</value>
+  </data>
+  <data name="SubProject" xml:space="preserve">
+    <value>مشروع فرعي</value>
+  </data>
+  <data name="SubProjectDetails" xml:space="preserve">
+    <value>تفاصيل المشروع الفرعي</value>
+  </data>
+  <data name="SubProjects" xml:space="preserve">
+    <value>المشاريع الفرعية</value>
+  </data>
+  <data name="Subject" xml:space="preserve">
+    <value>الموضوع</value>
+  </data>
+  <data name="Submit" xml:space="preserve">
+    <value>إرسال</value>
+  </data>
+  <data name="Subscribe" xml:space="preserve">
+    <value>اشتراك</value>
+  </data>
+  <data name="Subscription" xml:space="preserve">
+    <value>الاشتراك</value>
+  </data>
+  <data name="SubscriptionDuration" xml:space="preserve">
+    <value>مدة الاشتراك</value>
+  </data>
+  <data name="Subtotal" xml:space="preserve">
+    <value>المجموع الفرعي</value>
+  </data>
+  <data name="SupplyChain" xml:space="preserve">
+    <value>سلسلة التوريد</value>
+  </data>
+  <data name="Support" xml:space="preserve">
+    <value>الدعم</value>
+  </data>
+  <data name="SupportingValueStream" xml:space="preserve">
+    <value>تدفق القيمة الداعم</value>
+  </data>
+  <data name="SupportingValueStreamIsRequired" xml:space="preserve">
+    <value>تدفق القيمة الداعم مطلوب.</value>
+  </data>
+  <data name="Survey" xml:space="preserve">
+    <value>استبيان</value>
+  </data>
+  <data name="Sustainability" xml:space="preserve">
+    <value>الاستدامة</value>
+  </data>
+  <data name="Tables" xml:space="preserve">
+    <value>الجداول</value>
+  </data>
+  <data name="TargetSavings" xml:space="preserve">
+    <value>التوفير المستهدف</value>
+  </data>
+  <data name="TargetSavingsActivateToSortColumnAscending" xml:space="preserve">
+    <value>التوفير المستهدف: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="Team" xml:space="preserve">
+    <value>الفريق</value>
+  </data>
+  <data name="TeamListCannotBeEmpty" xml:space="preserve">
+    <value>قائمة الفريق لا يمكن أن تكون فارغة</value>
+  </data>
+  <data name="TeamMember" xml:space="preserve">
+    <value>عضو الفريق</value>
+  </data>
+  <data name="TeamMemberRoleIsRequired" xml:space="preserve">
+    <value>دور عضو الفريق مطلوب</value>
+  </data>
+  <data name="TeamMembers" xml:space="preserve">
+    <value>أعضاء الفريق</value>
+  </data>
+  <data name="TeamActivateToSortColumnAscending" xml:space="preserve">
+    <value>الفريق: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="TheCITrackerWebAppComesWithReadyToUseFeatures" xml:space="preserve">
+    <value>يأتي تطبيق CITracker الإلكتروني بميزات جاهزة للاستخدام سهلة تمامًا لأي مستخدم، حتى للمبتدئين.</value>
+  </data>
+  <data name="TheNameOfTheValueStreamThisInitiativeIsTiedTo" xml:space="preserve">
+    <value>اسم تدفق القيمة الذي ترتبط به هذه المبادرة</value>
+  </data>
+  <data name="ThisHelpsWithTyingTheInitiativeProjectToAnyLeanSixSigmaCertificationEffort" xml:space="preserve">
+    <value>يساعد هذا في ربط المبادرة/المشروع بأي جهد للحصول على شهادة Lean 6 Sigma</value>
+  </data>
+  <data name="ThisIncludesNonFinancialSavings" xml:space="preserve">
+    <value>يتضمن ذلك توفيرات غير مالية (مثل الوقت، المساحة، الجودة، السلامة)</value>
+  </data>
+  <data name="Time" xml:space="preserve">
+    <value>الوقت</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="TitleIsRequired" xml:space="preserve">
+    <value>العنوان مطلوب.</value>
+  </data>
+  <data name="TitleActivateToSortColumnAscending" xml:space="preserve">
+    <value>العنوان: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="ToggleForAnyTeamMemberYouWouldLikeToReceiveAnEmailNotification" xml:space="preserve">
+    <value>فعّل لأي عضو فريق تريد أن يتلقى إشعارًا بالبريد الإلكتروني عند إجراء أي تحديث</value>
+  </data>
+  <data name="ToolManagement" xml:space="preserve">
+    <value>إدارة الأدوات</value>
+  </data>
+  <data name="Tools" xml:space="preserve">
+    <value>الأدوات</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>الإجمالي</value>
+  </data>
+  <data name="TotalExpectedRevenue" xml:space="preserve">
+    <value>إجمالي الإيراد المتوقع</value>
+  </data>
+  <data name="TotalExpectedRevenueActivateToSortColumnAscending" xml:space="preserve">
+    <value>إجمالي الإيراد المتوقع: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="TotalExpectedSavings" xml:space="preserve">
+    <value>إجمالي التوفير المتوقع</value>
+  </data>
+  <data name="TotalExpectedSavingsRevenue" xml:space="preserve">
+    <value>إجمالي التوفير/الإيراد المتوقع</value>
+  </data>
+  <data name="TotalExpenses" xml:space="preserve">
+    <value>إجمالي المصروفات</value>
+  </data>
+  <data name="TotalRevenue" xml:space="preserve">
+    <value>إجمالي الإيراد</value>
+  </data>
+  <data name="TotalSavings" xml:space="preserve">
+    <value>إجمالي التوفير</value>
+  </data>
+  <data name="TrackPractitionerProgressAndProjectMilestones" xml:space="preserve">
+    <value>تتبع تقدم الممارس ومعالم المشروع لشهادات Lean Six Sigma.</value>
+  </data>
+  <data name="TrackTraditionalProjects" xml:space="preserve">
+    <value>تتبع المشاريع التقليدية</value>
+  </data>
+  <data name="TwentyMBMaxFileSize" xml:space="preserve">
+    <value>20 ميجابايت (الحد الأقصى لحجم الملف)</value>
+  </data>
+  <data name="TypeYourMessageHere" xml:space="preserve">
+    <value>اكتب رسالتك هنا...</value>
+  </data>
+  <data name="UnableToRegisterOrganisation" xml:space="preserve">
+    <value>تعذر تسجيل المؤسسة</value>
+  </data>
+  <data name="UnitOfMeasurement" xml:space="preserve">
+    <value>وحدة القياس (مثل الدقائق، م²، dpu)</value>
+  </data>
+  <data name="Unlimited" xml:space="preserve">
+    <value>غير محدود</value>
+  </data>
+  <data name="UpgradeSubscription" xml:space="preserve">
+    <value>ترقية الاشتراك</value>
+  </data>
+  <data name="Upload" xml:space="preserve">
+    <value>رفع</value>
+  </data>
+  <data name="UserDetails" xml:space="preserve">
+    <value>تفاصيل المستخدم</value>
+  </data>
+  <data name="UserLicenses" xml:space="preserve">
+    <value>تراخيص المستخدم</value>
+  </data>
+  <data name="UserManagement" xml:space="preserve">
+    <value>إدارة المستخدمين</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>اسم المستخدم</value>
+  </data>
+  <data name="UserTemplate" xml:space="preserve">
+    <value>قالب المستخدم</value>
+  </data>
+  <data name="UsersNameIsRequired" xml:space="preserve">
+    <value>اسم المستخدم مطلوب</value>
+  </data>
+  <data name="Verification" xml:space="preserve">
+    <value>التحقق</value>
+  </data>
+  <data name="VerifiedUser" xml:space="preserve">
+    <value>مستخدم موثّق</value>
+  </data>
+  <data name="Verify" xml:space="preserve">
+    <value>تحقق</value>
+  </data>
+  <data name="View" xml:space="preserve">
+    <value>عرض</value>
+  </data>
+  <data name="ViewAll" xml:space="preserve">
+    <value>عرض الكل</value>
+  </data>
+  <data name="ViewOnMarketplace" xml:space="preserve">
+    <value>عرض على Marketplace</value>
+  </data>
+  <data name="WeAreHereToHelpYou" xml:space="preserve">
+    <value>نحن هنا لمساعدتك</value>
+  </data>
+  <data name="WelcomeToCITracker" xml:space="preserve">
+    <value>مرحبًا بك في CITracker</value>
+  </data>
+  <data name="WhatPeopleAreSayingAboutCITracker" xml:space="preserve">
+    <value>ما يقوله الناس عن CITracker.</value>
+  </data>
+  <data name="WorkingHours" xml:space="preserve">
+    <value>ساعات العمل</value>
+  </data>
+  <data name="WorkingTowardsACertification" xml:space="preserve">
+    <value>تسعى للحصول على شهادة؟</value>
+  </data>
+  <data name="Year" xml:space="preserve">
+    <value>سنة</value>
+  </data>
+  <data name="Years" xml:space="preserve">
+    <value>سنوات</value>
+  </data>
+  <data name="YouHaveTwoProjectsToFinishYouHadCompleted" xml:space="preserve">
+    <value>لديك مشروعان لإنهائهما، لقد أكملت</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>لقد استهلكت تراخيصك المتاحة، يرجى ترقية خطة اشتراكك</value>
+  </data>
+  <data name="YouHaveUsedUpYourAvailableUserLicensesKindlyUpgradeYourSubscriptionPlan" xml:space="preserve">
+    <value>لقد استهلكت تراخيص المستخدمين المتاحة لديك، يرجى ترقية خطة اشتراكك</value>
+  </data>
+  <data name="YouMayHaveMistypedTheAddressOrThePageMayHaveMoved" xml:space="preserve">
+    <value>ربما أخطأت في كتابة العنوان أو ربما انتقلت الصفحة. جرّب البحث أدناه.</value>
+  </data>
+  <data name="YouNeedToIdentifyIfThisIsACarryOverProject" xml:space="preserve">
+    <value>تحتاج إلى تحديد ما إذا كان هذا مشروعًا مُرحّلًا</value>
+  </data>
+  <data name="YourPaymentRequestHasBeenSubmittedSuccessfully" xml:space="preserve">
+    <value>تم إرسال طلب الدفع الخاص بك بنجاح، وستتلقى بريدًا إلكترونيًا بمجرد تنشيط حسابك.</value>
+  </data>
+  <data name="YourPaymentRequestSubmissionFailed" xml:space="preserve">
+    <value>فشل إرسال طلب الدفع الخاص بك، يرجى التحقق مع البنك والمحاولة مرة أخرى.</value>
+  </data>
+  <data name="By" xml:space="preserve">
+    <value>بواسطة</value>
+  </data>
+  <data name="DesignedWith" xml:space="preserve">
+    <value>مصمم بـ</value>
+  </data>
+  <data name="ForYourBusiness" xml:space="preserve">
+    <value>لأعمالك</value>
+  </data>
+  <data name="Reporting" xml:space="preserve">
+    <value>التقارير</value>
+  </data>
+  <data name="StrategyFocused" xml:space="preserve">
+    <value>تركز على الاستراتيجية</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>العنوان</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>البلد</value>
+  </data>
+  <data name="Days" xml:space="preserve">
+    <value>الأيام</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>المستخدم</value>
+  </data>
+  <data name="Suitable for Small Businesses or closed group trials" xml:space="preserve">
+    <value>مناسب للشركات الصغيرة أو التجارب الجماعية المغلقة</value>
+  </data>
+  <data name="Perfect for Individuals and Startups." xml:space="preserve">
+    <value>مثالي للأفراد والشركات الناشئة.</value>
+  </data>
+  <data name="Great for large businesses with multiple teams tracking several projects  in parallel." xml:space="preserve">
+    <value>رائع للشركات الكبيرة التي لديها فرق متعددة تتبع عدة مشاريع بالتوازي.</value>
+  </data>
+  <data name="Ideal for sizeable projects and businesses with expanding teams." xml:space="preserve">
+    <value>مثالي للمشاريع الكبيرة والشركات ذات الفرق المتوسعة.</value>
+  </data>
+  <data name="AreYouSureYouWantToCancelYourSubscription" xml:space="preserve">
+    <value>هل أنت متأكد أنك تريد إلغاء اشتراكك؟</value>
+  </data>
+  <data name="SubscriptionCancellationRequestSubmittedSuccessfully" xml:space="preserve">
+    <value>تم إرسال طلب إلغاء الاشتراك بنجاح</value>
+  </data>
+  <data name="SomethingWentWrong" xml:space="preserve">
+    <value>حدث خطأ ما</value>
+  </data>
+  <data name="MaxFileSize" xml:space="preserve">
+    <value>الحد الأقصى لحجم الملف</value>
+  </data>
+  <data name="ExcelMustContainHeadersAndAtLeastOneDataRow" xml:space="preserve">
+    <value>يجب أن يحتوي Excel على رؤوس أعمدة وصف بيانات واحد على الأقل</value>
+  </data>
+  <data name="PleaseSelectAnUploadType" xml:space="preserve">
+    <value>يرجى اختيار نوع رفع</value>
+  </data>
+  <data name="UploadSuccessful" xml:space="preserve">
+    <value>تم الرفع بنجاح</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>المستخدمون</value>
+  </data>
+  <data name="Licences" xml:space="preserve">
+    <value>التراخيص</value>
+  </data>
+  <data name="Successful" xml:space="preserve">
+    <value>ناجح</value>
+  </data>
+  <data name="Failed" xml:space="preserve">
+    <value>فشل</value>
+  </data>
+  <data name="InvalidBusinessObjectiveAlignment" xml:space="preserve">
+    <value>مواءمة هدف أعمال غير صالحة</value>
+  </data>
+  <data name="Department" xml:space="preserve">
+    <value>القسم</value>
+  </data>
+  <data name="InvalidDepartment" xml:space="preserve">
+    <value>قسم غير صالح</value>
+  </data>
+  <data name="InvalidFacilityName" xml:space="preserve">
+    <value>اسم منشأة غير صالح</value>
+  </data>
+  <data name="InvalidCountryName" xml:space="preserve">
+    <value>اسم بلد غير صالح</value>
+  </data>
+  <data name="InvalidSavingCategoryName" xml:space="preserve">
+    <value>اسم فئة توفير غير صالح</value>
+  </data>
+  <data name="UploadFailed" xml:space="preserve">
+    <value>فشل الرفع</value>
+  </data>
+  <data name="FailedToFetchTools" xml:space="preserve">
+    <value>فشل جلب الأدوات</value>
+  </data>
+  <data name="UploadThisFile" xml:space="preserve">
+    <value>هل تريد رفع هذا الملف؟</value>
+  </data>
+  <data name="InvalidUserName" xml:space="preserve">
+    <value>اسم مستخدم غير صالح</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>الحالة</value>
+  </data>
+  <data name="Priority" xml:space="preserve">
+    <value>الأولوية</value>
+  </data>
+  <data name="StartDateActivateToSortColumnAscending" xml:space="preserve">
+    <value>تاريخ البدء: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="NoRecordFound" xml:space="preserve">
+    <value>لم يتم العثور على سجل</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>الوصف</value>
+  </data>
+  <data name="Owner" xml:space="preserve">
+    <value>المالك</value>
+  </data>
+  <data name="OwnerActivateToSortColumnAscending" xml:space="preserve">
+    <value>المالك: تفعيل لفرز العمود تصاعديًا</value>
+  </data>
+  <data name="TypeUser" xml:space="preserve">
+    <value>اكتب المستخدم...</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>لا توجد بيانات متاحة</value>
+  </data>
+  <data name="ProjectStatus" xml:space="preserve">
+    <value>حالة المشروع</value>
+  </data>
+  <data name="SavingsCategory" xml:space="preserve">
+    <value>فئة التوفير</value>
+  </data>
+  <data name="MonthlyProjectsStatus" xml:space="preserve">
+    <value>حالة المشاريع الشهرية</value>
+  </data>
+  <data name="MonthlyProjects" xml:space="preserve">
+    <value>المشاريع الشهرية</value>
+  </data>
+  <data name="MonthlyProjectsPerDepartment" xml:space="preserve">
+    <value>المشاريع الشهرية حسب القسم</value>
+  </data>
+  <data name="MonthlyProjectsPerPhase" xml:space="preserve">
+    <value>المشاريع الشهرية حسب المرحلة</value>
+  </data>
+  <data name="FacilitatorsProjects" xml:space="preserve">
+    <value>مشاريع الميسّرين</value>
+  </data>
+  <data name="Savings" xml:space="preserve">
+    <value>التوفيرات</value>
+  </data>
+  <data name="Attachments" xml:space="preserve">
+    <value>المرفقات</value>
+  </data>
+  <data name="Attachment" xml:space="preserve">
+    <value>المرفق</value>
+  </data>
+  <data name="SaveAndNext" xml:space="preserve">
+    <value>حفظ والتالي</value>
+  </data>
+  <data name="AllCommentsAreRequired" xml:space="preserve">
+    <value>جميع التعليقات مطلوبة.</value>
+  </data>
+  <data name="AllCommentDatesAreRequired" xml:space="preserve">
+    <value>جميع تواريخ التعليقات مطلوبة.</value>
+  </data>
+  <data name="Comment" xml:space="preserve">
+    <value>تعليق</value>
+  </data>
+  <data name="Audited" xml:space="preserve">
+    <value>تم التدقيق</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>حفظ</value>
+  </data>
+  <data name="PleaseAddAtLeastOneSavingTypeEitherHardOrSoftSaving" xml:space="preserve">
+    <value>يرجى إضافة نوع توفير واحد على الأقل (إما توفير ملموس أو غير ملموس)</value>
+  </data>
+  <data name="DuplicateMonthDetected" xml:space="preserve">
+    <value>تم اكتشاف شهر مكرر</value>
+  </data>
+  <data name="YouCanOnlyAddUpTo12Entries" xml:space="preserve">
+    <value>يمكنك إضافة ما يصل إلى 12 إدخالًا فقط.</value>
+  </data>
+  <data name="KindlySearchForAProject" xml:space="preserve">
+    <value>يرجى البحث عن مشروع</value>
+  </data>
+  <data name="SelectATool" xml:space="preserve">
+    <value>اختر أداة</value>
+  </data>
+  <data name="ProjectSavedToEnterTeamMembersUpdateStatusInTheProjectDetailsPageToInitiated" xml:space="preserve">
+    <value>تم حفظ المشروع. لإدخال أعضاء الفريق، حدّث الحالة في صفحة تفاصيل المشروع إلى "مُبدأ".</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTeamMember" xml:space="preserve">
+    <value>يرجى إضافة عضو فريق واحد على الأقل.</value>
+  </data>
+  <data name="AllTeamMemberNamesAreRequired" xml:space="preserve">
+    <value>جميع أسماء أعضاء الفريق مطلوبة.</value>
+  </data>
+  <data name="AllTeamMemberRolesAreRequired" xml:space="preserve">
+    <value>جميع أدوار أعضاء الفريق مطلوبة.</value>
+  </data>
+  <data name="ProjectDefinitionAndAlignment" xml:space="preserve">
+    <value>تعريف المشروع ومواءمته.</value>
+  </data>
+  <data name="CurrentStatePerformanceBaseline" xml:space="preserve">
+    <value>خط الأساس لأداء الحالة الحالية.</value>
+  </data>
+  <data name="IdentifyCausesOfVariation" xml:space="preserve">
+    <value>تحديد أسباب التباين.</value>
+  </data>
+  <data name="DevelopTestAndImplementSolutions" xml:space="preserve">
+    <value>تطوير الحلول واختبارها وتنفيذها.</value>
+  </data>
+  <data name="SustainGainsAndScale" xml:space="preserve">
+    <value>الحفاظ على المكاسب وتوسيع النطاق.</value>
+  </data>
+  <data name="IdentifyABusinessNeedProblemOrOpportunityAndBrainstormWaysToMeetThisNeedSolveThisProblemOrSeizeThisOpportunity" xml:space="preserve">
+    <value>حدد حاجة أو مشكلة أو فرصة عمل، وابحث عن طرق لتلبية هذه الحاجة أو حل هذه المشكلة أو اغتنام هذه الفرصة.</value>
+  </data>
+  <data name="BreakDownTheLargerProjectIntoSmallerTasksBuildYourTeamAndPrepareAScheduleForTheCompletionOfAssignments" xml:space="preserve">
+    <value>قسّم المشروع الأكبر إلى مهام أصغر، وابنِ فريقك، وأعد جدولًا لإكمال المهام.</value>
+  </data>
+  <data name="TrackOrganizeTeamMembersManageTimelinesAndMakeSureTheWorkIsDoneAccordingToTheOriginalPlan" xml:space="preserve">
+    <value>تتبع أعضاء الفريق ونظّمهم، وأدر الجداول الزمنية، وتأكد من إنجاز العمل وفق الخطة الأصلية.</value>
+  </data>
+  <data name="ProjectPerformanceAndMonitoringEnsuresThatResultsAlignWithTheManagementPlan" xml:space="preserve">
+    <value>يضمن أداء المشروع ومراقبته توافق النتائج مع خطة الإدارة.</value>
+  </data>
+  <data name="ProvideFinancialDeliverablesReleaseProjectResourcesAndDetermineTheSuccessOfTheProjectEvaluatingWhatDidAndDidNotWorkWithTheProject" xml:space="preserve">
+    <value>قدّم المخرجات المالية، وأفرج عن موارد المشروع، وحدد نجاح المشروع، مع تقييم ما نجح وما لم ينجح في المشروع.</value>
+  </data>
+  <data name="PleaseAddAtLeastOneTool" xml:space="preserve">
+    <value>يرجى إضافة أداة واحدة على الأقل</value>
+  </data>
+  <data name="SelectTeamMember" xml:space="preserve">
+    <value>اختر عضو الفريق</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>تسجيل</value>
+  </data>
+  <data name="NoteYouWillNotBeDirectedToMakePayment" xml:space="preserve">
+    <value>ملاحظة: لن يتم توجيهك لإجراء الدفع.</value>
+  </data>
+  <data name="SignInWithGoogle" xml:space="preserve">
+    <value>تسجيل الدخول باستخدام Google</value>
+  </data>
+  <data name="ProjectHealth" xml:space="preserve">
+    <value>صحة المشروع</value>
+  </data>
+  <data name="ProfileAdministrators" xml:space="preserve">
+    <value>إعداد المسؤولين</value>
+  </data>
+  <data name="LicensesUsed" xml:space="preserve">
+    <value>التراخيص المستخدمة</value>
+  </data>
+  <data name="ModuleAccess" xml:space="preserve">
+    <value>الوصول إلى الوحدات</value>
+  </data>
+  <data name="ReactivateSubscription" xml:space="preserve">
+    <value>إعادة تنشيط الاشتراك</value>
+  </data>
+  <data name="Resubscribe" xml:space="preserve">
+    <value>إعادة الاشتراك</value>
+  </data>
+  <data name="InitiativeHealth" xml:space="preserve">
+    <value>صحة المبادرة / الحالة الصحية للمبادرة</value>
+  </data>
+  <data name="Health" xml:space="preserve">
+    <value>الصحة / الحالة الصحية</value>
+  </data>
+  <data name="CarryOverClassification" xml:space="preserve">
+    <value>الترحيل والتصنيف</value>
+  </data>
+  <data name="TopProjects" xml:space="preserve">
+    <value>أفضل المشاريع حسب الوفورات المستهدفة</value>
+  </data>
+  <data name="FacilitatorSponsorWorkload" xml:space="preserve">
+    <value>عبء عمل الميسّر والراعي</value>
+  </data>
+  <data name="SavingsForecastVsTarget" xml:space="preserve">
+    <value>توقعات الوفورات مقابل الهدف</value>
+  </data>
+  <data name="CumulativeMonthlySavingsTrend" xml:space="preserve">
+    <value>الاتجاه التراكمي للوفورات الشهرية</value>
+  </data>
+  <data name="SavingsByDeptFacility" xml:space="preserve">
+    <value>الوفورات حسب الإدارة والمنشأة</value>
+  </data>
+  <data name="TimeToCompletion" xml:space="preserve">
+    <value>الوقت حتى الإنجاز ووقت الدورة</value>
+  </data>
+  <data name="InitiativePipelineByStatus" xml:space="preserve">
+    <value>خط المبادرات حسب الحالة</value>
+  </data>
+  <data name="CummulativeStatusBreakdown" xml:space="preserve">
+    <value>التفصيل التراكمي للحالات (العائد على الاستثمار)</value>
+  </data>
+  <data name="TopInitiativesByROI" xml:space="preserve">
+    <value>أفضل المبادرات حسب العائد على الاستثمار</value>
+  </data>
+  <data name="OwnerSponsorWorkload" xml:space="preserve">
+    <value>عبء عمل المالك والراعي</value>
+  </data>
+  <data name="CumulativeROIvsTarget" xml:space="preserve">
+    <value>العائد التراكمي على الاستثمار مقابل الهدف</value>
+  </data>
+  <data name="MonthlyROIWaterfall" xml:space="preserve">
+    <value>الشلال الشهري للعائد على الاستثمار</value>
+  </data>
+  <data name="RoiByDeptOwner" xml:space="preserve">
+    <value>العائد على الاستثمار حسب الإدارة والمالك</value>
+  </data>
+  <data name="CycleTime" xml:space="preserve">
+    <value>الوقت حتى الإنجاز / وقت الدورة</value>
+  </data>
+</root>

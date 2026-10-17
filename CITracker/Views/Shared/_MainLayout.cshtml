@@ -1,105 +1,151 @@
 ﻿@using CITracker.Resources
 @inject IHttpContextAccessor hca
+@{
+    var currentCulture = System.Globalization.CultureInfo.CurrentUICulture;
+    var isRtl = currentCulture.TextInfo.IsRightToLeft;
+}
 
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
+<html lang="@currentCulture.Name" dir="@(isRtl ? "rtl" : "ltr")" data-nav-layout="vertical" data-theme-mode="light" data-header-styles="light" data-menu-styles="dark" data-toggled="close">
    <head>
-      <!-- Meta Data --> 
-      <meta charset="UTF-8">
-      <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <title>@ViewBag.Title</title>
-      <meta name="Description" content="">
-      <meta name="Author" content="Ops Focus Inc">
-      <meta name="keywords" content="admin,admin dashboard,admin panel,admin template,bootstrap,clean,dashboard,flat,jquery,modern,responsive,premium admin templates,responsive admin,ui,ui kit.">
-      <!-- Favicon --> 
-      <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
-      <!-- Choices JS -->
-      <link src="~/assets/libs/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
-      <!-- Bootstrap Css --> 
-      <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <!-- Main Theme Js --> 
-      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-      <script src="~/assets/js/main.js"></script> <!-- Style Css --> 
-      <link href="~/assets/css/styles.min.css" rel="stylesheet">
-      <link href="~/assets/css/partial.css" rel="stylesheet">
-      <!-- Icons Css -->
-      <link href="~/assets/css/icons.css" rel="stylesheet">
-      <!-- Node Waves Css --> 
-      <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
-      <!-- Color Picker Css --> 
-      <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
-      <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
-      <!-- Choices Css -->
-      <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
-      <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
-      <!-- Bootstrap Css -->
-      <link rel="stylesheet" href="~/assets/libs/jsvectormap/css/jsvectormap.min.css">
-      <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
-      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-      <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-      <!-- Flatpicker-->
-      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
-      <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
-      <!--Datatables fixed column-->
-      <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
-      <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
-      <!-- Prism CSS --> 
-      <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
-      <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-      <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <!-- Meta Data -->
+        <meta charset="UTF-8">
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>@ViewBag.Title</title>
+        <meta name="Description" content="">
+        <meta name="Author" content="Ops Focus Inc">
+        <meta name="keywords" content="admin,admin dashboard,admin panel,admin template,bootstrap,clean,dashboard,flat,jquery,modern,responsive,premium admin templates,responsive admin,ui,ui kit.">
 
-      <meta http-equiv="imagetoolbar" content="no" />    
-      <style>
-        a.details-control {
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+        <!-- Favicon -->
+        <link rel="icon" href="~/assets/images/brand-logos/favicon.ico" type="image/x-icon">
+
+        <!-- ⬇ RTL: Arabic-friendly font, loaded only when needed -->
+        @if (isRtl)
+        {
+            <link rel="preconnect" href="https://fonts.googleapis.com">
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600&display=swap">
         }
 
-        .child-table {
-            width: 95%;
+        <!-- Choices JS -->
+        <link href="~/assets/libs/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+
+        <!-- ⬇ RTL: Bootstrap swaps to its official RTL build -->
+        @if (isRtl)
+        {
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.rtl.min.css" integrity="sha512-4W9f7EnJgM33kD11Ux2XNF9DSpJ7LoQXCvBNhzKTorRSyjPHmjXhHMZMafIYqYvTNWahUk2ulNsarMMLDEv4zA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        }
+        else
+        {
+            <link id="style" href="~/assets/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         }
 
+        <!-- Main Theme Js -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="~/assets/js/main.js"></script>
 
-        .child-table1 {
-            table-layout: fixed;
-            width: 70%;
+        <!-- Style Css -->
+        <link href="~/assets/css/styles.min.css" rel="stylesheet">
+        <link href="~/assets/css/partial.css" rel="stylesheet">
+
+        <!-- ⬇ RTL: your custom RTL override, loaded after the theme -->
+        @if (isRtl)
+        {
+            <link href="~/assets/css/rtl-override.css" rel="stylesheet" asp-append-version="true">
         }
 
-        /* .child-table1 th:nth-child(2),
-        .child-table1 td:nth-child(2) {
-            width: 100%;
-        }
- */
-        .child-table-wrapper {
-            display: flex;
-            justify-content: flex-end; /* align to the right */
+        <!-- Icons Css -->
+        <link href="~/assets/css/icons.css" rel="stylesheet">
+
+        <!-- Node Waves Css -->
+        <link href="~/assets/libs/node-waves/waves.min.css" rel="stylesheet">
+
+        <!-- Color Picker Css -->
+        <link rel="stylesheet" href="~/assets/libs/flatpickr/flatpickr.min.css">
+        <link rel="stylesheet" href="~/assets/libs/simonwep/pickr/themes/nano.min.css">
+
+        <!-- ⬇ RTL: Flatpickr has an Arabic locale; load it conditionally -->
+        @if (isRtl)
+        {
+            <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ar.js"></script>
         }
 
-        .child-table-wrapper1 {
-            display: flex;
-            justify-content: flex-start; /* align to the right */
+        <!-- Choices Css -->
+        <link rel="stylesheet" href="~/assets/libs/choices.js/public/assets/styles/choices.min.css">
+        <script src="~/assets/libs/choices.js/public/assets/scripts/choices.min.js"></script>
+
+        <!-- ⬇ RTL: DataTables has an Arabic language pack -->
+        @if (isRtl)
+        {
+            <script src="https://cdn.datatables.net/plug-ins/1.13.6/i18n/ar.json"></script>
         }
 
-        .wrap-cell {
-            max-width: 180px;
-            white-space: normal; /* allow wrapping */
-            word-wrap: break-word; /* legacy */
-            overflow-wrap: break-word; /* modern */
-        }
+        <!-- Bootstrap Css -->
+        <link rel="stylesheet" href="~/assets/libs/jsvectormap/css/jsvectormap.min.css">
+        <link rel="stylesheet" href="~/assets/libs/swiper/swiper-bundle.min.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-        .child-table1 thead th {
-            background-color: #111827;
-            color: #f9fafb;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
+        <!-- Flatpicker-->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/style.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/plugins/monthSelect/index.js"></script>
 
-      </style>
-   </head>
+        <!--Datatables fixed column-->
+        <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+        <script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+
+        <!-- Prism CSS -->
+        <link rel="stylesheet" href="~/assets/libs/prismjs/themes/prism-coy.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+        <meta http-equiv="imagetoolbar" content="no" />
+
+        <style>
+            a.details-control {
+                cursor: pointer;
+                color: blue;
+                text-decoration: underline;
+            }
+
+            .child-table {
+                width: 95%;
+            }
+
+            .child-table1 {
+                table-layout: fixed;
+                width: 70%;
+            }
+
+            /* ⬇ RTL: justify-content flips meaning, use logical keywords */
+            .child-table-wrapper {
+                display: flex;
+                justify-content: end; /* was flex-end (physical right); logical end respects dir */
+            }
+
+            .child-table-wrapper1 {
+                display: flex;
+                justify-content: start; /* was flex-start (physical left); logical start respects dir */
+            }
+
+            .wrap-cell {
+                max-width: 180px;
+                white-space: normal;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+
+            .child-table1 thead th {
+                background-color: #111827;
+                color: #f9fafb;
+                font-weight: 600;
+                text-transform: uppercase; /* no-op in Arabic, harmless */
+                font-size: 12px;
+            }
+        </style>
+    </head>
    <body>
    <!-- Loader --> 
    <div id="loader" class="d-none"> <img src="~/assets/images/media/media-79.svg" alt=""> </div>
@@ -186,6 +232,13 @@
                                     <span class="avatar avatar-xs lh-1 me-2">
                                         <img src="~/assets/images/flags/cn.svg" alt="img">
                                     </span> Chinese
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center language-item" href="#" data-culture="ar-SA" data-flag="sa.svg">
+                                    <span class="avatar avatar-xs lh-1 me-2">
+                                        <img src="~/assets/images/flags/sa.svg" alt="img">
+                                    </span> العربية
                                 </a>
                             </li>
                         </ul>
@@ -446,7 +499,7 @@
                 const segments = currentPath.split('/').filter(s => s.length > 0);
 
                 // Check if first segment is a culture code and remove it
-                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh'];
+                const cultures = ['en-US', 'es', 'pt', 'nl', 'fr', 'zh', 'ar-SA'];
                 let pathWithoutCulture = currentPath;
 
                 if (segments.length > 0 && cultures.includes(segments[0])) {
@@ -528,7 +581,8 @@
                 'pt': 'pt.svg',
                 'nl': 'nl.svg',
                 'fr': 'mf.svg',
-                'zh': 'cn.svg'
+                'zh': 'cn.svg',
+                'ar-SA': 'sa.svg'
             };
 
             const flagFile = flagMap[culture] || 'us.svg';
