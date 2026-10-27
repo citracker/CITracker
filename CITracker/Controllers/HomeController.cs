@@ -888,7 +888,7 @@ namespace CITracker.Controllers
                         return View("Checkout", new CheckoutVM
                         {
                             StatusCode = (int)HttpStatusCode.ExpectationFailed,
-                            Message = $"Organisation - {Request.Form["companyName"]} - has existing mpSub.",
+                            Message = $"Organisation - {Request.Form["companyName"]} - Exists. Kindly request to be added as a staff instead or contact CITracker support.",
                             SubscriptionPlan = _subManager.GetSubscriptionPlanById(int.Parse(Request.Form["subscriptionId"])).Result?.SingleResult,
                             PaymentProvider = _payManager.FetchPaymentOptions().Result.Result.ToList(),
                             Country = _opsManager.FetchOperationalCountry().Result.Result.ToList()
