@@ -106,7 +106,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
                                     <select class="form-control" name="user" id="user" onchange="onUserChange(this, 'fnN', 'lnN', 'emN')" required>
-                                        <option disabled>@SharedResource.SelectAUser</option>
+                                        <option>@SharedResource.SelectAUser</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
@@ -169,7 +169,7 @@
                                 <div class="col-12">
                                     <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
                                     <select class="form-control" name="userD" id="userD">
-                                        <option disabled>@SharedResource.SelectAUser</option>
+                                        <option>@SharedResource.SelectAUser</option>
                                         @if (Model.Result != null)
                                         {
                                             if (Model.Result.Any())
