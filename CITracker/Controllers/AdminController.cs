@@ -942,7 +942,7 @@ namespace CITracker.Controllers
             }
             catch (Exception e)
             {
-                TempData["Message"] = "An Error Occured";
+                TempData["Message"] = "Kindly Select a User";
                 TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(RenameUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
@@ -974,7 +974,7 @@ namespace CITracker.Controllers
             }
             catch (Exception e)
             {
-                TempData["Message"] = "An Error Occured";
+                TempData["Message"] = "Kindly Select a User";
                 TempData["StatusCode"] = (int)HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occurred at {nameof(DeleteUser)} - {JsonConvert.SerializeObject(e)}");
                 return RedirectToAction("ManageUsers", "Admin");
