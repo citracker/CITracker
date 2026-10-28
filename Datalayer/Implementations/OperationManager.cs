@@ -1250,7 +1250,7 @@ namespace Datalayer.Implementations
             {
                 using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetListAsync<SISubProjectDTO>(dbConnection,
-                    "select a.Id, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.Id = @pid order by a.DateCreated desc",
+                    "select a.Id, a.SIId, a.Initiative, a.StartDate, a.EndDate, a.Description, a.FacilitatorId, b.Name as Facilitator, a.Percentage, a.Savings, a.Currency, a.DateCreated, a.CreatedBy, b1.Name as CreatedByUser from SISubProject a left join CIUser b on a.FacilitatorId = b.Id left join CIUser b1 on a.CreatedBy = b1.Id where a.Id = @pid order by a.DateCreated desc",
                     new { pid = Id }, CommandType.Text);
 
                 if (resi.Any())
