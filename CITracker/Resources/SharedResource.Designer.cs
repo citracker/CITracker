@@ -5238,7 +5238,7 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign in with Google.
+        ///   Looks up a localized string similar to Google Sign in.
         /// </summary>
         public static string SignInWithGoogle {
             get {
@@ -5247,7 +5247,7 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign in with Microsoft.
+        ///   Looks up a localized string similar to Microsoft Sign in.
         /// </summary>
         public static string SignInWithMicrosoft {
             get {
@@ -6144,6 +6144,60 @@ namespace CITracker.Resources {
         public static string Verify {
             get {
                 return ResourceManager.GetString("Verify", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to access and use the Administrator Settings.
+        /// </summary>
+        public static string VideoAdminSettings {
+            get {
+                return ResourceManager.GetString("VideoAdminSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to create and modify Continuous Improvement Project, from Start to Finish.
+        /// </summary>
+        public static string VideoContinuousImprovement {
+            get {
+                return ResourceManager.GetString("VideoContinuousImprovement", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to create and modify Operational Excellence Project.
+        /// </summary>
+        public static string VideoOperationalExcellence {
+            get {
+                return ResourceManager.GetString("VideoOperationalExcellence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to sign in and access your dashboard.
+        /// </summary>
+        public static string VideoSignInDashboard {
+            get {
+                return ResourceManager.GetString("VideoSignInDashboard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to create and modify Strategic Initiative Project.
+        /// </summary>
+        public static string VideoStrategicInitiative {
+            get {
+                return ResourceManager.GetString("VideoStrategicInitiative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How to create and modify Strategic Initiative Sub Project.
+        /// </summary>
+        public static string VideoStrategicSubProject {
+            get {
+                return ResourceManager.GetString("VideoStrategicSubProject", resourceCulture);
             }
         }
         
