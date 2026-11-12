@@ -1055,51 +1055,51 @@ namespace CITracker.Controllers
         }
 
 
-        [HttpPost("Contact")]
-        [ValidateAntiForgeryToken]
-        public IActionResult Contact()
-        {
-            try
-            {
-                if (!Utils.IsValidEmail(Request.Form["cusEmail"].ToString()))
-                {
-                    TempData["message"] = "Kindly provide a valid email address";
-                    return RedirectToAction("Index");
-                }
+        //[HttpPost("Contact")]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult Contact()
+        //{
+        //    try
+        //    {
+        //        if (!Utils.IsValidEmail(Request.Form["cusEmail"].ToString()))
+        //        {
+        //            TempData["message"] = "Kindly provide a valid email address";
+        //            return RedirectToAction("Index");
+        //        }
 
-                //build email object
-                var org = new EmailDTO
-                {
-                    Name = Request.Form["cusName"],
-                    Email = Request.Form["cusEmail"],
-                    Message = Request.Form["cusMessage"],
-                    Subject = Request.Form["cusSubject"]
-                };
+        //        //build email object
+        //        var org = new EmailDTO
+        //        {
+        //            Name = Request.Form["cusName"],
+        //            Email = Request.Form["cusEmail"],
+        //            Message = Request.Form["cusMessage"],
+        //            Subject = Request.Form["cusSubject"]
+        //        };
 
 
-                //send email to CITracker
-                var rply = new List<ReplyTo> {  new ReplyTo
-                    {
-                        EmailAddress = org.Email,
-                        Name = org.Name
-                    }
-                };
+        //        //send email to CITracker
+        //        var rply = new List<ReplyTo> {  new ReplyTo
+        //            {
+        //                EmailAddress = org.Email,
+        //                Name = org.Name
+        //            }
+        //        };
 
-                _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true);
+        //        _mail.sendEmail(_config.Value.ContactEmail, "CITracker Contact Form", "CITracker", _mail.PopulateContactBody(org), rply, true);
 
-                _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org));
+        //        _mail.sendEmail(org.Email, org.Subject, "CITracker", _mail.PopulateContactReceiptBody(org));
 
-                return RedirectToAction("Index");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
+        //        return RedirectToAction("Index");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Exception at Contact || - {JsonConvert.SerializeObject(ex)}");
 
-                TempData["message"] = $"{JsonConvert.SerializeObject(ex)}";
+        //        TempData["message"] = $"{JsonConvert.SerializeObject(ex)}";
 
-                return RedirectToAction("Index");
-            }
-        }
+        //        return RedirectToAction("Index");
+        //    }
+        //}
 
 
         private bool IsAuthenticated()

@@ -2196,4 +2196,22 @@
   <data name="CycleTime" xml:space="preserve">
     <value>Délai de réalisation / temps de cycle</value>
   </data>
+    <data name="VideoSignInDashboard" xml:space="preserve">
+    <value>Comment se connecter et accéder à votre tableau de bord</value>
+  </data>
+  <data name="VideoContinuousImprovement" xml:space="preserve">
+    <value>Comment créer et modifier un projet d'amélioration continue, du début à la fin</value>
+  </data>
+  <data name="VideoOperationalExcellence" xml:space="preserve">
+    <value>Comment créer et modifier un projet d'excellence opérationnelle</value>
+  </data>
+  <data name="VideoStrategicInitiative" xml:space="preserve">
+    <value>Comment créer et modifier un projet d'initiative stratégique</value>
+  </data>
+  <data name="VideoStrategicSubProject" xml:space="preserve">
+    <value>Comment créer et modifier un sous-projet d'initiative stratégique</value>
+  </data>
+  <data name="VideoAdminSettings" xml:space="preserve">
+    <value>Comment accéder aux paramètres de l'administrateur et les utiliser</value>
+  </data>
 </root>
