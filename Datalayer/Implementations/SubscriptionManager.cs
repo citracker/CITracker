@@ -378,7 +378,7 @@ namespace Datalayer.Implementations
             try
             {
                 using var dbConnection = await OpenConnectionAsync();
-                var resi = await _repository.GetAsync<Subscription>(dbConnection, "SELECT * from Subscription where PaymentSubscriptionId = @sid OR (PaymentSubscriptionId IS NULL AND PaymentCustomerId = @cid)", new
+                var resi = await _repository.GetAsync<Subscription>(dbConnection, "SELECT * from Subscription where PaymentCustomerId = @cid OR PaymentSubscriptionId = @sid", new
                     {
                         sid = subscriptionId,
                         cid = stripeCustomerId
