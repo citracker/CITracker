@@ -13,6 +13,7 @@ namespace Datalayer.Interfaces
         Task<ResponseHandler<SubscriptionPlan>> GetDefaultSubscriptionPlan();
         Task<ResponseHandler<SubscriptionPlan>> GetSubscriptionPlanByMarketPlaceId(string id);
         Task<ResponseHandler<Organization>> GetOrganizationByTenantId(string tenantId);
+        Task<ResponseHandler<OrganizationSubscription>> GetOrganizationDetails(string tenantId);
         Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscription(string tenantId);
         Task<ResponseHandler<Organization>> RegisterOrganizationSubscription(Organization org, CIUser usr, Subscription sub);
         Task UpdateOrganizationSubscription(long orgId, string stripeCustomerId, string stripeSubscriptionId, string subStatus, long adminUser);

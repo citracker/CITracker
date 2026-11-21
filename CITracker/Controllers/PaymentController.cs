@@ -80,29 +80,26 @@ namespace CITracker.Controllers
             }
 
             var pending = await _subManager.GetPendingSubscription(pendingId);
-            if (pending == null)
+            if (pending != null)
             {
-                _logger.LogInformation($"PendingSubscription {pendingId} not found.");
-                return;
+                // Idempotency: don't reprocess an already-paid pending
+                if (pending.Status == "PaidAwaitingTenant" || pending.Status == "Linked")
+                {
+                    _logger.LogInformation($"Pending {pendingId} already in status {pending.Status}; skipping.");
+                    return;
+                }
+
+                pending.ProviderCustomerId = session.CustomerId;
+                pending.ProviderSubscriptionId = session.SubscriptionId;
+                pending.StripeSessionId = session.Id;
+                pending.BillingEmail = session.CustomerDetails?.Email ?? session.CustomerEmail ?? pending.BillingEmail;
+                pending.SeatsRequested = pending.SeatsRequested;
+                pending.Status = "PaidAwaitingTenant";
+
+                await _subManager.UpdatePendingSubscription(pending);
+
+                _logger.LogInformation($"PendingSubscription {pendingId} → PaidAwaitingTenant ({pending.SeatsRequested} seats).");
             }
-
-            // Idempotency: don't reprocess an already-paid pending
-            if (pending.Status == "PaidAwaitingTenant" || pending.Status == "Linked")
-            {
-                _logger.LogInformation($"Pending {pendingId} already in status {pending.Status}; skipping.");
-                return;
-            }
-
-            pending.ProviderCustomerId = session.CustomerId;
-            pending.ProviderSubscriptionId = session.SubscriptionId;
-            pending.StripeSessionId = session.Id;
-            pending.BillingEmail = session.CustomerDetails?.Email  ?? session.CustomerEmail ?? pending.BillingEmail;
-            pending.SeatsRequested = pending.SeatsRequested; 
-            pending.Status = "PaidAwaitingTenant";
-
-            await _subManager.UpdatePendingSubscription(pending);
-
-            _logger.LogInformation($"PendingSubscription {pendingId} → PaidAwaitingTenant ({pending.SeatsRequested} seats).");
 
             _logger.LogInformation($"About to Refresh the Subscription for {session.SubscriptionId}");
 
