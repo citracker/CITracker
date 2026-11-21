@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Web;
 using Newtonsoft.Json;
@@ -84,7 +85,7 @@ namespace CITracker.Controllers
                 var tenantForLookup = !string.IsNullOrEmpty(identity.OrganizationKey) ? identity.OrganizationKey : org.OrganizationDomain;   // or expose Organization.TenantId on the DTO
 
                 // 5a. Fetch subscription status for that tenant
-                var orgDetails = _subManager.GetOrganizationSubscription(tenantForLookup).Result;
+                var orgDetails = _subManager.GetOrganizationDetails(tenantForLookup).Result;
 
                 _logger.LogInformation($"Subscription lookup for tenant {tenantForLookup} returned {orgDetails.StatusCode}");
 
@@ -92,8 +93,25 @@ namespace CITracker.Controllers
                 {
                     var status = orgDetails.SingleResult.SubscriptionStatus?.ToLower();
                     var isActive = (status == "active" || status == "trialing") && orgDetails.SingleResult.EndDate >= DateTime.UtcNow;
+                    var isCancelled = (status == "cancelled") && DateTime.UtcNow > orgDetails.SingleResult.EndDate;
 
-                    HttpContext.Session.SetString("OrganisationSubscriptionStatus", isActive ? "true" : "false");
+                    if(isCancelled)
+                    {
+                        //Redirect to renew or start subscription page
+                        if (orgDetails.SingleResult.Provider.ToLower() == "stripe")
+                        {
+                            var res = _strPay.CreateCheckout(orgDetails.SingleResult.OrganizationId.ToString(), orgDetails.SingleResult.PaymentCustomerId, orgDetails.SingleResult.PriceId, 1, 0).Result;
+
+                            if (!string.IsNullOrEmpty(res))
+                            {
+                                return Redirect(res);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("OrganisationSubscriptionStatus", isActive.ToString());
+                    }
                 }
                 else
                 {
@@ -127,15 +145,7 @@ namespace CITracker.Controllers
         }
 
 
-        private static readonly HashSet<string> FreeEmailProviders = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "gmail.com", "googlemail.com",
-        "outlook.com", "hotmail.com", "live.com", "msn.com",
-        "yahoo.com", "yahoo.co.uk", "ymail.com",
-        "icloud.com", "me.com", "mac.com",
-        "proton.me", "protonmail.com",
-        "aol.com", "gmx.com", "mail.com", "zoho.com"
-    };
+        private static readonly HashSet<string> FreeEmailProviders = new(StringComparer.OrdinalIgnoreCase) {"gmail.com", "googlemail.com", "outlook.com", "hotmail.com", "live.com", "msn.com", "yahoo.com", "yahoo.co.uk", "ymail.com", "icloud.com", "me.com", "mac.com", "proton.me", "protonmail.com", "aol.com", "gmx.com", "mail.com", "zoho.com"};
 
         private UserIdentityContext ResolveIdentityContext()
         {

@@ -69,10 +69,6 @@ namespace Infastructure.Implementation
                         }
                     },
                     ClientReferenceId = uid,
-                    SubscriptionData = new SessionSubscriptionDataOptions
-                    {
-                        TrialPeriodDays = trial
-                    },
                     PaymentMethodCollection = "always",
                     SuccessUrl = _config.Value.SuccessCallBack,
                     CancelUrl = _config.Value.FailedCallBack

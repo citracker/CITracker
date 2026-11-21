@@ -9,6 +9,7 @@
         public string SubscriptionName { get; set; }
         public string PaymentSubscriptionId { get; set; }
         public string PaymentCustomerId { get; set; }
+        public string PriceId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int NumberOfLicences { get; set; }

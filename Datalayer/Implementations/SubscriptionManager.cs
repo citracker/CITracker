@@ -171,13 +171,54 @@ namespace Datalayer.Implementations
             }
         }
 
+        public async Task<ResponseHandler<OrganizationSubscription>> GetOrganizationDetails(string tenantId)
+        {
+            try
+            {
+                using var dbConnection = await OpenConnectionAsync();
+                var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, sp.PriceId, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, s.SeatsPurchased as NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences, s.CancelAtPeriodEnd FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.PriceId, s.SeatsPurchased, s.CancelAtPeriodEnd", new
+                    {
+                        tid = tenantId
+                    }, CommandType.Text); //AND s.Status in ('ACTIVE', 'TRIALING') 
+
+                if (resi != null)
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                    {
+                        StatusCode = (int)HttpStatusCode.OK,
+                        Message = "Successful",
+                        SingleResult = resi
+                    });
+                }
+                else
+                {
+                    return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                    {
+                        StatusCode = (int)HttpStatusCode.NotFound,
+                        Message = "Record not found"
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Exception at {nameof(GetOrganizationSubscription)} - {JsonConvert.SerializeObject(ex)}");
+
+                return await Task.FromResult(new ResponseHandler<OrganizationSubscription>
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError,
+                    Message = "An error occured"
+                });
+            }
+        }
+
         public async Task<ResponseHandler<OrganizationSubscription>> GetOrganizationSubscription(string tenantId)
         {
             try
             {
                 using var dbConnection = await OpenConnectionAsync();
                 var resi = await _repository.GetAsync<OrganizationSubscription>(dbConnection,
-                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, s.SeatsPurchased as NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences, s.CancelAtPeriodEnd FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND s.Status in ('ACTIVE', 'TRIALING') GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, s.SeatsPurchased, s.CancelAtPeriodEnd", new
+                    "SELECT o.Id AS OrganizationId, o.Provider, s.SubscriptionPlanId, s.Status as SubscriptionStatus, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name as SubscriptionName, sp.PriceId, CAST(s.StartDate AS DATETIME) AS StartDate, CAST(s.EndDate AS DATETIME) AS EndDate, s.SeatsPurchased as NumberOfLicences, COUNT(u.Id) AS NumberOfUsedLicences, s.CancelAtPeriodEnd FROM Organization o INNER JOIN Subscription s ON o.SubscriptionId = s.Id INNER JOIN SubscriptionPlan sp ON s.SubscriptionPlanId = sp.Id LEFT JOIN CIUser u ON u.OrganizationId = o.Id AND u.IsActive = 1 WHERE o.TenantId = @tid AND s.Status in ('ACTIVE', 'TRIALING') GROUP BY o.Id, o.Provider, s.SubscriptionPlanId, s.Status, s.StartDate, s.EndDate, s.PaymentSubscriptionId, s.PaymentCustomerId, sp.Name, sp.PriceId, s.SeatsPurchased, s.CancelAtPeriodEnd", new
                     {
                         tid = tenantId
                     }, CommandType.Text);
