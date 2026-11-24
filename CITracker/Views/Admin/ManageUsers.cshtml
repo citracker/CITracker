@@ -202,7 +202,10 @@
                         <div class="card-body">
                             <div class="row gy-4">
                                 <div class="col-12">
-                                    <label for="input-text" class="form-label">@SharedResource.SelectAUser<span style="color:red">*</span></label>
+                                    <p class="mb-2 fw-medium">
+                                        @SharedResource.SetupAdministrators <span style="color:red">*</span>
+                                        <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-custom-class="tooltip-primary" class="text-primary" data-bs-original-title="@SharedResource.SetupAdministratorsNote"> <i class="fe fe-info"></i></a>
+                                    </p>
                                     <select class="form-control" name="auser" id="auser" multiple required>
                                         <option disabled>@SharedResource.SelectAUser</option>
                                         @if (Model.Result != null)

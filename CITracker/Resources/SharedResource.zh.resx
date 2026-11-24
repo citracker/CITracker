@@ -2196,7 +2196,7 @@
   <data name="CycleTime" xml:space="preserve">
     <value>完成时间 / 周期时间</value>
   </data>
-    <data name="VideoSignInDashboard" xml:space="preserve">
+  <data name="VideoSignInDashboard" xml:space="preserve">
     <value>如何登录并访问您的仪表板</value>
   </data>
   <data name="VideoContinuousImprovement" xml:space="preserve">
@@ -2213,5 +2213,11 @@
   </data>
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>如何访问和使用管理员设置</value>
+  </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>设置管理员</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>使用 Ctrl 或 Command 键选择多个用户以设置多位管理员。请注意，只有被选中的用户才会成为管理员。</value>
   </data>
 </root>
