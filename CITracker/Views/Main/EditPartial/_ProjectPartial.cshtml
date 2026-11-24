@@ -243,7 +243,7 @@
                     </div>
 
                     <div class="col-xl-3 col-lg-3 col-md-3 col-sm-12">
-                        <label for="facility" class="form-label">@SharedResource.Facility</label>
+                        <label for="facility" class="form-label">@SharedResource.Facility<span style="color:red">*</span></label>
                         <select class="form-control" name="facility" id="facility" onchange="onFacilityChange(this, 'department')" @(isAdminOrFacilitator == true ? "" : "readonly") required>
                         </select>
                     </div>

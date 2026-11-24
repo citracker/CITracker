@@ -2196,7 +2196,7 @@
   <data name="CycleTime" xml:space="preserve">
     <value>Délai de réalisation / temps de cycle</value>
   </data>
-    <data name="VideoSignInDashboard" xml:space="preserve">
+  <data name="VideoSignInDashboard" xml:space="preserve">
     <value>Comment se connecter et accéder à votre tableau de bord</value>
   </data>
   <data name="VideoContinuousImprovement" xml:space="preserve">
@@ -2213,5 +2213,11 @@
   </data>
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>Comment accéder aux paramètres de l'administrateur et les utiliser</value>
+  </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>Configurer les administrateurs</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>Sélectionnez plusieurs administrateurs en utilisant les touches Ctrl ou Command pour choisir plusieurs utilisateurs. Remarque : seuls les utilisateurs sélectionnés seront administrateurs.</value>
   </data>
 </root>

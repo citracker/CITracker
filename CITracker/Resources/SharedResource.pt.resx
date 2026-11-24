@@ -2214,4 +2214,10 @@
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>Como acessar e usar as configurações do administrador</value>
   </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>Configurar administradores</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>Selecione vários administradores usando as teclas Ctrl ou Command para escolher vários usuários. Nota: apenas os usuários selecionados serão administradores.</value>
+  </data>
 </root>

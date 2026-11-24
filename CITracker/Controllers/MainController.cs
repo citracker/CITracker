@@ -125,6 +125,22 @@ namespace CITracker.Controllers
             return Ok(coep);
         }
 
+        [HttpGet("HowTos")]
+        public IActionResult HowTos()
+        {
+            if (!IsAuthenticated())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (!UserHasValidRole())
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
+
         [HttpGet("SearchSupportingValues")]
         public async Task<IActionResult> SearchSupportingValues(string search)
         {

@@ -487,7 +487,7 @@
     <value>Opciones de pago</value>
   </data>
   <data name="ChooseAPlan" xml:space="preserve">
-    <value>Elija un plan</value>
+    <value>Elige tu plan</value>
   </data>
   <data name="ChooseMonthOfYear" xml:space="preserve">
     <value>Elija mes del año</value>
@@ -1129,7 +1129,7 @@
     <value>Dinero</value>
   </data>
   <data name="Month" xml:space="preserve">
-    <value>mes</value>
+    <value>al mes</value>
   </data>
   <data name="MonthYear" xml:space="preserve">
     <value>Mes y año</value>
@@ -1279,7 +1279,7 @@
     <value>Porcentaje de estado</value>
   </data>
   <data name="PerfectPlan" xml:space="preserve">
-    <value>Plan perfecto</value>
+    <value>plan perfecto</value>
   </data>
   <data name="PerformBulkUploads" xml:space="preserve">
     <value>Realizar cargas masivas</value>
@@ -1342,7 +1342,7 @@
     <value>Se requiere declaración del problema.</value>
   </data>
   <data name="ProceedToCITracker" xml:space="preserve">
-    <value>Proceder a CITracker</value>
+    <value>Ir a CI Tracker</value>
   </data>
   <data name="Profile" xml:space="preserve">
     <value>Perfil</value>
@@ -1618,7 +1618,7 @@
     <value>La fecha de inicio debe ser anterior a la fecha de finalización.</value>
   </data>
   <data name="StartingFrom" xml:space="preserve">
-    <value>A partir de</value>
+    <value>Desde</value>
   </data>
   <data name="StatusPercentageCompletion" xml:space="preserve">
     <value>Estado/porcentaje de finalización</value>
@@ -1804,7 +1804,7 @@
     <value>Detalles del usuario</value>
   </data>
   <data name="UserLicenses" xml:space="preserve">
-    <value>Licencias de usuario</value>
+    <value>licencias de usuario</value>
   </data>
   <data name="UserManagement" xml:space="preserve">
     <value>Gestión de usuarios</value>
@@ -1885,7 +1885,7 @@
     <value>Diseñado con</value>
   </data>
   <data name="ForYourBusiness" xml:space="preserve">
-    <value>para su negocio</value>
+    <value>para tu negocio</value>
   </data>
   <data name="Reporting" xml:space="preserve">
     <value>Informes</value>
@@ -1903,7 +1903,7 @@
     <value>Días</value>
   </data>
   <data name="User" xml:space="preserve">
-    <value>Usuario</value>
+    <value>por usuario</value>
   </data>
   <data name="Suitable for Small Businesses or closed group trials" xml:space="preserve">
     <value>Adecuado para Pequeñas Empresas o pruebas de grupo cerrado</value>
@@ -2213,5 +2213,11 @@
   </data>
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>Cómo acceder y usar la configuración del administrador</value>
+  </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>Configurar administradores</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>Seleccione varios administradores utilizando las teclas Ctrl o Command para elegir a varios usuarios. Nota: solo los usuarios seleccionados serán administradores.</value>
   </data>
 </root>

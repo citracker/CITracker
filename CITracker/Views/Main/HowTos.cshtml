@@ -1,0 +1,116 @@
+﻿@using CITracker.Resources
+
+@{
+    ViewData["Title"] = "CI Tracker";
+    ViewData["Base"] = "Resources";
+    ViewData["Active"] = "HowTos";
+    Layout = "~/Views/Shared/_MainLayout.cshtml";
+}
+
+<div class="main-content app-content">
+    <div class="container-fluid">
+        <!-- Page Header --> <div class="d-md-flex d-block align-items-center justify-content-between page-header-breadcrumb"> 
+            <div> 
+                <h2 class="main-content-title fs-24 mb-1">HOW TOs</h2> 
+                <ol class="breadcrumb mb-0"> 
+                    <li class="breadcrumb-item">
+                        <a href="javascript:void(0)">Resources</a>
+                    </li> <li class="breadcrumb-item active" aria-current="page">HOW TOs</li> 
+                </ol> 
+            </div> 
+        </div> <!-- End:: row-1 --> 
+
+        <!-- Start:: row-2 --> 
+
+        <div class="row row-sm">
+            <div class="col-xl-12">
+                <div class="card custom-card overflow-hidden">
+                    <div class="card-header justify-content-between"> 
+                        <div class="card-title"> HOW TO Videos 
+                            <p class="subtitle text-muted fs-12 fw-normal"> Add <code>.accordion-flush</code> to remove the default <code>background-color</code>, some borders, and some rounded corners to render accordions edge-to-edge with their parent container. </p>
+                        </div>                        
+                    </div> 
+                    <div class="card-body p-0"> 
+                        <div class="accordion accordion-flush" id="accordionFlushExample"> 
+                            <div class="accordion-item"> 
+                                <h2 class="accordion-header" id="flush-headingOne"> 
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne"> @SharedResource.VideoSignInDashboard </button>
+                                </h2> 
+                                <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample" style=""> 
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/MBalMGGyEeU?si=38ApVX2ljoPx5Enz" title="@SharedResource.VideoSignInDashboard" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div> 
+                                </div> 
+                            </div> 
+                            <div class="accordion-item"> 
+                                <h2 class="accordion-header" id="flush-headingTwo"> 
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo"> @SharedResource.VideoContinuousImprovement </button>
+                                </h2> 
+                                <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample" style=""> 
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/mpeSNdISiME?si=y2JcFlHZjsaOMZ6a" title="@SharedResource.VideoContinuousImprovement" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div> 
+                                </div> 
+                            </div> 
+                            <div class="accordion-item"> 
+                                <h2 class="accordion-header" id="flush-headingThree"> 
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree"> @SharedResource.VideoOperationalExcellence </button>
+                                </h2> 
+                                <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample"> 
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/yudWd7WMNyk?si=4w0CzBYusW9gv-ga" title="@SharedResource.VideoOperationalExcellence" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div> 
+                                </div> 
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-headingFour">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour"> @SharedResource.VideoStrategicInitiative </button>
+                                </h2>
+                                <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushExample" style="">
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/IzG1q-GrS1Y?si=wbwJt8D1AoAWuXZO" title="@SharedResource.VideoStrategicInitiative" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-headingFive">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFive" aria-expanded="false" aria-controls="flush-collapseFive"> @SharedResource.VideoStrategicSubProject </button>
+                                </h2>
+                                <div id="flush-collapseFive" class="accordion-collapse collapse" aria-labelledby="flush-headingFive" data-bs-parent="#accordionFlushExample" style="">
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/rJIGL6wowbo?si=9GDMrq1zYkv1e0Ud" title="@SharedResource.VideoStrategicSubProject" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="flush-headingSix">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseSix" aria-expanded="false" aria-controls="flush-collapseSix"> @SharedResource.VideoAdminSettings </button>
+                                </h2>
+                                <div id="flush-collapseSix" class="accordion-collapse collapse" aria-labelledby="flush-headingSix" data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <div class="ratio ratio-16x9">
+                                            <iframe src="https://www.youtube.com/embed/jiP8OkAnsD4?si=BRCEoXH6-UN5aDTc" title="@SharedResource.VideoAdminSettings" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div> 
+                    </div> 
+                    <div class="card-footer d-none border-top-0">
+                    </div>
+                </div>
+            </div>
+        </div> <!-- End:: row-2 --> 
+
+    </div>
+</div>

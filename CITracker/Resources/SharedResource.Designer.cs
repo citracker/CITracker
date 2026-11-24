@@ -5229,6 +5229,24 @@ namespace CITracker.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Setup Administrators.
+        /// </summary>
+        public static string SetupAdministrators {
+            get {
+                return ResourceManager.GetString("SetupAdministrators", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Multiple Administrators by using your Ctrl or Command Keys to select multiple users. Note only selected users would be administrators..
+        /// </summary>
+        public static string SetupAdministratorsNote {
+            get {
+                return ResourceManager.GetString("SetupAdministratorsNote", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Set up Verification.
         /// </summary>
         public static string SetupVerification {
