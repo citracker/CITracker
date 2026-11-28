@@ -2214,4 +2214,10 @@
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>Toegang krijgen tot en gebruikmaken van de beheerdersinstellingen</value>
   </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>Beheerders instellen</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>Selecteer meerdere beheerders door de Ctrl- of Command-toetsen te gebruiken om meerdere gebruikers te selecteren. Let op: alleen geselecteerde gebruikers worden beheerders.</value>
+  </data>
 </root>

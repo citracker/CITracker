@@ -2214,4 +2214,10 @@
   <data name="VideoAdminSettings" xml:space="preserve">
     <value>كيفية الوصول إلى إعدادات المسؤول واستخدامها</value>
   </data>
+  <data name="SetupAdministrators" xml:space="preserve">
+    <value>إعداد المسؤولين</value>
+  </data>
+  <data name="SetupAdministratorsNote" xml:space="preserve">
+    <value>حدد عدة مسؤولين بالضغط على مفتاح Ctrl أو Command لاختيار عدة مستخدمين. ملاحظة: سيتم تعيين المستخدمين المحددين فقط كمسؤولين.</value>
+  </data>
 </root>

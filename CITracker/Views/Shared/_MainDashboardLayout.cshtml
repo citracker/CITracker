@@ -495,7 +495,6 @@
                                             <li class="slide has-sub @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
                                                 <a href="javascript:void(0)" class="side-menu__item @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
                                                     @SharedResource.OperationalExcellence
-                                                    <i class="fe fe-chevron-right side-menu__angle"></i>
                                                 </a>
                                                 <ul class="slide-menu child2 @(ViewBag.Active == "AllOEProjects" || ViewBag.Active == "CreateOEProject" || ViewBag.Active == "OEProjectDetail" ? "active" : "")">
                                                     <li class="slide @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> <a href="@Url.Action("CreateOEProject", "Main")" class="side-menu__item @(ViewBag.Active == "CreateOEProject" ? "active" : "")"> @SharedResource.NewProject </a></li>
@@ -516,7 +515,17 @@
                                         }
                                         </ul>
                                     </li>
-                                    <!-- End::slide --> <!-- Start::slide__category -->
+                                    <!-- End::slide -->
+                                    <!-- Start::slide__category SharedResource.Resources-->
+                                    <li class="slide__category"><span class="category-name">Resources</span></li>
+                                    <!-- End::slide__category --> <!-- Start::slide -->
+                                    <li class="slide @(ViewBag.Active == "HowTos" ? "active" : "")">
+                                        <a href="@Url.Action("HowTos", "Main")" class="side-menu__item @(ViewBag.Active == "HowTos" ? "active" : "")">
+                                            <span class="shape1"></span> <span class="shape2"></span> <i class="ti-home side-menu__icon"></i> <span class="side-menu__label"> HOW TOs</span>
+                                        </a>
+                                    </li>
+                                    <!-- End::slide -->
+                                    <!-- Start::slide__category -->
                                     @if ((bool)hca?.HttpContext?.Session?.GetString("UserRole")?.ToString().Equals("Admin"))
                                     {
                                         <li class="slide__category"><span class="category-name">@SharedResource.Administration</span></li>
